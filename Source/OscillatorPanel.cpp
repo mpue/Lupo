@@ -21,7 +21,8 @@
 //[/Headers]
 
 #include "OscillatorPanel.h"
-
+#include "MessageBus/MessageBus.h"
+#include "MessageBus/Topic.h"
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 //[/MiscUserDefs]
@@ -214,16 +215,19 @@ void OscillatorPanel::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == oscPitch.get())
     {
         //[UserSliderCode_oscPitch] -- add your slider handling code here..
+		MessageBus::getInstance()->updateTopic(getName() + ".pitch", sliderThatWasMoved->getValue());
         //[/UserSliderCode_oscPitch]
     }
     else if (sliderThatWasMoved == oscFine.get())
     {
         //[UserSliderCode_oscFine] -- add your slider handling code here..
+		MessageBus::getInstance()->updateTopic(getName() + ".fine", sliderThatWasMoved->getValue());
         //[/UserSliderCode_oscFine]
     }
     else if (sliderThatWasMoved == pwSlider.get())
     {
         //[UserSliderCode_pwSlider] -- add your slider handling code here..
+		MessageBus::getInstance()->updateTopic(getName() + ".pulsewidth", sliderThatWasMoved->getValue());
         //[/UserSliderCode_pwSlider]
     }
 
@@ -239,26 +243,31 @@ void OscillatorPanel::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == pulseButton.get())
     {
         //[UserButtonCode_pulseButton] -- add your button handler code here..
+		MessageBus::getInstance()->updateTopic(getName() + ".shape.pulse",1);
         //[/UserButtonCode_pulseButton]
     }
     else if (buttonThatWasClicked == sawButton.get())
     {
         //[UserButtonCode_sawButton] -- add your button handler code here..
+		MessageBus::getInstance()->updateTopic(getName() + ".shape.saw", 1);
         //[/UserButtonCode_sawButton]
     }
     else if (buttonThatWasClicked == sineButton.get())
     {
         //[UserButtonCode_sineButton] -- add your button handler code here..
+		MessageBus::getInstance()->updateTopic(getName() + ".shape.sine", 1);
         //[/UserButtonCode_sineButton]
     }
     else if (buttonThatWasClicked == noiseButton.get())
     {
         //[UserButtonCode_noiseButton] -- add your button handler code here..
+		MessageBus::getInstance()->updateTopic(getName() + ".shape.noise", 1);
         //[/UserButtonCode_noiseButton]
     }
     else if (buttonThatWasClicked == syncButton.get())
     {
         //[UserButtonCode_syncButton] -- add your button handler code here..
+		MessageBus::getInstance()->updateTopic(getName() + ".sync", buttonThatWasClicked->getToggleState() ? 1 : 0);
         //[/UserButtonCode_syncButton]
     }
 

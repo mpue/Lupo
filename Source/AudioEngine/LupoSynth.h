@@ -33,7 +33,9 @@ public:
 	void topicChanged(Topic* topic) override;
 	
 	Oszillator* createOscillator(Oszillator::OscMode mode);
-	void configureOscillators(Oszillator::OscMode mode1, Oszillator::OscMode mode2, Oszillator::OscMode mode3);
+	void configureOscillators(Oszillator::OscMode mode1, Oszillator::OscMode mode2, Oszillator::OscMode mode3, Oszillator::OscMode mode4);
+
+	void updateSynthState(Topic* t, int oscillator);
 
 private:
 	vector<Voice*> voices;	

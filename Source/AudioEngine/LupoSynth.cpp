@@ -22,8 +22,6 @@ LupoSynth::LupoSynth(float sampleRate, int bufferSize) {
 		modEnvelopes.push_back(env);
 	}
 
-	
-
 	MessageBus::getInstance()->addListener("ampEnvelope.attack", this);
 	MessageBus::getInstance()->addListener("ampEnvelope.decay", this);
 	MessageBus::getInstance()->addListener("ampEnvelope.sustain", this);
@@ -39,6 +37,18 @@ LupoSynth::LupoSynth(float sampleRate, int bufferSize) {
 	MessageBus::getInstance()->addListener("filter.envAmount", this);
 
 	MessageBus::getInstance()->addListener("mainVolume", this);
+
+	for (int i = 0; i < 4; i++) {
+		MessageBus::getInstance()->addListener("osc" + String(i) + "Panel.pitch", this);
+		MessageBus::getInstance()->addListener("osc" + String(i) + "Panel.fine", this);
+		MessageBus::getInstance()->addListener("osc" + String(i) + "Panel.pulsewidth", this);
+		MessageBus::getInstance()->addListener("osc" + String(i) + "Panel.shape.pulse", this);
+		MessageBus::getInstance()->addListener("osc" + String(i) + "Panel.shape.saw", this);
+		MessageBus::getInstance()->addListener("osc" + String(i) + "Panel.shape.sine", this);
+		MessageBus::getInstance()->addListener("osc" + String(i) + "Panel.shape.noise", this);
+		MessageBus::getInstance()->addListener("osc" + String(i) + "Panel.sync", this);
+	}
+		
 }
 
 LupoSynth::~LupoSynth() {
@@ -82,7 +92,7 @@ Oszillator* LupoSynth::createOscillator(Oszillator::OscMode mode) {
 
 }
 
-void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscMode mode2, Oszillator::OscMode mode3) {
+void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscMode mode2, Oszillator::OscMode mode3, Oszillator::OscMode mode4) {
 	for (int i = 0; i < 127; i++) {
 
 		Voice* v = new Voice(sampleRate);
@@ -90,10 +100,12 @@ void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscM
 		Oszillator* osc1 = createOscillator(mode1);
 		Oszillator* osc2 = createOscillator(mode2);
 		Oszillator* osc3 = createOscillator(mode3);
+		Oszillator* osc4 = createOscillator(mode4);
 
 		v->addOszillator(osc1);
 		v->addOszillator(osc2);
 		v->addOszillator(osc3);
+		v->addOszillator(osc4);
 
 		voices.push_back(v);
 	}
@@ -109,7 +121,7 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	this->filter = new MultimodeFilter();
 	filter->setModulator(modEnvelopes[0]);
 
-	configureOscillators(Oszillator::OscMode::SAW, Oszillator::OscMode::SAW, Oszillator::OscMode::SAW);
+	configureOscillators(Oszillator::OscMode::SAW, Oszillator::OscMode::SAW, Oszillator::OscMode::SAW, Oszillator::OscMode::SAW);
 
 	for (int i = 0; i < modEnvelopes.size(); i++) {
 		modEnvelopes.at(i)->setAttackRate(0 * sampleRate);  // 1 second
@@ -286,7 +298,65 @@ void LupoSynth::topicChanged(Topic* topic) {
 			
 			}
 		}
-		
 
 	}
+	else if (topic->getName().startsWith("osc")) {
+		if (topic->getName().startsWith("osc1Panel")) {
+			updateSynthState(topic, 0);
+		}
+		if (topic->getName().startsWith("osc2Panel")) {
+			updateSynthState(topic, 1);
+		}
+		if (topic->getName().startsWith("osc3Panel")) {
+			updateSynthState(topic, 2);
+		}
+		if (topic->getName().startsWith("osc4Panel")) {
+			updateSynthState(topic, 3);
+		}
+
+	}
+}
+
+void LupoSynth::updateSynthState(Topic* topic, int oscillator) {
+	if (topic->getName().endsWith("pitch")) {
+		for (int i = 0; i < voices.size(); i++) {
+			voices.at(i)->getOscillator(oscillator)->setPitch(topic->getValue());
+		}
+	}
+	if (topic->getName().endsWith("fine")) {
+		for (int i = 0; i < voices.size(); i++) {
+			voices.at(i)->getOscillator(oscillator)->setFine(topic->getValue());
+		}
+
+	}
+	if (topic->getName().endsWith("pulsewidth")) {
+		// TODO : set pulsewidth
+	}
+
+	if (topic->getName().contains("shape")) {
+		if (topic->getName().endsWith("saw")) {
+			for (int i = 0; i < voices.size(); i++) {
+				voices.at(i)->getOscillator(oscillator)->setMode(MultimodeOscillator::OscMode::SAW);
+			}
+		}
+		if (topic->getName().endsWith("sine")) {
+			for (int i = 0; i < voices.size(); i++) {
+				voices.at(i)->getOscillator(oscillator)->setMode(MultimodeOscillator::OscMode::SINE);
+			}
+		}
+		if (topic->getName().endsWith("pulse")) {
+			for (int i = 0; i < voices.size(); i++) {
+				voices.at(i)->getOscillator(oscillator)->setMode(MultimodeOscillator::OscMode::PULSE);
+			}
+		}
+		if (topic->getName().endsWith("noise")) {
+			for (int i = 0; i < voices.size(); i++) {
+				voices.at(i)->getOscillator(oscillator)->setMode(MultimodeOscillator::OscMode::NOISE);
+			}
+		}
+
+	}
+
+	// TODO : Evaluate sync
+
 }
