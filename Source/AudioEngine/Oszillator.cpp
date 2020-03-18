@@ -26,6 +26,15 @@ void Oszillator::setPhase(double phase) {
     this->phase = phase;
 }
 
+void Oszillator::setPan(float pan) {
+	this->pan = pan;
+}
+
+float Oszillator::getPan() {
+	return pan;
+}
+
+
 void Oszillator::setVolume(float volume) {
     this->volume = volume;
 }

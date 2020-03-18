@@ -21,7 +21,8 @@
 //[/Headers]
 
 #include "MixerChannelPanel.h"
-
+#include "MessageBus/MessageBus.h"
+#include "MessageBus/Topic.h"
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 //[/MiscUserDefs]
@@ -134,11 +135,13 @@ void MixerChannelPanel::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == volSlider.get())
     {
         //[UserSliderCode_volSlider] -- add your slider handling code here..
+		MessageBus::getInstance()->updateTopic(getName() + ".volume", sliderThatWasMoved->getValue());
         //[/UserSliderCode_volSlider]
     }
     else if (sliderThatWasMoved == panSlider.get())
     {
         //[UserSliderCode_panSlider] -- add your slider handling code here..
+		MessageBus::getInstance()->updateTopic(getName() + ".pan", sliderThatWasMoved->getValue());
         //[/UserSliderCode_panSlider]
     }
 

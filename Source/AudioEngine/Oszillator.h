@@ -34,6 +34,9 @@ public:
     virtual void setVolume(float volume);
     virtual float getVolume();
     
+	virtual void setPan(float pan);
+	virtual float getPan();
+
     virtual float process() = 0;
     void setPitch(int pitch);
     int getPitch() const;
@@ -56,6 +59,7 @@ protected:
     
     double phase;
     float volume;
+	float pan;
     double frequency;
     double sampleRate;
     double phaseIncrement;

@@ -12,6 +12,10 @@
 #include "LowPassFilter.h"
 #include "MultimodeOscillator.h"
 
+#ifndef M_PI
+#define M_PI       3.14159265358979323846 
+#endif
+
 
 LupoSynth::LupoSynth(float sampleRate, int bufferSize) {
 	this->sampleRate = sampleRate;
@@ -38,7 +42,7 @@ LupoSynth::LupoSynth(float sampleRate, int bufferSize) {
 
 	MessageBus::getInstance()->addListener("mainVolume", this);
 
-	for (int i = 0; i < 4; i++) {
+	for (int i = 1; i < 5; i++) {
 		MessageBus::getInstance()->addListener("osc" + String(i) + "Panel.pitch", this);
 		MessageBus::getInstance()->addListener("osc" + String(i) + "Panel.fine", this);
 		MessageBus::getInstance()->addListener("osc" + String(i) + "Panel.pulsewidth", this);
@@ -47,6 +51,8 @@ LupoSynth::LupoSynth(float sampleRate, int bufferSize) {
 		MessageBus::getInstance()->addListener("osc" + String(i) + "Panel.shape.sine", this);
 		MessageBus::getInstance()->addListener("osc" + String(i) + "Panel.shape.noise", this);
 		MessageBus::getInstance()->addListener("osc" + String(i) + "Panel.sync", this);
+		MessageBus::getInstance()->addListener("channel" + String(i) + ".volume", this);
+		MessageBus::getInstance()->addListener("channel" + String(i) + ".pan", this);
 	}
 		
 }
@@ -223,21 +229,25 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 	
 	for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
 
-		float value = 0;
+		float valueL = 0;
+		float valueR = 0;
 
 		for (int i = 0; i < voices.size(); i++) {
-			if (voices[i]->isPlaying() || voices[i]->getAmpEnvelope()->getState() != SynthLab::ADSR::env_idle) {
-				value += voices[i]->process();
+			if (voices[i]->isPlaying() || voices[i]->getAmpEnvelope()->getState() != SynthLab::ADSR::env_idle) {				
+				valueL += voices[i]->process(0) * mainVolume;				
+				valueR += voices[i]->process(1) * mainVolume;
 			}
 		}
 		
-		buffer.addSample(0, sample, value);
-		buffer.addSample(1, sample, value);
+		buffer.addSample(0, sample, valueL);
+		buffer.addSample(1, sample, valueR);
 		
 		for (int i = 0; i < modEnvelopes.size(); i++) {
 			modEnvelopes.at(i)->process();
 		}
 	}
+
+
 
 	leftOut = buffer.getWritePointer(0);
 	rightOut = buffer.getWritePointer(1);
@@ -247,6 +257,10 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 }
 
 void LupoSynth::topicChanged(Topic* topic) {
+
+	if (topic->getName() == "mainVolume") {
+		mainVolume = topic->getValue() * 2;
+	}
 	
 	if (topic->getName().startsWith("ampEnvelope")) {
 
@@ -315,6 +329,22 @@ void LupoSynth::topicChanged(Topic* topic) {
 		}
 
 	}
+	else if (topic->getName().startsWith("channel")) {
+
+		if (topic->getName().contains("1")) {
+			updateChannel(topic, 0);
+		}
+		if (topic->getName().contains("2")) {
+			updateChannel(topic, 1);
+		}
+		if (topic->getName().contains("3")) {
+			updateChannel(topic, 2);
+		}
+		if (topic->getName().contains("4")) {
+			updateChannel(topic, 3);
+		}
+
+	}
 }
 
 void LupoSynth::updateSynthState(Topic* topic, int oscillator) {
@@ -356,7 +386,27 @@ void LupoSynth::updateSynthState(Topic* topic, int oscillator) {
 		}
 
 	}
+	for (int i = 0; i < voices.size(); i++) {
+		for (int j = 0; j < voices[i]->getOszillators().size(); j++) {
+			voices[i]->updateOscillator(j);
+		}
+
+	}
 
 	// TODO : Evaluate sync
+}
 
+void LupoSynth::updateChannel(Topic* topic, int channel) {
+	if (topic->getName().endsWith("volume")) {
+		volume[channel] = topic->getValue();
+		for (int i = 0; i < voices.size(); i++) {
+			voices[i]->setOscVolume(channel, volume[channel]);
+		}
+	}
+	if (topic->getName().endsWith("pan")) {
+		pan[channel] = topic->getValue();
+		for (int i = 0; i < voices.size(); i++) {
+			voices[i]->setOscPan(channel, pan[channel]);
+		}
+	}
 }

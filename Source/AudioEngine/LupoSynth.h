@@ -36,6 +36,7 @@ public:
 	void configureOscillators(Oszillator::OscMode mode1, Oszillator::OscMode mode2, Oszillator::OscMode mode3, Oszillator::OscMode mode4);
 
 	void updateSynthState(Topic* t, int oscillator);
+	void updateChannel(Topic* t, int channel);
 
 private:
 	vector<Voice*> voices;	
@@ -48,6 +49,8 @@ private:
 	int currentSample = 0;
 	int numVoices = 0;
 
+
+	float mainVolume;
 	float* leftOut;
 	float* rightOut;
 
@@ -56,4 +59,6 @@ private:
 	float currentTime;
 	float deltaTime;
 
+	float volume[4];
+	float pan[4];
 };

@@ -1,4 +1,4 @@
-/*
+ /*
   ==============================================================================
 
   This is an automatically generated GUI class created by the Projucer!

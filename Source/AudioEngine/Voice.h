@@ -35,7 +35,7 @@ public:
     vector<Oszillator*> getOszillators() const;
     Oszillator* getOscillator(int num);
     
-    float process();
+    float process(int channel);
     
     void setNoteNumber(int number);
     int getNoteNumber() const;
@@ -69,6 +69,9 @@ public:
 	int getVelocity() const;
 	void setNoteAndVelocity(int note, int velocity);
 
+	void setOscVolume(int osc, float volume);
+	void setOscPan(int osc, float pan);
+
 private:
     vector<Oszillator*> oscillators;
     float sampleRate;
@@ -87,7 +90,7 @@ private:
     int offset = 0;
 	float value = 0;
     float modAmount;
-
+	
 };
 
 

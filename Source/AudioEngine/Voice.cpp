@@ -10,6 +10,9 @@
 
 #include "Voice.h"
 
+#ifndef M_PI
+#define M_PI       3.14159265358979323846 
+#endif
 
 Voice::Voice(float sampleRate) {
 
@@ -44,6 +47,7 @@ void Voice::setNoteAndVelocity(int note, int velocity) {
 	oscillators.at(0)->setFrequency((midiNote[noteNumber + oscillators.at(0)->getPitch()]) * pitchBend);
 	oscillators.at(1)->setFrequency((midiNote[noteNumber + oscillators.at(1)->getPitch()]) * pitchBend);
 	oscillators.at(2)->setFrequency((midiNote[noteNumber + oscillators.at(2)->getPitch()]) * pitchBend);
+	oscillators.at(3)->setFrequency((midiNote[noteNumber + oscillators.at(3)->getPitch()]) * pitchBend);
 
 	/*
     for(std::vector<Oszillator*>::iterator it = oscillators.begin(); it != oscillators.end(); ++it) {
@@ -77,12 +81,14 @@ Oszillator* Voice::getOscillator(int num) {
     return oscillators.at(num);
 }
 
-float Voice::process() {
+float Voice::process(int channel) {
     
     value = 0;
     
+
     if(ampEnvelope->getState() != SynthLab::ADSR::env_idle) {
         
+
         float amplitude = (1.0f / (float) 127) * this->velocity;
 
         /*
@@ -93,9 +99,17 @@ float Voice::process() {
 		*/
         
         
+
         for (int i = 0; i < oscillators.size(); i++) {
             
-            
+			if (channel == 0) {
+				value += oscillators.at(i)->process() * cos((M_PI*(oscillators.at(i)->getPan() + 1) / 4));
+			}
+			else {
+				value += oscillators.at(i)->process() * sin((M_PI*(oscillators.at(i)->getPan() + 1) / 4));
+
+			}
+			
 			value += oscillators.at(i)->process();
 		}
 
@@ -131,6 +145,31 @@ int Voice::getPitch() const {
     return this->pitch;
 }
 
+void Voice::setOscVolume(int osc, float volume) {
+	int i = 0;
+	for (std::vector<Oszillator*>::iterator it = oscillators.begin(); it != oscillators.end(); ++it) {
+		Oszillator* o = *it;
+		if (i == osc) {
+			o->setVolume(volume);
+			break;
+		}
+		i++;
+	}
+}
+
+void Voice::setOscPan(int osc,float pan) {
+	int i = 0;
+
+	for (std::vector<Oszillator*>::iterator it = oscillators.begin(); it != oscillators.end(); ++it) {
+		Oszillator* o = *it;
+		if (i == osc) {
+			o->setPan(pan);
+			break;
+		}
+		i++;
+	}
+}
+
 void Voice::setOctave(int number) {
     this->octave = number;
     for(std::vector<Oszillator*>::iterator it = oscillators.begin(); it != oscillators.end(); ++it) {
@@ -152,7 +191,9 @@ int Voice::getOctave() const {
 }
 
 void Voice::updateOscillator(int index) {
-    oscillators.at(index)->setFrequency(midiNote[this->noteNumber + oscillators.at(index)->getPitch()]);
+	if (this->noteNumber >= 0) {
+	    oscillators.at(index)->setFrequency(midiNote[this->noteNumber + oscillators.at(index)->getPitch()]);
+	}
 }
 
 void Voice::calculateFrequencyTable() {
