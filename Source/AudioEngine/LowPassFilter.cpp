@@ -67,10 +67,7 @@ void LowPassFilter::process(float *in, float *out, int numSamples) {
             
         }
         else {
-            // f =  this->frequency * modulator->getOutput() * this->modAmount;
-            f =  this->frequency + (modulator->getOutput() * this->modAmount * 1000);
-            // f = this->frequency * modulator->getOutput();
-            cout << f << endl;
+	           f =  this->frequency + (modulator->getOutput() * this->modAmount * 1000);            
         }
 
         if (f <= 0) {
@@ -79,6 +76,9 @@ void LowPassFilter::process(float *in, float *out, int numSamples) {
         if (f > 22000) {
             f = 22000;
         }
+		if (resonance <= 0) {
+			resonance = 0.001f;
+		}
 
         IIRCoefficients ic1  = IIRCoefficients::makeLowPass (44100, f, this->resonance);
 

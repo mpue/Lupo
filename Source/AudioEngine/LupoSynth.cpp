@@ -22,6 +22,23 @@ LupoSynth::LupoSynth(float sampleRate, int bufferSize) {
 		modEnvelopes.push_back(env);
 	}
 
+	
+
+	MessageBus::getInstance()->addListener("ampEnvelope.attack", this);
+	MessageBus::getInstance()->addListener("ampEnvelope.decay", this);
+	MessageBus::getInstance()->addListener("ampEnvelope.sustain", this);
+	MessageBus::getInstance()->addListener("ampEnvelope.release", this);
+
+	MessageBus::getInstance()->addListener("filterEnvelope.attack", this);
+	MessageBus::getInstance()->addListener("filterEnvelope.decay", this);
+	MessageBus::getInstance()->addListener("filterEnvelope.sustain", this);
+	MessageBus::getInstance()->addListener("filterEnvelope.release", this);
+
+	MessageBus::getInstance()->addListener("filter.cutoff", this);
+	MessageBus::getInstance()->addListener("filter.resonance", this);
+	MessageBus::getInstance()->addListener("filter.envAmount", this);
+
+	MessageBus::getInstance()->addListener("mainVolume", this);
 }
 
 LupoSynth::~LupoSynth() {
@@ -35,32 +52,6 @@ LupoSynth::~LupoSynth() {
 	voices.clear();
 	delete filter;
 
-}
-
-void LupoSynth::setAmpAttack(float attack) {
-}
-void LupoSynth::setAmpDecay(float decay) {
-}
-
-void LupoSynth::setAmpSustain(float sustain) {
-}
-
-void LupoSynth::setAmpRelease(float release) {
-}
-
-
-void LupoSynth::setPitch(int osc, int pitch) {
-
-}
-
-void LupoSynth::setCutoff(float cutoff) {
-	this->cutoff = cutoff;
-	filter->coefficients(sampleRate, cutoff, resonance);
-}
-
-void LupoSynth::setResonance(float resonance) {
-	this->resonance = resonance;
-	filter->coefficients(sampleRate, cutoff, resonance);
 }
 
 Oszillator* LupoSynth::createOscillator(Oszillator::OscMode mode) {
@@ -116,7 +107,7 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	this->bufferSize = samplesPerBlock;
 
 	this->filter = new MultimodeFilter();
-
+	filter->setModulator(modEnvelopes[0]);
 
 	configureOscillators(Oszillator::OscMode::SAW, Oszillator::OscMode::SAW, Oszillator::OscMode::SAW);
 
@@ -199,8 +190,6 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 					voices[i]->setPitchBend(nPitch);
 			}
 
-			
-
 		}
 		if (m.isController()) {
 
@@ -217,11 +206,10 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 }
 
 void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) {
+
 	this->processMidi(midiMessages);
-
-
+	
 	for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
-
 
 		float value = 0;
 
@@ -230,21 +218,75 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 				value += voices[i]->process();
 			}
 		}
-
-		// *leftOut++ = value;
-		// *rightOut++ = value;
-
 		
 		buffer.addSample(0, sample, value);
 		buffer.addSample(1, sample, value);
 		
-
+		for (int i = 0; i < modEnvelopes.size(); i++) {
+			modEnvelopes.at(i)->process();
+		}
 	}
 
 	leftOut = buffer.getWritePointer(0);
 	rightOut = buffer.getWritePointer(1);
 
 	filter->processStereo(leftOut, rightOut, buffer.getNumSamples());
+		
+}
 
+void LupoSynth::topicChanged(Topic* topic) {
 	
+	if (topic->getName().startsWith("ampEnvelope")) {
+
+		for (int i = 0; i < voices.size(); i++) {
+			if (topic->getName() == "ampEnvelope.attack") {
+				voices[i]->getAmpEnvelope()->setAttackRate(topic->getValue() * sampleRate);
+			}
+			if (topic->getName() == "ampEnvelope.decay") {
+				voices[i]->getAmpEnvelope()->setDecayRate(topic->getValue() * sampleRate);
+			}
+			if (topic->getName() == "ampEnvelope.sustain") {
+				voices[i]->getAmpEnvelope()->setSustainLevel(topic->getValue());
+			}
+			if (topic->getName() == "ampEnvelope.release") {
+				voices[i]->getAmpEnvelope()->setReleaseRate(topic->getValue() * sampleRate);
+			}
+		
+		}
+
+	}
+	else if (topic->getName().startsWith("filter")) {
+
+		if (topic->getName().startsWith("filterEnvelope")) {
+			if (topic->getName() == "filterEnvelope.attack") {
+				modEnvelopes[0]->setAttackRate(topic->getValue() * sampleRate);
+			}
+			if (topic->getName() == "filterEnvelope.decay") {
+				modEnvelopes[0]->setDecayRate(topic->getValue() * sampleRate);
+			}
+			if (topic->getName() == "filterEnvelope.sustain") {
+				modEnvelopes[0]->setSustainLevel(topic->getValue());
+			}
+			if (topic->getName() == "filterEnvelope.release") {
+				modEnvelopes[0]->setReleaseRate(topic->getValue() * sampleRate);
+			}
+
+		}
+		else {
+			if (topic->getName() == "filter.cutoff") {
+				cutoff = topic->getValue();
+				filter->coefficients(sampleRate, cutoff, resonance);
+			}
+			if (topic->getName() == "filter.resonance") {
+				resonance = topic->getValue();
+				filter->coefficients(sampleRate, cutoff, resonance);
+			}
+			if (topic->getName() == "filter.envAmount") {
+				filter->setModAmount(topic->getValue());
+			
+			}
+		}
+		
+
+	}
 }

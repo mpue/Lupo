@@ -3,10 +3,42 @@
 <JUCERPROJECT id="M3MHKq" name="Lupo" projectType="audioplug" jucerVersion="5.4.3"
               pluginVST3Category="Instrument" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
   <MAINGROUP id="GthNfL" name="Lupo">
+    <GROUP id="{7D68CE24-8E1B-AC85-29D1-30E03A9479D6}" name="Images">
+      <FILE id="ISE3Pl" name="Knob_32.png" compile="0" resource="1" file="Images/Knob_32.png"/>
+      <FILE id="HLPRSK" name="Knob_48.png" compile="0" resource="1" file="Images/Knob_48.png"/>
+      <FILE id="e9enOd" name="Knob_64.png" compile="0" resource="1" file="Images/Knob_64.png"/>
+      <FILE id="dLLdn7" name="Knob_128.png" compile="0" resource="1" file="Images/Knob_128.png"/>
+      <FILE id="op0Ayv" name="oscillator_noise_48.png" compile="0" resource="1"
+            file="Images/oscillator_noise_48.png"/>
+      <FILE id="On0Q26" name="oscillator_saw_48.png" compile="0" resource="1"
+            file="Images/oscillator_saw_48.png"/>
+      <FILE id="Mepzpy" name="oscillator_sine_48.png" compile="0" resource="1"
+            file="Images/oscillator_sine_48.png"/>
+      <FILE id="Rb9UNB" name="oscillator_square_48.png" compile="0" resource="1"
+            file="Images/oscillator_square_48.png"/>
+    </GROUP>
     <GROUP id="{172FB074-0DA4-14B0-F615-01D1F806371C}" name="Source">
+      <GROUP id="{3341771E-643B-2160-B9CA-0DC24E0A8B9F}" name="MessageBus">
+        <FILE id="m9XYpZ" name="BusListener.h" compile="0" resource="0" file="Source/MessageBus/BusListener.h"/>
+        <FILE id="IJjLN4" name="MessageBus.cpp" compile="1" resource="0" file="Source/MessageBus/MessageBus.cpp"/>
+        <FILE id="gVc2GB" name="MessageBus.h" compile="0" resource="0" file="Source/MessageBus/MessageBus.h"/>
+        <FILE id="hbjxAO" name="Topic.cpp" compile="1" resource="0" file="Source/MessageBus/Topic.cpp"/>
+        <FILE id="aOdW8A" name="Topic.h" compile="0" resource="0" file="Source/MessageBus/Topic.h"/>
+      </GROUP>
       <GROUP id="{73B48C3D-9605-CFBE-4AA4-97CEABC11729}" name="UI">
+        <FILE id="ftY232" name="EnvelopePanel.cpp" compile="1" resource="0"
+              file="Source/EnvelopePanel.cpp"/>
+        <FILE id="bOOBt5" name="EnvelopePanel.h" compile="0" resource="0" file="Source/EnvelopePanel.h"/>
         <FILE id="EqhpA2" name="MainUI.cpp" compile="1" resource="0" file="Source/MainUI.cpp"/>
         <FILE id="udnadm" name="MainUI.h" compile="0" resource="0" file="Source/MainUI.h"/>
+        <FILE id="lMfmCB" name="MixerChannelPanel.cpp" compile="1" resource="0"
+              file="Source/MixerChannelPanel.cpp"/>
+        <FILE id="WEYxFH" name="MixerChannelPanel.h" compile="0" resource="0"
+              file="Source/MixerChannelPanel.h"/>
+        <FILE id="BN6bBt" name="OscillatorPanel.cpp" compile="1" resource="0"
+              file="Source/OscillatorPanel.cpp"/>
+        <FILE id="f1U1bO" name="OscillatorPanel.h" compile="0" resource="0"
+              file="Source/OscillatorPanel.h"/>
       </GROUP>
       <GROUP id="{E619D4C1-110E-416E-055B-B61301338B21}" name="AudioEngine">
         <FILE id="sGv9jB" name="ADSR.cpp" compile="1" resource="0" file="Source/AudioEngine/ADSR.cpp"/>

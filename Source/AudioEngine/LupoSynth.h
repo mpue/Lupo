@@ -15,8 +15,11 @@
 #include "MultimodeFilter.h"
 #include "Voice.h"
 #include "Oszillator.h"
+#include "../MessageBus/BusListener.h"
+#include "../MessageBus/Topic.h"
+#include "../MessageBus/MessageBus.h"
 
-class LupoSynth {
+class LupoSynth : public BusListener {
 	
 public:
 
@@ -27,16 +30,8 @@ public:
 	void processMidi(MidiBuffer& midiMessages);
 
 	void prepareToPlay(double sampleRate, int bufferSize);
-	void setPitch(int osc, int pitch);
-
-	void setAmpAttack(float attack);
-	void setAmpDecay(float decay);
-	void setAmpSustain(float sustain);
-	void setAmpRelease(float release);
-
-	void setCutoff(float cutoff);
-	void setResonance(float resonance);
-
+	void topicChanged(Topic* topic) override;
+	
 	Oszillator* createOscillator(Oszillator::OscMode mode);
 	void configureOscillators(Oszillator::OscMode mode1, Oszillator::OscMode mode2, Oszillator::OscMode mode3);
 

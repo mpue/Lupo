@@ -22,6 +22,12 @@
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "AudioEngine/LupoSynth.h"
+#include "OscillatorPanel.h"
+#include "EnvelopePanel.h"
+#include "MixerChannelPanel.h"
+#include "MessageBus/BusListener.h"
+#include "MessageBus/Topic.h"
+#include "MessageBus/MessageBus.h"
 //[/Headers]
 
 
@@ -35,6 +41,7 @@
                                                                     //[/Comments]
 */
 class MainUI  : public Component,
+                public BusListener,
                 public Slider::Listener
 {
 public:
@@ -44,6 +51,8 @@ public:
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+	void topicChanged(Topic* t) override;
+
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -58,43 +67,28 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<GroupComponent> groupComponent7;
-    std::unique_ptr<GroupComponent> groupComponent3;
-    std::unique_ptr<GroupComponent> groupComponent5;
-    std::unique_ptr<GroupComponent> groupComponent4;
     std::unique_ptr<GroupComponent> groupComponent;
-    std::unique_ptr<GroupComponent> groupComponent2;
-    std::unique_ptr<Slider> osc1Pitch;
-    std::unique_ptr<Slider> osc2Pitch;
-    std::unique_ptr<Label> pitchlabel1;
-    std::unique_ptr<Label> pitchlabel2;
-    std::unique_ptr<Slider> amp_attack;
-    std::unique_ptr<Slider> amp_decay;
-    std::unique_ptr<Slider> amp_sustain;
-    std::unique_ptr<Slider> amp_release;
-    std::unique_ptr<Label> attack;
-    std::unique_ptr<Label> decay;
-    std::unique_ptr<Label> sustain;
-    std::unique_ptr<Label> Release;
-    std::unique_ptr<Slider> osc1Fine;
-    std::unique_ptr<Slider> osc2Fine;
-    std::unique_ptr<Label> fineLabel;
-    std::unique_ptr<Label> fineLabel2;
-    std::unique_ptr<Slider> flt_attack;
-    std::unique_ptr<Slider> flt_decay;
-    std::unique_ptr<Slider> flt_sustain;
-    std::unique_ptr<Slider> flt_release;
-    std::unique_ptr<Label> attack2;
-    std::unique_ptr<Label> decay2;
-    std::unique_ptr<Label> sustain2;
-    std::unique_ptr<Label> Release2;
-    std::unique_ptr<Slider> flt_release2;
-    std::unique_ptr<Label> EnvAmt;
+    std::unique_ptr<GroupComponent> groupComponent3;
     std::unique_ptr<GroupComponent> groupComponent6;
-    std::unique_ptr<Slider> flt_cutoff;
-    std::unique_ptr<Slider> flt_res;
+    std::unique_ptr<Slider> fltCutoff;
+    std::unique_ptr<Slider> fltResonance;
     std::unique_ptr<Label> Cutoff;
     std::unique_ptr<Label> Res;
+    std::unique_ptr<OscillatorPanel> osc1Panel;
+    std::unique_ptr<OscillatorPanel> osc3Panel;
+    std::unique_ptr<OscillatorPanel> osc2Panel;
+    std::unique_ptr<EnvelopePanel> ampEnvelope;
+    std::unique_ptr<EnvelopePanel> filterEnvelope;
+    std::unique_ptr<Slider> mainVolume;
+    std::unique_ptr<Label> volumeLabel;
+    std::unique_ptr<Slider> envAmt;
+    std::unique_ptr<Label> Amt;
+    std::unique_ptr<GroupComponent> mixerGroiup;
+    std::unique_ptr<MixerChannelPanel> ch1Panel;
+    std::unique_ptr<MixerChannelPanel> ch2Panel;
+    std::unique_ptr<MixerChannelPanel> ch3Panel;
+    std::unique_ptr<MixerChannelPanel> ch4Panel;
+    std::unique_ptr<OscillatorPanel> osc4Panel;
 
 
     //==============================================================================
