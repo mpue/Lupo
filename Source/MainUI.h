@@ -27,6 +27,7 @@
 #include "LFOPanel.h"
 #include "ReverbPanel.h"
 #include "MixerChannelPanel.h"
+#include "GraphicalEnvelope.h"
 class Model;
 //[/Headers]
 
@@ -79,8 +80,8 @@ private:
     std::unique_ptr<OscillatorPanel> osc1Panel;
     std::unique_ptr<OscillatorPanel> osc3Panel;
     std::unique_ptr<OscillatorPanel> osc2Panel;
-    std::unique_ptr<EnvelopePanel> ampEnvelope;
-    std::unique_ptr<EnvelopePanel> filterEnvelope;
+    std::unique_ptr<GraphicalEnvelope> ampEnvelope;
+    std::unique_ptr<GraphicalEnvelope> filterEnvelope;
     std::unique_ptr<Slider> mainVolume;
     std::unique_ptr<Label> volumeLabel;
     std::unique_ptr<Slider> envAmt;
@@ -95,7 +96,7 @@ private:
     std::unique_ptr<LFOPanel> lfo2;
     std::unique_ptr<GroupComponent> FXGroup;
     std::unique_ptr<ReverbPanel> reverbPanel;
-    std::unique_ptr<EnvelopePanel> auxEnvelope;
+    std::unique_ptr<GraphicalEnvelope> auxEnvelope;
 
 
     //==============================================================================

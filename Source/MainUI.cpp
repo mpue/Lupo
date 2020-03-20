@@ -120,13 +120,13 @@ MainUI::MainUI (Model* model, LupoSynth* synth)
 
     osc2Panel->setBounds (240, 16, 216, 248);
 
-    ampEnvelope.reset (new EnvelopePanel (model));
+    ampEnvelope.reset (new GraphicalEnvelope (model));
     addAndMakeVisible (ampEnvelope.get());
     ampEnvelope->setName ("ampEnvelope");
 
     ampEnvelope->setBounds (608, 24, 376, 124);
 
-    filterEnvelope.reset (new EnvelopePanel (model));
+    filterEnvelope.reset (new GraphicalEnvelope (model));
     addAndMakeVisible (filterEnvelope.get());
     filterEnvelope->setName ("filterEnvelope");
 
@@ -232,7 +232,7 @@ MainUI::MainUI (Model* model, LupoSynth* synth)
 
     reverbPanel->setBounds (24, 696, 392, 112);
 
-    auxEnvelope.reset (new EnvelopePanel (model));
+    auxEnvelope.reset (new GraphicalEnvelope (model));
     addAndMakeVisible (auxEnvelope.get());
     auxEnvelope->setName ("auxEnvelope");
 
@@ -434,10 +434,10 @@ BEGIN_JUCER_METADATA
                     virtualName="" explicitFocusOrder="0" pos="240 16 216 248" class="OscillatorPanel"
                     params="model "/>
   <GENERICCOMPONENT name="ampEnvelope" id="2e9f4701bbd4595c" memberName="ampEnvelope"
-                    virtualName="" explicitFocusOrder="0" pos="608 24 376 124" class="EnvelopePanel"
+                    virtualName="" explicitFocusOrder="0" pos="608 24 376 124" class="GraphicalEnvelope"
                     params="model"/>
   <GENERICCOMPONENT name="filterEnvelope" id="17487bad76ca25aa" memberName="filterEnvelope"
-                    virtualName="" explicitFocusOrder="0" pos="608 400 376 124" class="EnvelopePanel"
+                    virtualName="" explicitFocusOrder="0" pos="608 400 376 124" class="GraphicalEnvelope"
                     params="model"/>
   <SLIDER name="mainVolume" id="8750195bcc6f4ab5" memberName="mainVolume"
           virtualName="" explicitFocusOrder="0" pos="920 160 64 64" min="0.0"
@@ -487,7 +487,7 @@ BEGIN_JUCER_METADATA
                     virtualName="" explicitFocusOrder="0" pos="24 696 392 112" class="ReverbPanel"
                     params=""/>
   <GENERICCOMPONENT name="auxEnvelope" id="b597ff273ac7fb29" memberName="auxEnvelope"
-                    virtualName="" explicitFocusOrder="0" pos="608 552 376 124" class="EnvelopePanel"
+                    virtualName="" explicitFocusOrder="0" pos="608 552 376 124" class="GraphicalEnvelope"
                     params="model"/>
 </JUCER_COMPONENT>
 

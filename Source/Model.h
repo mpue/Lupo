@@ -20,27 +20,27 @@ public:
 		
 		cutoff = 18000.0f;
 		resonance = 0.5f;
-		mainVolume = 1.0f;
+		mainVolume = 2.0f;
 		envAmt = 0.5f;
 		
 		osc1Pitch = 0;
 		osc1Fine = 0;
-		osc1Volume = 0.5f;
+		osc1Volume = 1.0f;
 		osc1Pan = 0;
 		osc1Shape = MultimodeOscillator::OscMode::SAW;
 		osc2Pitch = 0;
 		osc2Fine = 0;
-		osc2Volume = 0.5f;
+		osc2Volume = 1.0f;
 		osc2Pan = 0;
 		osc2Shape = MultimodeOscillator::OscMode::SAW;
 		osc3Pitch = 0;
 		osc3Fine = 0;
 		osc3Pan = 0;
-		osc3Volume = 0.5f;
+		osc3Volume = 1.0f;
 		osc3Shape = MultimodeOscillator::OscMode::SAW;
 		osc4Pitch = 0;
 		osc4Fine = 0;
-		osc4Volume = 0.5f;
+		osc4Volume = 1.0f;
 		osc4Pan = 0;
 		osc4Shape = MultimodeOscillator::OscMode::SAW;
 
@@ -55,12 +55,12 @@ public:
 	float envAmt;
 	
 	float ampAttack = 0;
-	float ampDecay = 1;
+	float ampDecay = 3;
 	float ampSustain = 0.1f;
 	float ampRelease = 0.1f;
 
 	float fltAttack = 0;
-	float fltDecay = 1;
+	float fltDecay = 2;
 	float fltSustain = 0.1f;
 	float fltRelease = 0.1f;
 

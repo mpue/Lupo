@@ -30,10 +30,9 @@ LupoAudioProcessor::LupoAudioProcessor()
 
 LupoAudioProcessor::~LupoAudioProcessor()
 {
-	/*
 	delete lupo;
-	*/
-	// delete messageBus;
+	delete model;
+// delete messageBus;
 }
 
 //==============================================================================

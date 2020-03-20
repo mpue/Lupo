@@ -206,7 +206,7 @@ void EnvelopePanel::sliderValueChanged (Slider* sliderThatWasMoved)
 			model->auxDecay = sliderThatWasMoved->getValue();
 		}
 
-		//[/UserSliderCode_amp_decay]
+        //[/UserSliderCode_amp_decay]
     }
     else if (sliderThatWasMoved == amp_sustain.get())
     {
@@ -221,7 +221,7 @@ void EnvelopePanel::sliderValueChanged (Slider* sliderThatWasMoved)
 			model->auxSustain = sliderThatWasMoved->getValue();
 		}
 
-		//[/UserSliderCode_amp_sustain]
+        //[/UserSliderCode_amp_sustain]
     }
     else if (sliderThatWasMoved == amp_release.get())
     {
