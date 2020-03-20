@@ -12,6 +12,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "AudioEngine/LupoSynth.h"
+#include "Model.h"
 
 //==============================================================================
 /**
@@ -57,11 +58,13 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 	LupoSynth* getSynth();
-
+	Model* getModel();
 private:
     //==============================================================================
 
-	LupoSynth* lupo;
+	LupoSynth* lupo = nullptr;
+	Model* model = nullptr;
 	
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LupoAudioProcessor)
 };

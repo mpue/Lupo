@@ -34,6 +34,7 @@ public:
     virtual void setModulator(Modulator* mod) override;
     virtual void setModAmount(float amount) override;
     void setMode(Mode mode);
+	void setKeyTrack(int track);
 
 private:
     
@@ -47,6 +48,9 @@ private:
     ScopedPointer<HighPassFilter> highPassRight;
     
     Mode mode;
+
+	int keyTrack;
+
     JUCE_LEAK_DETECTOR(MultimodeFilter);
     
 };

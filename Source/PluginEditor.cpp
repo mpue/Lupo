@@ -11,6 +11,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "MainUI.h"
+#include "TrioLookAndFeel.h"
 
 //==============================================================================
 LupoAudioProcessorEditor::LupoAudioProcessorEditor (LupoAudioProcessor& p)
@@ -18,14 +19,16 @@ LupoAudioProcessorEditor::LupoAudioProcessorEditor (LupoAudioProcessor& p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (1040, 550);	
-	mainUI = new MainUI(p.getSynth());
+	setLookAndFeel(&tlf);
+    setSize (1010, 820);	
+	mainUI = new MainUI(p.getModel(), p.getSynth());
 	addAndMakeVisible(mainUI);
 	
 }
 
 LupoAudioProcessorEditor::~LupoAudioProcessorEditor()
 {
+	setLookAndFeel(nullptr);
 	delete mainUI;
 }
 
@@ -33,7 +36,8 @@ LupoAudioProcessorEditor::~LupoAudioProcessorEditor()
 void LupoAudioProcessorEditor::paint (Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
-    g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
+    // g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
+	g.fillAll(Colours::lightgrey);
     g.setColour (Colours::white);
 
 }

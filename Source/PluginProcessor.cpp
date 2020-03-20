@@ -24,10 +24,16 @@ LupoAudioProcessor::LupoAudioProcessor()
                        )
 #endif
 {
+	model = new Model();
+	lupo = new LupoSynth(model);
 }
 
 LupoAudioProcessor::~LupoAudioProcessor()
 {
+	/*
+	delete lupo;
+	*/
+	// delete messageBus;
 }
 
 //==============================================================================
@@ -95,13 +101,12 @@ void LupoAudioProcessor::changeProgramName (int index, const String& newName)
 //==============================================================================
 void LupoAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-	lupo = new LupoSynth(sampleRate, samplesPerBlock);
+
 	lupo->prepareToPlay(sampleRate, samplesPerBlock);
 }
 
 void LupoAudioProcessor::releaseResources()
 {
-	delete lupo;
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -168,4 +173,8 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 LupoSynth* LupoAudioProcessor::getSynth() {
 	return lupo;
+}
+
+Model* LupoAudioProcessor::getModel() {
+	return model;
 }

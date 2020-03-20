@@ -21,7 +21,6 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "Model.h"
 //[/Headers]
 
 
@@ -34,14 +33,14 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class EnvelopePanel  : public Component,
-                       public ChangeBroadcaster,
-                       public Slider::Listener
+class LFOPanel  : public Component,
+                  public Slider::Listener,
+                  public Button::Listener
 {
 public:
     //==============================================================================
-    EnvelopePanel (Model* model);
-    ~EnvelopePanel();
+    LFOPanel ();
+    ~LFOPanel();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -50,28 +49,35 @@ public:
     void paint (Graphics& g) override;
     void resized() override;
     void sliderValueChanged (Slider* sliderThatWasMoved) override;
+    void buttonClicked (Button* buttonThatWasClicked) override;
 
+    // Binary resources:
+    static const char* oscillator_sine_48_png;
+    static const int oscillator_sine_48_pngSize;
+    static const char* oscillator_square_48_png;
+    static const int oscillator_square_48_pngSize;
+    static const char* oscillator_saw_48_png;
+    static const int oscillator_saw_48_pngSize;
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-	Model* model;
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<GroupComponent> groupComponent;
-    std::unique_ptr<Slider> amp_attack;
-    std::unique_ptr<Slider> amp_decay;
-    std::unique_ptr<Slider> amp_sustain;
-    std::unique_ptr<Slider> amp_release;
-    std::unique_ptr<Label> attack;
-    std::unique_ptr<Label> decay;
-    std::unique_ptr<Label> sustain;
-    std::unique_ptr<Label> Release;
+    std::unique_ptr<GroupComponent> LFOGroup;
+    std::unique_ptr<Slider> lfoSpeed;
+    std::unique_ptr<Label> speedLabel;
+    std::unique_ptr<ImageButton> pulseButton;
+    std::unique_ptr<ImageButton> sawButton;
+    std::unique_ptr<ImageButton> sineButton;
+    std::unique_ptr<Slider> lfoAmount;
+    std::unique_ptr<Label> amtLabel;
+    std::unique_ptr<Label> shapeLabel;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EnvelopePanel)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LFOPanel)
 };
 
 //[EndFile] You can add extra defines here...

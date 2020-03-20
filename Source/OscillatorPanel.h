@@ -21,6 +21,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
+class Model;
 //[/Headers]
 
 
@@ -34,16 +35,18 @@
                                                                     //[/Comments]
 */
 class OscillatorPanel  : public Component,
+                         public ChangeBroadcaster,
                          public Slider::Listener,
                          public Button::Listener
 {
 public:
     //==============================================================================
-    OscillatorPanel ();
+    OscillatorPanel (Model* model);
     ~OscillatorPanel();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+	void SetTitle(String title);
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -64,10 +67,11 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
+	Model* model;
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<GroupComponent> groupComponent4;
+    std::unique_ptr<GroupComponent> oscillatorGroup;
     std::unique_ptr<Slider> oscPitch;
     std::unique_ptr<Label> pitchlabel1;
     std::unique_ptr<Slider> oscFine;

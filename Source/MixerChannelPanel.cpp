@@ -18,19 +18,21 @@
 */
 
 //[Headers] You can add your own extra header files here...
+#include "MessageBus/MessageBus.h"
+#include "Model.h"
 //[/Headers]
 
 #include "MixerChannelPanel.h"
-#include "MessageBus/MessageBus.h"
-#include "MessageBus/Topic.h"
+
 
 //[MiscUserDefs] You can add your own user definitions and misc code here...
 //[/MiscUserDefs]
 
 //==============================================================================
-MixerChannelPanel::MixerChannelPanel ()
+MixerChannelPanel::MixerChannelPanel (Model* model)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+	this->model = model;
     //[/Constructor_pre]
 
     channelGroup.reset (new GroupComponent ("channelGroup",
@@ -42,7 +44,7 @@ MixerChannelPanel::MixerChannelPanel ()
     volSlider.reset (new Slider ("volSlider"));
     addAndMakeVisible (volSlider.get());
     volSlider->setRange (0, 1, 0.01);
-    volSlider->setSliderStyle (Slider::RotaryHorizontalDrag);
+    volSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     volSlider->setTextBoxStyle (Slider::NoTextBox, true, 80, 20);
     volSlider->addListener (this);
 
@@ -50,8 +52,8 @@ MixerChannelPanel::MixerChannelPanel ()
 
     panSlider.reset (new Slider ("panSlider"));
     addAndMakeVisible (panSlider.get());
-    panSlider->setRange (-1, 1, 0.01);
-    panSlider->setSliderStyle (Slider::RotaryHorizontalDrag);
+    panSlider->setRange (-2, 2, 0.01);
+    panSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     panSlider->setTextBoxStyle (Slider::NoTextBox, true, 80, 20);
     panSlider->addListener (this);
 
@@ -87,6 +89,7 @@ MixerChannelPanel::MixerChannelPanel ()
 
 
     //[Constructor] You can add your own custom stuff here..
+
     //[/Constructor]
 }
 
@@ -112,8 +115,6 @@ void MixerChannelPanel::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.fillAll (Colour (0xff323e44));
-
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
 }
@@ -135,23 +136,51 @@ void MixerChannelPanel::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == volSlider.get())
     {
         //[UserSliderCode_volSlider] -- add your slider handling code here..
-		MessageBus::getInstance()->updateTopic(getName() + ".volume", sliderThatWasMoved->getValue());
+		if (getName().startsWith("channel1")) {
+			model->osc1Volume = sliderThatWasMoved->getValue();
+		}
+		if (getName().startsWith("channel2")) {
+			model->osc2Volume = sliderThatWasMoved->getValue();
+		}
+		if (getName().startsWith("channel3")) {
+			model->osc3Volume = sliderThatWasMoved->getValue();
+		}
+		if (getName().startsWith("channel4")) {
+			model->osc4Volume = sliderThatWasMoved->getValue();
+		}
         //[/UserSliderCode_volSlider]
     }
     else if (sliderThatWasMoved == panSlider.get())
     {
         //[UserSliderCode_panSlider] -- add your slider handling code here..
-		MessageBus::getInstance()->updateTopic(getName() + ".pan", sliderThatWasMoved->getValue());
+		if (getName().startsWith("channel1")) {
+			model->osc1Pan = sliderThatWasMoved->getValue();
+		}
+		if (getName().startsWith("channel2")) {
+			model->osc2Pan = sliderThatWasMoved->getValue();
+		}
+		if (getName().startsWith("channel3")) {
+			model->osc3Pan = sliderThatWasMoved->getValue();
+		}
+		if (getName().startsWith("channel4")) {
+			model->osc4Pan = sliderThatWasMoved->getValue();
+		}
         //[/UserSliderCode_panSlider]
     }
 
     //[UsersliderValueChanged_Post]
+	sendChangeMessage();
     //[/UsersliderValueChanged_Post]
 }
 
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+void MixerChannelPanel::SetTitle(String title) {
+	channelGroup.get()->setText(title);
+}
+
+
 //[/MiscUserCode]
 
 
@@ -165,20 +194,20 @@ void MixerChannelPanel::sliderValueChanged (Slider* sliderThatWasMoved)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="MixerChannelPanel" componentName=""
-                 parentClasses="public Component" constructorParams="" variableInitialisers=""
-                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="0" initialWidth="600" initialHeight="400">
-  <BACKGROUND backgroundColour="ff323e44"/>
+                 parentClasses="public Component, public ChangeBroadcaster" constructorParams="Model* model"
+                 variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
+                 overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
+  <BACKGROUND backgroundColour="0"/>
   <GROUPCOMPONENT name="channelGroup" id="9f266fdaeb7fb76b" memberName="channelGroup"
                   virtualName="" explicitFocusOrder="0" pos="0 0 112 128" title="CH1"/>
   <SLIDER name="volSlider" id="b16b5072d98a689d" memberName="volSlider"
           virtualName="" explicitFocusOrder="0" pos="16 16 56 48" min="0.0"
-          max="1.0" int="0.01" style="RotaryHorizontalDrag" textBoxPos="NoTextBox"
+          max="1.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="0" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <SLIDER name="panSlider" id="5c349ac21e02e861" memberName="panSlider"
-          virtualName="" explicitFocusOrder="0" pos="16 64 56 48" min="-1.0"
-          max="1.0" int="0.01" style="RotaryHorizontalDrag" textBoxPos="NoTextBox"
+          virtualName="" explicitFocusOrder="0" pos="16 64 56 48" min="-2.0"
+          max="2.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="0" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="volumeLabel" id="7c2ca28cdcb89db2" memberName="volumeLabel"

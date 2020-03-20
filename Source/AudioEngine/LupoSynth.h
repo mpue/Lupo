@@ -15,42 +15,40 @@
 #include "MultimodeFilter.h"
 #include "Voice.h"
 #include "Oszillator.h"
-#include "../MessageBus/BusListener.h"
-#include "../MessageBus/Topic.h"
-#include "../MessageBus/MessageBus.h"
+#include "../Model.h"
+#include "../JuceLibraryCode/JuceHeader.h"
 
-class LupoSynth : public BusListener {
+class LupoSynth : public ChangeListener {
 	
 public:
 
-	LupoSynth(float sampleRate, int bufferSize);
+	LupoSynth(Model* model);
 	~LupoSynth();
 
 	void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages);	
 	void processMidi(MidiBuffer& midiMessages);
 
 	void prepareToPlay(double sampleRate, int bufferSize);
-	void topicChanged(Topic* topic) override;
 	
 	Oszillator* createOscillator(Oszillator::OscMode mode);
 	void configureOscillators(Oszillator::OscMode mode1, Oszillator::OscMode mode2, Oszillator::OscMode mode3, Oszillator::OscMode mode4);
-
-	void updateSynthState(Topic* t, int oscillator);
-	void updateChannel(Topic* t, int channel);
+	void changeListenerCallback(ChangeBroadcaster* source) override;
 
 private:
-	vector<Voice*> voices;	
-	vector<SynthLab::ADSR*> modEnvelopes;
+	Model* model;
+	vector<Voice*>* voices;	
+	vector<SynthLab::ADSR*>* modEnvelopes;
 	float sampleRate;
 	int bufferSize;
 	MultimodeFilter* filter;
-	float cutoff;
-	float resonance;
+	float cutoff = 15000.0f;
+	float resonance = 1.0f;
 	int currentSample = 0;
 	int numVoices = 0;
 
+	int highestNote = 0;
 
-	float mainVolume;
+	float mainVolume = 1.0f;
 	float* leftOut;
 	float* rightOut;
 

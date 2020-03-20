@@ -1,4 +1,4 @@
- /*
+/*
   ==============================================================================
 
   This is an automatically generated GUI class created by the Projucer!
@@ -20,7 +20,8 @@
 //[Headers] You can add your own extra header files here...
 #include "AudioEngine/LupoSynth.h"
 #include "OscillatorPanel.h"
-
+#include "LFOPanel.h"
+#include "Model.h"
 //[/Headers]
 
 #include "MainUI.h"
@@ -30,17 +31,24 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-MainUI::MainUI (LupoSynth* lupo)
+MainUI::MainUI (Model* model, LupoSynth* synth)
 {
     //[Constructor_pre] You can add your own custom stuff here..
-	this->lupo = lupo;
+	this->model = model;
+	this->synth = synth;
     //[/Constructor_pre]
+
+    ModulationGroup.reset (new GroupComponent ("ModulationGroup",
+                                               TRANS("Modulation")));
+    addAndMakeVisible (ModulationGroup.get());
+
+    ModulationGroup->setBounds (8, 536, 992, 144);
 
     groupComponent.reset (new GroupComponent ("new group",
                                               TRANS("Amplifier")));
     addAndMakeVisible (groupComponent.get());
 
-    groupComponent->setBounds (592, 0, 440, 232);
+    groupComponent->setBounds (592, 0, 408, 232);
 
     groupComponent3.reset (new GroupComponent ("new group",
                                                TRANS("Oscilators")));
@@ -52,7 +60,7 @@ MainUI::MainUI (LupoSynth* lupo)
                                                TRANS("Filter")));
     addAndMakeVisible (groupComponent6.get());
 
-    groupComponent6->setBounds (592, 232, 440, 304);
+    groupComponent6->setBounds (592, 232, 408, 304);
 
     fltCutoff.reset (new Slider ("fltCutoff"));
     addAndMakeVisible (fltCutoff.get());
@@ -61,7 +69,7 @@ MainUI::MainUI (LupoSynth* lupo)
     fltCutoff->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     fltCutoff->addListener (this);
 
-    fltCutoff->setBounds (608, 248, 80, 80);
+    fltCutoff->setBounds (608, 264, 80, 80);
 
     fltResonance.reset (new Slider ("fltResonance"));
     addAndMakeVisible (fltResonance.get());
@@ -70,7 +78,7 @@ MainUI::MainUI (LupoSynth* lupo)
     fltResonance->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     fltResonance->addListener (this);
 
-    fltResonance->setBounds (696, 248, 80, 80);
+    fltResonance->setBounds (696, 264, 80, 80);
 
     Cutoff.reset (new Label ("Cutoff",
                              TRANS("Cutoff\n")));
@@ -81,7 +89,7 @@ MainUI::MainUI (LupoSynth* lupo)
     Cutoff->setColour (TextEditor::textColourId, Colours::black);
     Cutoff->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    Cutoff->setBounds (624, 336, 56, 24);
+    Cutoff->setBounds (624, 352, 56, 24);
 
     Res.reset (new Label ("Res",
                           TRANS("Q")));
@@ -92,46 +100,46 @@ MainUI::MainUI (LupoSynth* lupo)
     Res->setColour (TextEditor::textColourId, Colours::black);
     Res->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    Res->setBounds (728, 336, 24, 24);
+    Res->setBounds (728, 352, 24, 24);
 
-    osc1Panel.reset (new OscillatorPanel());
+    osc1Panel.reset (new OscillatorPanel (model));
     addAndMakeVisible (osc1Panel.get());
     osc1Panel->setName ("osc1Panel");
 
     osc1Panel->setBounds (16, 16, 216, 248);
 
-    osc3Panel.reset (new OscillatorPanel());
+    osc3Panel.reset (new OscillatorPanel (model));
     addAndMakeVisible (osc3Panel.get());
     osc3Panel->setName ("osc3Panel");
 
     osc3Panel->setBounds (16, 288, 216, 240);
 
-    osc2Panel.reset (new OscillatorPanel());
+    osc2Panel.reset (new OscillatorPanel (model ));
     addAndMakeVisible (osc2Panel.get());
     osc2Panel->setName ("osc2Panel");
 
     osc2Panel->setBounds (240, 16, 216, 248);
 
-    ampEnvelope.reset (new EnvelopePanel());
+    ampEnvelope.reset (new EnvelopePanel (model));
     addAndMakeVisible (ampEnvelope.get());
     ampEnvelope->setName ("ampEnvelope");
 
-    ampEnvelope->setBounds (608, 16, 408, 144);
+    ampEnvelope->setBounds (608, 24, 376, 124);
 
-    filterEnvelope.reset (new EnvelopePanel());
+    filterEnvelope.reset (new EnvelopePanel (model));
     addAndMakeVisible (filterEnvelope.get());
     filterEnvelope->setName ("filterEnvelope");
 
-    filterEnvelope->setBounds (608, 368, 408, 144);
+    filterEnvelope->setBounds (608, 400, 376, 124);
 
     mainVolume.reset (new Slider ("mainVolume"));
     addAndMakeVisible (mainVolume.get());
-    mainVolume->setRange (0, 1, 0.01);
+    mainVolume->setRange (0, 2, 0.01);
     mainVolume->setSliderStyle (Slider::RotaryVerticalDrag);
     mainVolume->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     mainVolume->addListener (this);
 
-    mainVolume->setBounds (952, 160, 64, 64);
+    mainVolume->setBounds (920, 160, 64, 64);
 
     volumeLabel.reset (new Label ("volumeLabel",
                                   TRANS("Main volume")));
@@ -142,7 +150,7 @@ MainUI::MainUI (LupoSynth* lupo)
     volumeLabel->setColour (TextEditor::textColourId, Colours::black);
     volumeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    volumeLabel->setBounds (864, 176, 96, 24);
+    volumeLabel->setBounds (824, 176, 96, 24);
 
     envAmt.reset (new Slider ("envAmt"));
     addAndMakeVisible (envAmt.get());
@@ -151,7 +159,7 @@ MainUI::MainUI (LupoSynth* lupo)
     envAmt->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     envAmt->addListener (this);
 
-    envAmt->setBounds (792, 248, 80, 80);
+    envAmt->setBounds (792, 264, 80, 80);
 
     Amt.reset (new Label ("Amt",
                           TRANS("Env. Amount")));
@@ -162,7 +170,7 @@ MainUI::MainUI (LupoSynth* lupo)
     Amt->setColour (TextEditor::textColourId, Colours::black);
     Amt->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    Amt->setBounds (792, 336, 88, 24);
+    Amt->setBounds (792, 352, 88, 24);
 
     mixerGroiup.reset (new GroupComponent ("mixerGroiup",
                                            TRANS("Mixer")));
@@ -170,47 +178,100 @@ MainUI::MainUI (LupoSynth* lupo)
 
     mixerGroiup->setBounds (464, 0, 128, 536);
 
-    ch1Panel.reset (new MixerChannelPanel());
+    ch1Panel.reset (new MixerChannelPanel (model));
     addAndMakeVisible (ch1Panel.get());
     ch1Panel->setName ("channel1");
 
     ch1Panel->setBounds (472, 16, 112, 128);
 
-    ch2Panel.reset (new MixerChannelPanel());
+    ch2Panel.reset (new MixerChannelPanel (model));
     addAndMakeVisible (ch2Panel.get());
     ch2Panel->setName ("channel2");
 
     ch2Panel->setBounds (472, 144, 112, 128);
 
-    ch3Panel.reset (new MixerChannelPanel());
+    ch3Panel.reset (new MixerChannelPanel (model));
     addAndMakeVisible (ch3Panel.get());
     ch3Panel->setName ("channel3");
 
     ch3Panel->setBounds (472, 272, 112, 128);
 
-    ch4Panel.reset (new MixerChannelPanel());
+    ch4Panel.reset (new MixerChannelPanel (model));
     addAndMakeVisible (ch4Panel.get());
     ch4Panel->setName ("channel4");
 
     ch4Panel->setBounds (472, 400, 112, 128);
 
-    osc4Panel.reset (new OscillatorPanel());
+    osc4Panel.reset (new OscillatorPanel (model));
     addAndMakeVisible (osc4Panel.get());
     osc4Panel->setName ("osc4Panel");
 
     osc4Panel->setBounds (240, 288, 216, 240);
 
+    lfo1.reset (new LFOPanel());
+    addAndMakeVisible (lfo1.get());
+    lfo1->setName ("lfo1");
+
+    lfo1->setBounds (24, 560, 240, 96);
+
+    lfo2.reset (new LFOPanel());
+    addAndMakeVisible (lfo2.get());
+    lfo2->setName ("lfo2");
+
+    lfo2->setBounds (280, 560, 240, 96);
+
+    FXGroup.reset (new GroupComponent ("FXGroup",
+                                       TRANS("FX")));
+    addAndMakeVisible (FXGroup.get());
+
+    FXGroup->setBounds (8, 680, 992, 136);
+
+    reverbPanel.reset (new ReverbPanel());
+    addAndMakeVisible (reverbPanel.get());
+    reverbPanel->setName ("reverbPanel");
+
+    reverbPanel->setBounds (24, 696, 392, 112);
+
+    auxEnvelope.reset (new EnvelopePanel (model));
+    addAndMakeVisible (auxEnvelope.get());
+    auxEnvelope->setName ("auxEnvelope");
+
+    auxEnvelope->setBounds (608, 552, 376, 124);
+
 
     //[UserPreSize]
     //[/UserPreSize]
 
-    setSize (1100, 768);
+    setSize (1300, 900);
 
 
     //[Constructor] You can add your own custom stuff here..
 
+	osc1Panel.get()->SetTitle("Osc 1");
+	osc2Panel.get()->SetTitle("Osc 2");
+	osc3Panel.get()->SetTitle("Osc 3");
+	osc4Panel.get()->SetTitle("Osc 4");
 
+	ch1Panel.get()->SetTitle("Ch 1");
+	ch2Panel.get()->SetTitle("Ch 2");
+	ch3Panel.get()->SetTitle("Ch 3");
+	ch4Panel.get()->SetTitle("Ch 4");
 
+	osc1Panel.get()->addChangeListener(this);
+	osc2Panel.get()->addChangeListener(this);
+	osc3Panel.get()->addChangeListener(this);
+	osc4Panel.get()->addChangeListener(this);
+
+	ch1Panel.get()->addChangeListener(this);
+	ch2Panel.get()->addChangeListener(this);
+	ch3Panel.get()->addChangeListener(this);
+	ch4Panel.get()->addChangeListener(this);
+
+	ampEnvelope.get()->addChangeListener(this);
+	filterEnvelope.get()->addChangeListener(this);
+	auxEnvelope.get()->addChangeListener(this);
+
+	addChangeListener(synth);
     //[/Constructor]
 }
 
@@ -219,6 +280,7 @@ MainUI::~MainUI()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
+    ModulationGroup = nullptr;
     groupComponent = nullptr;
     groupComponent3 = nullptr;
     groupComponent6 = nullptr;
@@ -241,6 +303,11 @@ MainUI::~MainUI()
     ch3Panel = nullptr;
     ch4Panel = nullptr;
     osc4Panel = nullptr;
+    lfo1 = nullptr;
+    lfo2 = nullptr;
+    FXGroup = nullptr;
+    reverbPanel = nullptr;
+    auxEnvelope = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -253,7 +320,7 @@ void MainUI::paint (Graphics& g)
     //[UserPrePaint] Add your own custom painting code here..
     //[/UserPrePaint]
 
-    g.fillAll (Colour (0xff323e44));
+    g.fillAll (Colour (0xff606060));
 
     //[UserPaint] Add your own custom painting code here..
     //[/UserPaint]
@@ -276,40 +343,40 @@ void MainUI::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == fltCutoff.get())
     {
         //[UserSliderCode_fltCutoff] -- add your slider handling code here..
-		MessageBus::getInstance()->updateTopic("filter.cutoff", sliderThatWasMoved->getValue());
+		model->cutoff = sliderThatWasMoved->getValue();
         //[/UserSliderCode_fltCutoff]
     }
     else if (sliderThatWasMoved == fltResonance.get())
     {
         //[UserSliderCode_fltResonance] -- add your slider handling code here..
-		MessageBus::getInstance()->updateTopic("filter.resonance", sliderThatWasMoved->getValue());
+		model->resonance = sliderThatWasMoved->getValue();
+
         //[/UserSliderCode_fltResonance]
     }
     else if (sliderThatWasMoved == mainVolume.get())
     {
         //[UserSliderCode_mainVolume] -- add your slider handling code here..
-		MessageBus::getInstance()->updateTopic("mainVolume", sliderThatWasMoved->getValue());
+		model->mainVolume = sliderThatWasMoved->getValue();
         //[/UserSliderCode_mainVolume]
     }
     else if (sliderThatWasMoved == envAmt.get())
     {
         //[UserSliderCode_envAmt] -- add your slider handling code here..
-		MessageBus::getInstance()->updateTopic("filter.envAmount", sliderThatWasMoved->getValue());
+		model->envAmt = sliderThatWasMoved->getValue();
         //[/UserSliderCode_envAmt]
     }
 
     //[UsersliderValueChanged_Post]
+	sendChangeMessage();
     //[/UsersliderValueChanged_Post]
 }
 
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
-void MainUI::topicChanged(Topic* topic) {
-	Logger::getCurrentLogger()->writeToLog("topic " + topic->getName() + String(topic->getValue()));
+void MainUI::changeListenerCallback(ChangeBroadcaster* source) {
+	sendChangeMessage();
 }
-
-
 
 //[/MiscUserCode]
 
@@ -324,68 +391,71 @@ void MainUI::topicChanged(Topic* topic) {
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="MainUI" componentName=""
-                 parentClasses="public Component, public BusListener" constructorParams="LupoSynth* lupo"
-                 variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
-                 overlayOpacity="0.330" fixedSize="0" initialWidth="1100" initialHeight="768">
-  <BACKGROUND backgroundColour="ff323e44"/>
+                 parentClasses="public Component, public ChangeBroadcaster, public ChangeListener"
+                 constructorParams="Model* model, LupoSynth* synth" variableInitialisers=""
+                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
+                 fixedSize="0" initialWidth="1300" initialHeight="900">
+  <BACKGROUND backgroundColour="ff606060"/>
+  <GROUPCOMPONENT name="ModulationGroup" id="bbbc621090753013" memberName="ModulationGroup"
+                  virtualName="" explicitFocusOrder="0" pos="8 536 992 144" title="Modulation"/>
   <GROUPCOMPONENT name="new group" id="fddf59086c1c83a4" memberName="groupComponent"
-                  virtualName="" explicitFocusOrder="0" pos="592 0 440 232" title="Amplifier"/>
+                  virtualName="" explicitFocusOrder="0" pos="592 0 408 232" title="Amplifier"/>
   <GROUPCOMPONENT name="new group" id="be488b129ef124bc" memberName="groupComponent3"
                   virtualName="" explicitFocusOrder="0" pos="8 0 456 536" title="Oscilators"/>
   <GROUPCOMPONENT name="new group" id="d21f32d49ecf1836" memberName="groupComponent6"
-                  virtualName="" explicitFocusOrder="0" pos="592 232 440 304" title="Filter"/>
+                  virtualName="" explicitFocusOrder="0" pos="592 232 408 304" title="Filter"/>
   <SLIDER name="fltCutoff" id="820aba5f43f549e0" memberName="fltCutoff"
-          virtualName="" explicitFocusOrder="0" pos="608 248 80 80" min="0.0"
+          virtualName="" explicitFocusOrder="0" pos="608 264 80 80" min="0.0"
           max="18000.0" int="10.0" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <SLIDER name="fltResonance" id="e9128200d848646a" memberName="fltResonance"
-          virtualName="" explicitFocusOrder="0" pos="696 248 80 80" min="0.0"
+          virtualName="" explicitFocusOrder="0" pos="696 264 80 80" min="0.0"
           max="5.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="Cutoff" id="3a68e51a612b8d7" memberName="Cutoff" virtualName=""
-         explicitFocusOrder="0" pos="624 336 56 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="624 352 56 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Cutoff&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Res" id="25ed1f5df93f7ca0" memberName="Res" virtualName=""
-         explicitFocusOrder="0" pos="728 336 24 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="728 352 24 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Q" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <GENERICCOMPONENT name="osc1Panel" id="de6e8c64c8286c8d" memberName="osc1Panel"
                     virtualName="" explicitFocusOrder="0" pos="16 16 216 248" class="OscillatorPanel"
-                    params=""/>
+                    params="model"/>
   <GENERICCOMPONENT name="osc3Panel" id="6bf55931fc2de34d" memberName="osc3Panel"
                     virtualName="" explicitFocusOrder="0" pos="16 288 216 240" class="OscillatorPanel"
-                    params=""/>
+                    params="model"/>
   <GENERICCOMPONENT name="osc2Panel" id="ffc4e13aca23b88e" memberName="osc2Panel"
                     virtualName="" explicitFocusOrder="0" pos="240 16 216 248" class="OscillatorPanel"
-                    params=""/>
+                    params="model "/>
   <GENERICCOMPONENT name="ampEnvelope" id="2e9f4701bbd4595c" memberName="ampEnvelope"
-                    virtualName="" explicitFocusOrder="0" pos="608 16 408 144" class="EnvelopePanel"
-                    params=""/>
+                    virtualName="" explicitFocusOrder="0" pos="608 24 376 124" class="EnvelopePanel"
+                    params="model"/>
   <GENERICCOMPONENT name="filterEnvelope" id="17487bad76ca25aa" memberName="filterEnvelope"
-                    virtualName="" explicitFocusOrder="0" pos="608 368 408 144" class="EnvelopePanel"
-                    params=""/>
+                    virtualName="" explicitFocusOrder="0" pos="608 400 376 124" class="EnvelopePanel"
+                    params="model"/>
   <SLIDER name="mainVolume" id="8750195bcc6f4ab5" memberName="mainVolume"
-          virtualName="" explicitFocusOrder="0" pos="952 160 64 64" min="0.0"
-          max="1.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
+          virtualName="" explicitFocusOrder="0" pos="920 160 64 64" min="0.0"
+          max="2.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="volumeLabel" id="594cc943c91cef9d" memberName="volumeLabel"
-         virtualName="" explicitFocusOrder="0" pos="864 176 96 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="824 176 96 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Main volume" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="envAmt" id="ee160c38e2a36d41" memberName="envAmt" virtualName=""
-          explicitFocusOrder="0" pos="792 248 80 80" min="0.0" max="1.0"
+          explicitFocusOrder="0" pos="792 264 80 80" min="0.0" max="1.0"
           int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="Amt" id="8a3f810d8c37fde8" memberName="Amt" virtualName=""
-         explicitFocusOrder="0" pos="792 336 88 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="792 352 88 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Env. Amount" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="15.0" kerning="0.0" bold="0" italic="0" justification="33"/>
@@ -393,19 +463,32 @@ BEGIN_JUCER_METADATA
                   virtualName="" explicitFocusOrder="0" pos="464 0 128 536" title="Mixer"/>
   <GENERICCOMPONENT name="channel1" id="a653fea415c89991" memberName="ch1Panel" virtualName=""
                     explicitFocusOrder="0" pos="472 16 112 128" class="MixerChannelPanel"
-                    params=""/>
+                    params="model"/>
   <GENERICCOMPONENT name="channel2" id="f3b06b13d2a0d971" memberName="ch2Panel" virtualName=""
                     explicitFocusOrder="0" pos="472 144 112 128" class="MixerChannelPanel"
-                    params=""/>
+                    params="model"/>
   <GENERICCOMPONENT name="channel3" id="6786cb4ee8a2b52d" memberName="ch3Panel" virtualName=""
                     explicitFocusOrder="0" pos="472 272 112 128" class="MixerChannelPanel"
-                    params=""/>
+                    params="model"/>
   <GENERICCOMPONENT name="channel4" id="fff0d24cb459d4de" memberName="ch4Panel" virtualName=""
                     explicitFocusOrder="0" pos="472 400 112 128" class="MixerChannelPanel"
-                    params=""/>
+                    params="model"/>
   <GENERICCOMPONENT name="osc4Panel" id="e90f31bb4430d4b4" memberName="osc4Panel"
                     virtualName="" explicitFocusOrder="0" pos="240 288 216 240" class="OscillatorPanel"
+                    params="model"/>
+  <GENERICCOMPONENT name="lfo1" id="5309e7d420abc98c" memberName="lfo1" virtualName=""
+                    explicitFocusOrder="0" pos="24 560 240 96" class="LFOPanel" params=""/>
+  <GENERICCOMPONENT name="lfo2" id="6e5eaff17ef4b84d" memberName="lfo2" virtualName=""
+                    explicitFocusOrder="0" pos="280 560 240 96" class="LFOPanel"
                     params=""/>
+  <GROUPCOMPONENT name="FXGroup" id="85cf2fc9be4f7bcf" memberName="FXGroup" virtualName=""
+                  explicitFocusOrder="0" pos="8 680 992 136" title="FX"/>
+  <GENERICCOMPONENT name="reverbPanel" id="c574c98e1dd9ac8a" memberName="reverbPanel"
+                    virtualName="" explicitFocusOrder="0" pos="24 696 392 112" class="ReverbPanel"
+                    params=""/>
+  <GENERICCOMPONENT name="auxEnvelope" id="b597ff273ac7fb29" memberName="auxEnvelope"
+                    virtualName="" explicitFocusOrder="0" pos="608 552 376 124" class="EnvelopePanel"
+                    params="model"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

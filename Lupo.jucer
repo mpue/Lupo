@@ -18,6 +18,10 @@
             file="Images/oscillator_square_48.png"/>
     </GROUP>
     <GROUP id="{172FB074-0DA4-14B0-F615-01D1F806371C}" name="Source">
+      <FILE id="IqemcJ" name="TrioLookAndFeel.cpp" compile="1" resource="0"
+            file="Source/TrioLookAndFeel.cpp"/>
+      <FILE id="cZg5di" name="TrioLookAndFeel.h" compile="0" resource="0"
+            file="Source/TrioLookAndFeel.h"/>
       <GROUP id="{3341771E-643B-2160-B9CA-0DC24E0A8B9F}" name="MessageBus">
         <FILE id="m9XYpZ" name="BusListener.h" compile="0" resource="0" file="Source/MessageBus/BusListener.h"/>
         <FILE id="IJjLN4" name="MessageBus.cpp" compile="1" resource="0" file="Source/MessageBus/MessageBus.cpp"/>
@@ -29,16 +33,21 @@
         <FILE id="ftY232" name="EnvelopePanel.cpp" compile="1" resource="0"
               file="Source/EnvelopePanel.cpp"/>
         <FILE id="bOOBt5" name="EnvelopePanel.h" compile="0" resource="0" file="Source/EnvelopePanel.h"/>
+        <FILE id="y1fTKh" name="LFOPanel.cpp" compile="1" resource="0" file="Source/LFOPanel.cpp"/>
+        <FILE id="YFPMBu" name="LFOPanel.h" compile="0" resource="0" file="Source/LFOPanel.h"/>
         <FILE id="EqhpA2" name="MainUI.cpp" compile="1" resource="0" file="Source/MainUI.cpp"/>
         <FILE id="udnadm" name="MainUI.h" compile="0" resource="0" file="Source/MainUI.h"/>
         <FILE id="lMfmCB" name="MixerChannelPanel.cpp" compile="1" resource="0"
               file="Source/MixerChannelPanel.cpp"/>
         <FILE id="WEYxFH" name="MixerChannelPanel.h" compile="0" resource="0"
               file="Source/MixerChannelPanel.h"/>
+        <FILE id="HGJwq9" name="Model.h" compile="0" resource="0" file="Source/Model.h"/>
         <FILE id="BN6bBt" name="OscillatorPanel.cpp" compile="1" resource="0"
               file="Source/OscillatorPanel.cpp"/>
         <FILE id="f1U1bO" name="OscillatorPanel.h" compile="0" resource="0"
               file="Source/OscillatorPanel.h"/>
+        <FILE id="B6a3Em" name="ReverbPanel.cpp" compile="1" resource="0" file="Source/ReverbPanel.cpp"/>
+        <FILE id="GQWj1X" name="ReverbPanel.h" compile="0" resource="0" file="Source/ReverbPanel.h"/>
       </GROUP>
       <GROUP id="{E619D4C1-110E-416E-055B-B61301338B21}" name="AudioEngine">
         <FILE id="sGv9jB" name="ADSR.cpp" compile="1" resource="0" file="Source/AudioEngine/ADSR.cpp"/>

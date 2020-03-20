@@ -34,15 +34,17 @@
                                                                     //[/Comments]
 */
 class MixerChannelPanel  : public Component,
+                           public ChangeBroadcaster,
                            public Slider::Listener
 {
 public:
     //==============================================================================
-    MixerChannelPanel ();
+    MixerChannelPanel (Model* model);
     ~MixerChannelPanel();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+	void SetTitle(String title);
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -53,6 +55,7 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
+	Model* model;
     //[/UserVariables]
 
     //==============================================================================

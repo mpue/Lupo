@@ -24,10 +24,10 @@
 #include "AudioEngine/LupoSynth.h"
 #include "OscillatorPanel.h"
 #include "EnvelopePanel.h"
+#include "LFOPanel.h"
+#include "ReverbPanel.h"
 #include "MixerChannelPanel.h"
-#include "MessageBus/BusListener.h"
-#include "MessageBus/Topic.h"
-#include "MessageBus/MessageBus.h"
+class Model;
 //[/Headers]
 
 
@@ -41,18 +41,18 @@
                                                                     //[/Comments]
 */
 class MainUI  : public Component,
-                public BusListener,
+                public ChangeBroadcaster,
+                public ChangeListener,
                 public Slider::Listener
 {
 public:
     //==============================================================================
-    MainUI (LupoSynth* lupo);
+    MainUI (Model* model, LupoSynth* synth);
     ~MainUI();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-	void topicChanged(Topic* t) override;
-
+	void changeListenerCallback(ChangeBroadcaster* source);
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -63,10 +63,12 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-	LupoSynth* lupo;
+	Model* model;
+	LupoSynth* synth;
     //[/UserVariables]
 
     //==============================================================================
+    std::unique_ptr<GroupComponent> ModulationGroup;
     std::unique_ptr<GroupComponent> groupComponent;
     std::unique_ptr<GroupComponent> groupComponent3;
     std::unique_ptr<GroupComponent> groupComponent6;
@@ -89,6 +91,11 @@ private:
     std::unique_ptr<MixerChannelPanel> ch3Panel;
     std::unique_ptr<MixerChannelPanel> ch4Panel;
     std::unique_ptr<OscillatorPanel> osc4Panel;
+    std::unique_ptr<LFOPanel> lfo1;
+    std::unique_ptr<LFOPanel> lfo2;
+    std::unique_ptr<GroupComponent> FXGroup;
+    std::unique_ptr<ReverbPanel> reverbPanel;
+    std::unique_ptr<EnvelopePanel> auxEnvelope;
 
 
     //==============================================================================

@@ -63,7 +63,7 @@ protected:
     double frequency;
     double sampleRate;
     double phaseIncrement;
-    int pitch; // halftones
+    int pitch = 0; // halftones
     float pitchBend;
     OscMode mode;
     bool sync = false;

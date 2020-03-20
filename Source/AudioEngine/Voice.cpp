@@ -24,9 +24,11 @@ Voice::Voice(float sampleRate) {
     this->pitchBend = 1;
     
     ampEnvelope->setAttackRate(0 * sampleRate);  // 1 second
-    ampEnvelope->setDecayRate(0 * sampleRate);
-    ampEnvelope->setReleaseRate(0 * sampleRate);
+    ampEnvelope->setDecayRate(1 * sampleRate);
+    ampEnvelope->setReleaseRate(1 * sampleRate);
     ampEnvelope->setSustainLevel(.8);
+
+
 }
 
 Voice::~Voice() {
@@ -103,18 +105,16 @@ float Voice::process(int channel) {
         for (int i = 0; i < oscillators.size(); i++) {
             
 			if (channel == 0) {
-				value += oscillators.at(i)->process() * cos((M_PI*(oscillators.at(i)->getPan() + 1) / 4));
+				value += oscillators.at(i)->process() * cos((M_PI*(oscillators.at(i)->getPan() + 1) / 4)) * amplitude * ampEnvelope->process();;
 			}
 			else {
-				value += oscillators.at(i)->process() * sin((M_PI*(oscillators.at(i)->getPan() + 1) / 4));
+				value += oscillators.at(i)->process() * sin((M_PI*(oscillators.at(i)->getPan() + 1) / 4)) * amplitude * ampEnvelope->process();;
 
 			}
 			
-			value += oscillators.at(i)->process();
+
 		}
 
-
-        value = (value / oscillators.size()) * amplitude * ampEnvelope->process();
         
     }
     else {

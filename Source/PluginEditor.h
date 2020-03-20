@@ -13,6 +13,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
 #include "MainUI.h"
+#include "TrioLookAndFeel.h"
 
 //==============================================================================
 /**
@@ -32,6 +33,6 @@ private:
     // access the processor object that created it.
     LupoAudioProcessor& processor;
 	MainUI* mainUI;
-
+	TrioLookAndFeel tlf;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LupoAudioProcessorEditor)
 };

@@ -21,7 +21,6 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "Model.h"
 //[/Headers]
 
 
@@ -34,14 +33,13 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class EnvelopePanel  : public Component,
-                       public ChangeBroadcaster,
-                       public Slider::Listener
+class ReverbPanel  : public Component,
+                     public Slider::Listener
 {
 public:
     //==============================================================================
-    EnvelopePanel (Model* model);
-    ~EnvelopePanel();
+    ReverbPanel ();
+    ~ReverbPanel();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -55,23 +53,26 @@ public:
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-	Model* model;
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<GroupComponent> groupComponent;
-    std::unique_ptr<Slider> amp_attack;
-    std::unique_ptr<Slider> amp_decay;
-    std::unique_ptr<Slider> amp_sustain;
-    std::unique_ptr<Slider> amp_release;
-    std::unique_ptr<Label> attack;
-    std::unique_ptr<Label> decay;
-    std::unique_ptr<Label> sustain;
-    std::unique_ptr<Label> Release;
+    std::unique_ptr<GroupComponent> reverbGroup;
+    std::unique_ptr<Slider> roomSize;
+    std::unique_ptr<Label> roomSIzeLbl;
+    std::unique_ptr<Slider> damping;
+    std::unique_ptr<Label> dampingLbl;
+    std::unique_ptr<Slider> damping2;
+    std::unique_ptr<Label> widthLbl;
+    std::unique_ptr<Slider> dryLevel;
+    std::unique_ptr<Label> dryLbl;
+    std::unique_ptr<Slider> wetLevel;
+    std::unique_ptr<Label> wetLbl;
+    std::unique_ptr<Slider> wetLevel2;
+    std::unique_ptr<Label> freezeLbl;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (EnvelopePanel)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReverbPanel)
 };
 
 //[EndFile] You can add extra defines here...
