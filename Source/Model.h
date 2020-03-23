@@ -44,6 +44,15 @@ public:
 		osc4Pan = 0;
 		osc4Shape = MultimodeOscillator::OscMode::SAW;
 
+		dlyTimeLeft = 500;
+		dlyTimeRight = 375;
+		dlyMix = 0;
+		dlyFeedback = 0.25;
+
+		chrDelay = 0.1f;
+		chrDelay = 0.1f;
+		chrFeedback = 0.1f;
+		chrMix = 0;
 	}
 
 	~Model() {}
@@ -94,5 +103,21 @@ public:
 	float osc4Pan;
 	MultimodeOscillator::OscMode osc4Shape;
 
-	
+	int dlyTimeLeft;
+	int dlyTimeRight;
+	float dlyFeedback;
+	float dlyMix;
+
+	float rvbRoomSize = 0.5f;     /**< Room size, 0 to 1.0, where 1.0 is big, 0 is small. */
+	float rvbDdamping = 0.5f;     /**< Damping, 0 to 1.0, where 0 is not damped, 1.0 is fully damped. */
+	float rvbWetLevel = 0.0f;    /**< Wet level, 0 to 1.0 */
+	float rvbDryLevel = 1.0f;     /**< Dry level, 0 to 1.0 */
+	float rvbWidth = 1.0f;     /**< Reverb width, 0 to 1.0, where 1.0 is very wide. */
+	float rvbFreezeMode = 0.0f;
+
+	float chrDelay;
+	float chrModulation;
+	float chrFeedback;
+	float chrMix;
+
 };

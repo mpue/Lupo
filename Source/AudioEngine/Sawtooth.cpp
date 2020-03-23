@@ -28,6 +28,7 @@ Sawtooth::Sawtooth(float sampleRate, int buffersize) : Oszillator(sampleRate) {
     this->dc = -0.498f / this->pmax;
     this->lastValue = 0;
 	this->saw = 0;
+	blitsaw = new stk::BlitSaw();
 }
 
 float Sawtooth::getOutput() {
@@ -36,11 +37,13 @@ float Sawtooth::getOutput() {
 
 void Sawtooth::reset() {
     this->p = 0;
+	blitsaw->reset();
 }
 
 
 float Sawtooth::process() {
-    
+	return blitsaw->tick();
+    /*
     p += dp;
     
     if(p < 0.0f)
@@ -71,18 +74,22 @@ float Sawtooth::process() {
         lastValue = saw;
         
     return saw * this->volume;
+	*/
 }
 
 void Sawtooth::setFrequency(double frequency) {
     this->frequency = frequency;
+	blitsaw->setFrequency(frequency+ this->fine);
+
+	/*
     pmax = 0.5f * sampleRate / (frequency + this->fine);
     dc = -0.498f / pmax;
-    
+    */
 }
 
 void Sawtooth::setFine(float fine) {
-    this->fine = fine;
-    setFrequency(frequency + fine);
+	this->fine = fine;    
+	setFrequency(frequency + fine);
 }
 
 float Sawtooth::getFine() const {

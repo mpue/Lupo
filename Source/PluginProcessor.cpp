@@ -24,14 +24,16 @@ LupoAudioProcessor::LupoAudioProcessor()
                        )
 #endif
 {
-	model = new Model();
-	lupo = new LupoSynth(model);
+	model.reset(new Model());
+	lupo.reset(new LupoSynth(model.get()));
+	parameters.reset(new AudioProcessorValueTreeState(*this, nullptr));
 }
 
 LupoAudioProcessor::~LupoAudioProcessor()
-{
-	delete lupo;
-	delete model;
+{	
+	 lupo = nullptr;
+	 model = nullptr;
+	 parameters = nullptr;
 // delete messageBus;
 }
 
@@ -171,9 +173,14 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 }
 
 LupoSynth* LupoAudioProcessor::getSynth() {
-	return lupo;
+	return lupo.get();
 }
 
 Model* LupoAudioProcessor::getModel() {
-	return model;
+	return model.get();
 }
+
+AudioProcessorValueTreeState* LupoAudioProcessor::getValueTreeState() {
+	return this->parameters.get();
+}
+

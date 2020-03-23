@@ -15,10 +15,15 @@
 #include "MultimodeFilter.h"
 #include "Voice.h"
 #include "Oszillator.h"
+#include "StereoDelay.h"
+#include "StereoReverb.h"
+#include "StereoChorus.h"
 #include "../Model.h"
 #include "../JuceLibraryCode/JuceHeader.h"
 
-class LupoSynth : public ChangeListener {
+class LupoSynth : public ChangeListener, 
+			      public AudioProcessorValueTreeState::Listener, 
+				  public AudioProcessorParameter::Listener {
 	
 public:
 
@@ -30,9 +35,14 @@ public:
 
 	void prepareToPlay(double sampleRate, int bufferSize);
 	
+	void updateState();
+
 	Oszillator* createOscillator(Oszillator::OscMode mode);
 	void configureOscillators(Oszillator::OscMode mode1, Oszillator::OscMode mode2, Oszillator::OscMode mode3, Oszillator::OscMode mode4);
 	void changeListenerCallback(ChangeBroadcaster* source) override;
+	void parameterChanged(const String& parameterID, float newValue) override;
+	void parameterValueChanged(int parameterIndex, float newValue) override;
+	void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override;
 
 private:
 	Model* model;
@@ -45,6 +55,10 @@ private:
 	float resonance = 1.0f;
 	int currentSample = 0;
 	int numVoices = 0;
+
+	StereoDelay* delay;
+	StereoReverb* reverb;
+	StereoChorus* chorus;
 
 	int highestNote = 0;
 

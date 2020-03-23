@@ -12,12 +12,16 @@
 #include <stdio.h>
 #include "Oszillator.h"
 #include "Modulator.h"
+#include "..\BlitSquare.h"
 
 class Pulse : public Oszillator , public Modulator {
     
     
 public:
     Pulse(float sampleRate, int buffersize);
+	~Pulse() {
+		delete blitSquare;			
+	}
     virtual float process() override;
     virtual void setFine(float fine) override;
     virtual float getFine() const override;
@@ -30,6 +34,7 @@ private:
     double phase;
     double value;
     bool on = false;
+	stk::BlitSquare* blitSquare;
 };
 
 #endif /* Pulse_hpp */

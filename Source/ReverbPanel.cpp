@@ -18,6 +18,7 @@
 */
 
 //[Headers] You can add your own extra header files here...
+#include "Model.h"
 //[/Headers]
 
 #include "ReverbPanel.h"
@@ -27,9 +28,10 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-ReverbPanel::ReverbPanel ()
+ReverbPanel::ReverbPanel (Model* model)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+	this->model = model;
     //[/Constructor_pre]
 
     reverbGroup.reset (new GroupComponent ("reverbGroup",
@@ -41,7 +43,7 @@ ReverbPanel::ReverbPanel ()
     roomSize.reset (new Slider ("roomSize"));
     addAndMakeVisible (roomSize.get());
     roomSize->setRange (0, 1, 0.01);
-    roomSize->setSliderStyle (Slider::RotaryHorizontalDrag);
+    roomSize->setSliderStyle (Slider::RotaryVerticalDrag);
     roomSize->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     roomSize->addListener (this);
 
@@ -61,7 +63,7 @@ ReverbPanel::ReverbPanel ()
     damping.reset (new Slider ("damping"));
     addAndMakeVisible (damping.get());
     damping->setRange (0, 1, 0.01);
-    damping->setSliderStyle (Slider::RotaryHorizontalDrag);
+    damping->setSliderStyle (Slider::RotaryVerticalDrag);
     damping->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     damping->addListener (this);
 
@@ -78,14 +80,14 @@ ReverbPanel::ReverbPanel ()
 
     dampingLbl->setBounds (72, 80, 63, 24);
 
-    damping2.reset (new Slider ("damping"));
-    addAndMakeVisible (damping2.get());
-    damping2->setRange (0, 1, 0.01);
-    damping2->setSliderStyle (Slider::RotaryHorizontalDrag);
-    damping2->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
-    damping2->addListener (this);
+    width.reset (new Slider ("damping"));
+    addAndMakeVisible (width.get());
+    width->setRange (0, 1, 0.01);
+    width->setSliderStyle (Slider::RotaryVerticalDrag);
+    width->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
+    width->addListener (this);
 
-    damping2->setBounds (137, 16, 56, 64);
+    width->setBounds (137, 16, 56, 64);
 
     widthLbl.reset (new Label ("widthLbl",
                                TRANS("Width")));
@@ -101,7 +103,7 @@ ReverbPanel::ReverbPanel ()
     dryLevel.reset (new Slider ("dryLevel"));
     addAndMakeVisible (dryLevel.get());
     dryLevel->setRange (0, 1, 0.01);
-    dryLevel->setSliderStyle (Slider::RotaryHorizontalDrag);
+    dryLevel->setSliderStyle (Slider::RotaryVerticalDrag);
     dryLevel->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     dryLevel->addListener (this);
 
@@ -121,7 +123,7 @@ ReverbPanel::ReverbPanel ()
     wetLevel.reset (new Slider ("wetLevel"));
     addAndMakeVisible (wetLevel.get());
     wetLevel->setRange (0, 1, 0.01);
-    wetLevel->setSliderStyle (Slider::RotaryHorizontalDrag);
+    wetLevel->setSliderStyle (Slider::RotaryVerticalDrag);
     wetLevel->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     wetLevel->addListener (this);
 
@@ -138,14 +140,14 @@ ReverbPanel::ReverbPanel ()
 
     wetLbl->setBounds (272, 80, 34, 24);
 
-    wetLevel2.reset (new Slider ("wetLevel"));
-    addAndMakeVisible (wetLevel2.get());
-    wetLevel2->setRange (0, 1, 0.01);
-    wetLevel2->setSliderStyle (Slider::RotaryHorizontalDrag);
-    wetLevel2->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
-    wetLevel2->addListener (this);
+    freeze.reset (new Slider ("wetLevel"));
+    addAndMakeVisible (freeze.get());
+    freeze->setRange (0, 1, 0.01);
+    freeze->setSliderStyle (Slider::RotaryVerticalDrag);
+    freeze->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
+    freeze->addListener (this);
 
-    wetLevel2->setBounds (328, 16, 56, 64);
+    freeze->setBounds (328, 16, 56, 64);
 
     freezeLbl.reset (new Label ("freezeLbl",
                                 TRANS("Freeze\n")));
@@ -179,13 +181,13 @@ ReverbPanel::~ReverbPanel()
     roomSIzeLbl = nullptr;
     damping = nullptr;
     dampingLbl = nullptr;
-    damping2 = nullptr;
+    width = nullptr;
     widthLbl = nullptr;
     dryLevel = nullptr;
     dryLbl = nullptr;
     wetLevel = nullptr;
     wetLbl = nullptr;
-    wetLevel2 = nullptr;
+    freeze = nullptr;
     freezeLbl = nullptr;
 
 
@@ -220,35 +222,42 @@ void ReverbPanel::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == roomSize.get())
     {
         //[UserSliderCode_roomSize] -- add your slider handling code here..
+		model->rvbRoomSize = sliderThatWasMoved->getValue();
         //[/UserSliderCode_roomSize]
     }
     else if (sliderThatWasMoved == damping.get())
     {
         //[UserSliderCode_damping] -- add your slider handling code here..
+		model->rvbDdamping = sliderThatWasMoved->getValue();
         //[/UserSliderCode_damping]
     }
-    else if (sliderThatWasMoved == damping2.get())
+    else if (sliderThatWasMoved == width.get())
     {
-        //[UserSliderCode_damping2] -- add your slider handling code here..
-        //[/UserSliderCode_damping2]
+        //[UserSliderCode_width] -- add your slider handling code here..
+		model->rvbWidth = sliderThatWasMoved->getValue();
+        //[/UserSliderCode_width]
     }
     else if (sliderThatWasMoved == dryLevel.get())
     {
         //[UserSliderCode_dryLevel] -- add your slider handling code here..
+		model->rvbDryLevel = sliderThatWasMoved->getValue();
         //[/UserSliderCode_dryLevel]
     }
     else if (sliderThatWasMoved == wetLevel.get())
     {
         //[UserSliderCode_wetLevel] -- add your slider handling code here..
+		model->rvbWetLevel = sliderThatWasMoved->getValue();
         //[/UserSliderCode_wetLevel]
     }
-    else if (sliderThatWasMoved == wetLevel2.get())
+    else if (sliderThatWasMoved == freeze.get())
     {
-        //[UserSliderCode_wetLevel2] -- add your slider handling code here..
-        //[/UserSliderCode_wetLevel2]
+        //[UserSliderCode_freeze] -- add your slider handling code here..
+		model->rvbFreezeMode = sliderThatWasMoved->getValue();
+        //[/UserSliderCode_freeze]
     }
 
     //[UsersliderValueChanged_Post]
+	sendChangeMessage();
     //[/UsersliderValueChanged_Post]
 }
 
@@ -268,15 +277,15 @@ void ReverbPanel::sliderValueChanged (Slider* sliderThatWasMoved)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="ReverbPanel" componentName=""
-                 parentClasses="public Component" constructorParams="" variableInitialisers=""
-                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="0" initialWidth="600" initialHeight="400">
+                 parentClasses="public Component, public ChangeBroadcaster" constructorParams="Model* model"
+                 variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
+                 overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="0"/>
   <GROUPCOMPONENT name="reverbGroup" id="827b920ebb279fef" memberName="reverbGroup"
                   virtualName="" explicitFocusOrder="0" pos="0 0 392 112" title="Reverb"/>
   <SLIDER name="roomSize" id="3affdff2a3157f75" memberName="roomSize" virtualName=""
           explicitFocusOrder="0" pos="8 16 56 64" min="0.0" max="1.0" int="0.01"
-          style="RotaryHorizontalDrag" textBoxPos="TextBoxBelow" textBoxEditable="1"
+          style="RotaryVerticalDrag" textBoxPos="TextBoxBelow" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <LABEL name="roomSIzeLbl" id="1abc27b61ccb8637" memberName="roomSIzeLbl"
          virtualName="" explicitFocusOrder="0" pos="8 80 63 24" edTextCol="ff000000"
@@ -285,7 +294,7 @@ BEGIN_JUCER_METADATA
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="damping" id="b8bfc21a9c0ca3d0" memberName="damping" virtualName=""
           explicitFocusOrder="0" pos="72 16 56 64" min="0.0" max="1.0"
-          int="0.01" style="RotaryHorizontalDrag" textBoxPos="TextBoxBelow"
+          int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="dampingLbl" id="fab930de840213e1" memberName="dampingLbl"
@@ -293,9 +302,9 @@ BEGIN_JUCER_METADATA
          edBkgCol="0" labelText="Damping" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
-  <SLIDER name="damping" id="63317514a3284189" memberName="damping2" virtualName=""
+  <SLIDER name="damping" id="63317514a3284189" memberName="width" virtualName=""
           explicitFocusOrder="0" pos="137 16 56 64" min="0.0" max="1.0"
-          int="0.01" style="RotaryHorizontalDrag" textBoxPos="TextBoxBelow"
+          int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="widthLbl" id="ec953c6e67180da9" memberName="widthLbl" virtualName=""
@@ -305,7 +314,7 @@ BEGIN_JUCER_METADATA
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="dryLevel" id="246c47f37893dfef" memberName="dryLevel" virtualName=""
           explicitFocusOrder="0" pos="200 16 56 64" min="0.0" max="1.0"
-          int="0.01" style="RotaryHorizontalDrag" textBoxPos="TextBoxBelow"
+          int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="dryLbl" id="8133e7067b6f46f0" memberName="dryLbl" virtualName=""
@@ -315,7 +324,7 @@ BEGIN_JUCER_METADATA
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="wetLevel" id="6f75904fe54beef4" memberName="wetLevel" virtualName=""
           explicitFocusOrder="0" pos="264 16 56 64" min="0.0" max="1.0"
-          int="0.01" style="RotaryHorizontalDrag" textBoxPos="TextBoxBelow"
+          int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="wetLbl" id="298de79cd0c6bb3d" memberName="wetLbl" virtualName=""
@@ -323,9 +332,9 @@ BEGIN_JUCER_METADATA
          edBkgCol="0" labelText="Wet" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
-  <SLIDER name="wetLevel" id="17f4021cbeb408a5" memberName="wetLevel2"
-          virtualName="" explicitFocusOrder="0" pos="328 16 56 64" min="0.0"
-          max="1.0" int="0.01" style="RotaryHorizontalDrag" textBoxPos="TextBoxBelow"
+  <SLIDER name="wetLevel" id="17f4021cbeb408a5" memberName="freeze" virtualName=""
+          explicitFocusOrder="0" pos="328 16 56 64" min="0.0" max="1.0"
+          int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="freezeLbl" id="e04867dabc2ea1df" memberName="freezeLbl"

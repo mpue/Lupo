@@ -21,7 +21,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "Model.h"
+class Model;
 //[/Headers]
 
 
@@ -34,14 +34,15 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class ReverbPanel  : public Component,
-                     public ChangeBroadcaster,
-                     public Slider::Listener
+class SamplerPanel  : public Component,
+                      public ChangeBroadcaster,
+                      public Slider::Listener,
+                      public Button::Listener
 {
 public:
     //==============================================================================
-    ReverbPanel (Model* model);
-    ~ReverbPanel();
+    SamplerPanel (Model* model);
+    ~SamplerPanel();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -50,6 +51,7 @@ public:
     void paint (Graphics& g) override;
     void resized() override;
     void sliderValueChanged (Slider* sliderThatWasMoved) override;
+    void buttonClicked (Button* buttonThatWasClicked) override;
 
 
 
@@ -59,23 +61,18 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<GroupComponent> reverbGroup;
-    std::unique_ptr<Slider> roomSize;
-    std::unique_ptr<Label> roomSIzeLbl;
-    std::unique_ptr<Slider> damping;
-    std::unique_ptr<Label> dampingLbl;
-    std::unique_ptr<Slider> width;
-    std::unique_ptr<Label> widthLbl;
-    std::unique_ptr<Slider> dryLevel;
-    std::unique_ptr<Label> dryLbl;
-    std::unique_ptr<Slider> wetLevel;
-    std::unique_ptr<Label> wetLbl;
-    std::unique_ptr<Slider> freeze;
-    std::unique_ptr<Label> freezeLbl;
+    std::unique_ptr<GroupComponent> sampler;
+    std::unique_ptr<Slider> oscPitch;
+    std::unique_ptr<Label> pitchlabel1;
+    std::unique_ptr<Slider> oscFine;
+    std::unique_ptr<Label> fineLabel;
+    std::unique_ptr<Label> sampleLabel;
+    std::unique_ptr<TextEditor> sampleName;
+    std::unique_ptr<TextButton> browseButton;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReverbPanel)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SamplerPanel)
 };
 
 //[EndFile] You can add extra defines here...

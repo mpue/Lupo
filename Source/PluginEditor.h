@@ -15,6 +15,8 @@
 #include "MainUI.h"
 #include "TrioLookAndFeel.h"
 
+class AttachmentFactory;
+
 //==============================================================================
 /**
 */
@@ -34,5 +36,6 @@ private:
     LupoAudioProcessor& processor;
 	MainUI* mainUI;
 	TrioLookAndFeel tlf;
+	AttachmentFactory* factory;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LupoAudioProcessorEditor)
 };

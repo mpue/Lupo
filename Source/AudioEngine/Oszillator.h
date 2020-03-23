@@ -17,11 +17,12 @@ class Oszillator {
 
 public:
     
-    enum OscMode {
-        SAW,
-        SINE,
-        PULSE,
-        NOISE
+	enum OscMode {
+		SAW,
+		SINE,
+		PULSE,
+		NOISE,
+		SAMPLE
     };
     
     Oszillator();
@@ -38,8 +39,8 @@ public:
 	virtual float getPan();
 
     virtual float process() = 0;
-    void setPitch(int pitch);
-    int getPitch() const;
+    virtual void setPitch(int pitch);
+    virtual int getPitch();
     void setPitchBend(float bend);
     float getPitchBend() const;
     

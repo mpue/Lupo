@@ -21,7 +21,9 @@
 #include "AudioEngine/LupoSynth.h"
 #include "OscillatorPanel.h"
 #include "LFOPanel.h"
+#include "ChorusPanel.h"
 #include "Model.h"
+#include "AttachmentFactory.h"
 //[/Headers]
 
 #include "MainUI.h"
@@ -31,11 +33,12 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-MainUI::MainUI (Model* model, LupoSynth* synth)
+MainUI::MainUI (LupoAudioProcessor* processor)
 {
     //[Constructor_pre] You can add your own custom stuff here..
-	this->model = model;
-	this->synth = synth;
+	this->processor = processor;
+	this->model = processor->getModel();
+	this->synth = processor->getSynth();
     //[/Constructor_pre]
 
     ModulationGroup.reset (new GroupComponent ("ModulationGroup",
@@ -226,17 +229,30 @@ MainUI::MainUI (Model* model, LupoSynth* synth)
 
     FXGroup->setBounds (8, 680, 992, 136);
 
-    reverbPanel.reset (new ReverbPanel());
+    reverbPanel.reset (new ReverbPanel (model));
     addAndMakeVisible (reverbPanel.get());
     reverbPanel->setName ("reverbPanel");
 
-    reverbPanel->setBounds (24, 696, 392, 112);
+    reverbPanel->setBounds (16, 696, 392, 112);
 
     auxEnvelope.reset (new GraphicalEnvelope (model));
     addAndMakeVisible (auxEnvelope.get());
     auxEnvelope->setName ("auxEnvelope");
 
     auxEnvelope->setBounds (608, 552, 376, 124);
+
+    delayPanel.reset (new DelayPanel (model));
+    addAndMakeVisible (delayPanel.get());
+    delayPanel->setName ("delayPanel");
+
+    delayPanel->setBounds (408, 696, 264, 112);
+
+    chorusPanel.reset (new ChorusPanel (model
+                                        ));
+    addAndMakeVisible (chorusPanel.get());
+    chorusPanel->setName ("new component");
+
+    chorusPanel->setBounds (672, 696, 320, 112);
 
 
     //[UserPreSize]
@@ -250,7 +266,7 @@ MainUI::MainUI (Model* model, LupoSynth* synth)
 	osc1Panel.get()->SetTitle("Osc 1");
 	osc2Panel.get()->SetTitle("Osc 2");
 	osc3Panel.get()->SetTitle("Osc 3");
-	osc4Panel.get()->SetTitle("Osc 4");
+
 
 	ch1Panel.get()->SetTitle("Ch 1");
 	ch2Panel.get()->SetTitle("Ch 2");
@@ -270,16 +286,36 @@ MainUI::MainUI (Model* model, LupoSynth* synth)
 	ampEnvelope.get()->addChangeListener(this);
 	filterEnvelope.get()->addChangeListener(this);
 	auxEnvelope.get()->addChangeListener(this);
+	delayPanel.get()->addChangeListener(this);
+	reverbPanel.get()->addChangeListener(this);
+	chorusPanel.get()->addChangeListener(this);
 
 	addChangeListener(synth);
+	addMouseListener(this, true);
+
+	factory.reset(new AttachmentFactory(processor, synth, this));
+	factory.get()->createParam("cutoff", "Cutoff", 0.01f, 15000.0, 12000.0);
+	factory.get()->createParam("resonance", "Resonance", 0.01f, 5.0f, 1.0);
+	factory.get()->createParam("mainVol", "Main Volume", 0.01f, 2.0f, 1.0);
+	factory.get()->createParam("envAmt", "Filter amount", 0.01f, 1.0f, 1.0);
+
+	factory.get()->initState();
+	factory.get()->createAttachment(processor, "cutoff", fltCutoff.get());
+	factory.get()->createAttachment(processor, "resonance", fltResonance.get());
+	factory.get()->createAttachment(processor, "mainVol", mainVolume.get());
+	factory.get()->createAttachment(processor, "envAmt", envAmt.get());
+
+
     //[/Constructor]
 }
 
 MainUI::~MainUI()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
+	removeAllChangeListeners();
     //[/Destructor_pre]
 
+	factory = nullptr;
     ModulationGroup = nullptr;
     groupComponent = nullptr;
     groupComponent3 = nullptr;
@@ -308,7 +344,8 @@ MainUI::~MainUI()
     FXGroup = nullptr;
     reverbPanel = nullptr;
     auxEnvelope = nullptr;
-
+    delayPanel = nullptr;
+    chorusPanel = nullptr;
 
     //[Destructor]. You can add your own custom destruction code here..
     //[/Destructor]
@@ -323,6 +360,15 @@ void MainUI::paint (Graphics& g)
     g.fillAll (Colour (0xff606060));
 
     //[UserPaint] Add your own custom painting code here..
+
+	g.setColour(Colours::white);
+	if (draggingConnection) {
+		g.drawLine(mouseDownPos.x, mouseDownPos.y, mousePos.x, mousePos.y, 2.0f);
+
+	}
+
+
+
     //[/UserPaint]
 }
 
@@ -376,6 +422,27 @@ void MainUI::sliderValueChanged (Slider* sliderThatWasMoved)
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void MainUI::changeListenerCallback(ChangeBroadcaster* source) {
 	sendChangeMessage();
+}
+
+void MainUI::mouseDown(const MouseEvent & event)
+{
+	// mouseDownPos = event.getPosition();
+}
+
+void MainUI::mouseUp(const MouseEvent & event)
+{
+	// draggingConnection = false;
+}
+
+void MainUI::mouseDrag(const MouseEvent & event)
+{
+	// draggingConnection = true;
+	// repaint();
+}
+
+void MainUI::mouseMove(const MouseEvent & event)
+{
+	// mousePos = event.getPosition();
 }
 
 //[/MiscUserCode]
@@ -484,11 +551,17 @@ BEGIN_JUCER_METADATA
   <GROUPCOMPONENT name="FXGroup" id="85cf2fc9be4f7bcf" memberName="FXGroup" virtualName=""
                   explicitFocusOrder="0" pos="8 680 992 136" title="FX"/>
   <GENERICCOMPONENT name="reverbPanel" id="c574c98e1dd9ac8a" memberName="reverbPanel"
-                    virtualName="" explicitFocusOrder="0" pos="24 696 392 112" class="ReverbPanel"
-                    params=""/>
+                    virtualName="" explicitFocusOrder="0" pos="16 696 392 112" class="ReverbPanel"
+                    params="model"/>
   <GENERICCOMPONENT name="auxEnvelope" id="b597ff273ac7fb29" memberName="auxEnvelope"
                     virtualName="" explicitFocusOrder="0" pos="608 552 376 124" class="GraphicalEnvelope"
                     params="model"/>
+  <GENERICCOMPONENT name="delayPanel" id="f7f617a6d8249b19" memberName="delayPanel"
+                    virtualName="" explicitFocusOrder="0" pos="408 696 264 112" class="DelayPanel"
+                    params="model"/>
+  <GENERICCOMPONENT name="new component" id="958d847dca958b2b" memberName="chorusPanel"
+                    virtualName="" explicitFocusOrder="0" pos="672 696 320 112" class="ChorusPanel"
+                    params="model&#10;"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

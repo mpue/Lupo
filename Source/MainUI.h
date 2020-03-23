@@ -26,9 +26,14 @@
 #include "EnvelopePanel.h"
 #include "LFOPanel.h"
 #include "ReverbPanel.h"
+#include "DelayPanel.h"
+#include "ChorusPanel.h"
+#include "SamplerPanel.h"
 #include "MixerChannelPanel.h"
 #include "GraphicalEnvelope.h"
+#include "PluginProcessor.h"
 class Model;
+class AttachmentFactory;
 //[/Headers]
 
 
@@ -48,12 +53,21 @@ class MainUI  : public Component,
 {
 public:
     //==============================================================================
-    MainUI (Model* model, LupoSynth* synth);
+    MainUI (LupoAudioProcessor* processor);
     ~MainUI();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 	void changeListenerCallback(ChangeBroadcaster* source);
+	void mouseDown(const MouseEvent& event) override;
+	void mouseUp(const MouseEvent& event) override;
+	void mouseDrag(const MouseEvent& event) override;
+	void mouseMove(const MouseEvent& event) override;
+
+	Slider* getCutoffSlider() {
+		return fltCutoff.get();
+	}
+
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -66,6 +80,13 @@ private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 	Model* model;
 	LupoSynth* synth;
+	Point<int> mouseDownPos;
+	Point<int> mousePos;
+	bool draggingConnection = false;
+	LupoAudioProcessor* processor;
+	std::unique_ptr <AttachmentFactory> factory;
+	vector<std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment>>* sliderAttachments;
+
     //[/UserVariables]
 
     //==============================================================================
@@ -97,6 +118,8 @@ private:
     std::unique_ptr<GroupComponent> FXGroup;
     std::unique_ptr<ReverbPanel> reverbPanel;
     std::unique_ptr<GraphicalEnvelope> auxEnvelope;
+    std::unique_ptr<DelayPanel> delayPanel;
+    std::unique_ptr<ChorusPanel> chorusPanel;
 
 
     //==============================================================================

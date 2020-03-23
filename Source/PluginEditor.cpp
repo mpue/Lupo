@@ -12,6 +12,7 @@
 #include "PluginEditor.h"
 #include "MainUI.h"
 #include "TrioLookAndFeel.h"
+#include "AttachmentFactory.h"
 
 //==============================================================================
 LupoAudioProcessorEditor::LupoAudioProcessorEditor (LupoAudioProcessor& p)
@@ -21,7 +22,7 @@ LupoAudioProcessorEditor::LupoAudioProcessorEditor (LupoAudioProcessor& p)
     // editor's size to whatever you need it to be.
 	setLookAndFeel(&tlf);
     setSize (1010, 820);	
-	mainUI = new MainUI(p.getModel(), p.getSynth());
+	mainUI = new MainUI(&p);
 	addAndMakeVisible(mainUI);
 	
 }

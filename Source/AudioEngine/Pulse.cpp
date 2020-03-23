@@ -7,6 +7,7 @@
 //
 
 #include "Pulse.h"
+#include "..\BlitSquare.h"
 
 #define _USE_MATH_DEFINES
 
@@ -21,10 +22,12 @@ Pulse::Pulse(float sampleRate, int buffersize) : Oszillator(sampleRate) {
     this->fine = 0.0f;
     this->step = (frequency * 2 * M_PI) / sampleRate;
     this->phase = 0;
+	blitSquare = new stk::BlitSquare();
 }
 
 void Pulse::reset() {
     this->phase = 0;
+	blitSquare->reset();
 }
 
 float Pulse::getOutput() {
@@ -32,7 +35,7 @@ float Pulse::getOutput() {
 }
 
 float Pulse::process() {
-    
+    /*
     phase += step;
     
     this->value = (float)(sin(phase));
@@ -45,16 +48,20 @@ float Pulse::process() {
     }
 
     return this->value * volume;
+	*/
+	return blitSquare->tick();
 }
 
 void Pulse::setFrequency(double frequency) {
     this->frequency = frequency;
-    this->step = ((frequency + (double)this->fine) * 2 * M_PI / sampleRate);
+	blitSquare->setFrequency(frequency + this->fine);
+    //this->step = ((frequency + (double)this->fine) * 2 * M_PI / sampleRate);
 }
 
 void Pulse::setFine(float fine) {
     this->fine = fine;
-    this->step = ((frequency + (double)this->fine) * 2 * M_PI / sampleRate);
+	setFrequency(this->frequency);
+    // this->step = ((frequency + (double)this->fine) * 2 * M_PI / sampleRate);
 }
 
 float Pulse::getFine() const {

@@ -51,7 +51,7 @@ void Oszillator::setPitch(int pitch) {
     this->pitch = pitch;
 }
 
-int Oszillator::getPitch() const {
+int Oszillator::getPitch() {
     return this->pitch;
 }
 

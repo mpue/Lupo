@@ -11,6 +11,7 @@
 #include "LupoSynth.h"
 #include "LowPassFilter.h"
 #include "MultimodeOscillator.h"
+#include "Sampler.h"
 
 #ifndef M_PI
 #define M_PI       3.14159265358979323846 
@@ -29,7 +30,9 @@ LupoSynth::LupoSynth(Model* model) {
 
 	this->filter = new MultimodeFilter();
 	filter->setModulator(modEnvelopes->at(0));
-
+	delay = new StereoDelay();
+	reverb = new StereoReverb();
+	
 }
 
 LupoSynth::~LupoSynth() {
@@ -45,6 +48,9 @@ LupoSynth::~LupoSynth() {
 	voices->clear();
 	delete voices;
 	delete filter;
+	delete delay;
+	delete reverb;
+	delete chorus;
 }
 
 Oszillator* LupoSynth::createOscillator(Oszillator::OscMode mode) {
@@ -59,6 +65,12 @@ Oszillator* LupoSynth::createOscillator(Oszillator::OscMode mode) {
 	}
 	case Oszillator::OscMode::SINE: {
 		osc = new MultimodeOscillator(sampleRate, bufferSize);
+		osc->setMode(Oszillator::OscMode::SINE);
+		break;
+	}
+
+	case Oszillator::OscMode::SAMPLE: {
+		osc = new Sampler(sampleRate, bufferSize);
 		osc->setMode(Oszillator::OscMode::SINE);
 		break;
 	}
@@ -104,8 +116,10 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	this->bufferSize = samplesPerBlock;
 
 	filter->coefficients(sampleRate, 15000.0f, 1.0f);
-
 	configureOscillators(Oszillator::OscMode::SAW, Oszillator::OscMode::SAW, Oszillator::OscMode::SAW, Oszillator::OscMode::SAW);
+	
+	chorus = new StereoChorus(sampleRate,bufferSize);
+	chorus->setEnabled(true);
 
 	for (int i = 0; i < modEnvelopes->size(); i++) {
 		modEnvelopes->at(i)->setAttackRate(0 * sampleRate);  // 1 second
@@ -113,6 +127,8 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 		modEnvelopes->at(i)->setReleaseRate(1 * sampleRate);
 		modEnvelopes->at(i)->setSustainLevel(.8);
 	}
+
+	updateState();
 
 }
 
@@ -232,20 +248,34 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 		}
 	}
 
-
-
 	leftOut = buffer.getWritePointer(0);
 	rightOut = buffer.getWritePointer(1);
 
 	filter->processStereo(leftOut, rightOut, buffer.getNumSamples());
-		
+	chorus->processStereo(leftOut, rightOut, buffer.getNumSamples());
+	delay->processStereo(leftOut, rightOut,buffer.getNumSamples());
+	reverb->processStereo(leftOut, rightOut, buffer.getNumSamples());
 }
 
-void LupoSynth::changeListenerCallback(ChangeBroadcaster* source) {
-
+void LupoSynth::updateState() {
+		
 	mainVolume = model->mainVolume;
+	
 	filter->coefficients(sampleRate, model->cutoff, model->resonance);
 	filter->setModAmount(model->envAmt);
+
+	delay->setDelay(StereoDelay::Channel::LEFT, model->dlyTimeLeft);
+	delay->setDelay(StereoDelay::Channel::RIGHT, model->dlyTimeRight);
+	delay->setFeedback(StereoDelay::Channel::LEFT, model->dlyFeedback);
+	delay->setFeedback(StereoDelay::Channel::RIGHT, model->dlyFeedback);
+	delay->setMix(StereoDelay::Channel::LEFT, model->dlyMix);
+	delay->setMix(StereoDelay::Channel::RIGHT, model->dlyMix);
+
+	chorus->delay = model->chrDelay;
+	chorus->feedback = model->chrFeedback;
+	chorus->leftMod = model->chrModulation;
+	chorus->rightMod = model->chrModulation;
+	chorus->mix = model->chrMix;
 
 	modEnvelopes->at(0)->setAttackRate(model->fltAttack * sampleRate);
 	modEnvelopes->at(0)->setDecayRate(model->fltDecay * sampleRate);
@@ -257,40 +287,77 @@ void LupoSynth::changeListenerCallback(ChangeBroadcaster* source) {
 	modEnvelopes->at(1)->setSustainLevel(model->auxSustain);
 	modEnvelopes->at(1)->setReleaseRate(model->auxRelease * sampleRate);
 
+	juce::Reverb::Parameters params =  reverb->getParameters();
+	params.damping = model->rvbDdamping;
+	params.dryLevel = model->rvbDryLevel;
+	params.freezeMode = model->rvbFreezeMode;
+	params.roomSize = model->rvbRoomSize;
+	params.wetLevel = model->rvbWetLevel;
+	params.width = model->rvbWidth;
+	reverb->setParameters(params);
+
+
 	for (int i = 0; i < voices->size(); i++) {
 
 		voices->at(i)->getAmpEnvelope()->setAttackRate(model->ampAttack * sampleRate);
 		voices->at(i)->getAmpEnvelope()->setDecayRate(model->ampDecay * sampleRate);
 		voices->at(i)->getAmpEnvelope()->setSustainLevel(model->ampSustain);
 		voices->at(i)->getAmpEnvelope()->setReleaseRate(model->ampRelease * sampleRate);
-		
+
 		voices->at(i)->getOscillator(0)->setPitch(model->osc1Pitch);
 		voices->at(i)->getOscillator(0)->setFine(model->osc1Fine);
 		voices->at(i)->getOscillator(0)->setMode(model->osc1Shape);
 		voices->at(i)->setOscVolume(0, model->osc1Volume);
 		voices->at(i)->setOscPan(0, model->osc1Pan);
-		
+
 		voices->at(i)->getOscillator(1)->setPitch(model->osc2Pitch);
 		voices->at(i)->getOscillator(1)->setFine(model->osc2Fine);
 		voices->at(i)->getOscillator(1)->setMode(model->osc2Shape);
 		voices->at(i)->setOscVolume(1, model->osc2Volume);
 		voices->at(i)->setOscPan(1, model->osc2Pan);
-		
+
 		voices->at(i)->getOscillator(2)->setPitch(model->osc3Pitch);
 		voices->at(i)->getOscillator(2)->setFine(model->osc3Fine);
 		voices->at(i)->getOscillator(2)->setMode(model->osc3Shape);
 		voices->at(i)->setOscVolume(2, model->osc3Volume);
 		voices->at(i)->setOscPan(2, model->osc3Pan);
-		
+
 		voices->at(i)->getOscillator(3)->setPitch(model->osc4Pitch);
 		voices->at(i)->getOscillator(3)->setFine(model->osc4Fine);
 		voices->at(i)->getOscillator(3)->setMode(model->osc4Shape);
 		voices->at(i)->setOscVolume(3, model->osc4Volume);
 		voices->at(i)->setOscPan(3, model->osc4Pan);
 
-		for (int j = 0; j< 4; j++) {
+		for (int j = 0; j < 4; j++) {
 			voices->at(i)->updateOscillator(j);
 		}
 	}
+}
 
+void LupoSynth::changeListenerCallback(ChangeBroadcaster* source) {
+	// updateState();
+}
+
+void LupoSynth::parameterChanged(const String & parameterID, float newValue)
+{
+	Logger::getCurrentLogger()->writeToLog("Parameter " + parameterID + " changed to " + String(newValue));
+
+	if (parameterID == "cutoff") {
+		model->cutoff = newValue;
+	}
+	if (parameterID == "resonance") {
+		model->resonance = newValue;
+	}
+
+
+	updateState();
+}
+
+void LupoSynth::parameterValueChanged(int parameterIndex, float newValue)
+{
+	Logger::getCurrentLogger()->writeToLog("Parameter " + String(parameterIndex) + " changed to " + String(newValue));
+}
+
+void LupoSynth::parameterGestureChanged(int parameterIndex, bool gestureIsStarting)
+{
 }

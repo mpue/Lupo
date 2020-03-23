@@ -19,7 +19,7 @@
 #include "Note.h"
 #include "ADSR.h"
 #include "ModTarget.h"
-
+#include "Sampler.h"
 #include "../JuceLibraryCode/JuceHeader.h"
 
 using namespace std;

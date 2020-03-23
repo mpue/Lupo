@@ -18,6 +18,13 @@
             file="Images/oscillator_square_48.png"/>
     </GROUP>
     <GROUP id="{172FB074-0DA4-14B0-F615-01D1F806371C}" name="Source">
+      <FILE id="XiFEss" name="BlitSquare.cpp" compile="1" resource="0" file="Source/BlitSquare.cpp"/>
+      <FILE id="U30oV1" name="BlitSquare.h" compile="0" resource="0" file="Source/BlitSquare.h"/>
+      <FILE id="ZvSdSy" name="Stk.cpp" compile="1" resource="0" file="Source/Stk.cpp"/>
+      <FILE id="y6xNhl" name="BlitSaw.cpp" compile="1" resource="0" file="Source/BlitSaw.cpp"/>
+      <FILE id="YPVnrX" name="BlitSaw.h" compile="0" resource="0" file="Source/BlitSaw.h"/>
+      <FILE id="SnBbSX" name="Generator.h" compile="0" resource="0" file="Source/Generator.h"/>
+      <FILE id="dETlEa" name="Stk.h" compile="0" resource="0" file="Source/Stk.h"/>
       <FILE id="IqemcJ" name="TrioLookAndFeel.cpp" compile="1" resource="0"
             file="Source/TrioLookAndFeel.cpp"/>
       <FILE id="cZg5di" name="TrioLookAndFeel.h" compile="0" resource="0"
@@ -30,6 +37,10 @@
         <FILE id="aOdW8A" name="Topic.h" compile="0" resource="0" file="Source/MessageBus/Topic.h"/>
       </GROUP>
       <GROUP id="{73B48C3D-9605-CFBE-4AA4-97CEABC11729}" name="UI">
+        <FILE id="fzdpsu" name="ChorusPanel.cpp" compile="1" resource="0" file="Source/ChorusPanel.cpp"/>
+        <FILE id="v0hFu3" name="ChorusPanel.h" compile="0" resource="0" file="Source/ChorusPanel.h"/>
+        <FILE id="SzCDGd" name="DelayPanel.cpp" compile="1" resource="0" file="Source/DelayPanel.cpp"/>
+        <FILE id="lgwdag" name="DelayPanel.h" compile="0" resource="0" file="Source/DelayPanel.h"/>
         <FILE id="ftY232" name="EnvelopePanel.cpp" compile="1" resource="0"
               file="Source/EnvelopePanel.cpp"/>
         <FILE id="bOOBt5" name="EnvelopePanel.h" compile="0" resource="0" file="Source/EnvelopePanel.h"/>
@@ -52,6 +63,9 @@
               file="Source/OscillatorPanel.h"/>
         <FILE id="B6a3Em" name="ReverbPanel.cpp" compile="1" resource="0" file="Source/ReverbPanel.cpp"/>
         <FILE id="GQWj1X" name="ReverbPanel.h" compile="0" resource="0" file="Source/ReverbPanel.h"/>
+        <FILE id="jUOTPO" name="SamplerPanel.cpp" compile="1" resource="0"
+              file="Source/SamplerPanel.cpp"/>
+        <FILE id="CjiGWH" name="SamplerPanel.h" compile="0" resource="0" file="Source/SamplerPanel.h"/>
       </GROUP>
       <GROUP id="{E619D4C1-110E-416E-055B-B61301338B21}" name="AudioEngine">
         <FILE id="sGv9jB" name="ADSR.cpp" compile="1" resource="0" file="Source/AudioEngine/ADSR.cpp"/>
@@ -106,10 +120,15 @@
         <FILE id="kfX76j" name="Pulse.h" compile="0" resource="0" file="Source/AudioEngine/Pulse.h"/>
         <FILE id="ZzaGWR" name="Random.cpp" compile="1" resource="0" file="Source/AudioEngine/Random.cpp"/>
         <FILE id="wobyGb" name="Random.h" compile="0" resource="0" file="Source/AudioEngine/Random.h"/>
+        <FILE id="Ekevo5" name="Sampler.cpp" compile="1" resource="0" file="Source/AudioEngine/Sampler.cpp"/>
+        <FILE id="OE64o2" name="Sampler.h" compile="0" resource="0" file="Source/AudioEngine/Sampler.h"/>
         <FILE id="OBN49G" name="Sawtooth.cpp" compile="1" resource="0" file="Source/AudioEngine/Sawtooth.cpp"/>
         <FILE id="ux5YiP" name="Sawtooth.h" compile="0" resource="0" file="Source/AudioEngine/Sawtooth.h"/>
         <FILE id="VbGn8R" name="Sine.cpp" compile="1" resource="0" file="Source/AudioEngine/Sine.cpp"/>
         <FILE id="AbMRQ4" name="Sine.h" compile="0" resource="0" file="Source/AudioEngine/Sine.h"/>
+        <FILE id="YqHtFU" name="StereoChorus.cpp" compile="1" resource="0"
+              file="Source/AudioEngine/StereoChorus.cpp"/>
+        <FILE id="f7Eiaw" name="StereoChorus.h" compile="0" resource="0" file="Source/AudioEngine/StereoChorus.h"/>
         <FILE id="n002OZ" name="StereoDelay.cpp" compile="1" resource="0" file="Source/AudioEngine/StereoDelay.cpp"/>
         <FILE id="eC0OvM" name="StereoDelay.h" compile="0" resource="0" file="Source/AudioEngine/StereoDelay.h"/>
         <FILE id="g5EXYU" name="StereoEffect.h" compile="0" resource="0" file="Source/AudioEngine/StereoEffect.h"/>
@@ -153,6 +172,8 @@
         <MODULEPATH id="juce_gui_basics" path="../JUCE/modules"/>
         <MODULEPATH id="juce_gui_extra" path="../JUCE/modules"/>
         <MODULEPATH id="juce_opengl" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_dsp" path="../JUCE/modules"/>
+        <MODULEPATH id="juce_osc" path="../JUCE/modules"/>
       </MODULEPATHS>
     </VS2017>
   </EXPORTFORMATS>
@@ -167,11 +188,13 @@
     <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
     <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_osc" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
   <LIVE_SETTINGS>
     <WINDOWS/>

@@ -34,14 +34,14 @@
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class ReverbPanel  : public Component,
-                     public ChangeBroadcaster,
-                     public Slider::Listener
+class DelayPanel  : public Component,
+                    public ChangeBroadcaster,
+                    public Slider::Listener
 {
 public:
     //==============================================================================
-    ReverbPanel (Model* model);
-    ~ReverbPanel();
+    DelayPanel (Model* model);
+    ~DelayPanel();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -59,23 +59,19 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<GroupComponent> reverbGroup;
-    std::unique_ptr<Slider> roomSize;
-    std::unique_ptr<Label> roomSIzeLbl;
-    std::unique_ptr<Slider> damping;
-    std::unique_ptr<Label> dampingLbl;
-    std::unique_ptr<Slider> width;
-    std::unique_ptr<Label> widthLbl;
-    std::unique_ptr<Slider> dryLevel;
-    std::unique_ptr<Label> dryLbl;
-    std::unique_ptr<Slider> wetLevel;
-    std::unique_ptr<Label> wetLbl;
-    std::unique_ptr<Slider> freeze;
-    std::unique_ptr<Label> freezeLbl;
+    std::unique_ptr<GroupComponent> delayGroup;
+    std::unique_ptr<Slider> timeLeft;
+    std::unique_ptr<Slider> timeRight;
+    std::unique_ptr<Slider> feedback;
+    std::unique_ptr<Slider> mix;
+    std::unique_ptr<Label> labelTime;
+    std::unique_ptr<Label> labelTime2;
+    std::unique_ptr<Label> labelFb;
+    std::unique_ptr<Label> labelMix;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReverbPanel)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayPanel)
 };
 
 //[EndFile] You can add extra defines here...

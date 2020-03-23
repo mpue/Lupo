@@ -57,13 +57,17 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
 
+	AudioProcessorValueTreeState* getValueTreeState();
+
+	std::unique_ptr<AudioProcessorValueTreeState> parameters;
+
 	LupoSynth* getSynth();
 	Model* getModel();
 private:
     //==============================================================================
 
-	LupoSynth* lupo = nullptr;
-	Model* model = nullptr;
+	std::unique_ptr<LupoSynth> lupo = nullptr;
+	std::unique_ptr<Model> model = nullptr;
 	
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LupoAudioProcessor)
