@@ -427,6 +427,7 @@ MainUI::~MainUI()
     //[Destructor_pre]. You can add your own custom destruction code here..
 	removeAllChangeListeners();
 	delete factory;
+	delete dlg;
     //[/Destructor_pre]
 
     ModulationGroup = nullptr;

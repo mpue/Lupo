@@ -43,48 +43,12 @@ void Sawtooth::reset() {
 
 float Sawtooth::process() {
 	return blitsaw->tick();
-    /*
-    p += dp;
-    
-    if(p < 0.0f)
-    {
-        p = -p;
-        dp = -dp;
-    }
-    else if(p > pmax)
-    {
-        p = pmax + pmax - p;
-        dp = -dp;
-        
-        if (this->slave != 0 && sync) {
-            slave->reset();
-        }
-    }
-    
-    x = M_PI * p;
-    
-    if(x < 0.00001f)
-        x=0.00001f; //don't divide by 0
-    
-    saw = leak * saw + dc + (float)sin(x)/(x);
-    
-    if (saw > 1.0f)
-        saw = lastValue;
-    else
-        lastValue = saw;
-        
-    return saw * this->volume;
-	*/
+
 }
 
 void Sawtooth::setFrequency(double frequency) {
     this->frequency = frequency;
 	blitsaw->setFrequency(frequency+ this->fine);
-
-	/*
-    pmax = 0.5f * sampleRate / (frequency + this->fine);
-    dc = -0.498f / pmax;
-    */
 }
 
 void Sawtooth::setFine(float fine) {

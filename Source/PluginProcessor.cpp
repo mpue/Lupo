@@ -28,9 +28,13 @@ LupoAudioProcessor::LupoAudioProcessor()
 	model.reset(new Model());
 	lupo.reset(new LupoSynth(model.get()));
 	parameters.reset(new AudioProcessorValueTreeState(*this, nullptr));
+	bypass = parameters.get()->createAndAddParameter("bypass", "bypass", "Bypass", NormalisableRange<float>(0, 1),0, nullptr, nullptr);
+	
+	Logger::getCurrentLogger()->writeToLog("Building preset list");
+
 	String appDataPath = File::getSpecialLocation(File::userApplicationDataDirectory).getFullPathName();
 	String presetPath = appDataPath + "/Audio/Presets/pueski/Lupo/";
-
+	
 	File presets = File(presetPath);
 
 	if (presets.exists() && presets.isDirectory()) {
@@ -46,14 +50,18 @@ LupoAudioProcessor::LupoAudioProcessor()
 		iter = nullptr;
 
 	}
+
+	Logger::getCurrentLogger()->writeToLog("Found"+String(programNames.size())+" presets");
 }
 
 LupoAudioProcessor::~LupoAudioProcessor()
-{	
-	 lupo = nullptr;
-	 model = nullptr;
-	 parameters = nullptr;
+{	/*
+	lupo.reset();
+	model.reset();
+	parameters.reset();
+	 */
 // delete messageBus;
+	Logger::getCurrentLogger()->writeToLog("Lupo is dead.");
 }
 
 //==============================================================================
@@ -96,24 +104,33 @@ double LupoAudioProcessor::getTailLengthSeconds() const
 
 int LupoAudioProcessor::getNumPrograms()
 {
-	return programNames.size();
+	return std::max(1,(int)programNames.size());
 }
 
 int LupoAudioProcessor::getCurrentProgram()
 {
-	return this->currentProgramNumber;
+	return std::max(0, (int)currentProgramNumber);
 }
 
 void LupoAudioProcessor::setCurrentProgram (int index)
 {
-	String name = programNames.at(index);
-	this->currentProgramNumber = index;
-	this->setSelectedProgram(name);
+	Logger::getCurrentLogger()->writeToLog("Setting program index "+String(index));
+
+	if (index < 0 || index > programNames.size()) {
+		index = 0;
+	}
+
+	if (programNames.size() > 0) {
+		String name = programNames.at(index);
+		this->currentProgramNumber = index;
+		this->setSelectedProgram(name);
+	}
+
 }
 
 void LupoAudioProcessor::setSelectedProgram(juce::String name) {
 
-	this->selectedProgram = name;
+	Logger::getCurrentLogger()->writeToLog("Loading preset "+name);
 
 	if (!prepared) {
 		return;
@@ -133,10 +150,10 @@ void LupoAudioProcessor::setSelectedProgram(juce::String name) {
 		getValueTreeState()->state = state;
 
 		xml = nullptr;
-		
+		this->selectedProgram = name;
+		lupo->updateState();
+		Logger::getCurrentLogger()->writeToLog("Updating synth state");
 	}
-
-	lupo->updateState();
 
 }
 
@@ -162,15 +179,13 @@ void LupoAudioProcessor::changeProgramName (int index, const String& newName)
 //==============================================================================
 void LupoAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-	lupo->prepareToPlay(sampleRate, samplesPerBlock);
-
+	Logger::getCurrentLogger()->writeToLog("Preparing playback");
 	if (!prepared) {
 		prepared = true;
-
-		if (selectedProgram != "") {
-			setSelectedProgram(selectedProgram);
-		}
+		// setSelectedProgram("init");
 	}
+	lupo->prepareToPlay(sampleRate, samplesPerBlock);
+
 }
 
 void LupoAudioProcessor::releaseResources()
@@ -207,6 +222,13 @@ void LupoAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& m
 	lupo->processBlock(buffer,midiMessages);
 }
 
+AudioProcessorParameter * LupoAudioProcessor::getBypassParameter() const
+{
+	return bypass;
+}
+
+
+
 //==============================================================================
 bool LupoAudioProcessor::hasEditor() const
 {
@@ -224,12 +246,37 @@ void LupoAudioProcessor::getStateInformation (MemoryBlock& destData)
     // You should use this method to store your parameters in the memory block.
     // You could do that either as raw data, or use the XML or ValueTree classes
     // as intermediaries to make it easy to save and load complex data.
+	
+	if (parameters == nullptr) {
+		return;
+	}
+	if (parameters.get()->state.isValid()) {
+		parameters.get()->state.setProperty("program", getCurrentProgram(), nullptr);
+		ScopedPointer<XmlElement> xml(parameters.get()->state.createXml());
+		copyXmlToBinary(*xml, destData);
+	}
+	
 }
 
 void LupoAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
     // You should use this method to restore your parameters from this memory block,
     // whose contents will have been created by the getStateInformation() call.
+
+	if (sizeInBytes > 0) {
+		ScopedPointer<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
+		if (xmlState != nullptr)
+			if (xmlState->hasTagName(parameters->state.getType())) {
+				parameters->state = ValueTree::fromXml(*xmlState);
+				if (parameters->state.hasProperty("program")) {
+					setSelectedProgram(getProgramName(parameters->state.getProperty("program")));
+				}
+			}
+
+	}
+	
+
+
 }
 
 //==============================================================================

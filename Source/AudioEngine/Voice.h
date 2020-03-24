@@ -75,7 +75,7 @@ public:
 private:
     vector<Oszillator*> oscillators;
     float sampleRate;
-    int noteNumber;
+    int noteNumber = 0;
     int pitch;
     int velocity;
     double midiNote[128];

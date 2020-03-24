@@ -33,7 +33,7 @@ public:
    #endif
 
     void processBlock (AudioBuffer<float>&, MidiBuffer&) override;
-
+	AudioProcessorParameter* getBypassParameter() const override;
     //==============================================================================
     AudioProcessorEditor* createEditor() override;
     bool hasEditor() const override;
@@ -61,7 +61,7 @@ public:
 
 	AudioProcessorValueTreeState* getValueTreeState();
 
-	std::unique_ptr<AudioProcessorValueTreeState> parameters;
+	std::unique_ptr<AudioProcessorValueTreeState> parameters = nullptr;
 
 	bool prepared = false;
 	LupoSynth* getSynth();
@@ -71,10 +71,12 @@ private:
 
 	std::unique_ptr<LupoSynth> lupo = nullptr;
 	std::unique_ptr<Model> model = nullptr;
+
+	AudioProcessorParameter* bypass = nullptr;
 	
 	vector<String> programNames;
 	String selectedProgram = "";
-	int currentProgramNumber;
+	int currentProgramNumber = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LupoAudioProcessor)
 };

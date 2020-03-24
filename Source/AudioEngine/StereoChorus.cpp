@@ -29,6 +29,10 @@ StereoChorus::StereoChorus(float sampleRate, int bufferSize) {
 }
 
 StereoChorus::~StereoChorus() {
+	delete leftBuffer;
+	delete rightBuffer;
+	delete leftOsc;
+	delete rightOsc;
 }
 
 void StereoChorus::processStereo(float * left, float * right, const int numSamples) {

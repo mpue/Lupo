@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="M3MHKq" name="Lupo" projectType="audioplug" jucerVersion="5.4.3"
-              pluginVST3Category="Instrument" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn">
+              pluginVST3Category="Instrument" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
+              companyName="Matthias Pueski">
   <MAINGROUP id="GthNfL" name="Lupo">
     <GROUP id="{7D68CE24-8E1B-AC85-29D1-30E03A9479D6}" name="Images">
       <FILE id="ISE3Pl" name="Knob_32.png" compile="0" resource="1" file="Images/Knob_32.png"/>
@@ -37,6 +38,8 @@
         <FILE id="aOdW8A" name="Topic.h" compile="0" resource="0" file="Source/MessageBus/Topic.h"/>
       </GROUP>
       <GROUP id="{73B48C3D-9605-CFBE-4AA4-97CEABC11729}" name="UI">
+        <FILE id="oN5BfN" name="AttachmentFactory.h" compile="0" resource="0"
+              file="Source/AttachmentFactory.h"/>
         <FILE id="fzdpsu" name="ChorusPanel.cpp" compile="1" resource="0" file="Source/ChorusPanel.cpp"/>
         <FILE id="v0hFu3" name="ChorusPanel.h" compile="0" resource="0" file="Source/ChorusPanel.h"/>
         <FILE id="SzCDGd" name="DelayPanel.cpp" compile="1" resource="0" file="Source/DelayPanel.cpp"/>
