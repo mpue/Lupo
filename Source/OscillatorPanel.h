@@ -21,7 +21,9 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "AudioEngine/Oszillator.h"
 class Model;
+class AttachmentFactory;
 //[/Headers]
 
 
@@ -37,22 +39,29 @@ class Model;
 class OscillatorPanel  : public Component,
                          public ChangeBroadcaster,
                          public Slider::Listener,
-                         public Button::Listener
+                         public Button::Listener,
+                         public ComboBox::Listener
 {
 public:
     //==============================================================================
-    OscillatorPanel (Model* model);
+    OscillatorPanel (Model* model, AttachmentFactory* factory);
     ~OscillatorPanel();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 	void SetTitle(String title);
+	void initAttachments();
+	ComboBox* getShapeCombo() {
+		return shapeComboBox.get();
+	}
+
     //[/UserMethods]
 
     void paint (Graphics& g) override;
     void resized() override;
     void sliderValueChanged (Slider* sliderThatWasMoved) override;
     void buttonClicked (Button* buttonThatWasClicked) override;
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
 
     // Binary resources:
     static const char* oscillator_square_48_png;
@@ -68,6 +77,8 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 	Model* model;
+	AttachmentFactory* factory;
+	int id;
     //[/UserVariables]
 
     //==============================================================================
@@ -76,13 +87,11 @@ private:
     std::unique_ptr<Label> pitchlabel1;
     std::unique_ptr<Slider> oscFine;
     std::unique_ptr<Label> fineLabel;
-    std::unique_ptr<ImageButton> pulseButton;
-    std::unique_ptr<ImageButton> sawButton;
-    std::unique_ptr<ImageButton> sineButton;
-    std::unique_ptr<ImageButton> noiseButton;
     std::unique_ptr<Slider> pwSlider;
     std::unique_ptr<Label> pwLabel;
     std::unique_ptr<ToggleButton> syncButton;
+    std::unique_ptr<ComboBox> shapeComboBox;
+    std::unique_ptr<Label> shapeLabel;
 
 
     //==============================================================================

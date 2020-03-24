@@ -20,6 +20,7 @@
 //[Headers] You can add your own extra header files here...
 #include "MessageBus/MessageBus.h"
 #include "Model.h"
+#include "AttachmentFactory.h"
 //[/Headers]
 
 #include "MixerChannelPanel.h"
@@ -29,10 +30,12 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-MixerChannelPanel::MixerChannelPanel (Model* model)
+MixerChannelPanel::MixerChannelPanel (Model* model, AttachmentFactory* factory)
 {
     //[Constructor_pre] You can add your own custom stuff here..
 	this->model = model;
+	this->factory = factory;
+
     //[/Constructor_pre]
 
     channelGroup.reset (new GroupComponent ("channelGroup",
@@ -180,6 +183,26 @@ void MixerChannelPanel::SetTitle(String title) {
 	channelGroup.get()->setText(title);
 }
 
+void MixerChannelPanel::initAttachments()
+{
+	if (getName().startsWith("channel1")) {
+		factory->createSliderAttachment("osc1Volume", volSlider.get());
+		factory->createSliderAttachment("osc1Pan", panSlider.get());
+	}
+	if (getName().startsWith("channel2")) {
+		factory->createSliderAttachment("osc2Volume", volSlider.get());
+		factory->createSliderAttachment("osc2Pan", panSlider.get());
+	}
+	if (getName().startsWith("channel3")) {
+		factory->createSliderAttachment("osc3Volume", volSlider.get());
+		factory->createSliderAttachment("osc3Pan", panSlider.get());
+	}
+	if (getName().startsWith("channel4")) {
+		factory->createSliderAttachment("osc4Volume", volSlider.get());
+		factory->createSliderAttachment("osc4Pan", panSlider.get());
+	}
+}
+
 
 //[/MiscUserCode]
 
@@ -194,7 +217,7 @@ void MixerChannelPanel::SetTitle(String title) {
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="MixerChannelPanel" componentName=""
-                 parentClasses="public Component, public ChangeBroadcaster" constructorParams="Model* model"
+                 parentClasses="public Component, public ChangeBroadcaster" constructorParams="Model* model, AttachmentFactory* factory"
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
                  overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="0"/>

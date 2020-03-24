@@ -13,6 +13,8 @@ public:
 		this->lupo = lupo;
 		this->ui = ui;
 		this->attachments = new vector<AudioProcessorValueTreeState::SliderAttachment*>();
+		this->buttonAttachments = new vector<AudioProcessorValueTreeState::ButtonAttachment*>();
+		this->comboAttachments = new vector<AudioProcessorValueTreeState::ComboBoxAttachment*>();
 	}
 
 	void initState() {		
@@ -24,9 +26,19 @@ public:
 		processor->getValueTreeState()->addParameterListener(name, lupo);
 	}
 
-	void  createAttachment(LupoAudioProcessor* processor, String name,Slider* comp) {
+	void  createSliderAttachment(String name,Slider* comp) {
 		AudioProcessorValueTreeState::SliderAttachment* att = new AudioProcessorValueTreeState::SliderAttachment(*processor->getValueTreeState(), name, *comp);
 		attachments->push_back(att);
+	}
+
+	void  createComboAttachment(String name, ComboBox* comp) {
+		AudioProcessorValueTreeState::ComboBoxAttachment* att = new AudioProcessorValueTreeState::ComboBoxAttachment(*processor->getValueTreeState(), name, *comp);
+		comboAttachments->push_back(att);
+	}
+
+	void  createButtonAttachment(String name, Button* comp) {
+		AudioProcessorValueTreeState::ButtonAttachment* att = new AudioProcessorValueTreeState::ButtonAttachment(*processor->getValueTreeState(), name, *comp);
+		buttonAttachments->push_back(att);
 	}
 
 	~AttachmentFactory() {
@@ -34,11 +46,21 @@ public:
 			delete attachments->at(i);
 		}
 		delete attachments;
+		for (int i = 0; i < buttonAttachments->size(); i++) {
+			delete buttonAttachments->at(i);
+		}
+		delete buttonAttachments;
+		for (int i = 0; i < comboAttachments->size(); i++) {
+			delete comboAttachments->at(i);
+		}
+		delete comboAttachments;
 	};
 
 private:
 
 	vector<AudioProcessorValueTreeState::SliderAttachment*>* attachments;
+	vector<AudioProcessorValueTreeState::ButtonAttachment*>* buttonAttachments;
+	vector<AudioProcessorValueTreeState::ComboBoxAttachment*>* comboAttachments;
 
 	class ParamDescriptor {
 	public:

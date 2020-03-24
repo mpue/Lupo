@@ -22,7 +22,6 @@
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Model.h"
-class AttachmentFactory;
 //[/Headers]
 
 
@@ -35,46 +34,42 @@ class AttachmentFactory;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class DelayPanel  : public Component,
-                    public ChangeBroadcaster,
-                    public Slider::Listener
+class PresetDialog  : public Component,
+                      public Button::Listener
 {
 public:
     //==============================================================================
-    DelayPanel (Model* model, AttachmentFactory* factory);
-    ~DelayPanel();
+    PresetDialog (ComboBox* presetBox, Model* model);
+    ~PresetDialog();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-	void initAttachments();
+    void setData(ScopedPointer<XmlElement> xml);
+    void visibilityChanged() override;
+    void setVisible (bool shouldBeVisible) override;
     //[/UserMethods]
 
     void paint (Graphics& g) override;
     void resized() override;
-    void sliderValueChanged (Slider* sliderThatWasMoved) override;
+    void buttonClicked (Button* buttonThatWasClicked) override;
 
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-	Model* model;
-	AttachmentFactory* factory;
+    ComboBox* presetBox;
+    ScopedPointer<XmlElement> xml;
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<GroupComponent> delayGroup;
-    std::unique_ptr<Slider> timeLeft;
-    std::unique_ptr<Slider> timeRight;
-    std::unique_ptr<Slider> feedback;
-    std::unique_ptr<Slider> mix;
-    std::unique_ptr<Label> labelTime;
-    std::unique_ptr<Label> labelTime2;
-    std::unique_ptr<Label> labelFb;
-    std::unique_ptr<Label> labelMix;
+    ScopedPointer<TextButton> okButton;
+	ScopedPointer<TextButton> cancelButton;
+	ScopedPointer<TextEditor> textEditor;
+	ScopedPointer<Label> label;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayPanel)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (PresetDialog)
 };
 
 //[EndFile] You can add extra defines here...

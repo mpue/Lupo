@@ -10,6 +10,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "AudioEngine/MultimodeOscillator.h"
 
 //==============================================================================
 LupoAudioProcessor::LupoAudioProcessor()
@@ -27,6 +28,24 @@ LupoAudioProcessor::LupoAudioProcessor()
 	model.reset(new Model());
 	lupo.reset(new LupoSynth(model.get()));
 	parameters.reset(new AudioProcessorValueTreeState(*this, nullptr));
+	String appDataPath = File::getSpecialLocation(File::userApplicationDataDirectory).getFullPathName();
+	String presetPath = appDataPath + "/Audio/Presets/pueski/Lupo/";
+
+	File presets = File(presetPath);
+
+	if (presets.exists() && presets.isDirectory()) {
+		ScopedPointer<DirectoryIterator> iter = new DirectoryIterator(presets, false);
+		while (iter->next()) {
+			if (iter->getFile().exists() && !iter->getFile().isDirectory()) {
+				String name = iter->getFile().getFileNameWithoutExtension();
+				Logger::getCurrentLogger()->writeToLog("Found preset : " + name);
+				programNames.push_back(name);
+			}
+
+		}
+		iter = nullptr;
+
+	}
 }
 
 LupoAudioProcessor::~LupoAudioProcessor()
@@ -77,22 +96,63 @@ double LupoAudioProcessor::getTailLengthSeconds() const
 
 int LupoAudioProcessor::getNumPrograms()
 {
-    return 1;   // NB: some hosts don't cope very well if you tell them there are 0 programs,
-                // so this should be at least 1, even if you're not really implementing programs.
+	return programNames.size();
 }
 
 int LupoAudioProcessor::getCurrentProgram()
 {
-    return 0;
+	return this->currentProgramNumber;
 }
 
 void LupoAudioProcessor::setCurrentProgram (int index)
 {
+	String name = programNames.at(index);
+	this->currentProgramNumber = index;
+	this->setSelectedProgram(name);
+}
+
+void LupoAudioProcessor::setSelectedProgram(juce::String name) {
+
+	this->selectedProgram = name;
+
+	if (!prepared) {
+		return;
+	}
+
+	String appDataPath = File::getSpecialLocation(File::userApplicationDataDirectory).getFullPathName();
+	String presetPath = appDataPath + "/Audio/Presets/pueski/Lupo/";
+
+	String filename = name + ".xml";
+	File preset = File(presetPath + filename);
+
+	if (preset.exists()) {
+
+		ScopedPointer<XmlElement> xml = XmlDocument(preset).getDocumentElement();
+		ValueTree state = ValueTree::fromXml(*xml.get());
+		
+		getValueTreeState()->state = state;
+
+		xml = nullptr;
+		
+	}
+
+	lupo->updateState();
+
 }
 
 const String LupoAudioProcessor::getProgramName (int index)
 {
-    return {};
+	if (programNames.size() > 0) {
+
+		if (index > programNames.size() - 1) {
+			index = programNames.size() - 1;
+		}
+
+		return programNames.at(index);
+
+	}
+
+	return "Empty";
 }
 
 void LupoAudioProcessor::changeProgramName (int index, const String& newName)
@@ -102,8 +162,15 @@ void LupoAudioProcessor::changeProgramName (int index, const String& newName)
 //==============================================================================
 void LupoAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-
 	lupo->prepareToPlay(sampleRate, samplesPerBlock);
+
+	if (!prepared) {
+		prepared = true;
+
+		if (selectedProgram != "") {
+			setSelectedProgram(selectedProgram);
+		}
+	}
 }
 
 void LupoAudioProcessor::releaseResources()

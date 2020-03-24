@@ -306,36 +306,43 @@ void LupoSynth::updateState() {
 
 		voices->at(i)->getOscillator(0)->setPitch(model->osc1Pitch);
 		voices->at(i)->getOscillator(0)->setFine(model->osc1Fine);
-		voices->at(i)->getOscillator(0)->setMode(model->osc1Shape);
+		
 		voices->at(i)->setOscVolume(0, model->osc1Volume);
 		voices->at(i)->setOscPan(0, model->osc1Pan);
 
 		voices->at(i)->getOscillator(1)->setPitch(model->osc2Pitch);
 		voices->at(i)->getOscillator(1)->setFine(model->osc2Fine);
-		voices->at(i)->getOscillator(1)->setMode(model->osc2Shape);
+		
 		voices->at(i)->setOscVolume(1, model->osc2Volume);
 		voices->at(i)->setOscPan(1, model->osc2Pan);
 
 		voices->at(i)->getOscillator(2)->setPitch(model->osc3Pitch);
 		voices->at(i)->getOscillator(2)->setFine(model->osc3Fine);
-		voices->at(i)->getOscillator(2)->setMode(model->osc3Shape);
+		
 		voices->at(i)->setOscVolume(2, model->osc3Volume);
 		voices->at(i)->setOscPan(2, model->osc3Pan);
 
 		voices->at(i)->getOscillator(3)->setPitch(model->osc4Pitch);
 		voices->at(i)->getOscillator(3)->setFine(model->osc4Fine);
-		voices->at(i)->getOscillator(3)->setMode(model->osc4Shape);
+		
 		voices->at(i)->setOscVolume(3, model->osc4Volume);
 		voices->at(i)->setOscPan(3, model->osc4Pan);
 
 		for (int j = 0; j < 4; j++) {
 			voices->at(i)->updateOscillator(j);
 		}
+
+		voices->at(i)->getOscillator(0)->setMode(model->osc1Shape);
+		voices->at(i)->getOscillator(1)->setMode(model->osc2Shape);
+		voices->at(i)->getOscillator(2)->setMode(model->osc3Shape);
+		voices->at(i)->getOscillator(3)->setMode(model->osc4Shape);
+
 	}
+
 }
 
 void LupoSynth::changeListenerCallback(ChangeBroadcaster* source) {
-	// updateState();
+	updateState();
 }
 
 void LupoSynth::parameterChanged(const String & parameterID, float newValue)
@@ -349,8 +356,7 @@ void LupoSynth::parameterChanged(const String & parameterID, float newValue)
 		model->resonance = newValue;
 	}
 
-
-	updateState();
+	
 }
 
 void LupoSynth::parameterValueChanged(int parameterIndex, float newValue)

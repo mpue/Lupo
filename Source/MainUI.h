@@ -34,6 +34,7 @@
 #include "PluginProcessor.h"
 class Model;
 class AttachmentFactory;
+class PresetDialog;
 //[/Headers]
 
 
@@ -49,7 +50,9 @@ class AttachmentFactory;
 class MainUI  : public Component,
                 public ChangeBroadcaster,
                 public ChangeListener,
-                public Slider::Listener
+                public Slider::Listener,
+                public Button::Listener,
+                public ComboBox::Listener
 {
 public:
     //==============================================================================
@@ -63,16 +66,14 @@ public:
 	void mouseUp(const MouseEvent& event) override;
 	void mouseDrag(const MouseEvent& event) override;
 	void mouseMove(const MouseEvent& event) override;
-
-	Slider* getCutoffSlider() {
-		return fltCutoff.get();
-	}
-
+	void updatePresetList();
     //[/UserMethods]
 
     void paint (Graphics& g) override;
     void resized() override;
     void sliderValueChanged (Slider* sliderThatWasMoved) override;
+    void buttonClicked (Button* buttonThatWasClicked) override;
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
 
 
 
@@ -84,8 +85,9 @@ private:
 	Point<int> mousePos;
 	bool draggingConnection = false;
 	LupoAudioProcessor* processor;
-	std::unique_ptr <AttachmentFactory> factory;
+	AttachmentFactory* factory;
 	vector<std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment>>* sliderAttachments;
+	PresetDialog* dlg;
 
     //[/UserVariables]
 
@@ -101,8 +103,8 @@ private:
     std::unique_ptr<OscillatorPanel> osc1Panel;
     std::unique_ptr<OscillatorPanel> osc3Panel;
     std::unique_ptr<OscillatorPanel> osc2Panel;
-    std::unique_ptr<GraphicalEnvelope> ampEnvelope;
-    std::unique_ptr<GraphicalEnvelope> filterEnvelope;
+    std::unique_ptr<EnvelopePanel> ampEnvelope;
+    std::unique_ptr<EnvelopePanel> filterEnvelope;
     std::unique_ptr<Slider> mainVolume;
     std::unique_ptr<Label> volumeLabel;
     std::unique_ptr<Slider> envAmt;
@@ -117,9 +119,12 @@ private:
     std::unique_ptr<LFOPanel> lfo2;
     std::unique_ptr<GroupComponent> FXGroup;
     std::unique_ptr<ReverbPanel> reverbPanel;
-    std::unique_ptr<GraphicalEnvelope> auxEnvelope;
+    std::unique_ptr<EnvelopePanel> auxEnvelope;
     std::unique_ptr<DelayPanel> delayPanel;
     std::unique_ptr<ChorusPanel> chorusPanel;
+    std::unique_ptr<TextButton> presetButton;
+    std::unique_ptr<TextButton> saveButton;
+    std::unique_ptr<ComboBox> presetCombo;
 
 
     //==============================================================================

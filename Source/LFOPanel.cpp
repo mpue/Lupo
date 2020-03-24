@@ -18,7 +18,8 @@
 */
 
 //[Headers] You can add your own extra header files here...
-
+#include "AttachmentFactory.h"
+#include "Model.h"
 //[/Headers]
 
 #include "LFOPanel.h"
@@ -28,9 +29,11 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-LFOPanel::LFOPanel ()
+LFOPanel::LFOPanel (Model* model, AttachmentFactory* factory)
 {
     //[Constructor_pre] You can add your own custom stuff here..
+	this->model = model;
+	this->factory = factory;
     //[/Constructor_pre]
 
     LFOGroup.reset (new GroupComponent ("LFOGroup",
@@ -157,6 +160,8 @@ LFOPanel::~LFOPanel()
     //[/Destructor]
 }
 
+
+
 //==============================================================================
 void LFOPanel::paint (Graphics& g)
 {
@@ -224,6 +229,9 @@ void LFOPanel::buttonClicked (Button* buttonThatWasClicked)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+void LFOPanel::initAttachments()
+{
+}
 //[/MiscUserCode]
 
 
@@ -237,9 +245,9 @@ void LFOPanel::buttonClicked (Button* buttonThatWasClicked)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="LFOPanel" componentName=""
-                 parentClasses="public Component" constructorParams="" variableInitialisers=""
-                 snapPixels="8" snapActive="1" snapShown="1" overlayOpacity="0.330"
-                 fixedSize="0" initialWidth="600" initialHeight="400">
+                 parentClasses="public Component" constructorParams="Model* model, AttachmentFactory* factory"
+                 variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
+                 overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="0"/>
   <GROUPCOMPONENT name="LFOGroup" id="92909cf09d44f991" memberName="LFOGroup" virtualName=""
                   explicitFocusOrder="0" pos="0 0 240 96" title="LFO"/>

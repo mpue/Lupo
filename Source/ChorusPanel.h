@@ -22,6 +22,7 @@
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
 class Model;
+class AttachmentFactory;
 //[/Headers]
 
 
@@ -40,12 +41,13 @@ class ChorusPanel  : public Component,
 {
 public:
     //==============================================================================
-    ChorusPanel (Model* model);
+    ChorusPanel (Model* model, AttachmentFactory* factory);
     ~ChorusPanel();
 
-    //==============================================================================
-    //[UserMethods]     -- You can add your own custom methods in this section.
-    //[/UserMethods]
+    //==============================================================================    
+	//[UserMethods]     -- You can add your own custom methods in this section.
+	void initAttachments();
+	//[/UserMethods]
 
     void paint (Graphics& g) override;
     void resized() override;
@@ -56,6 +58,7 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 	Model* model;
+	AttachmentFactory* factory;
     //[/UserVariables]
 
     //==============================================================================

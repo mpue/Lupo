@@ -21,6 +21,8 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
+class Model;
+class AttachmentFactory;
 //[/Headers]
 
 
@@ -39,12 +41,13 @@ class MixerChannelPanel  : public Component,
 {
 public:
     //==============================================================================
-    MixerChannelPanel (Model* model);
+    MixerChannelPanel (Model* model, AttachmentFactory* factory);
     ~MixerChannelPanel();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 	void SetTitle(String title);
+	void initAttachments();
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -56,6 +59,7 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 	Model* model;
+	AttachmentFactory* factory;
     //[/UserVariables]
 
     //==============================================================================

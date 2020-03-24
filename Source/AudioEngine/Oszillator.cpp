@@ -67,6 +67,23 @@ void Oszillator::setMode(OscMode mode) {
     this->mode = mode;
 }
 
+void Oszillator::setMode(float mode) {
+	if (mode == 0.0f) {
+		this->mode = OscMode::SAW;
+	}
+	else if (mode == 1.0f) {
+		this->mode = OscMode::PULSE;
+	}
+	else if (mode == 2.0f) {
+		this->mode = OscMode::SINE;
+	}
+	else if (mode == 3.0f) {
+		this->mode = OscMode::NOISE;
+	}
+
+}
+
+
 void Oszillator::setSync(bool sync) {
     this->sync = sync;
 }

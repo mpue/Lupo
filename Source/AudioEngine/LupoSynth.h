@@ -23,7 +23,9 @@
 
 class LupoSynth : public ChangeListener, 
 			      public AudioProcessorValueTreeState::Listener, 
-				  public AudioProcessorParameter::Listener {
+				  public AudioProcessorParameter::Listener,
+				  public ChangeBroadcaster
+{
 	
 public:
 
@@ -32,9 +34,7 @@ public:
 
 	void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages);	
 	void processMidi(MidiBuffer& midiMessages);
-
-	void prepareToPlay(double sampleRate, int bufferSize);
-	
+	void prepareToPlay(double sampleRate, int bufferSize);	
 	void updateState();
 
 	Oszillator* createOscillator(Oszillator::OscMode mode);

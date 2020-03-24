@@ -19,6 +19,7 @@
 
 //[Headers] You can add your own extra header files here...
 #include "Model.h"
+#include "AttachmentFactory.h"
 //[/Headers]
 
 #include "OscillatorPanel.h"
@@ -28,10 +29,12 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-OscillatorPanel::OscillatorPanel (Model* model)
+OscillatorPanel::OscillatorPanel (Model* model, AttachmentFactory* factory)
 {
     //[Constructor_pre] You can add your own custom stuff here..
 	this->model = model;
+	this->factory = factory;
+
     //[/Constructor_pre]
 
     oscillatorGroup.reset (new GroupComponent ("new group",
@@ -80,54 +83,6 @@ OscillatorPanel::OscillatorPanel (Model* model)
 
     fineLabel->setBounds (136, 96, 39, 24);
 
-    pulseButton.reset (new ImageButton ("pulseButton"));
-    addAndMakeVisible (pulseButton.get());
-    pulseButton->setButtonText (TRANS("new button"));
-    pulseButton->setRadioGroupId (1);
-    pulseButton->addListener (this);
-
-    pulseButton->setImages (false, true, true,
-                            ImageCache::getFromMemory (oscillator_square_48_png, oscillator_square_48_pngSize), 1.000f, Colour (0x00000000),
-                            Image(), 1.000f, Colour (0x00000000),
-                            ImageCache::getFromMemory (oscillator_square_48_png, oscillator_square_48_pngSize), 1.000f, Colours::blue);
-    pulseButton->setBounds (120, 136, 31, 24);
-
-    sawButton.reset (new ImageButton ("sawButton"));
-    addAndMakeVisible (sawButton.get());
-    sawButton->setButtonText (TRANS("new button"));
-    sawButton->setRadioGroupId (1);
-    sawButton->addListener (this);
-
-    sawButton->setImages (false, true, true,
-                          ImageCache::getFromMemory (oscillator_saw_48_png, oscillator_saw_48_pngSize), 1.000f, Colour (0x00000000),
-                          Image(), 1.000f, Colour (0x00000000),
-                          ImageCache::getFromMemory (oscillator_saw_48_png, oscillator_saw_48_pngSize), 1.000f, Colours::blue);
-    sawButton->setBounds (152, 136, 31, 24);
-
-    sineButton.reset (new ImageButton ("sineButton"));
-    addAndMakeVisible (sineButton.get());
-    sineButton->setButtonText (TRANS("new button"));
-    sineButton->setRadioGroupId (1);
-    sineButton->addListener (this);
-
-    sineButton->setImages (false, true, true,
-                           ImageCache::getFromMemory (oscillator_sine_48_png, oscillator_sine_48_pngSize), 1.000f, Colour (0x00000000),
-                           Image(), 1.000f, Colour (0x00000000),
-                           ImageCache::getFromMemory (oscillator_sine_48_png, oscillator_sine_48_pngSize), 1.000f, Colours::blue);
-    sineButton->setBounds (120, 168, 31, 24);
-
-    noiseButton.reset (new ImageButton ("noiseButton"));
-    addAndMakeVisible (noiseButton.get());
-    noiseButton->setButtonText (TRANS("new button"));
-    noiseButton->setRadioGroupId (1);
-    noiseButton->addListener (this);
-
-    noiseButton->setImages (false, true, true,
-                            ImageCache::getFromMemory (oscillator_noise_48_png, oscillator_noise_48_pngSize), 1.000f, Colour (0x00000000),
-                            Image(), 1.000f, Colour (0x00000000),
-                            ImageCache::getFromMemory (oscillator_noise_48_png, oscillator_noise_48_pngSize), 1.000f, Colours::blue);
-    noiseButton->setBounds (152, 168, 31, 24);
-
     pwSlider.reset (new Slider ("pwSlider"));
     addAndMakeVisible (pwSlider.get());
     pwSlider->setRange (0, 1, 0.01);
@@ -135,7 +90,7 @@ OscillatorPanel::OscillatorPanel (Model* model)
     pwSlider->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
     pwSlider->addListener (this);
 
-    pwSlider->setBounds (24, 128, 64, 64);
+    pwSlider->setBounds (24, 120, 64, 64);
 
     pwLabel.reset (new Label ("pwLabel",
                               TRANS("PW\n")));
@@ -153,7 +108,32 @@ OscillatorPanel::OscillatorPanel (Model* model)
     syncButton->setButtonText (TRANS("sync"));
     syncButton->addListener (this);
 
-    syncButton->setBounds (128, 192, 56, 24);
+    syncButton->setBounds (128, 200, 56, 24);
+
+    shapeComboBox.reset (new ComboBox ("shapeComboBox"));
+    addAndMakeVisible (shapeComboBox.get());
+    shapeComboBox->setEditableText (false);
+    shapeComboBox->setJustificationType (Justification::centredLeft);
+    shapeComboBox->setTextWhenNothingSelected (String());
+    shapeComboBox->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
+    shapeComboBox->addItem (TRANS("Sawtooth"), 1);
+    shapeComboBox->addItem (TRANS("Pulse"), 2);
+    shapeComboBox->addItem (TRANS("Sine"), 3);
+    shapeComboBox->addItem (TRANS("Noise"), 4);
+    shapeComboBox->addListener (this);
+
+    shapeComboBox->setBounds (104, 136, 88, 24);
+
+    shapeLabel.reset (new Label ("shapeLabel",
+                                 TRANS("Shape\n")));
+    addAndMakeVisible (shapeLabel.get());
+    shapeLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
+    shapeLabel->setJustificationType (Justification::centredLeft);
+    shapeLabel->setEditable (false, false, false);
+    shapeLabel->setColour (TextEditor::textColourId, Colours::black);
+    shapeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    shapeLabel->setBounds (104, 168, 71, 24);
 
 
     //[UserPreSize]
@@ -163,17 +143,8 @@ OscillatorPanel::OscillatorPanel (Model* model)
 
 
     //[Constructor] You can add your own custom stuff here..
-	pulseButton.get()->setRadioGroupId(1);
-	sineButton.get()->setRadioGroupId(1);
-	sawButton.get()->setRadioGroupId(1);
-	noiseButton.get()->setRadioGroupId(1);
 
-	pulseButton.get()->setClickingTogglesState(true);
-	sineButton.get()->setClickingTogglesState(true);
-	sawButton.get()->setClickingTogglesState(true);
-	noiseButton.get()->setClickingTogglesState(true);
 
-	sawButton.get()->setToggleState(true, NotificationType::dontSendNotification);
     //[/Constructor]
 }
 
@@ -187,13 +158,11 @@ OscillatorPanel::~OscillatorPanel()
     pitchlabel1 = nullptr;
     oscFine = nullptr;
     fineLabel = nullptr;
-    pulseButton = nullptr;
-    sawButton = nullptr;
-    sineButton = nullptr;
-    noiseButton = nullptr;
     pwSlider = nullptr;
     pwLabel = nullptr;
     syncButton = nullptr;
+    shapeComboBox = nullptr;
+    shapeLabel = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -272,91 +241,50 @@ void OscillatorPanel::sliderValueChanged (Slider* sliderThatWasMoved)
 void OscillatorPanel::buttonClicked (Button* buttonThatWasClicked)
 {
     //[UserbuttonClicked_Pre]
+
     //[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == pulseButton.get())
-    {
-        //[UserButtonCode_pulseButton] -- add your button handler code here..
-		if (getName().startsWith("osc1")) {
-			model->osc1Shape = MultimodeOscillator::OscMode::PULSE;
-		}
-		if (getName().startsWith("osc2")) {
-			model->osc2Shape = MultimodeOscillator::OscMode::PULSE;
-		}
-
-		if (getName().startsWith("osc3")) {
-			model->osc3Shape = MultimodeOscillator::OscMode::PULSE;
-		}
-		if (getName().startsWith("osc4")) {
-			model->osc4Shape = MultimodeOscillator::OscMode::PULSE;
-		}
-
-        //[/UserButtonCode_pulseButton]
-    }
-    else if (buttonThatWasClicked == sawButton.get())
-    {
-        //[UserButtonCode_sawButton] -- add your button handler code here..
-		if (getName().startsWith("osc1")) {
-			model->osc1Shape = MultimodeOscillator::OscMode::SAW;
-		}
-		if (getName().startsWith("osc2")) {
-			model->osc2Shape = MultimodeOscillator::OscMode::SAW;
-		}
-
-		if (getName().startsWith("osc3")) {
-			model->osc3Shape = MultimodeOscillator::OscMode::SAW;
-		}
-		if (getName().startsWith("osc4")) {
-			model->osc4Shape = MultimodeOscillator::OscMode::SAW;
-		}
-        //[/UserButtonCode_sawButton]
-    }
-    else if (buttonThatWasClicked == sineButton.get())
-    {
-        //[UserButtonCode_sineButton] -- add your button handler code here..
-		if (getName().startsWith("osc1")) {
-			model->osc1Shape = MultimodeOscillator::OscMode::SINE;
-		}
-		if (getName().startsWith("osc2")) {
-			model->osc2Shape = MultimodeOscillator::OscMode::SINE;
-		}
-
-		if (getName().startsWith("osc3")) {
-			model->osc3Shape = MultimodeOscillator::OscMode::SINE;
-		}
-		if (getName().startsWith("osc4")) {
-			model->osc4Shape = MultimodeOscillator::OscMode::SINE;
-		}
-        //[/UserButtonCode_sineButton]
-    }
-    else if (buttonThatWasClicked == noiseButton.get())
-    {
-        //[UserButtonCode_noiseButton] -- add your button handler code here..
-		if (getName().startsWith("osc1")) {
-			model->osc1Shape = MultimodeOscillator::OscMode::NOISE;
-		}
-		if (getName().startsWith("osc2")) {
-			model->osc2Shape = MultimodeOscillator::OscMode::NOISE;
-		}
-
-		if (getName().startsWith("osc3")) {
-			model->osc3Shape = MultimodeOscillator::OscMode::NOISE;
-		}
-		if (getName().startsWith("osc4")) {
-			model->osc4Shape = MultimodeOscillator::OscMode::NOISE;
-		}
-
-        //[/UserButtonCode_noiseButton]
-    }
-    else if (buttonThatWasClicked == syncButton.get())
+    if (buttonThatWasClicked == syncButton.get())
     {
         //[UserButtonCode_syncButton] -- add your button handler code here..
+
         //[/UserButtonCode_syncButton]
     }
 
     //[UserbuttonClicked_Post]
+
 	sendChangeMessage();
     //[/UserbuttonClicked_Post]
+}
+
+void OscillatorPanel::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
+{
+    //[UsercomboBoxChanged_Pre]
+    //[/UsercomboBoxChanged_Pre]
+
+    if (comboBoxThatHasChanged == shapeComboBox.get())
+    {
+        //[UserComboBoxCode_shapeComboBox] -- add your combo box handling code here..
+
+		if (getName().startsWith("osc1")) {
+			model->osc1Shape = comboBoxThatHasChanged->getSelectedItemIndex();
+		}
+		else if (getName().startsWith("osc2")) {
+			model->osc2Shape = comboBoxThatHasChanged->getSelectedItemIndex();
+		}
+		else if (getName().startsWith("osc3")) {
+			model->osc3Shape = comboBoxThatHasChanged->getSelectedItemIndex();
+		}
+		else if (getName().startsWith("osc4")) {
+			model->osc4Shape = comboBoxThatHasChanged->getSelectedItemIndex();
+		}
+
+        //[/UserComboBoxCode_shapeComboBox]
+    }
+
+    //[UsercomboBoxChanged_Post]
+	sendChangeMessage();
+    //[/UsercomboBoxChanged_Post]
 }
 
 
@@ -364,6 +292,33 @@ void OscillatorPanel::buttonClicked (Button* buttonThatWasClicked)
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void OscillatorPanel::SetTitle(String title) {
 	oscillatorGroup.get()->setText(title);
+}
+void OscillatorPanel::initAttachments()
+{
+	if (getName().startsWith("osc1")) {
+		factory->createSliderAttachment("osc1Pitch", oscPitch.get());
+		factory->createSliderAttachment("osc1Fine", oscFine.get());
+		factory->createComboAttachment("osc1Shape", shapeComboBox.get());
+
+	}
+	else if (getName().startsWith("osc2")) {
+		factory->createSliderAttachment("osc2Pitch", oscPitch.get());
+		factory->createSliderAttachment("osc2Fine", oscFine.get());
+		factory->createComboAttachment("osc2Shape", shapeComboBox.get());
+	}
+	else if (getName().startsWith("osc3")) {
+		factory->createSliderAttachment("osc3Pitch", oscPitch.get());
+		factory->createSliderAttachment("osc3Fine", oscFine.get());
+		factory->createComboAttachment("osc3Shape", shapeComboBox.get());
+	}
+
+	else if (getName().startsWith("osc4")) {
+		factory->createSliderAttachment("osc4Pitch", oscPitch.get());
+		factory->createSliderAttachment("osc4Fine", oscFine.get());
+		factory->createComboAttachment("osc4Shape", shapeComboBox.get());
+	}
+
+
 }
 //[/MiscUserCode]
 
@@ -378,7 +333,7 @@ void OscillatorPanel::SetTitle(String title) {
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="OscillatorPanel" componentName=""
-                 parentClasses="public Component, public ChangeBroadcaster" constructorParams="Model* model"
+                 parentClasses="public Component, public ChangeBroadcaster" constructorParams="Model* model, AttachmentFactory* factory"
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
                  overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="ffffff"/>
@@ -404,32 +359,8 @@ BEGIN_JUCER_METADATA
          edBkgCol="0" labelText="Fine&#10;" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
-  <IMAGEBUTTON name="pulseButton" id="511af3726a478c03" memberName="pulseButton"
-               virtualName="" explicitFocusOrder="0" pos="120 136 31 24" buttonText="new button"
-               connectedEdges="0" needsCallback="1" radioGroupId="1" keepProportions="1"
-               resourceNormal="oscillator_square_48_png" opacityNormal="1.0"
-               colourNormal="0" resourceOver="" opacityOver="1.0" colourOver="0"
-               resourceDown="oscillator_square_48_png" opacityDown="1.0" colourDown="ff0000ff"/>
-  <IMAGEBUTTON name="sawButton" id="155b1f55d4e3de3e" memberName="sawButton"
-               virtualName="" explicitFocusOrder="0" pos="152 136 31 24" buttonText="new button"
-               connectedEdges="0" needsCallback="1" radioGroupId="1" keepProportions="1"
-               resourceNormal="oscillator_saw_48_png" opacityNormal="1.0" colourNormal="0"
-               resourceOver="" opacityOver="1.0" colourOver="0" resourceDown="oscillator_saw_48_png"
-               opacityDown="1.0" colourDown="ff0000ff"/>
-  <IMAGEBUTTON name="sineButton" id="7188fe136a8f0553" memberName="sineButton"
-               virtualName="" explicitFocusOrder="0" pos="120 168 31 24" buttonText="new button"
-               connectedEdges="0" needsCallback="1" radioGroupId="1" keepProportions="1"
-               resourceNormal="oscillator_sine_48_png" opacityNormal="1.0" colourNormal="0"
-               resourceOver="" opacityOver="1.0" colourOver="0" resourceDown="oscillator_sine_48_png"
-               opacityDown="1.0" colourDown="ff0000ff"/>
-  <IMAGEBUTTON name="noiseButton" id="5be3fb70902b176c" memberName="noiseButton"
-               virtualName="" explicitFocusOrder="0" pos="152 168 31 24" buttonText="new button"
-               connectedEdges="0" needsCallback="1" radioGroupId="1" keepProportions="1"
-               resourceNormal="oscillator_noise_48_png" opacityNormal="1.0"
-               colourNormal="0" resourceOver="" opacityOver="1.0" colourOver="0"
-               resourceDown="oscillator_noise_48_png" opacityDown="1.0" colourDown="ff0000ff"/>
   <SLIDER name="pwSlider" id="ebf7f16f43baf87" memberName="pwSlider" virtualName=""
-          explicitFocusOrder="0" pos="24 128 64 64" min="0.0" max="1.0"
+          explicitFocusOrder="0" pos="24 120 64 64" min="0.0" max="1.0"
           int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
@@ -439,8 +370,17 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="syncButton" id="9febd9e09778ff94" memberName="syncButton"
-                virtualName="" explicitFocusOrder="0" pos="128 192 56 24" buttonText="sync"
+                virtualName="" explicitFocusOrder="0" pos="128 200 56 24" buttonText="sync"
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
+  <COMBOBOX name="shapeComboBox" id="3df82e5817294763" memberName="shapeComboBox"
+            virtualName="" explicitFocusOrder="0" pos="104 136 88 24" editable="0"
+            layout="33" items="Sawtooth&#10;Pulse&#10;Sine&#10;Noise" textWhenNonSelected=""
+            textWhenNoItems="(no choices)"/>
+  <LABEL name="shapeLabel" id="240585a2912d6ae4" memberName="shapeLabel"
+         virtualName="" explicitFocusOrder="0" pos="104 168 71 24" edTextCol="ff000000"
+         edBkgCol="0" labelText="Shape&#10;" editableSingleClick="0" editableDoubleClick="0"
+         focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
+         kerning="0.0" bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

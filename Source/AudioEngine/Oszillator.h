@@ -48,7 +48,8 @@ public:
     virtual float getFine() const { return 0; };
     
     void setMode(OscMode mode);
-    
+	void setMode(float mode);
+
     virtual void setSync(bool sync);
     bool isSync();
     

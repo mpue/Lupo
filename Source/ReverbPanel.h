@@ -21,7 +21,9 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "Model.h"
+
+class AttachmentFactory;
+class Model;
 //[/Headers]
 
 
@@ -40,11 +42,12 @@ class ReverbPanel  : public Component,
 {
 public:
     //==============================================================================
-    ReverbPanel (Model* model);
+    ReverbPanel (Model* model, AttachmentFactory* factory);
     ~ReverbPanel();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+	void initAttachments();
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -56,6 +59,7 @@ public:
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 	Model* model;
+	AttachmentFactory* factory;
     //[/UserVariables]
 
     //==============================================================================

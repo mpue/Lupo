@@ -21,9 +21,10 @@ LupoAudioProcessorEditor::LupoAudioProcessorEditor (LupoAudioProcessor& p)
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
 	setLookAndFeel(&tlf);
-    setSize (1010, 820);	
+    setSize (1010, 900);	
 	mainUI = new MainUI(&p);
 	addAndMakeVisible(mainUI);
+	mainUI->updatePresetList();
 	
 }
 

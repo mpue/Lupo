@@ -46,6 +46,8 @@ public:
     bool isMidiEffect() const override;
     double getTailLengthSeconds() const override;
 
+	void setSelectedProgram(String name);
+
     //==============================================================================
     int getNumPrograms() override;
     int getCurrentProgram() override;
@@ -61,6 +63,7 @@ public:
 
 	std::unique_ptr<AudioProcessorValueTreeState> parameters;
 
+	bool prepared = false;
 	LupoSynth* getSynth();
 	Model* getModel();
 private:
@@ -69,6 +72,9 @@ private:
 	std::unique_ptr<LupoSynth> lupo = nullptr;
 	std::unique_ptr<Model> model = nullptr;
 	
+	vector<String> programNames;
+	String selectedProgram = "";
+	int currentProgramNumber;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LupoAudioProcessor)
 };

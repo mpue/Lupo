@@ -61,6 +61,9 @@
               file="Source/OscillatorPanel.cpp"/>
         <FILE id="f1U1bO" name="OscillatorPanel.h" compile="0" resource="0"
               file="Source/OscillatorPanel.h"/>
+        <FILE id="JY1OHb" name="PresetDialog.cpp" compile="1" resource="0"
+              file="Source/PresetDialog.cpp"/>
+        <FILE id="aKKnxp" name="PresetDialog.h" compile="0" resource="0" file="Source/PresetDialog.h"/>
         <FILE id="B6a3Em" name="ReverbPanel.cpp" compile="1" resource="0" file="Source/ReverbPanel.cpp"/>
         <FILE id="GQWj1X" name="ReverbPanel.h" compile="0" resource="0" file="Source/ReverbPanel.h"/>
         <FILE id="jUOTPO" name="SamplerPanel.cpp" compile="1" resource="0"

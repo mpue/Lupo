@@ -144,7 +144,7 @@ void TrioLookAndFeel::drawPopupMenuItem (Graphics& g, const Rectangle<int>& area
         
         if (isHighlighted)
         {
-            g.setColour (findColour (PopupMenu::highlightedBackgroundColourId));
+            g.setColour (Colours::darkgrey);
             g.fillRect (r);
             
             g.setColour (findColour (PopupMenu::highlightedTextColourId));
@@ -244,9 +244,9 @@ void TrioLookAndFeel::drawLabel (Graphics& g, Label& label)
 void TrioLookAndFeel::drawComboBox (Graphics& g, int width, int height, const bool isButtonDown,
                                    int buttonX, int buttonY, int buttonW, int buttonH, ComboBox& box)
 {
-    LookAndFeel_V1::drawComboBox(g, width, height, isButtonDown, buttonX, buttonY, buttonW, buttonH, box);
+    // LookAndFeel_V1::drawComboBox(g, width, height, isButtonDown, buttonX, buttonY, buttonW, buttonH, box);
     
-    /*
+    
     g.fillAll (box.findColour (ComboBox::backgroundColourId));
     
     if (box.isEnabled() && box.hasKeyboardFocus (false))
@@ -261,12 +261,13 @@ void TrioLookAndFeel::drawComboBox (Graphics& g, int width, int height, const bo
     }
     
     const float outlineThickness = box.isEnabled() ? (isButtonDown ? 1.2f : 0.5f) : 0.3f;
-    
-    
+	const Colour baseColour = Colours::darkgrey;
+    /*
     const Colour baseColour (LookAndFeelHelpers::createBaseColour (box.findColour (ComboBox::buttonColourId),
                                                                    box.hasKeyboardFocus (true),
                                                                    false, isButtonDown)
                              .withMultipliedAlpha (box.isEnabled() ? 1.0f : 0.5f));
+							 */
     
     drawGlassLozenge (g,
                       buttonX + outlineThickness, buttonY + outlineThickness,
@@ -291,7 +292,7 @@ void TrioLookAndFeel::drawComboBox (Graphics& g, int width, int height, const bo
         g.setColour (box.findColour (ComboBox::arrowColourId));
         g.fillPath (p);
     }
-     */
+   
 }
 
 void TrioLookAndFeel::drawScrollbarButton (Graphics& g, ScrollBar& bar,

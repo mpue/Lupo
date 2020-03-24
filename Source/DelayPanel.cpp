@@ -18,6 +18,8 @@
 */
 
 //[Headers] You can add your own extra header files here...
+#include "Model.h"
+#include "AttachmentFactory.h"
 //[/Headers]
 
 #include "DelayPanel.h"
@@ -27,10 +29,11 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-DelayPanel::DelayPanel (Model* model)
+DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
 {
     //[Constructor_pre] You can add your own custom stuff here..
 	this->model = model;
+	this->factory = factory;
     //[/Constructor_pre]
 
     delayGroup.reset (new GroupComponent ("delayGroup",
@@ -109,7 +112,7 @@ DelayPanel::DelayPanel (Model* model)
     labelFb->setBounds (144, 72, 48, 24);
 
     labelMix.reset (new Label ("labelMix",
-                               TRANS("Feedback")));
+                               TRANS("Mix")));
     addAndMakeVisible (labelMix.get());
     labelMix->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
     labelMix->setJustificationType (Justification::centredLeft);
@@ -207,6 +210,13 @@ void DelayPanel::sliderValueChanged (Slider* sliderThatWasMoved)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+
+void DelayPanel::initAttachments() {
+	factory->createSliderAttachment("dlyTimeLeft", timeLeft.get());
+	factory->createSliderAttachment("dlyTimeRight", timeRight.get());
+	factory->createSliderAttachment("dlyFeedback", feedback.get());
+	factory->createSliderAttachment("dlyMix", mix.get());
+}
 //[/MiscUserCode]
 
 
@@ -220,7 +230,7 @@ void DelayPanel::sliderValueChanged (Slider* sliderThatWasMoved)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="DelayPanel" componentName=""
-                 parentClasses="public Component, public ChangeBroadcaster" constructorParams="Model* model"
+                 parentClasses="public Component, public ChangeBroadcaster" constructorParams="Model* model, AttachmentFactory* factory"
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
                  overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="0"/>
@@ -262,7 +272,7 @@ BEGIN_JUCER_METADATA
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="labelMix" id="cf219d26a0150a09" memberName="labelMix" virtualName=""
          explicitFocusOrder="0" pos="208 72 48 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Feedback" editableSingleClick="0" editableDoubleClick="0"
+         edBkgCol="0" labelText="Mix" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>

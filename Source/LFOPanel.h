@@ -21,6 +21,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
+class Model;
 //[/Headers]
 
 
@@ -39,11 +40,12 @@ class LFOPanel  : public Component,
 {
 public:
     //==============================================================================
-    LFOPanel ();
+    LFOPanel (Model* model, AttachmentFactory* factory);
     ~LFOPanel();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
+	void initAttachments();
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -61,8 +63,10 @@ public:
 
 
 private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
-    //[/UserVariables]
+    //[UserVariables]   -- You can add your own custom variables in this section
+	AttachmentFactory* factory;
+	Model* model;
+	//[/UserVariables]
 
     //==============================================================================
     std::unique_ptr<GroupComponent> LFOGroup;

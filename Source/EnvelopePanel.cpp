@@ -19,6 +19,7 @@
 
 //[Headers] You can add your own extra header files here...
 #include "MessageBus/MessageBus.h"
+#include "AttachmentFactory.h"
 //[/Headers]
 
 #include "EnvelopePanel.h"
@@ -28,10 +29,11 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-EnvelopePanel::EnvelopePanel (Model* model)
+EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
 {
     //[Constructor_pre] You can add your own custom stuff here..
 	this->model = model;
+	this->factory = factory;
     //[/Constructor_pre]
 
     groupComponent.reset (new GroupComponent ("new group",
@@ -127,8 +129,7 @@ EnvelopePanel::EnvelopePanel (Model* model)
     setSize (600, 400);
 
 
-    //[Constructor] You can add your own custom stuff here..
-
+	//[Constructor] You can add your own custom stuff here..	
     //[/Constructor]
 }
 
@@ -151,6 +152,7 @@ EnvelopePanel::~EnvelopePanel()
     //[Destructor]. You can add your own custom destruction code here..
     //[/Destructor]
 }
+
 
 //==============================================================================
 void EnvelopePanel::paint (Graphics& g)
@@ -246,6 +248,17 @@ void EnvelopePanel::sliderValueChanged (Slider* sliderThatWasMoved)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+
+void EnvelopePanel::initAttachments()
+{
+	String prefix = getName().substring(0, 3);
+
+	factory->createSliderAttachment(prefix + "Attack", amp_attack.get());
+	factory->createSliderAttachment(prefix + "Decay", amp_decay.get());
+	factory->createSliderAttachment(prefix + "Sustain", amp_sustain.get());
+	factory->createSliderAttachment(prefix + "Release", amp_release.get());
+
+}
 //[/MiscUserCode]
 
 
@@ -259,7 +272,7 @@ void EnvelopePanel::sliderValueChanged (Slider* sliderThatWasMoved)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="EnvelopePanel" componentName=""
-                 parentClasses="public Component, public ChangeBroadcaster" constructorParams="Model* model"
+                 parentClasses="public Component, public ChangeBroadcaster" constructorParams="Model* model, AttachmentFactory* factory"
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
                  overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="0"/>

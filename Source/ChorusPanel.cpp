@@ -19,6 +19,7 @@
 
 //[Headers] You can add your own extra header files here...
 #include "Model.h"
+#include "AttachmentFactory.h"
 //[/Headers]
 
 #include "ChorusPanel.h"
@@ -28,10 +29,11 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-ChorusPanel::ChorusPanel (Model* model)
+ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
 {
     //[Constructor_pre] You can add your own custom stuff here..
 	this->model = model;
+	this->factory = factory;
     //[/Constructor_pre]
 
     chorusGroup.reset (new GroupComponent ("chorusGroup",
@@ -151,6 +153,8 @@ ChorusPanel::~ChorusPanel()
     //[/Destructor]
 }
 
+
+
 //==============================================================================
 void ChorusPanel::paint (Graphics& g)
 {
@@ -208,6 +212,13 @@ void ChorusPanel::sliderValueChanged (Slider* sliderThatWasMoved)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+void ChorusPanel::initAttachments()
+{
+	factory->createSliderAttachment("chrDelay", delay.get());
+	factory->createSliderAttachment("chrModulation", modulation.get());
+	factory->createSliderAttachment("chrFeedback", feedback.get());
+	factory->createSliderAttachment("chrMix", mix.get());
+}
 //[/MiscUserCode]
 
 
@@ -221,7 +232,7 @@ void ChorusPanel::sliderValueChanged (Slider* sliderThatWasMoved)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="ChorusPanel" componentName=""
-                 parentClasses="public Component, public ChangeBroadcaster" constructorParams="Model* model"
+                 parentClasses="public Component, public ChangeBroadcaster" constructorParams="Model* model, AttachmentFactory* factory"
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
                  overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="0"/>

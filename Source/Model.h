@@ -27,22 +27,22 @@ public:
 		osc1Fine = 0;
 		osc1Volume = 1.0f;
 		osc1Pan = 0;
-		osc1Shape = MultimodeOscillator::OscMode::SAW;
+		osc1Shape = 0.0f;
 		osc2Pitch = 0;
 		osc2Fine = 0;
 		osc2Volume = 1.0f;
 		osc2Pan = 0;
-		osc2Shape = MultimodeOscillator::OscMode::SAW;
+		osc2Shape = 0.0f;
 		osc3Pitch = 0;
 		osc3Fine = 0;
 		osc3Pan = 0;
 		osc3Volume = 1.0f;
-		osc3Shape = MultimodeOscillator::OscMode::SAW;
+		osc3Shape = 0.0f;
 		osc4Pitch = 0;
 		osc4Fine = 0;
 		osc4Volume = 1.0f;
 		osc4Pan = 0;
-		osc4Shape = MultimodeOscillator::OscMode::SAW;
+		osc4Shape = 0.0f;
 
 		dlyTimeLeft = 500;
 		dlyTimeRight = 375;
@@ -83,25 +83,25 @@ public:
 	float osc1Volume;
 	float osc1Pan;
 
-	MultimodeOscillator::OscMode osc1Shape;
+	float osc1Shape;
 
 	float osc2Pitch;
 	float osc2Fine;
 	float osc2Volume;
 	float osc2Pan;
-	MultimodeOscillator::OscMode osc2Shape;
+	float osc2Shape;
 
 	float osc3Pitch;
 	float osc3Fine;
 	float osc3Volume;
 	float osc3Pan;
-	MultimodeOscillator::OscMode osc3Shape;
+	float osc3Shape;
 
 	float osc4Pitch;
 	float osc4Fine;
 	float osc4Volume;
 	float osc4Pan;
-	MultimodeOscillator::OscMode osc4Shape;
+	float osc4Shape;
 
 	int dlyTimeLeft;
 	int dlyTimeRight;

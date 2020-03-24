@@ -19,6 +19,7 @@
 
 //[Headers] You can add your own extra header files here...
 #include "Model.h"
+#include "AttachmentFactory.h"
 //[/Headers]
 
 #include "ReverbPanel.h"
@@ -28,10 +29,11 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-ReverbPanel::ReverbPanel (Model* model)
+ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
 {
     //[Constructor_pre] You can add your own custom stuff here..
 	this->model = model;
+	this->factory = factory;
     //[/Constructor_pre]
 
     reverbGroup.reset (new GroupComponent ("reverbGroup",
@@ -195,6 +197,7 @@ ReverbPanel::~ReverbPanel()
     //[/Destructor]
 }
 
+
 //==============================================================================
 void ReverbPanel::paint (Graphics& g)
 {
@@ -264,6 +267,16 @@ void ReverbPanel::sliderValueChanged (Slider* sliderThatWasMoved)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+void ReverbPanel::initAttachments()
+{
+	factory->createSliderAttachment("rvbRoomSize", roomSize.get());
+	factory->createSliderAttachment("rvbDamping", damping.get());
+	factory->createSliderAttachment("rvbWetLevel", wetLevel.get());
+	factory->createSliderAttachment("rvbDryLevel", dryLevel.get());
+	factory->createSliderAttachment("rvbWidth", width.get());
+	factory->createSliderAttachment("rvbFreezeMode", freeze.get());
+}
+
 //[/MiscUserCode]
 
 
@@ -277,7 +290,7 @@ void ReverbPanel::sliderValueChanged (Slider* sliderThatWasMoved)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="ReverbPanel" componentName=""
-                 parentClasses="public Component, public ChangeBroadcaster" constructorParams="Model* model"
+                 parentClasses="public Component, public ChangeBroadcaster" constructorParams="Model* model, AttachmentFactory* factory"
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
                  overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="0"/>
