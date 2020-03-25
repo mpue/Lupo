@@ -5,13 +5,14 @@
 #include "AudioEngine/LupoSynth.h"
 #include "MainUI.h"
 #include <map>
+
+
 class AttachmentFactory
 {
 public:
-	AttachmentFactory(LupoAudioProcessor* processor, LupoSynth* lupo, MainUI* ui) {
+	AttachmentFactory(LupoAudioProcessor* processor, LupoSynth* lupo) {
 		this->processor = processor;
 		this->lupo = lupo;
-		this->ui = ui;
 		this->attachments = new vector<AudioProcessorValueTreeState::SliderAttachment*>();
 		this->buttonAttachments = new vector<AudioProcessorValueTreeState::ButtonAttachment*>();
 		this->comboAttachments = new vector<AudioProcessorValueTreeState::ComboBoxAttachment*>();
@@ -21,11 +22,10 @@ public:
 		processor->getValueTreeState()->state = ValueTree(Identifier("default"));
 	}
 
-	void createParam(String name, String label , float min, float max, float defaultValue) {
-		processor->getValueTreeState()->createAndAddParameter(name, name, label, NormalisableRange<float>(min,max), defaultValue, nullptr, nullptr);
+	void createParam(String name, String label, float min, float max, float defaultValue) {
+		processor->getValueTreeState()->createAndAddParameter(name, name, label, NormalisableRange<float>(min, max), defaultValue, nullptr, nullptr);
 		processor->getValueTreeState()->addParameterListener(name, lupo);
 	}
-
 	void  createSliderAttachment(String name,Slider* comp) {
 		AudioProcessorValueTreeState::SliderAttachment* att = new AudioProcessorValueTreeState::SliderAttachment(*processor->getValueTreeState(), name, *comp);
 		attachments->push_back(att);
@@ -100,6 +100,5 @@ private:
 
 	LupoAudioProcessor* processor;
 	LupoSynth* lupo;
-	MainUI* ui;
 };
 

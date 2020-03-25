@@ -13,7 +13,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "AudioEngine/LupoSynth.h"
 #include "Model.h"
-
+class AttachmentFactory;
 //==============================================================================
 /**
 */
@@ -60,9 +60,14 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;
 
 	AudioProcessorValueTreeState* getValueTreeState();
+	AudioProcessorValueTreeState* parameters = nullptr;
 
-	std::unique_ptr<AudioProcessorValueTreeState> parameters = nullptr;
+	AttachmentFactory* getFactory() {
+		return factory;
+	}
 
+	AttachmentFactory* factory = nullptr;
+	String selectedProgram = "";
 	bool prepared = false;
 	LupoSynth* getSynth();
 	Model* getModel();
@@ -73,9 +78,9 @@ private:
 	std::unique_ptr<Model> model = nullptr;
 
 	AudioProcessorParameter* bypass = nullptr;
-	
+	FileLogger* fileLogger = nullptr;
+
 	vector<String> programNames;
-	String selectedProgram = "";
 	int currentProgramNumber = 0;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LupoAudioProcessor)

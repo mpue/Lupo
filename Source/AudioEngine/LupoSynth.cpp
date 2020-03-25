@@ -259,16 +259,10 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 
 void LupoSynth::updateState() {
 		
-	Logger::getCurrentLogger()->writeToLog("Synth update");
-
 	mainVolume = model->mainVolume;
-	
-	Logger::getCurrentLogger()->writeToLog("Filter update");
 
 	filter->coefficients(sampleRate, model->cutoff, model->resonance);
 	filter->setModAmount(model->envAmt);
-
-	Logger::getCurrentLogger()->writeToLog("Delay update");
 
 	delay->setDelay(StereoDelay::Channel::LEFT, model->dlyTimeLeft);
 	delay->setDelay(StereoDelay::Channel::RIGHT, model->dlyTimeRight);
@@ -277,15 +271,11 @@ void LupoSynth::updateState() {
 	delay->setMix(StereoDelay::Channel::LEFT, model->dlyMix);
 	delay->setMix(StereoDelay::Channel::RIGHT, model->dlyMix);
 
-	Logger::getCurrentLogger()->writeToLog("Chorus update");
-
 	chorus->delay = model->chrDelay;
 	chorus->feedback = model->chrFeedback;
 	chorus->leftMod = model->chrModulation;
 	chorus->rightMod = model->chrModulation;
 	chorus->mix = model->chrMix;
-
-	Logger::getCurrentLogger()->writeToLog("Envelopes update");
 
 	modEnvelopes->at(0)->setAttackRate(model->fltAttack * sampleRate);
 	modEnvelopes->at(0)->setDecayRate(model->fltDecay * sampleRate);
@@ -297,8 +287,6 @@ void LupoSynth::updateState() {
 	modEnvelopes->at(1)->setSustainLevel(model->auxSustain);
 	modEnvelopes->at(1)->setReleaseRate(model->auxRelease * sampleRate);
 
-	Logger::getCurrentLogger()->writeToLog("Reverb update");
-
 	juce::Reverb::Parameters params =  reverb->getParameters();
 	params.damping = model->rvbDdamping;
 	params.dryLevel = model->rvbDryLevel;
@@ -307,8 +295,6 @@ void LupoSynth::updateState() {
 	params.wetLevel = model->rvbWetLevel;
 	params.width = model->rvbWidth;
 	reverb->setParameters(params);
-
-	Logger::getCurrentLogger()->writeToLog("Voice update");
 
 	for (int i = 0; i < voices->size(); i++) {
 
@@ -340,8 +326,6 @@ void LupoSynth::updateState() {
 		
 		voices->at(i)->setOscVolume(3, model->osc4Volume);
 		voices->at(i)->setOscPan(3, model->osc4Pan);
-		
-		Logger::getCurrentLogger()->writeToLog("Oscillator update");
 
 		for (int j = 0; j < 4; j++) {
 			voices->at(i)->updateOscillator(j);
@@ -353,7 +337,7 @@ void LupoSynth::updateState() {
 		voices->at(i)->getOscillator(3)->setMode(model->osc4Shape);
 
 	}
-	Logger::getCurrentLogger()->writeToLog("Synth update finished,");
+
 }
 
 void LupoSynth::changeListenerCallback(ChangeBroadcaster* source) {
@@ -366,7 +350,6 @@ void LupoSynth::parameterChanged(const String & parameterID, float newValue)
 
 void LupoSynth::parameterValueChanged(int parameterIndex, float newValue)
 {
-	Logger::getCurrentLogger()->writeToLog("Parameter " + String(parameterIndex) + " changed to " + String(newValue));
 }
 
 void LupoSynth::parameterGestureChanged(int parameterIndex, bool gestureIsStarting)

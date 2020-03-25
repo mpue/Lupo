@@ -2,7 +2,7 @@
 
 <JUCERPROJECT id="M3MHKq" name="Lupo" projectType="audioplug" jucerVersion="5.4.3"
               pluginVST3Category="Instrument" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
-              companyName="Matthias Pueski">
+              companyName="Matthias Pueski" pluginFormats="buildStandalone,buildUnity,buildVST3">
   <MAINGROUP id="GthNfL" name="Lupo">
     <GROUP id="{7D68CE24-8E1B-AC85-29D1-30E03A9479D6}" name="Images">
       <FILE id="ISE3Pl" name="Knob_32.png" compile="0" resource="1" file="Images/Knob_32.png"/>

@@ -35,13 +35,13 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-MainUI::MainUI (LupoAudioProcessor* processor)
+MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 {
     //[Constructor_pre] You can add your own custom stuff here..
 	this->processor = processor;
 	this->model = processor->getModel();
 	this->synth = processor->getSynth();
-	factory = new AttachmentFactory(processor, synth, this);
+	Logger::getCurrentLogger()->writeToLog("GUI instance created.");
     //[/Constructor_pre]
 
     ModulationGroup.reset (new GroupComponent ("ModulationGroup",
@@ -328,67 +328,6 @@ MainUI::MainUI (LupoAudioProcessor* processor)
 	addChangeListener(synth);
 	addMouseListener(this, true);
 
-	factory->createParam("cutoff", "Cutoff", 0.01f, 15000.0, 12000.0);
-	factory->createParam("resonance", "Resonance", 0.01f, 5.0f, 1.0);
-	factory->createParam("mainVol", "Main Volume", 0.01f, 2.0f, 1.0);
-	factory->createParam("envAmt", "Filter amount", 0.01f, 1.0f, 1.0);
-
-	factory->createParam("ampAttack", "Attack", 0.0f, 10.0, 0.0);
-	factory->createParam("ampDecay", "Decay", 0.0f, 10.0f, 1.0);
-	factory->createParam("ampSustain", "Sustain", 0.0f, 1.0f, 0.0);
-	factory->createParam("ampRelease", "Release", 0.0f, 10.0f, 1.0);
-
-	factory->createParam("filAttack", "Attack", 0.0f, 10.0, 0.0);
-	factory->createParam("filDecay", "Decay", 0.0f, 10.0f, 1.0);
-	factory->createParam("filSustain", "Sustain", 0.0f, 1.0f, 0.0);
-	factory->createParam("filRelease", "Release", 0.0f, 10.0f, 1.0);
-
-	factory->createParam("auxAttack", "Attack", 0.0f, 10.0, 0.0);
-	factory->createParam("auxDecay", "Decay", 0.0f, 10.0f, 1.0);
-	factory->createParam("auxSustain", "Sustain", 0.0f, 1.0f, 0.0);
-	factory->createParam("auxRelease", "Release", 0.0f, 10.0f, 1.0);
-
-	factory->createParam("dlyTimeLeft", "DelayL", 0.0f, 1000.0, 0.0);
-	factory->createParam("dlyTimeRight", "DelayR", 0.0f, 1000.0f, 1.0);
-	factory->createParam("dlyFeedback", "Feedback", 0.0f, 1.0f, 0.0);
-	factory->createParam("dlyMix", "Mix", 0.0f, 1.0f, 0.0);
-
-	factory->createParam("rvbRoomSize", "RoomSize", 0.0f, 1.0, 0.0);
-	factory->createParam("rvbDamping", "Damping", 0.0f, 1.0f, 1.0);
-	factory->createParam("rvbWetLevel", "WetLevel", 0.0f, 1.0f, 0.0);
-	factory->createParam("rvbDryLevel", "DryLevel", 0.0f, 1.0f, 0.0);
-	factory->createParam("rvbWidth", "Width", 0.0f, 1.0f, 0.0);
-	factory->createParam("rvbFreezeMode", "Freeze", 0.0f, 1.0f, 0.0);
-
-	factory->createParam("chrDelay", "Delay", 0.0f, 1.0, 0.0);
-	factory->createParam("chrModulation", "MOdulation", 0.0f, 1.0f, 1.0);
-	factory->createParam("chrFeedback", "Feedback", 0.0f, 1.0f, 0.0);
-	factory->createParam("chrMix", "Mix", 0.0f, 1.0f, 0.0);
-
-	factory->createParam("osc1Pitch", "Osc1 pitch", -36, 36, 0);
-	factory->createParam("osc1Fine", "Osc1 fine", -1.0, 1.0, 0);
-	factory->createParam("osc1Volume", "Osc1 volume", 0, 1.0, 1);
-	factory->createParam("osc1Pan", "Osc1 pan", -1.0, 1.0, 0);
-	factory->createParam("osc1Shape", "Osc1 shape", 0, 3.0, 0);
-
-	factory->createParam("osc2Pitch", "Osc2 pitch", -36, 36, 0);
-	factory->createParam("osc2Fine", "Osc2 fine", -1.0, 1.0, 0);
-	factory->createParam("osc2Volume", "Osc2 volume", 0, 1.0, 1);
-	factory->createParam("osc2Pan", "Osc2 pan", -1.0, 1.0, 0);
-	factory->createParam("osc2Shape", "Osc2 shape", 0, 3.0, 0);
-
-	factory->createParam("osc3Pitch", "Osc3 pitch", -36, 36, 0);
-	factory->createParam("osc3Fine", "Osc3 fine", -1.0, 1.0, 0);
-	factory->createParam("osc3Volume", "Osc3 volume", 0, 1.0, 1);
-	factory->createParam("osc3Pan", "Osc3 pan", -1.0, 1.0, 0);
-	factory->createParam("osc3Shape", "Osc3 shape", 0, 3.0, 0);
-
-	factory->createParam("osc4Pitch", "Osc4 pitch", -36, 36, 0);
-	factory->createParam("osc4Fine", "Osc4 fine", -1.0, 1.0, 0);
-	factory->createParam("osc4Volume", "Osc4 volume", 0, 1.0, 1);
-	factory->createParam("osc4Pan", "Osc4 pan", -1.0, 1.0, 0);
-	factory->createParam("osc4Shape", "Osc4 shape", 0, 3.0, 0);
-
 	factory->initState();
 
 	factory->createSliderAttachment("cutoff", fltCutoff.get());
@@ -426,7 +365,6 @@ MainUI::~MainUI()
 {
     //[Destructor_pre]. You can add your own custom destruction code here..
 	removeAllChangeListeners();
-	delete factory;
 	delete dlg;
     //[/Destructor_pre]
 
@@ -651,9 +589,6 @@ void MainUI::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void MainUI::changeListenerCallback(ChangeBroadcaster* source) {
 	sendChangeMessage();
-	
-
-
 }
 
 void MainUI::updatePresetList() {
@@ -661,6 +596,13 @@ void MainUI::updatePresetList() {
 	for (int i = 0; i < processor->getNumPrograms(); i++) {
 		presetCombo->addItem(processor->getProgramName(i), i + 1);
 	}
+	for (int i = 0; i < presetCombo.get()->getNumItems(); i++) {
+		if (presetCombo.get()->getItemText(i) == processor->selectedProgram) {
+			presetCombo->setSelectedItemIndex(i,juce::NotificationType::dontSendNotification);
+			break;
+		}
+	}
+
 }
 
 void MainUI::mouseDown(const MouseEvent & event)

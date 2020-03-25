@@ -22,16 +22,18 @@ LupoAudioProcessorEditor::LupoAudioProcessorEditor (LupoAudioProcessor& p)
     // editor's size to whatever you need it to be.
 	setLookAndFeel(&tlf);
     setSize (1010, 900);	
-	mainUI = new MainUI(&p);
+	mainUI = new MainUI(&p, p.getFactory());
 	addAndMakeVisible(mainUI);
 	mainUI->updatePresetList();
-	
+	if (p.selectedProgram.length() > 0) {
+		p.setSelectedProgram(p.selectedProgram);
+	}	
 }
 
 LupoAudioProcessorEditor::~LupoAudioProcessorEditor()
 {
 	setLookAndFeel(nullptr);
-	delete mainUI;
+	// delete mainUI;
 }
 
 //==============================================================================

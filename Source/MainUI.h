@@ -56,7 +56,7 @@ class MainUI  : public Component,
 {
 public:
     //==============================================================================
-    MainUI (LupoAudioProcessor* processor);
+    MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory);
     ~MainUI();
 
     //==============================================================================

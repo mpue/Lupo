@@ -11,6 +11,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "AudioEngine/MultimodeOscillator.h"
+#include "AttachmentFactory.h"
 
 //==============================================================================
 LupoAudioProcessor::LupoAudioProcessor()
@@ -25,14 +26,78 @@ LupoAudioProcessor::LupoAudioProcessor()
                        )
 #endif
 {
+	String appDataPath = File::getSpecialLocation(File::userApplicationDataDirectory).getFullPathName();
+
 	model.reset(new Model());
 	lupo.reset(new LupoSynth(model.get()));
-	parameters.reset(new AudioProcessorValueTreeState(*this, nullptr));
-	bypass = parameters.get()->createAndAddParameter("bypass", "bypass", "Bypass", NormalisableRange<float>(0, 1),0, nullptr, nullptr);
+	parameters = new AudioProcessorValueTreeState(*this, nullptr);
+
+	factory = new AttachmentFactory(this, lupo.get());
+
+	factory->createParam("cutoff", "Cutoff", 0.01f, 15000.0, 12000.0);
+	factory->createParam("resonance", "Resonance", 0.01f, 5.0f, 1.0);
+	factory->createParam("mainVol", "Main Volume", 0.01f, 2.0f, 1.0);
+	factory->createParam("envAmt", "Filter amount", 0.01f, 1.0f, 1.0);
+
+	factory->createParam("ampAttack", "Attack", 0.0f, 10.0, 0.0);
+	factory->createParam("ampDecay", "Decay", 0.0f, 10.0f, 1.0);
+	factory->createParam("ampSustain", "Sustain", 0.0f, 1.0f, 0.0);
+	factory->createParam("ampRelease", "Release", 0.0f, 10.0f, 1.0);
+
+	factory->createParam("filAttack", "Attack", 0.0f, 10.0, 0.0);
+	factory->createParam("filDecay", "Decay", 0.0f, 10.0f, 1.0);
+	factory->createParam("filSustain", "Sustain", 0.0f, 1.0f, 0.0);
+	factory->createParam("filRelease", "Release", 0.0f, 10.0f, 1.0);
+
+	factory->createParam("auxAttack", "Attack", 0.0f, 10.0, 0.0);
+	factory->createParam("auxDecay", "Decay", 0.0f, 10.0f, 1.0);
+	factory->createParam("auxSustain", "Sustain", 0.0f, 1.0f, 0.0);
+	factory->createParam("auxRelease", "Release", 0.0f, 10.0f, 1.0);
+
+	factory->createParam("dlyTimeLeft", "DelayL", 0.0f, 1000.0, 0.0);
+	factory->createParam("dlyTimeRight", "DelayR", 0.0f, 1000.0f, 1.0);
+	factory->createParam("dlyFeedback", "Feedback", 0.0f, 1.0f, 0.0);
+	factory->createParam("dlyMix", "Mix", 0.0f, 1.0f, 0.0);
+
+	factory->createParam("rvbRoomSize", "RoomSize", 0.0f, 1.0, 0.0);
+	factory->createParam("rvbDamping", "Damping", 0.0f, 1.0f, 1.0);
+	factory->createParam("rvbWetLevel", "WetLevel", 0.0f, 1.0f, 0.0);
+	factory->createParam("rvbDryLevel", "DryLevel", 0.0f, 1.0f, 0.0);
+	factory->createParam("rvbWidth", "Width", 0.0f, 1.0f, 0.0);
+	factory->createParam("rvbFreezeMode", "Freeze", 0.0f, 1.0f, 0.0);
+
+	factory->createParam("chrDelay", "Delay", 0.0f, 1.0, 0.0);
+	factory->createParam("chrModulation", "MOdulation", 0.0f, 1.0f, 1.0);
+	factory->createParam("chrFeedback", "Feedback", 0.0f, 1.0f, 0.0);
+	factory->createParam("chrMix", "Mix", 0.0f, 1.0f, 0.0);
+
+	factory->createParam("osc1Pitch", "Osc1 pitch", -36, 36, 0);
+	factory->createParam("osc1Fine", "Osc1 fine", -1.0, 1.0, 0);
+	factory->createParam("osc1Volume", "Osc1 volume", 0, 1.0, 1);
+	factory->createParam("osc1Pan", "Osc1 pan", -1.0, 1.0, 0);
+	factory->createParam("osc1Shape", "Osc1 shape", 0, 3.0, 0);
+
+	factory->createParam("osc2Pitch", "Osc2 pitch", -36, 36, 0);
+	factory->createParam("osc2Fine", "Osc2 fine", -1.0, 1.0, 0);
+	factory->createParam("osc2Volume", "Osc2 volume", 0, 1.0, 1);
+	factory->createParam("osc2Pan", "Osc2 pan", -1.0, 1.0, 0);
+	factory->createParam("osc2Shape", "Osc2 shape", 0, 3.0, 0);
+
+	factory->createParam("osc3Pitch", "Osc3 pitch", -36, 36, 0);
+	factory->createParam("osc3Fine", "Osc3 fine", -1.0, 1.0, 0);
+	factory->createParam("osc3Volume", "Osc3 volume", 0, 1.0, 1);
+	factory->createParam("osc3Pan", "Osc3 pan", -1.0, 1.0, 0);
+	factory->createParam("osc3Shape", "Osc3 shape", 0, 3.0, 0);
+
+	factory->createParam("osc4Pitch", "Osc4 pitch", -36, 36, 0);
+	factory->createParam("osc4Fine", "Osc4 fine", -1.0, 1.0, 0);
+	factory->createParam("osc4Volume", "Osc4 volume", 0, 1.0, 1);
+	factory->createParam("osc4Pan", "Osc4 pan", -1.0, 1.0, 0);
+	factory->createParam("osc4Shape", "Osc4 shape", 0, 3.0, 0);
+	bypass = parameters->createAndAddParameter("bypass", "bypass", "Bypass", NormalisableRange<float>(0, 1),0, nullptr, nullptr);
 	
 	Logger::getCurrentLogger()->writeToLog("Building preset list");
 
-	String appDataPath = File::getSpecialLocation(File::userApplicationDataDirectory).getFullPathName();
 	String presetPath = appDataPath + "/Audio/Presets/pueski/Lupo/";
 	
 	File presets = File(presetPath);
@@ -52,6 +117,7 @@ LupoAudioProcessor::LupoAudioProcessor()
 	}
 
 	Logger::getCurrentLogger()->writeToLog("Found"+String(programNames.size())+" presets");
+	
 }
 
 LupoAudioProcessor::~LupoAudioProcessor()
@@ -59,7 +125,7 @@ LupoAudioProcessor::~LupoAudioProcessor()
 	lupo.reset();
 	model.reset();
 	parameters.reset();
-	 */
+	 */	
 // delete messageBus;
 	Logger::getCurrentLogger()->writeToLog("Lupo is dead.");
 }
@@ -159,14 +225,8 @@ void LupoAudioProcessor::setSelectedProgram(juce::String name) {
 
 const String LupoAudioProcessor::getProgramName (int index)
 {
-	if (programNames.size() > 0) {
-
-		if (index > programNames.size() - 1) {
-			index = programNames.size() - 1;
-		}
-
+	if (getNumPrograms() > 0 && index < getNumPrograms() && index >= 0) {
 		return programNames.at(index);
-
 	}
 
 	return "Empty";
@@ -243,26 +303,30 @@ AudioProcessorEditor* LupoAudioProcessor::createEditor()
 //==============================================================================
 void LupoAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+	/*
+	Logger::getCurrentLogger()->writeToLog("getStateInformation");
+
+	MemoryOutputStream stream;
+	parameters->state.writeToStream(stream);	
+	destData.append(stream.getData(), stream.getDataSize());
+	*/
 	
 	if (parameters == nullptr) {
 		return;
 	}
-	if (parameters.get()->state.isValid()) {
-		parameters.get()->state.setProperty("program", getCurrentProgram(), nullptr);
-		ScopedPointer<XmlElement> xml(parameters.get()->state.createXml());
+	if (parameters->state.isValid()) {
+		parameters->state.setProperty("program", getCurrentProgram(), nullptr);
+		ScopedPointer<XmlElement> xml(parameters->state.createXml());
 		copyXmlToBinary(*xml, destData);
 	}
+	
 	
 }
 
 void LupoAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
-
+	
+	
 	if (sizeInBytes > 0) {
 		ScopedPointer<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
 		if (xmlState != nullptr)
@@ -274,9 +338,13 @@ void LupoAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 			}
 
 	}
-	
-
-
+	/*
+	if (parameters->state.isValid()) {
+		MemoryInputStream stream(data, sizeInBytes, false);
+		parameters->state.readFromStream(stream);
+		lupo->updateState();
+	}
+	*/
 }
 
 //==============================================================================
@@ -295,6 +363,6 @@ Model* LupoAudioProcessor::getModel() {
 }
 
 AudioProcessorValueTreeState* LupoAudioProcessor::getValueTreeState() {
-	return this->parameters.get();
+	return this->parameters;
 }
 
