@@ -40,13 +40,13 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
                                            TRANS("Reverb")));
     addAndMakeVisible (reverbGroup.get());
 
-    reverbGroup->setBounds (0, 0, 392, 112);
+    reverbGroup->setBounds (0, 0, 352, 112);
 
     roomSize.reset (new Slider ("roomSize"));
     addAndMakeVisible (roomSize.get());
     roomSize->setRange (0, 1, 0.01);
     roomSize->setSliderStyle (Slider::RotaryVerticalDrag);
-    roomSize->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
+    roomSize->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     roomSize->addListener (this);
 
     roomSize->setBounds (8, 16, 56, 64);
@@ -66,10 +66,10 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     addAndMakeVisible (damping.get());
     damping->setRange (0, 1, 0.01);
     damping->setSliderStyle (Slider::RotaryVerticalDrag);
-    damping->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
+    damping->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     damping->addListener (this);
 
-    damping->setBounds (72, 16, 56, 64);
+    damping->setBounds (64, 16, 56, 64);
 
     dampingLbl.reset (new Label ("dampingLbl",
                                  TRANS("Damping")));
@@ -80,16 +80,16 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     dampingLbl->setColour (TextEditor::textColourId, Colours::black);
     dampingLbl->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    dampingLbl->setBounds (72, 80, 63, 24);
+    dampingLbl->setBounds (64, 80, 63, 24);
 
     width.reset (new Slider ("damping"));
     addAndMakeVisible (width.get());
     width->setRange (0, 1, 0.01);
     width->setSliderStyle (Slider::RotaryVerticalDrag);
-    width->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
+    width->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     width->addListener (this);
 
-    width->setBounds (137, 16, 56, 64);
+    width->setBounds (120, 16, 56, 64);
 
     widthLbl.reset (new Label ("widthLbl",
                                TRANS("Width")));
@@ -100,16 +100,16 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     widthLbl->setColour (TextEditor::textColourId, Colours::black);
     widthLbl->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    widthLbl->setBounds (144, 80, 63, 24);
+    widthLbl->setBounds (128, 80, 63, 24);
 
     dryLevel.reset (new Slider ("dryLevel"));
     addAndMakeVisible (dryLevel.get());
     dryLevel->setRange (0, 1, 0.01);
     dryLevel->setSliderStyle (Slider::RotaryVerticalDrag);
-    dryLevel->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
+    dryLevel->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     dryLevel->addListener (this);
 
-    dryLevel->setBounds (200, 16, 56, 64);
+    dryLevel->setBounds (176, 16, 56, 64);
 
     dryLbl.reset (new Label ("dryLbl",
                              TRANS("Dry\n")));
@@ -120,16 +120,16 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     dryLbl->setColour (TextEditor::textColourId, Colours::black);
     dryLbl->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    dryLbl->setBounds (208, 80, 34, 24);
+    dryLbl->setBounds (184, 80, 34, 24);
 
     wetLevel.reset (new Slider ("wetLevel"));
     addAndMakeVisible (wetLevel.get());
     wetLevel->setRange (0, 1, 0.01);
     wetLevel->setSliderStyle (Slider::RotaryVerticalDrag);
-    wetLevel->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
+    wetLevel->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     wetLevel->addListener (this);
 
-    wetLevel->setBounds (264, 16, 56, 64);
+    wetLevel->setBounds (232, 16, 56, 64);
 
     wetLbl.reset (new Label ("wetLbl",
                              TRANS("Wet")));
@@ -140,16 +140,16 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     wetLbl->setColour (TextEditor::textColourId, Colours::black);
     wetLbl->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    wetLbl->setBounds (272, 80, 34, 24);
+    wetLbl->setBounds (240, 80, 34, 24);
 
     freeze.reset (new Slider ("wetLevel"));
     addAndMakeVisible (freeze.get());
     freeze->setRange (0, 1, 0.01);
     freeze->setSliderStyle (Slider::RotaryVerticalDrag);
-    freeze->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
+    freeze->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     freeze->addListener (this);
 
-    freeze->setBounds (328, 16, 56, 64);
+    freeze->setBounds (288, 16, 56, 64);
 
     freezeLbl.reset (new Label ("freezeLbl",
                                 TRANS("Freeze\n")));
@@ -160,7 +160,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     freezeLbl->setColour (TextEditor::textColourId, Colours::black);
     freezeLbl->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    freezeLbl->setBounds (336, 80, 48, 24);
+    freezeLbl->setBounds (296, 80, 48, 24);
 
 
     //[UserPreSize]
@@ -196,7 +196,6 @@ ReverbPanel::~ReverbPanel()
     //[Destructor]. You can add your own custom destruction code here..
     //[/Destructor]
 }
-
 
 //==============================================================================
 void ReverbPanel::paint (Graphics& g)
@@ -295,10 +294,10 @@ BEGIN_JUCER_METADATA
                  overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="0"/>
   <GROUPCOMPONENT name="reverbGroup" id="827b920ebb279fef" memberName="reverbGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0 0 392 112" title="Reverb"/>
+                  virtualName="" explicitFocusOrder="0" pos="0 0 352 112" title="Reverb"/>
   <SLIDER name="roomSize" id="3affdff2a3157f75" memberName="roomSize" virtualName=""
           explicitFocusOrder="0" pos="8 16 56 64" min="0.0" max="1.0" int="0.01"
-          style="RotaryVerticalDrag" textBoxPos="TextBoxBelow" textBoxEditable="1"
+          style="RotaryVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <LABEL name="roomSIzeLbl" id="1abc27b61ccb8637" memberName="roomSIzeLbl"
          virtualName="" explicitFocusOrder="0" pos="8 80 63 24" edTextCol="ff000000"
@@ -306,52 +305,52 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="damping" id="b8bfc21a9c0ca3d0" memberName="damping" virtualName=""
-          explicitFocusOrder="0" pos="72 16 56 64" min="0.0" max="1.0"
-          int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
+          explicitFocusOrder="0" pos="64 16 56 64" min="0.0" max="1.0"
+          int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="dampingLbl" id="fab930de840213e1" memberName="dampingLbl"
-         virtualName="" explicitFocusOrder="0" pos="72 80 63 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="64 80 63 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Damping" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="damping" id="63317514a3284189" memberName="width" virtualName=""
-          explicitFocusOrder="0" pos="137 16 56 64" min="0.0" max="1.0"
-          int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
+          explicitFocusOrder="0" pos="120 16 56 64" min="0.0" max="1.0"
+          int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="widthLbl" id="ec953c6e67180da9" memberName="widthLbl" virtualName=""
-         explicitFocusOrder="0" pos="144 80 63 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="128 80 63 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Width" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="dryLevel" id="246c47f37893dfef" memberName="dryLevel" virtualName=""
-          explicitFocusOrder="0" pos="200 16 56 64" min="0.0" max="1.0"
-          int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
+          explicitFocusOrder="0" pos="176 16 56 64" min="0.0" max="1.0"
+          int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="dryLbl" id="8133e7067b6f46f0" memberName="dryLbl" virtualName=""
-         explicitFocusOrder="0" pos="208 80 34 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="184 80 34 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Dry&#10;" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="wetLevel" id="6f75904fe54beef4" memberName="wetLevel" virtualName=""
-          explicitFocusOrder="0" pos="264 16 56 64" min="0.0" max="1.0"
-          int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
+          explicitFocusOrder="0" pos="232 16 56 64" min="0.0" max="1.0"
+          int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="wetLbl" id="298de79cd0c6bb3d" memberName="wetLbl" virtualName=""
-         explicitFocusOrder="0" pos="272 80 34 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="240 80 34 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Wet" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="wetLevel" id="17f4021cbeb408a5" memberName="freeze" virtualName=""
-          explicitFocusOrder="0" pos="328 16 56 64" min="0.0" max="1.0"
-          int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
+          explicitFocusOrder="0" pos="288 16 56 64" min="0.0" max="1.0"
+          int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="freezeLbl" id="e04867dabc2ea1df" memberName="freezeLbl"
-         virtualName="" explicitFocusOrder="0" pos="336 80 48 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="296 80 48 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Freeze&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>

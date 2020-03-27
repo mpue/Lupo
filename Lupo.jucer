@@ -5,10 +5,13 @@
               companyName="Matthias Pueski" pluginFormats="buildStandalone,buildUnity,buildVST3">
   <MAINGROUP id="GthNfL" name="Lupo">
     <GROUP id="{7D68CE24-8E1B-AC85-29D1-30E03A9479D6}" name="Images">
+      <FILE id="cw2qUT" name="DSEG14Classic-Regular.ttf" compile="0" resource="1"
+            file="Images/DSEG14Classic-Regular.ttf"/>
       <FILE id="ISE3Pl" name="Knob_32.png" compile="0" resource="1" file="Images/Knob_32.png"/>
       <FILE id="HLPRSK" name="Knob_48.png" compile="0" resource="1" file="Images/Knob_48.png"/>
       <FILE id="e9enOd" name="Knob_64.png" compile="0" resource="1" file="Images/Knob_64.png"/>
       <FILE id="dLLdn7" name="Knob_128.png" compile="0" resource="1" file="Images/Knob_128.png"/>
+      <FILE id="wCxM6Q" name="logo.png" compile="0" resource="1" file="Images/logo.png"/>
       <FILE id="op0Ayv" name="oscillator_noise_48.png" compile="0" resource="1"
             file="Images/oscillator_noise_48.png"/>
       <FILE id="On0Q26" name="oscillator_saw_48.png" compile="0" resource="1"

@@ -27,12 +27,12 @@ public:
 
 	void processStereo(float* const left, float* const right, const int numSamples);
 
-	float modulation = 0.5f;
-	float delay = 0.005f;
-	float feedback = 0.1f;
-	float leftMod = 0.1f;
-	float rightMod = 0.1f;
-	float mix = 0.5f;
+	float modulation = 0.0f;
+	float delay = 0.00f;
+	float feedback = 0.0f;
+	float leftMod = 0.0f;
+	float rightMod = 0.0f;
+	float mix = 0.0f;
 
 private:
 	float sampleRate;

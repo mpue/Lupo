@@ -40,7 +40,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
                                           TRANS("Stereo delay")));
     addAndMakeVisible (delayGroup.get());
 
-    delayGroup->setBounds (0, 0, 264, 112);
+    delayGroup->setBounds (8, 0, 216, 112);
 
     timeLeft.reset (new Slider ("timeLeft"));
     addAndMakeVisible (timeLeft.get());
@@ -49,7 +49,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     timeLeft->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     timeLeft->addListener (this);
 
-    timeLeft->setBounds (8, 16, 56, 64);
+    timeLeft->setBounds (16, 16, 56, 64);
 
     timeRight.reset (new Slider ("timeRight"));
     addAndMakeVisible (timeRight.get());
@@ -58,7 +58,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     timeRight->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     timeRight->addListener (this);
 
-    timeRight->setBounds (72, 16, 56, 64);
+    timeRight->setBounds (64, 16, 56, 64);
 
     feedback.reset (new Slider ("feedback"));
     addAndMakeVisible (feedback.get());
@@ -67,7 +67,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     feedback->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     feedback->addListener (this);
 
-    feedback->setBounds (136, 16, 56, 64);
+    feedback->setBounds (112, 16, 56, 64);
 
     mix.reset (new Slider ("mix"));
     addAndMakeVisible (mix.get());
@@ -76,7 +76,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     mix->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     mix->addListener (this);
 
-    mix->setBounds (200, 16, 56, 64);
+    mix->setBounds (160, 16, 56, 64);
 
     labelTime.reset (new Label ("labelTime",
                                 TRANS("Time L\n")));
@@ -98,7 +98,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     labelTime2->setColour (TextEditor::textColourId, Colours::black);
     labelTime2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    labelTime2->setBounds (80, 72, 48, 24);
+    labelTime2->setBounds (72, 72, 48, 24);
 
     labelFb.reset (new Label ("labelFb",
                               TRANS("Feedback")));
@@ -109,7 +109,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     labelFb->setColour (TextEditor::textColourId, Colours::black);
     labelFb->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    labelFb->setBounds (144, 72, 48, 24);
+    labelFb->setBounds (120, 72, 48, 24);
 
     labelMix.reset (new Label ("labelMix",
                                TRANS("Mix")));
@@ -120,7 +120,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     labelMix->setColour (TextEditor::textColourId, Colours::black);
     labelMix->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    labelMix->setBounds (208, 72, 48, 24);
+    labelMix->setBounds (176, 72, 48, 24);
 
 
     //[UserPreSize]
@@ -235,23 +235,23 @@ BEGIN_JUCER_METADATA
                  overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="0"/>
   <GROUPCOMPONENT name="delayGroup" id="5e1dad4ec7bae1e2" memberName="delayGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0 0 264 112" title="Stereo delay"/>
+                  virtualName="" explicitFocusOrder="0" pos="8 0 216 112" title="Stereo delay"/>
   <SLIDER name="timeLeft" id="f2df016a0268b524" memberName="timeLeft" virtualName=""
-          explicitFocusOrder="0" pos="8 16 56 64" min="0.0" max="1000.0"
+          explicitFocusOrder="0" pos="16 16 56 64" min="0.0" max="1000.0"
           int="5.0" style="RotaryVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <SLIDER name="timeRight" id="eabe77dba6904595" memberName="timeRight"
-          virtualName="" explicitFocusOrder="0" pos="72 16 56 64" min="0.0"
+          virtualName="" explicitFocusOrder="0" pos="64 16 56 64" min="0.0"
           max="1000.0" int="5.0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <SLIDER name="feedback" id="ef0b4be3871ae3a4" memberName="feedback" virtualName=""
-          explicitFocusOrder="0" pos="136 16 56 64" min="0.0" max="1.0"
+          explicitFocusOrder="0" pos="112 16 56 64" min="0.0" max="1.0"
           int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <SLIDER name="mix" id="7a09499f272a836f" memberName="mix" virtualName=""
-          explicitFocusOrder="0" pos="200 16 56 64" min="0.0" max="1.0"
+          explicitFocusOrder="0" pos="160 16 56 64" min="0.0" max="1.0"
           int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
@@ -261,17 +261,17 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="labelTime" id="91bc68e5f5fbba29" memberName="labelTime2"
-         virtualName="" explicitFocusOrder="0" pos="80 72 48 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="72 72 48 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Time R&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="labelFb" id="4e9ae61b560dbb17" memberName="labelFb" virtualName=""
-         explicitFocusOrder="0" pos="144 72 48 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="120 72 48 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Feedback" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="labelMix" id="cf219d26a0150a09" memberName="labelMix" virtualName=""
-         explicitFocusOrder="0" pos="208 72 48 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="176 72 48 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Mix" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>

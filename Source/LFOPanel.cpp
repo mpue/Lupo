@@ -44,7 +44,7 @@ LFOPanel::LFOPanel (Model* model, AttachmentFactory* factory)
 
     lfoSpeed.reset (new Slider ("lfoSpeed"));
     addAndMakeVisible (lfoSpeed.get());
-    lfoSpeed->setRange (0, 1000, 1);
+    lfoSpeed->setRange (0, 30, 1);
     lfoSpeed->setSliderStyle (Slider::RotaryVerticalDrag);
     lfoSpeed->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     lfoSpeed->addListener (this);
@@ -61,42 +61,6 @@ LFOPanel::LFOPanel (Model* model, AttachmentFactory* factory)
     speedLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     speedLabel->setBounds (16, 64, 48, 24);
-
-    pulseButton.reset (new ImageButton ("pulseButton"));
-    addAndMakeVisible (pulseButton.get());
-    pulseButton->setButtonText (TRANS("new button"));
-    pulseButton->setRadioGroupId (1);
-    pulseButton->addListener (this);
-
-    pulseButton->setImages (false, true, true,
-                            ImageCache::getFromMemory (oscillator_square_48_png, oscillator_square_48_pngSize), 1.000f, Colour (0x00000000),
-                            Image(), 1.000f, Colour (0x00000000),
-                            Image(), 1.000f, Colours::blue);
-    pulseButton->setBounds (128, 32, 31, 24);
-
-    sawButton.reset (new ImageButton ("sawButton"));
-    addAndMakeVisible (sawButton.get());
-    sawButton->setButtonText (TRANS("new button"));
-    sawButton->setRadioGroupId (1);
-    sawButton->addListener (this);
-
-    sawButton->setImages (false, true, true,
-                          ImageCache::getFromMemory (oscillator_saw_48_png, oscillator_saw_48_pngSize), 1.000f, Colour (0x00000000),
-                          Image(), 1.000f, Colour (0x00000000),
-                          Image(), 1.000f, Colours::blue);
-    sawButton->setBounds (160, 32, 31, 24);
-
-    sineButton.reset (new ImageButton ("sineButton"));
-    addAndMakeVisible (sineButton.get());
-    sineButton->setButtonText (TRANS("new button"));
-    sineButton->setRadioGroupId (1);
-    sineButton->addListener (this);
-
-    sineButton->setImages (false, true, true,
-                           ImageCache::getFromMemory (oscillator_sine_48_png, oscillator_sine_48_pngSize), 1.000f, Colour (0x00000000),
-                           Image(), 1.000f, Colour (0x00000000),
-                           Image(), 1.000f, Colours::blue);
-    sineButton->setBounds (200, 32, 31, 24);
 
     lfoAmount.reset (new Slider ("lfoAmount"));
     addAndMakeVisible (lfoAmount.get());
@@ -129,6 +93,20 @@ LFOPanel::LFOPanel (Model* model, AttachmentFactory* factory)
 
     shapeLabel->setBounds (160, 64, 56, 24);
 
+    shapeComboBox.reset (new ComboBox ("shapeComboBox"));
+    addAndMakeVisible (shapeComboBox.get());
+    shapeComboBox->setEditableText (false);
+    shapeComboBox->setJustificationType (Justification::centredLeft);
+    shapeComboBox->setTextWhenNothingSelected (String());
+    shapeComboBox->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
+    shapeComboBox->addItem (TRANS("Sawtooth"), 1);
+    shapeComboBox->addItem (TRANS("Pulse"), 2);
+    shapeComboBox->addItem (TRANS("Sine"), 3);
+    shapeComboBox->addItem (TRANS("Noise"), 4);
+    shapeComboBox->addListener (this);
+
+    shapeComboBox->setBounds (136, 32, 88, 24);
+
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -148,19 +126,15 @@ LFOPanel::~LFOPanel()
     LFOGroup = nullptr;
     lfoSpeed = nullptr;
     speedLabel = nullptr;
-    pulseButton = nullptr;
-    sawButton = nullptr;
-    sineButton = nullptr;
     lfoAmount = nullptr;
     amtLabel = nullptr;
     shapeLabel = nullptr;
+    shapeComboBox = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
     //[/Destructor]
 }
-
-
 
 //==============================================================================
 void LFOPanel::paint (Graphics& g)
@@ -201,29 +175,19 @@ void LFOPanel::sliderValueChanged (Slider* sliderThatWasMoved)
     //[/UsersliderValueChanged_Post]
 }
 
-void LFOPanel::buttonClicked (Button* buttonThatWasClicked)
+void LFOPanel::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 {
-    //[UserbuttonClicked_Pre]
-    //[/UserbuttonClicked_Pre]
+    //[UsercomboBoxChanged_Pre]
+    //[/UsercomboBoxChanged_Pre]
 
-    if (buttonThatWasClicked == pulseButton.get())
+    if (comboBoxThatHasChanged == shapeComboBox.get())
     {
-        //[UserButtonCode_pulseButton] -- add your button handler code here..
-        //[/UserButtonCode_pulseButton]
-    }
-    else if (buttonThatWasClicked == sawButton.get())
-    {
-        //[UserButtonCode_sawButton] -- add your button handler code here..
-        //[/UserButtonCode_sawButton]
-    }
-    else if (buttonThatWasClicked == sineButton.get())
-    {
-        //[UserButtonCode_sineButton] -- add your button handler code here..
-        //[/UserButtonCode_sineButton]
+        //[UserComboBoxCode_shapeComboBox] -- add your combo box handling code here..
+        //[/UserComboBoxCode_shapeComboBox]
     }
 
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
+    //[UsercomboBoxChanged_Post]
+    //[/UsercomboBoxChanged_Post]
 }
 
 
@@ -231,6 +195,11 @@ void LFOPanel::buttonClicked (Button* buttonThatWasClicked)
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
 void LFOPanel::initAttachments()
 {
+	String prefix = getName();
+	factory->createSliderAttachment(prefix + "Speed", lfoSpeed.get());
+	factory->createSliderAttachment(prefix + "Amount", lfoAmount.get());
+	factory->createComboAttachment(prefix + "Shape", shapeComboBox.get());
+
 }
 //[/MiscUserCode]
 
@@ -252,7 +221,7 @@ BEGIN_JUCER_METADATA
   <GROUPCOMPONENT name="LFOGroup" id="92909cf09d44f991" memberName="LFOGroup" virtualName=""
                   explicitFocusOrder="0" pos="0 0 240 96" title="LFO"/>
   <SLIDER name="lfoSpeed" id="57e273c20e9f4d5e" memberName="lfoSpeed" virtualName=""
-          explicitFocusOrder="0" pos="16 16 48 48" min="0.0" max="1000.0"
+          explicitFocusOrder="0" pos="16 16 48 48" min="0.0" max="30.0"
           int="1.0" style="RotaryVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <LABEL name="speedLabel" id="abdc5c483d1b1ed5" memberName="speedLabel"
@@ -260,24 +229,6 @@ BEGIN_JUCER_METADATA
          edBkgCol="0" labelText="Speed" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
-  <IMAGEBUTTON name="pulseButton" id="511af3726a478c03" memberName="pulseButton"
-               virtualName="" explicitFocusOrder="0" pos="128 32 31 24" buttonText="new button"
-               connectedEdges="0" needsCallback="1" radioGroupId="1" keepProportions="1"
-               resourceNormal="oscillator_square_48_png" opacityNormal="1.0"
-               colourNormal="0" resourceOver="" opacityOver="1.0" colourOver="0"
-               resourceDown="" opacityDown="1.0" colourDown="ff0000ff"/>
-  <IMAGEBUTTON name="sawButton" id="155b1f55d4e3de3e" memberName="sawButton"
-               virtualName="" explicitFocusOrder="0" pos="160 32 31 24" buttonText="new button"
-               connectedEdges="0" needsCallback="1" radioGroupId="1" keepProportions="1"
-               resourceNormal="oscillator_saw_48_png" opacityNormal="1.0" colourNormal="0"
-               resourceOver="" opacityOver="1.0" colourOver="0" resourceDown=""
-               opacityDown="1.0" colourDown="ff0000ff"/>
-  <IMAGEBUTTON name="sineButton" id="7188fe136a8f0553" memberName="sineButton"
-               virtualName="" explicitFocusOrder="0" pos="200 32 31 24" buttonText="new button"
-               connectedEdges="0" needsCallback="1" radioGroupId="1" keepProportions="1"
-               resourceNormal="oscillator_sine_48_png" opacityNormal="1.0" colourNormal="0"
-               resourceOver="" opacityOver="1.0" colourOver="0" resourceDown=""
-               opacityDown="1.0" colourDown="ff0000ff"/>
   <SLIDER name="lfoAmount" id="2af918ae339d8f03" memberName="lfoAmount"
           virtualName="" explicitFocusOrder="0" pos="72 16 48 48" min="0.0"
           max="1.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
@@ -293,6 +244,10 @@ BEGIN_JUCER_METADATA
          edBkgCol="0" labelText="Shape" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
+  <COMBOBOX name="shapeComboBox" id="3df82e5817294763" memberName="shapeComboBox"
+            virtualName="" explicitFocusOrder="0" pos="136 32 88 24" editable="0"
+            layout="33" items="Sawtooth&#10;Pulse&#10;Sine&#10;Noise" textWhenNonSelected=""
+            textWhenNoItems="(no choices)"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

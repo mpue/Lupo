@@ -42,7 +42,7 @@ private:
     Sine* sine;
     Pulse* pulse;
     WhiteNoise* noise;
-    float modAmount;
+    float modAmount = 0;
     Modulator* modulator;
 };
 

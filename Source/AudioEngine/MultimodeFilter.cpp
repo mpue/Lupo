@@ -23,6 +23,7 @@ MultimodeFilter::MultimodeFilter() {
     
     this->mode = LOWPASS;
 	this->keyTrack = 0;
+	this->modAmount = 0;
 }
 
 MultimodeFilter::~MultimodeFilter() {

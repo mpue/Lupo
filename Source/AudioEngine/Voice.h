@@ -76,7 +76,7 @@ private:
     vector<Oszillator*> oscillators;
     float sampleRate;
     int noteNumber = 0;
-    int pitch;
+    int pitch = 0;
     int velocity;
     double midiNote[128];
     void calculateFrequencyTable();
@@ -89,7 +89,7 @@ private:
     int octave = 0;
     int offset = 0;
 	float value = 0;
-    float modAmount;
+    float modAmount = 0;
 	
 };
 

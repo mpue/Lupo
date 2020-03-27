@@ -40,16 +40,16 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
                                            TRANS("Chorus")));
     addAndMakeVisible (chorusGroup.get());
 
-    chorusGroup->setBounds (0, 0, 304, 112);
+    chorusGroup->setBounds (0, 0, 240, 112);
 
     delay.reset (new Slider ("delay"));
     addAndMakeVisible (delay.get());
     delay->setRange (0, 1, 0.01);
     delay->setSliderStyle (Slider::RotaryVerticalDrag);
-    delay->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 12);
+    delay->setTextBoxStyle (Slider::NoTextBox, false, 80, 12);
     delay->addListener (this);
 
-    delay->setBounds (11, 21, 64, 64);
+    delay->setBounds (8, 16, 56, 64);
 
     delayLabel.reset (new Label ("delayLabel",
                                  TRANS("Delay\n")));
@@ -60,16 +60,16 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
     delayLabel->setColour (TextEditor::textColourId, Colours::black);
     delayLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    delayLabel->setBounds (27, 85, 40, 24);
+    delayLabel->setBounds (16, 80, 40, 24);
 
     modulation.reset (new Slider ("modulation"));
     addAndMakeVisible (modulation.get());
     modulation->setRange (0, 1, 0.01);
     modulation->setSliderStyle (Slider::RotaryVerticalDrag);
-    modulation->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 12);
+    modulation->setTextBoxStyle (Slider::NoTextBox, false, 80, 12);
     modulation->addListener (this);
 
-    modulation->setBounds (83, 21, 64, 64);
+    modulation->setBounds (64, 16, 56, 64);
 
     modLabel.reset (new Label ("modLabel",
                                TRANS("Modulation\n")));
@@ -80,16 +80,16 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
     modLabel->setColour (TextEditor::textColourId, Colours::black);
     modLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    modLabel->setBounds (83, 85, 72, 24);
+    modLabel->setBounds (56, 80, 72, 24);
 
     feedback.reset (new Slider ("feedback"));
     addAndMakeVisible (feedback.get());
     feedback->setRange (0, 1, 0.01);
     feedback->setSliderStyle (Slider::RotaryVerticalDrag);
-    feedback->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 12);
+    feedback->setTextBoxStyle (Slider::NoTextBox, false, 80, 12);
     feedback->addListener (this);
 
-    feedback->setBounds (155, 21, 64, 64);
+    feedback->setBounds (120, 16, 56, 64);
 
     fblabel.reset (new Label ("fblabel",
                               TRANS("Feedback")));
@@ -100,16 +100,16 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
     fblabel->setColour (TextEditor::textColourId, Colours::black);
     fblabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    fblabel->setBounds (155, 85, 56, 24);
+    fblabel->setBounds (120, 80, 56, 24);
 
     mix.reset (new Slider ("mix"));
     addAndMakeVisible (mix.get());
     mix->setRange (0, 1, 0.01);
     mix->setSliderStyle (Slider::RotaryVerticalDrag);
-    mix->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 12);
+    mix->setTextBoxStyle (Slider::NoTextBox, false, 80, 12);
     mix->addListener (this);
 
-    mix->setBounds (227, 21, 64, 64);
+    mix->setBounds (176, 16, 56, 64);
 
     mixLabel.reset (new Label ("mixLabel",
                                TRANS("Mix\n")));
@@ -120,7 +120,7 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
     mixLabel->setColour (TextEditor::textColourId, Colours::black);
     mixLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    mixLabel->setBounds (243, 85, 32, 24);
+    mixLabel->setBounds (192, 80, 32, 24);
 
 
     //[UserPreSize]
@@ -152,8 +152,6 @@ ChorusPanel::~ChorusPanel()
     //[Destructor]. You can add your own custom destruction code here..
     //[/Destructor]
 }
-
-
 
 //==============================================================================
 void ChorusPanel::paint (Graphics& g)
@@ -237,44 +235,43 @@ BEGIN_JUCER_METADATA
                  overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="0"/>
   <GROUPCOMPONENT name="chorusGroup" id="eacd1de0d050c8e2" memberName="chorusGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0 0 304 112" title="Chorus"/>
+                  virtualName="" explicitFocusOrder="0" pos="0 0 240 112" title="Chorus"/>
   <SLIDER name="delay" id="abab2f5032a25de2" memberName="delay" virtualName=""
-          explicitFocusOrder="0" pos="11 21 64 64" min="0.0" max="1.0"
-          int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="12" skewFactor="1.0"
-          needsCallback="1"/>
+          explicitFocusOrder="0" pos="8 16 56 64" min="0.0" max="1.0" int="0.01"
+          style="RotaryVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
+          textBoxWidth="80" textBoxHeight="12" skewFactor="1.0" needsCallback="1"/>
   <LABEL name="delayLabel" id="94f67f48984c9459" memberName="delayLabel"
-         virtualName="" explicitFocusOrder="0" pos="27 85 40 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="16 80 40 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Delay&#10;" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="modulation" id="fb30fdbeb23f1267" memberName="modulation"
-          virtualName="" explicitFocusOrder="0" pos="83 21 64 64" min="0.0"
-          max="1.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
+          virtualName="" explicitFocusOrder="0" pos="64 16 56 64" min="0.0"
+          max="1.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="12" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="modLabel" id="37dfd528d1bda78" memberName="modLabel" virtualName=""
-         explicitFocusOrder="0" pos="83 85 72 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="56 80 72 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Modulation&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="feedback" id="2216e6c2e45b40a1" memberName="feedback" virtualName=""
-          explicitFocusOrder="0" pos="155 21 64 64" min="0.0" max="1.0"
-          int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
+          explicitFocusOrder="0" pos="120 16 56 64" min="0.0" max="1.0"
+          int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="12" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="fblabel" id="1084255963638e9d" memberName="fblabel" virtualName=""
-         explicitFocusOrder="0" pos="155 85 56 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="120 80 56 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Feedback" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="mix" id="f1be319ec0c8f888" memberName="mix" virtualName=""
-          explicitFocusOrder="0" pos="227 21 64 64" min="0.0" max="1.0"
-          int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
+          explicitFocusOrder="0" pos="176 16 56 64" min="0.0" max="1.0"
+          int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="12" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="mixLabel" id="d3b292080de81ca2" memberName="mixLabel" virtualName=""
-         explicitFocusOrder="0" pos="243 85 32 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="192 80 32 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Mix&#10;" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>

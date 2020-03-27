@@ -56,6 +56,9 @@ private:
 	int currentSample = 0;
 	int numVoices = 0;
 
+	MultimodeOscillator* lfo1;
+	MultimodeOscillator* lfo2;
+
 	StereoDelay* delay;
 	StereoReverb* reverb;
 	StereoChorus* chorus;

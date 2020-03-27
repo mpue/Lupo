@@ -35,21 +35,7 @@ float Pulse::getOutput() {
 }
 
 float Pulse::process() {
-    /*
-    phase += step;
-    
-    this->value = (float)(sin(phase));
-    
-    if (value < 0) {
-        value = -1;
-    }
-    else {
-        value = 1;
-    }
-
-    return this->value * volume;
-	*/
-	return blitSquare->tick();
+	return blitSquare->tick() * volume;
 }
 
 void Pulse::setFrequency(double frequency) {

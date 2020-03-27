@@ -49,6 +49,8 @@ private:
     
     Mode mode;
 
+	float modAmount = 0;
+
 	int keyTrack;
 
     JUCE_LEAK_DETECTOR(MultimodeFilter);

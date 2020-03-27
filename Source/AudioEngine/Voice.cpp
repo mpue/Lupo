@@ -9,6 +9,7 @@
 */
 
 #include "Voice.h"
+#include "MultimodeOscillator.h"
 
 #ifndef M_PI
 #define M_PI       3.14159265358979323846 
@@ -87,20 +88,9 @@ float Voice::process(int channel) {
     
     value = 0;
     
-
-    if(ampEnvelope->getState() != SynthLab::ADSR::env_idle) {
+	if(ampEnvelope->getState() != SynthLab::ADSR::env_idle) {
         
-
         float amplitude = (1.0f / (float) 127) * this->velocity;
-
-        /*
-        for(std::vector<Oszillator*>::iterator it = oscillators.begin(); it != oscillators.end(); ++it) {
-            Oszillator* o = *it;
-            value += o->process();
-        }
-		*/
-        
-        
 
         for (int i = 0; i < oscillators.size(); i++) {
             
@@ -109,24 +99,17 @@ float Voice::process(int channel) {
 			}
 			else {
 				value += oscillators.at(i)->process() * sin((M_PI*(oscillators.at(i)->getPan() + 1) / 4)) * amplitude * ampEnvelope->process();;
-
 			}
-			
-
+			if (modulator != nullptr) {	
+				oscillators.at(i)->setPitchMod(modulator->getOutput() * this->modAmount );
+			}
 		}
-
-        
     }
     else {
         ampEnvelope->reset();
     }
 
-    if (modulator != 0) {
-        
-    }
-
-    return value;
-    
+    return value;    
 }
 
 void Voice::setNoteNumber(int number) {
@@ -223,10 +206,22 @@ SynthLab::ADSR* Voice::getAmpEnvelope() {
 
 void Voice::setModAmount(float amount ) {
     this->modAmount = amount;
+	for (int i = 0; i < oscillators.size(); i++) {
+		MultimodeOscillator* mmo = dynamic_cast<MultimodeOscillator*>(oscillators.at(i));
+		if (mmo != nullptr) {
+			mmo->setModAmount(amount);
+		}
+	}
 }
 
 void Voice::setModulator(Modulator* modulator) {
-    this->modulator = modulator;
+	this->modulator = modulator;
+	for (int i = 0; i < oscillators.size(); i++) {
+		MultimodeOscillator* mmo = dynamic_cast<MultimodeOscillator*>(oscillators.at(i));
+		if (mmo != nullptr) {
+			mmo->setModulator(modulator);
+		}
+	}
 }
 
 float Voice::getTime() {

@@ -42,18 +42,18 @@ void Sawtooth::reset() {
 
 
 float Sawtooth::process() {
-	return blitsaw->tick();
+	return blitsaw->tick() * volume;
 
 }
 
 void Sawtooth::setFrequency(double frequency) {
     this->frequency = frequency;
-	blitsaw->setFrequency(frequency+ this->fine);
+	blitsaw->setFrequency(frequency+ this->fine + pitchMod);
 }
 
 void Sawtooth::setFine(float fine) {
 	this->fine = fine;    
-	setFrequency(frequency + fine);
+	setFrequency(frequency);
 }
 
 float Sawtooth::getFine() const {

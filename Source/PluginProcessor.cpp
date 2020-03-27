@@ -36,7 +36,7 @@ LupoAudioProcessor::LupoAudioProcessor()
 
 	factory->createParam("cutoff", "Cutoff", 0.01f, 15000.0, 12000.0);
 	factory->createParam("resonance", "Resonance", 0.01f, 5.0f, 1.0);
-	factory->createParam("mainVol", "Main Volume", 0.01f, 2.0f, 1.0);
+	factory->createParam("mainVolume", "Main Volume", 0.01f, 2.0f, 1.0);
 	factory->createParam("envAmt", "Filter amount", 0.01f, 1.0f, 1.0);
 
 	factory->createParam("ampAttack", "Attack", 0.0f, 10.0, 0.0);
@@ -94,6 +94,17 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("osc4Volume", "Osc4 volume", 0, 1.0, 1);
 	factory->createParam("osc4Pan", "Osc4 pan", -1.0, 1.0, 0);
 	factory->createParam("osc4Shape", "Osc4 shape", 0, 3.0, 0);
+
+	factory->createParam("lfo1Shape", "Lfo1 shape", 0, 3.0, 0);
+	factory->createParam("lfo2Shape", "Lfo2 shape", 0, 3.0, 0);
+
+	factory->createParam("lfo1Speed", "Lfo1 speed", 0, 10.0, 0);
+	factory->createParam("lfo2Speed", "Lfo2 speed", 0, 10.0, 0);
+
+	factory->createParam("lfo1Amount", "Lfo1 amount", 0, 1.0, 0);
+	factory->createParam("lfo2Amount", "Lfo2 amount", 0, 1.0, 0);
+
+
 	bypass = parameters->createAndAddParameter("bypass", "bypass", "Bypass", NormalisableRange<float>(0, 1),0, nullptr, nullptr);
 	
 	Logger::getCurrentLogger()->writeToLog("Building preset list");

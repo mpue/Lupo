@@ -10,6 +10,7 @@
 
 #include "TrioLookAndFeel.h"
 
+
 TrioLookAndFeel::TrioLookAndFeel() {
     
 }
@@ -112,7 +113,7 @@ void TrioLookAndFeel::drawToggleButton (Graphics& g, ToggleButton& button,
 
 Font TrioLookAndFeel::getPopupMenuFont()
 {
-    return Font (17.0f);
+    return (Font("Verdana", "bold", 12.0f));
 }
 
 void TrioLookAndFeel::drawPopupMenuItem (Graphics& g, const Rectangle<int>& area,
@@ -208,9 +209,24 @@ void TrioLookAndFeel::drawPopupMenuItem (Graphics& g, const Rectangle<int>& area
     }
 }
 
+void TrioLookAndFeel::drawPopupMenuBackground(Graphics &g, int width, int height)
+{
+	auto background = Colours::darkgrey;
+
+	g.fillAll(background);
+	g.setColour(background.overlaidWith(Colour(0x2badd8e6)));
+
+
+
+#if ! JUCE_MAC
+	g.setColour(findColour(PopupMenu::textColourId).withAlpha(0.6f));
+	g.drawRect(0, 0, width, height);
+#endif
+}
+
 void TrioLookAndFeel::drawLabel (Graphics& g, Label& label)
 {
-    /*
+    
     g.fillAll (label.findColour (Label::backgroundColourId));
     
     if (! label.isBeingEdited())
@@ -218,8 +234,8 @@ void TrioLookAndFeel::drawLabel (Graphics& g, Label& label)
         const float alpha = label.isEnabled() ? 1.0f : 0.5f;
         const Font font (getLabelFont (label));
         
-        g.setColour (label.findColour (Label::textColourId).withMultipliedAlpha (alpha));
-        g.setFont (font);
+        g.setColour (Colours::lightgrey.withMultipliedAlpha (alpha));
+        g.setFont (Font("Verdana","bold",12.0f));
         
         Rectangle<int> textArea (label.getBorderSize().subtractedFrom (label.getLocalBounds()).expanded(3, 1));
     
@@ -237,8 +253,8 @@ void TrioLookAndFeel::drawLabel (Graphics& g, Label& label)
     }
     
     g.drawRect (label.getLocalBounds());
-     */
-    LookAndFeel_V2::drawLabel(g, label);
+    
+    //LookAndFeel_V2::drawLabel(g, label);
 }
 
 void TrioLookAndFeel::drawComboBox (Graphics& g, int width, int height, const bool isButtonDown,
@@ -247,7 +263,7 @@ void TrioLookAndFeel::drawComboBox (Graphics& g, int width, int height, const bo
     // LookAndFeel_V1::drawComboBox(g, width, height, isButtonDown, buttonX, buttonY, buttonW, buttonH, box);
     
     
-    g.fillAll (box.findColour (ComboBox::backgroundColourId));
+    g.fillAll (Colours::darkgrey);
     
     if (box.isEnabled() && box.hasKeyboardFocus (false))
     {
@@ -293,6 +309,65 @@ void TrioLookAndFeel::drawComboBox (Graphics& g, int width, int height, const bo
         g.fillPath (p);
     }
    
+}
+
+
+void TrioLookAndFeel::drawGroupComponentOutline(Graphics& g, int width, int height,
+	const String& text, const Justification& position,
+	GroupComponent& group)
+{
+	const float textH = 15.0f;
+	const float indent = 3.0f;
+	const float textEdgeGap = 4.0f;
+	auto cs = 2.0f;
+
+	Font f(textH);
+
+	Path p;
+	auto x = indent;
+	auto y = f.getAscent() - 3.0f;
+	auto w = jmax(0.0f, width - x * 2.0f);
+	auto h = jmax(0.0f, height - y - indent);
+	cs = jmin(cs, w * 0.5f, h * 0.5f);
+	auto cs2 = 2.0f * cs;
+
+	auto textW = text.isEmpty() ? 0 : jlimit(0.0f, jmax(0.0f, w - cs2 - textEdgeGap * 2), f.getStringWidth(text) + textEdgeGap * 2.0f);
+	auto textX = cs + textEdgeGap;
+
+	if (position.testFlags(Justification::horizontallyCentred))
+		textX = cs + (w - cs2 - textW) * 0.5f;
+	else if (position.testFlags(Justification::right))
+		textX = w - cs - textW - textEdgeGap;
+
+	p.startNewSubPath(x + textX + textW, y);
+	p.lineTo(x + w - cs, y);
+
+	p.addArc(x + w - cs2, y, cs2, cs2, 0, MathConstants<float>::halfPi);
+	p.lineTo(x + w, y + h - cs);
+
+	p.addArc(x + w - cs2, y + h - cs2, cs2, cs2, MathConstants<float>::halfPi, MathConstants<float>::pi);
+	p.lineTo(x + cs, y + h);
+
+	p.addArc(x, y + h - cs2, cs2, cs2, MathConstants<float>::pi, MathConstants<float>::pi * 1.5f);
+	p.lineTo(x, y + cs);
+
+	p.addArc(x, y, cs2, cs2, MathConstants<float>::pi * 1.5f, MathConstants<float>::twoPi);
+	p.lineTo(x + textX, y);
+
+	auto alpha = group.isEnabled() ? 1.0f : 0.5f;
+
+	g.setColour(Colours::darkgrey.darker().withMultipliedAlpha(alpha));
+
+	g.strokePath(p, PathStrokeType(1.0f));
+
+	g.setColour(Colours::white.withMultipliedAlpha(alpha));
+	g.setFont(f);
+	g.drawText(text,
+		roundToInt(x + textX), 0,
+		roundToInt(textW),
+		roundToInt(textH),
+		Justification::centred, true);
+
 }
 
 void TrioLookAndFeel::drawScrollbarButton (Graphics& g, ScrollBar& bar,
@@ -386,7 +461,7 @@ void TrioLookAndFeel::drawScrollbar (Graphics& g, ScrollBar& bar,
             for (int i = 3; --i >= 0;)
             {
                 const float linePos = thumbStartPosition + thumbSize / 2 + (i - 1) * 4.0f;
-                g.setColour (Colours::black.withAlpha (0.15f));
+                g.setColour (Colours::orange.withAlpha (0.15f));
                 
                 if (isScrollbarVertical)
                 {

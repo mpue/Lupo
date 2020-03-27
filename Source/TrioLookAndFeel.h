@@ -13,7 +13,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
-class TrioLookAndFeel : public LookAndFeel_V1 {
+class TrioLookAndFeel : public LookAndFeel_V2 {
     
 public:
     
@@ -40,13 +40,18 @@ public:
                             const String& shortcutKeyText,
                             const Drawable* icon, const Colour* const textColourToUse) override;
 
-    
+	void drawPopupMenuBackground(Graphics&, int width, int height) override;
+
     void drawComboBox (Graphics& g, int width, int height, const bool isButtonDown,
                  int buttonX, int buttonY, int buttonW, int buttonH, ComboBox& box) override;
     
     Font getPopupMenuFont() override;
     void drawLabel (Graphics& g, Label& label) override;
     
+
+	void drawGroupComponentOutline(Graphics&, int w, int h, const String& text,
+		const Justification&, GroupComponent&) override;
+
     void drawScrollbarButton (Graphics&, ScrollBar&, int width, int height,
                               int buttonDirection, bool isScrollbarVertical,
                               bool isMouseOverButton, bool isButtonDown) override;

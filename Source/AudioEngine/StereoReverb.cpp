@@ -13,7 +13,16 @@
 using juce::Reverb;
 
 StereoReverb::StereoReverb() {
-    this->reverb = new Reverb();
+	this->reverb = new Reverb();
+	Reverb::Parameters params =  reverb->getParameters();
+	params.damping = 0.0f;
+	params.roomSize = 0.0f;
+	params.damping = 0.0f;
+	params.wetLevel = 0.0f;
+	params.dryLevel = 1.0f;
+	params.width = 0.0f;
+	params.freezeMode = 0.0f;
+	reverb->setParameters(params);
 }
 
 StereoReverb::~StereoReverb() {

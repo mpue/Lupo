@@ -36,7 +36,7 @@ class Model;
 */
 class LFOPanel  : public Component,
                   public Slider::Listener,
-                  public Button::Listener
+                  public ComboBox::Listener
 {
 public:
     //==============================================================================
@@ -51,7 +51,7 @@ public:
     void paint (Graphics& g) override;
     void resized() override;
     void sliderValueChanged (Slider* sliderThatWasMoved) override;
-    void buttonClicked (Button* buttonThatWasClicked) override;
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
 
     // Binary resources:
     static const char* oscillator_sine_48_png;
@@ -63,21 +63,19 @@ public:
 
 
 private:
-    //[UserVariables]   -- You can add your own custom variables in this section
+    //[UserVariables]   -- You can add your own custom variables in this section.
 	AttachmentFactory* factory;
 	Model* model;
-	//[/UserVariables]
+    //[/UserVariables]
 
     //==============================================================================
     std::unique_ptr<GroupComponent> LFOGroup;
     std::unique_ptr<Slider> lfoSpeed;
     std::unique_ptr<Label> speedLabel;
-    std::unique_ptr<ImageButton> pulseButton;
-    std::unique_ptr<ImageButton> sawButton;
-    std::unique_ptr<ImageButton> sineButton;
     std::unique_ptr<Slider> lfoAmount;
     std::unique_ptr<Label> amtLabel;
     std::unique_ptr<Label> shapeLabel;
+    std::unique_ptr<ComboBox> shapeComboBox;
 
 
     //==============================================================================

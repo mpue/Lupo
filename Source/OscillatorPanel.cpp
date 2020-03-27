@@ -101,14 +101,14 @@ OscillatorPanel::OscillatorPanel (Model* model, AttachmentFactory* factory)
     pwLabel->setColour (TextEditor::textColourId, Colours::black);
     pwLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    pwLabel->setBounds (40, 200, 39, 24);
+    pwLabel->setBounds (40, 184, 39, 24);
 
     syncButton.reset (new ToggleButton ("syncButton"));
     addAndMakeVisible (syncButton.get());
     syncButton->setButtonText (TRANS("sync"));
     syncButton->addListener (this);
 
-    syncButton->setBounds (128, 200, 56, 24);
+    syncButton->setBounds (112, 192, 56, 24);
 
     shapeComboBox.reset (new ComboBox ("shapeComboBox"));
     addAndMakeVisible (shapeComboBox.get());
@@ -122,7 +122,7 @@ OscillatorPanel::OscillatorPanel (Model* model, AttachmentFactory* factory)
     shapeComboBox->addItem (TRANS("Noise"), 4);
     shapeComboBox->addListener (this);
 
-    shapeComboBox->setBounds (104, 136, 88, 24);
+    shapeComboBox->setBounds (104, 128, 88, 24);
 
     shapeLabel.reset (new Label ("shapeLabel",
                                  TRANS("Shape\n")));
@@ -133,7 +133,7 @@ OscillatorPanel::OscillatorPanel (Model* model, AttachmentFactory* factory)
     shapeLabel->setColour (TextEditor::textColourId, Colours::black);
     shapeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    shapeLabel->setBounds (104, 168, 71, 24);
+    shapeLabel->setBounds (104, 160, 71, 24);
 
 
     //[UserPreSize]
@@ -365,19 +365,19 @@ BEGIN_JUCER_METADATA
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="pwLabel" id="7770108089bbf43b" memberName="pwLabel" virtualName=""
-         explicitFocusOrder="0" pos="40 200 39 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="40 184 39 24" edTextCol="ff000000"
          edBkgCol="0" labelText="PW&#10;" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="syncButton" id="9febd9e09778ff94" memberName="syncButton"
-                virtualName="" explicitFocusOrder="0" pos="128 200 56 24" buttonText="sync"
+                virtualName="" explicitFocusOrder="0" pos="112 192 56 24" buttonText="sync"
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <COMBOBOX name="shapeComboBox" id="3df82e5817294763" memberName="shapeComboBox"
-            virtualName="" explicitFocusOrder="0" pos="104 136 88 24" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="104 128 88 24" editable="0"
             layout="33" items="Sawtooth&#10;Pulse&#10;Sine&#10;Noise" textWhenNonSelected=""
             textWhenNoItems="(no choices)"/>
   <LABEL name="shapeLabel" id="240585a2912d6ae4" memberName="shapeLabel"
-         virtualName="" explicitFocusOrder="0" pos="104 168 71 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="104 160 71 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Shape&#10;" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>

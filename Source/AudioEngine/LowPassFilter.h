@@ -32,7 +32,7 @@ private:
     juce::IIRFilter* filter2;
     Modulator* modulator;
     float frequency;
-    float modAmount;
+    float modAmount = 0;
     float resonance;
     JUCE_LEAK_DETECTOR(LowPassFilter);
 

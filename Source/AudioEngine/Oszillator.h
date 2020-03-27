@@ -30,6 +30,7 @@ public:
     virtual ~Oszillator();
 
     virtual void setFrequency(double frequency);
+	float getFrequency();
     void setPhase(double phase);
     
     virtual void setVolume(float volume);
@@ -56,12 +57,15 @@ public:
     virtual void setSlave(Oszillator* slave);
     
     virtual void reset() = 0;
+
+	void setPitchMod(float mod);
     
 protected:
     
     double phase;
     float volume;
 	float pan;
+	float pitchMod = 0;
     double frequency;
     double sampleRate;
     double phaseIncrement;

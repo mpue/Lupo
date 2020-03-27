@@ -75,6 +75,9 @@ public:
     void buttonClicked (Button* buttonThatWasClicked) override;
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
 
+    // Binary resources:
+    static const char* logo_png;
+    static const int logo_pngSize;
 
 
 private:
@@ -125,6 +128,7 @@ private:
     std::unique_ptr<TextButton> presetButton;
     std::unique_ptr<TextButton> saveButton;
     std::unique_ptr<ComboBox> presetCombo;
+    std::unique_ptr<ImageButton> imageButton;
 
 
     //==============================================================================

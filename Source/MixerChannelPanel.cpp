@@ -42,7 +42,7 @@ MixerChannelPanel::MixerChannelPanel (Model* model, AttachmentFactory* factory)
                                             TRANS("CH1")));
     addAndMakeVisible (channelGroup.get());
 
-    channelGroup->setBounds (0, 0, 112, 128);
+    channelGroup->setBounds (0, 0, 104, 96);
 
     volSlider.reset (new Slider ("volSlider"));
     addAndMakeVisible (volSlider.get());
@@ -51,7 +51,7 @@ MixerChannelPanel::MixerChannelPanel (Model* model, AttachmentFactory* factory)
     volSlider->setTextBoxStyle (Slider::NoTextBox, true, 80, 20);
     volSlider->addListener (this);
 
-    volSlider->setBounds (16, 16, 56, 48);
+    volSlider->setBounds (8, 16, 48, 48);
 
     panSlider.reset (new Slider ("panSlider"));
     addAndMakeVisible (panSlider.get());
@@ -60,29 +60,29 @@ MixerChannelPanel::MixerChannelPanel (Model* model, AttachmentFactory* factory)
     panSlider->setTextBoxStyle (Slider::NoTextBox, true, 80, 20);
     panSlider->addListener (this);
 
-    panSlider->setBounds (16, 64, 56, 48);
+    panSlider->setBounds (64, 24, 32, 32);
 
     volumeLabel.reset (new Label ("volumeLabel",
                                   TRANS("Vol\n")));
     addAndMakeVisible (volumeLabel.get());
-    volumeLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    volumeLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
     volumeLabel->setJustificationType (Justification::centredLeft);
     volumeLabel->setEditable (false, false, false);
     volumeLabel->setColour (TextEditor::textColourId, Colours::black);
     volumeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    volumeLabel->setBounds (64, 32, 31, 24);
+    volumeLabel->setBounds (16, 64, 31, 24);
 
     panLabel.reset (new Label ("panLabel",
                                TRANS("Pan\n")));
     addAndMakeVisible (panLabel.get());
-    panLabel->setFont (Font (15.00f, Font::plain).withTypefaceStyle ("Regular"));
+    panLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
     panLabel->setJustificationType (Justification::centredLeft);
     panLabel->setEditable (false, false, false);
     panLabel->setColour (TextEditor::textColourId, Colours::black);
     panLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    panLabel->setBounds (64, 80, 40, 24);
+    panLabel->setBounds (64, 64, 40, 24);
 
 
     //[UserPreSize]
@@ -222,26 +222,26 @@ BEGIN_JUCER_METADATA
                  overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="0"/>
   <GROUPCOMPONENT name="channelGroup" id="9f266fdaeb7fb76b" memberName="channelGroup"
-                  virtualName="" explicitFocusOrder="0" pos="0 0 112 128" title="CH1"/>
+                  virtualName="" explicitFocusOrder="0" pos="0 0 104 96" title="CH1"/>
   <SLIDER name="volSlider" id="b16b5072d98a689d" memberName="volSlider"
-          virtualName="" explicitFocusOrder="0" pos="16 16 56 48" min="0.0"
+          virtualName="" explicitFocusOrder="0" pos="8 16 48 48" min="0.0"
           max="1.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="0" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <SLIDER name="panSlider" id="5c349ac21e02e861" memberName="panSlider"
-          virtualName="" explicitFocusOrder="0" pos="16 64 56 48" min="-2.0"
+          virtualName="" explicitFocusOrder="0" pos="64 24 32 32" min="-2.0"
           max="2.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="0" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="volumeLabel" id="7c2ca28cdcb89db2" memberName="volumeLabel"
-         virtualName="" explicitFocusOrder="0" pos="64 32 31 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="16 64 31 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Vol&#10;" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
+         focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="panLabel" id="27664fc0db1a0720" memberName="panLabel" virtualName=""
-         explicitFocusOrder="0" pos="64 80 40 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="64 64 40 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Pan&#10;" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="15.0"
+         focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>
 

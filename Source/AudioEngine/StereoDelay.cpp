@@ -12,15 +12,15 @@
 
 StereoDelay::StereoDelay() {
     delayLeft = new BasicDelayLine();
-    delayLeft->setMix(0.5);
-    delayLeft->setDelay(500);
-    delayLeft->setFeedback(0.5);
+    delayLeft->setMix(0);
+    delayLeft->setDelay(0);
+    delayLeft->setFeedback(0);
     delayLeft->setUseExternalFeedback(false);
     
     delayRight = new BasicDelayLine();
-    delayRight->setMix(0.5);
-    delayRight->setDelay(375);
-    delayRight->setFeedback(0.5);
+    delayRight->setMix(0.0);
+    delayRight->setDelay(0);
+    delayRight->setFeedback(0);
     delayRight->setUseExternalFeedback(false);
 }
 

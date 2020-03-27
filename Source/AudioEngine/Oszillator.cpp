@@ -47,6 +47,10 @@ void Oszillator::setFrequency(double frequency) {
     this->frequency = frequency;
 }
 
+float Oszillator::getFrequency() {
+	return frequency;
+}
+
 void Oszillator::setPitch(int pitch) {
     this->pitch = pitch;
 }
@@ -83,6 +87,9 @@ void Oszillator::setMode(float mode) {
 
 }
 
+void Oszillator::setPitchMod(float mod) {
+	this->pitchMod = mod;
+}
 
 void Oszillator::setSync(bool sync) {
     this->sync = sync;
