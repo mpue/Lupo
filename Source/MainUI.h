@@ -129,6 +129,8 @@ private:
     std::unique_ptr<TextButton> saveButton;
     std::unique_ptr<ComboBox> presetCombo;
     std::unique_ptr<ImageButton> imageButton;
+    std::unique_ptr<Slider> fmSlider;
+    std::unique_ptr<Label> fmLabel;
 
 
     //==============================================================================

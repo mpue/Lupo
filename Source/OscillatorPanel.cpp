@@ -29,120 +29,120 @@
 //[/MiscUserDefs]
 
 //==============================================================================
-OscillatorPanel::OscillatorPanel (Model* model, AttachmentFactory* factory)
+OscillatorPanel::OscillatorPanel(Model* model, AttachmentFactory* factory)
 {
-    //[Constructor_pre] You can add your own custom stuff here..
+	//[Constructor_pre] You can add your own custom stuff here..
 	this->model = model;
 	this->factory = factory;
 
-    //[/Constructor_pre]
+	//[/Constructor_pre]
 
-    oscillatorGroup.reset (new GroupComponent ("new group",
-                                               TRANS("Osc 1")));
-    addAndMakeVisible (oscillatorGroup.get());
+	oscillatorGroup.reset(new GroupComponent("new group",
+		TRANS("Osc 1")));
+	addAndMakeVisible(oscillatorGroup.get());
 
-    oscillatorGroup->setBounds (0, 0, 208, 232);
+	oscillatorGroup->setBounds(0, 0, 208, 232);
 
-    oscPitch.reset (new Slider ("oscPitch"));
-    addAndMakeVisible (oscPitch.get());
-    oscPitch->setRange (-36, 36, 1);
-    oscPitch->setSliderStyle (Slider::RotaryVerticalDrag);
-    oscPitch->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
-    oscPitch->addListener (this);
+	oscPitch.reset(new Slider("oscPitch"));
+	addAndMakeVisible(oscPitch.get());
+	oscPitch->setRange(-36, 36, 1);
+	oscPitch->setSliderStyle(Slider::RotaryVerticalDrag);
+	oscPitch->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+	oscPitch->addListener(this);
 
-    oscPitch->setBounds (16, 16, 80, 80);
+	oscPitch->setBounds(16, 16, 80, 80);
 
-    pitchlabel1.reset (new Label ("pitchlabel1",
-                                  TRANS("Pitch")));
-    addAndMakeVisible (pitchlabel1.get());
-    pitchlabel1->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
-    pitchlabel1->setJustificationType (Justification::centredLeft);
-    pitchlabel1->setEditable (false, false, false);
-    pitchlabel1->setColour (TextEditor::textColourId, Colours::black);
-    pitchlabel1->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+	pitchlabel1.reset(new Label("pitchlabel1",
+		TRANS("Pitch")));
+	addAndMakeVisible(pitchlabel1.get());
+	pitchlabel1->setFont(Font(12.00f, Font::plain).withTypefaceStyle("Regular"));
+	pitchlabel1->setJustificationType(Justification::centredLeft);
+	pitchlabel1->setEditable(false, false, false);
+	pitchlabel1->setColour(TextEditor::textColourId, Colours::black);
+	pitchlabel1->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    pitchlabel1->setBounds (40, 96, 39, 24);
+	pitchlabel1->setBounds(40, 96, 39, 24);
 
-    oscFine.reset (new Slider ("oscFine"));
-    addAndMakeVisible (oscFine.get());
-    oscFine->setRange (-1, 1, 0.01);
-    oscFine->setSliderStyle (Slider::RotaryVerticalDrag);
-    oscFine->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
-    oscFine->addListener (this);
+	oscFine.reset(new Slider("oscFine"));
+	addAndMakeVisible(oscFine.get());
+	oscFine->setRange(-1, 1, 0.01);
+	oscFine->setSliderStyle(Slider::RotaryVerticalDrag);
+	oscFine->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+	oscFine->addListener(this);
 
-    oscFine->setBounds (120, 32, 64, 64);
+	oscFine->setBounds(120, 32, 64, 64);
 
-    fineLabel.reset (new Label ("fineLabel",
-                                TRANS("Fine\n")));
-    addAndMakeVisible (fineLabel.get());
-    fineLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
-    fineLabel->setJustificationType (Justification::centredLeft);
-    fineLabel->setEditable (false, false, false);
-    fineLabel->setColour (TextEditor::textColourId, Colours::black);
-    fineLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+	fineLabel.reset(new Label("fineLabel",
+		TRANS("Fine\n")));
+	addAndMakeVisible(fineLabel.get());
+	fineLabel->setFont(Font(12.00f, Font::plain).withTypefaceStyle("Regular"));
+	fineLabel->setJustificationType(Justification::centredLeft);
+	fineLabel->setEditable(false, false, false);
+	fineLabel->setColour(TextEditor::textColourId, Colours::black);
+	fineLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    fineLabel->setBounds (136, 96, 39, 24);
+	fineLabel->setBounds(136, 96, 39, 24);
 
-    pwSlider.reset (new Slider ("pwSlider"));
-    addAndMakeVisible (pwSlider.get());
-    pwSlider->setRange (0, 1, 0.01);
-    pwSlider->setSliderStyle (Slider::RotaryVerticalDrag);
-    pwSlider->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
-    pwSlider->addListener (this);
+	pwSlider.reset(new Slider("pwSlider"));
+	addAndMakeVisible(pwSlider.get());
+	pwSlider->setRange(0, 1, 0.01);
+	pwSlider->setSliderStyle(Slider::RotaryVerticalDrag);
+	pwSlider->setTextBoxStyle(Slider::TextBoxBelow, false, 80, 20);
+	pwSlider->addListener(this);
 
-    pwSlider->setBounds (24, 120, 64, 64);
+	pwSlider->setBounds(24, 120, 64, 64);
 
-    pwLabel.reset (new Label ("pwLabel",
-                              TRANS("PW\n")));
-    addAndMakeVisible (pwLabel.get());
-    pwLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
-    pwLabel->setJustificationType (Justification::centredLeft);
-    pwLabel->setEditable (false, false, false);
-    pwLabel->setColour (TextEditor::textColourId, Colours::black);
-    pwLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+	pwLabel.reset(new Label("pwLabel",
+		TRANS("PW\n")));
+	addAndMakeVisible(pwLabel.get());
+	pwLabel->setFont(Font(12.00f, Font::plain).withTypefaceStyle("Regular"));
+	pwLabel->setJustificationType(Justification::centredLeft);
+	pwLabel->setEditable(false, false, false);
+	pwLabel->setColour(TextEditor::textColourId, Colours::black);
+	pwLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    pwLabel->setBounds (40, 184, 39, 24);
+	pwLabel->setBounds(40, 184, 39, 24);
 
-    syncButton.reset (new ToggleButton ("syncButton"));
-    addAndMakeVisible (syncButton.get());
-    syncButton->setButtonText (TRANS("sync"));
-    syncButton->addListener (this);
+	syncButton.reset(new ToggleButton("syncButton"));
+	addAndMakeVisible(syncButton.get());
+	syncButton->setButtonText(TRANS("sync"));
+	syncButton->addListener(this);
 
-    syncButton->setBounds (112, 192, 56, 24);
+	syncButton->setBounds(112, 192, 56, 24);
 
-    shapeComboBox.reset (new ComboBox ("shapeComboBox"));
-    addAndMakeVisible (shapeComboBox.get());
-    shapeComboBox->setEditableText (false);
-    shapeComboBox->setJustificationType (Justification::centredLeft);
-    shapeComboBox->setTextWhenNothingSelected (String());
-    shapeComboBox->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    shapeComboBox->addItem (TRANS("Sawtooth"), 1);
-    shapeComboBox->addItem (TRANS("Pulse"), 2);
-    shapeComboBox->addItem (TRANS("Sine"), 3);
-    shapeComboBox->addItem (TRANS("Noise"), 4);
-    shapeComboBox->addListener (this);
+	shapeComboBox.reset(new ComboBox("shapeComboBox"));
+	addAndMakeVisible(shapeComboBox.get());
+	shapeComboBox->setEditableText(false);
+	shapeComboBox->setJustificationType(Justification::centredLeft);
+	shapeComboBox->setTextWhenNothingSelected(String());
+	shapeComboBox->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
+	shapeComboBox->addItem(TRANS("Sawtooth"), 1);
+	shapeComboBox->addItem(TRANS("Pulse"), 2);
+	shapeComboBox->addItem(TRANS("Sine"), 3);
+	shapeComboBox->addItem(TRANS("Noise"), 4);
+	shapeComboBox->addListener(this);
 
-    shapeComboBox->setBounds (104, 128, 88, 24);
+	shapeComboBox->setBounds(104, 128, 88, 24);
 
-    shapeLabel.reset (new Label ("shapeLabel",
-                                 TRANS("Shape\n")));
-    addAndMakeVisible (shapeLabel.get());
-    shapeLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
-    shapeLabel->setJustificationType (Justification::centredLeft);
-    shapeLabel->setEditable (false, false, false);
-    shapeLabel->setColour (TextEditor::textColourId, Colours::black);
-    shapeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+	shapeLabel.reset(new Label("shapeLabel",
+		TRANS("Shape\n")));
+	addAndMakeVisible(shapeLabel.get());
+	shapeLabel->setFont(Font(12.00f, Font::plain).withTypefaceStyle("Regular"));
+	shapeLabel->setJustificationType(Justification::centredLeft);
+	shapeLabel->setEditable(false, false, false);
+	shapeLabel->setColour(TextEditor::textColourId, Colours::black);
+	shapeLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    shapeLabel->setBounds (104, 160, 71, 24);
-
-
-    //[UserPreSize]
-    //[/UserPreSize]
-
-    setSize (600, 400);
+	shapeLabel->setBounds(104, 160, 71, 24);
 
 
-    //[Constructor] You can add your own custom stuff here..
+	//[UserPreSize]
+	//[/UserPreSize]
+
+	setSize(600, 400);
+
+
+	//[Constructor] You can		add your own custom stuff here..
 
 
     //[/Constructor]
@@ -318,6 +318,14 @@ void OscillatorPanel::initAttachments()
 		factory->createComboAttachment("osc4Shape", shapeComboBox.get());
 	}
 
+	oscPitch.get()->textFromValueFunction = [](double value)
+	{
+		return String(roundDoubleToInt(value));
+
+	};
+	oscPitch.get()->valueFromTextFunction = [](String text) {
+		return text.getIntValue();
+	};
 
 }
 //[/MiscUserCode]

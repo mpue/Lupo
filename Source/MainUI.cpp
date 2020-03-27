@@ -194,19 +194,19 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
     addAndMakeVisible (ch2Panel.get());
     ch2Panel->setName ("channel2");
 
-    ch2Panel->setBounds (472, 168, 112, 96);
+    ch2Panel->setBounds (472, 160, 112, 96);
 
     ch3Panel.reset (new MixerChannelPanel (model, factory));
     addAndMakeVisible (ch3Panel.get());
     ch3Panel->setName ("channel3");
 
-    ch3Panel->setBounds (472, 272, 112, 96);
+    ch3Panel->setBounds (472, 256, 112, 96);
 
     ch4Panel.reset (new MixerChannelPanel (model, factory));
     addAndMakeVisible (ch4Panel.get());
     ch4Panel->setName ("channel4");
 
-    ch4Panel->setBounds (472, 376, 112, 96);
+    ch4Panel->setBounds (472, 352, 112, 96);
 
     osc4Panel.reset (new OscillatorPanel (model, factory));
     addAndMakeVisible (osc4Panel.get());
@@ -292,6 +292,26 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
                             Image(), 1.000f, Colour (0x00000000));
     imageButton->setBounds (600, 464, 376, 80);
 
+    fmSlider.reset (new Slider ("fmSlider"));
+    addAndMakeVisible (fmSlider.get());
+    fmSlider->setRange (0, 1, 0);
+    fmSlider->setSliderStyle (Slider::RotaryVerticalDrag);
+    fmSlider->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    fmSlider->addListener (this);
+
+    fmSlider->setBounds (496, 456, 64, 56);
+
+    fmLabel.reset (new Label ("fmLabel",
+                              TRANS("FM osc1->osc2")));
+    addAndMakeVisible (fmLabel.get());
+    fmLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
+    fmLabel->setJustificationType (Justification::centredLeft);
+    fmLabel->setEditable (false, false, false);
+    fmLabel->setColour (TextEditor::textColourId, Colours::black);
+    fmLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    fmLabel->setBounds (488, 512, 72, 24);
+
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -342,8 +362,9 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 	factory->createSliderAttachment("cutoff", fltCutoff.get());
 	factory->createSliderAttachment("resonance", fltResonance.get());
-	factory->createSliderAttachment("mainVol", mainVolume.get());
+	factory->createSliderAttachment("mainVolume", mainVolume.get());
 	factory->createSliderAttachment("envAmt", envAmt.get());
+	factory->createSliderAttachment("fmAmount", fmSlider.get());
 
 	osc1Panel.get()->initAttachments();
 	osc2Panel.get()->initAttachments();
@@ -412,6 +433,8 @@ MainUI::~MainUI()
     saveButton = nullptr;
     presetCombo = nullptr;
     imageButton = nullptr;
+    fmSlider = nullptr;
+    fmLabel = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -477,6 +500,11 @@ void MainUI::sliderValueChanged (Slider* sliderThatWasMoved)
         //[UserSliderCode_envAmt] -- add your slider handling code here..
 		model->envAmt = sliderThatWasMoved->getValue();
         //[/UserSliderCode_envAmt]
+    }
+    else if (sliderThatWasMoved == fmSlider.get())
+    {
+        //[UserSliderCode_fmSlider] -- add your slider handling code here..
+        //[/UserSliderCode_fmSlider]
     }
 
     //[UsersliderValueChanged_Post]
@@ -729,13 +757,13 @@ BEGIN_JUCER_METADATA
                     explicitFocusOrder="0" pos="472 64 112 96" class="MixerChannelPanel"
                     params="model, factory"/>
   <GENERICCOMPONENT name="channel2" id="f3b06b13d2a0d971" memberName="ch2Panel" virtualName=""
-                    explicitFocusOrder="0" pos="472 168 112 96" class="MixerChannelPanel"
+                    explicitFocusOrder="0" pos="472 160 112 96" class="MixerChannelPanel"
                     params="model, factory"/>
   <GENERICCOMPONENT name="channel3" id="6786cb4ee8a2b52d" memberName="ch3Panel" virtualName=""
-                    explicitFocusOrder="0" pos="472 272 112 96" class="MixerChannelPanel"
+                    explicitFocusOrder="0" pos="472 256 112 96" class="MixerChannelPanel"
                     params="model, factory"/>
   <GENERICCOMPONENT name="channel4" id="fff0d24cb459d4de" memberName="ch4Panel" virtualName=""
-                    explicitFocusOrder="0" pos="472 376 112 96" class="MixerChannelPanel"
+                    explicitFocusOrder="0" pos="472 352 112 96" class="MixerChannelPanel"
                     params="model, factory"/>
   <GENERICCOMPONENT name="osc4Panel" id="e90f31bb4430d4b4" memberName="osc4Panel"
                     virtualName="" explicitFocusOrder="0" pos="240 304 216 232" class="OscillatorPanel"
@@ -774,6 +802,15 @@ BEGIN_JUCER_METADATA
                resourceNormal="logo_png" opacityNormal="1.0" colourNormal="61040404"
                resourceOver="" opacityOver="1.0" colourOver="0" resourceDown=""
                opacityDown="1.0" colourDown="0"/>
+  <SLIDER name="fmSlider" id="69f0d2ae761ae29c" memberName="fmSlider" virtualName=""
+          explicitFocusOrder="0" pos="496 456 64 56" min="0.0" max="1.0"
+          int="0.0" style="RotaryVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
+          textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+  <LABEL name="fmLabel" id="5b0b7ed57f4efafc" memberName="fmLabel" virtualName=""
+         explicitFocusOrder="0" pos="488 512 72 24" edTextCol="ff000000"
+         edBkgCol="0" labelText="FM osc1-&gt;osc2" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

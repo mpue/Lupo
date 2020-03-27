@@ -106,7 +106,7 @@ void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscM
 		v->addOszillator(osc2);
 		v->addOszillator(osc3);
 		v->addOszillator(osc4);
-
+		
 		voices->push_back(v);
 	}
 }
@@ -128,11 +128,7 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	lfo2 = new MultimodeOscillator(sampleRate, bufferSize);
 	lfo2->setMode(2.0f);
 
-	for (int i = 0; i < voices->size(); i++) {
-		voices->at(i)->setModulator(lfo1);
-	}
-
-	//filter->setModulator(lfo2);
+	// filter->setModulator(lfo2);
 	lfo2->setModAmount(0);
 	lfo1->setModAmount(0);
 
@@ -281,89 +277,8 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 }
 
 void LupoSynth::updateState() {
-		
-	/*
-	mainVolume = model->mainVolume;
-
-	filter->coefficients(sampleRate, model->cutoff, model->resonance);
-	filter->setModAmount(model->envAmt);
-
-	delay->setDelay(StereoDelay::Channel::LEFT, model->dlyTimeLeft);
-	delay->setDelay(StereoDelay::Channel::RIGHT, model->dlyTimeRight);
-	delay->setFeedback(StereoDelay::Channel::LEFT, model->dlyFeedback);
-	delay->setFeedback(StereoDelay::Channel::RIGHT, model->dlyFeedback);
-	delay->setMix(StereoDelay::Channel::LEFT, model->dlyMix);
-	delay->setMix(StereoDelay::Channel::RIGHT, model->dlyMix);
-
-	chorus->delay = model->chrDelay;
-	chorus->feedback = model->chrFeedback;
-	chorus->leftMod = model->chrModulation;
-	chorus->rightMod = model->chrModulation;
-	chorus->mix = model->chrMix;
-
-	modEnvelopes->at(0)->setAttackRate(model->fltAttack * sampleRate);
-	modEnvelopes->at(0)->setDecayRate(model->fltDecay * sampleRate);
-	modEnvelopes->at(0)->setSustainLevel(model->fltSustain);
-	modEnvelopes->at(0)->setReleaseRate(model->fltRelease * sampleRate);
-
-	modEnvelopes->at(1)->setAttackRate(model->auxAttack * sampleRate);
-	modEnvelopes->at(1)->setDecayRate(model->auxDecay * sampleRate);
-	modEnvelopes->at(1)->setSustainLevel(model->auxSustain);
-	modEnvelopes->at(1)->setReleaseRate(model->auxRelease * sampleRate);
-
-	juce::Reverb::Parameters params =  reverb->getParameters();
-	params.damping = model->rvbDdamping;
-	params.dryLevel = model->rvbDryLevel;
-	params.freezeMode = model->rvbFreezeMode;
-	params.roomSize = model->rvbRoomSize;
-	params.wetLevel = model->rvbWetLevel;
-	params.width = model->rvbWidth;
-	reverb->setParameters(params);
-
-	for (int i = 0; i < voices->size(); i++) {
-
-		voices->at(i)->getAmpEnvelope()->setAttackRate(model->ampAttack * sampleRate);
-		voices->at(i)->getAmpEnvelope()->setDecayRate(model->ampDecay * sampleRate);
-		voices->at(i)->getAmpEnvelope()->setSustainLevel(model->ampSustain);
-		voices->at(i)->getAmpEnvelope()->setReleaseRate(model->ampRelease * sampleRate);
-
-		voices->at(i)->getOscillator(0)->setPitch(model->osc1Pitch);
-		voices->at(i)->getOscillator(0)->setFine(model->osc1Fine);
-		
-		voices->at(i)->setOscVolume(0, model->osc1Volume);
-		voices->at(i)->setOscPan(0, model->osc1Pan);
-
-		voices->at(i)->getOscillator(1)->setPitch(model->osc2Pitch);
-		voices->at(i)->getOscillator(1)->setFine(model->osc2Fine);
-		
-		voices->at(i)->setOscVolume(1, model->osc2Volume);
-		voices->at(i)->setOscPan(1, model->osc2Pan);
-
-		voices->at(i)->getOscillator(2)->setPitch(model->osc3Pitch);
-		voices->at(i)->getOscillator(2)->setFine(model->osc3Fine);
-		
-		voices->at(i)->setOscVolume(2, model->osc3Volume);
-		voices->at(i)->setOscPan(2, model->osc3Pan);
-
-		voices->at(i)->getOscillator(3)->setPitch(model->osc4Pitch);
-		voices->at(i)->getOscillator(3)->setFine(model->osc4Fine);
-		
-		voices->at(i)->setOscVolume(3, model->osc4Volume);
-		voices->at(i)->setOscPan(3, model->osc4Pan);
-
-		for (int j = 0; j < 4; j++) {
-			voices->at(i)->updateOscillator(j);
-		}
-
-		voices->at(i)->getOscillator(0)->setMode(model->osc1Shape);
-		voices->at(i)->getOscillator(1)->setMode(model->osc2Shape);
-		voices->at(i)->getOscillator(2)->setMode(model->osc3Shape);
-		voices->at(i)->getOscillator(3)->setMode(model->osc4Shape);
-
-	}
-	*/
-
 }
+
 
 void LupoSynth::changeListenerCallback(ChangeBroadcaster* source) {
 	updateState();
@@ -605,6 +520,8 @@ void LupoSynth::parameterChanged(const String & parameterID, float newValue)
 		for (int i = 0; i < voices->size(); i++) {
 			voices->at(i)->setModAmount(newValue * 10);
 		}
+	}
+	else if (parameterID == "fmAmount") {
 	}
 	else if (parameterID == "lfo1Shape") {
 		lfo1->setMode(newValue);

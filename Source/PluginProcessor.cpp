@@ -103,7 +103,7 @@ LupoAudioProcessor::LupoAudioProcessor()
 
 	factory->createParam("lfo1Amount", "Lfo1 amount", 0, 1.0, 0);
 	factory->createParam("lfo2Amount", "Lfo2 amount", 0, 1.0, 0);
-
+	factory->createParam("fmAmount", "FM amount", 0, 1.0, 0);
 
 	bypass = parameters->createAndAddParameter("bypass", "bypass", "Bypass", NormalisableRange<float>(0, 1),0, nullptr, nullptr);
 	
