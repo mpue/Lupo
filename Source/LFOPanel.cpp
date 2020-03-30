@@ -49,7 +49,7 @@ LFOPanel::LFOPanel (Model* model, AttachmentFactory* factory)
     lfoSpeed->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     lfoSpeed->addListener (this);
 
-    lfoSpeed->setBounds (16, 16, 48, 48);
+    lfoSpeed->setBounds (16, 24, 48, 48);
 
     speedLabel.reset (new Label ("speedLabel",
                                  TRANS("Speed")));
@@ -60,7 +60,7 @@ LFOPanel::LFOPanel (Model* model, AttachmentFactory* factory)
     speedLabel->setColour (TextEditor::textColourId, Colours::black);
     speedLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    speedLabel->setBounds (16, 64, 48, 24);
+    speedLabel->setBounds (16, 72, 48, 24);
 
     lfoAmount.reset (new Slider ("lfoAmount"));
     addAndMakeVisible (lfoAmount.get());
@@ -69,7 +69,7 @@ LFOPanel::LFOPanel (Model* model, AttachmentFactory* factory)
     lfoAmount->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     lfoAmount->addListener (this);
 
-    lfoAmount->setBounds (72, 16, 48, 48);
+    lfoAmount->setBounds (72, 24, 48, 48);
 
     amtLabel.reset (new Label ("amtLabel",
                                TRANS("Amount\n")));
@@ -80,7 +80,7 @@ LFOPanel::LFOPanel (Model* model, AttachmentFactory* factory)
     amtLabel->setColour (TextEditor::textColourId, Colours::black);
     amtLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    amtLabel->setBounds (72, 64, 56, 24);
+    amtLabel->setBounds (72, 72, 56, 24);
 
     shapeLabel.reset (new Label ("shapeLabel",
                                  TRANS("Shape")));
@@ -91,7 +91,7 @@ LFOPanel::LFOPanel (Model* model, AttachmentFactory* factory)
     shapeLabel->setColour (TextEditor::textColourId, Colours::black);
     shapeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    shapeLabel->setBounds (160, 64, 56, 24);
+    shapeLabel->setBounds (160, 72, 56, 24);
 
     shapeComboBox.reset (new ComboBox ("shapeComboBox"));
     addAndMakeVisible (shapeComboBox.get());
@@ -105,7 +105,7 @@ LFOPanel::LFOPanel (Model* model, AttachmentFactory* factory)
     shapeComboBox->addItem (TRANS("Noise"), 4);
     shapeComboBox->addListener (this);
 
-    shapeComboBox->setBounds (136, 32, 88, 24);
+    shapeComboBox->setBounds (136, 40, 88, 24);
 
 
     //[UserPreSize]
@@ -221,31 +221,31 @@ BEGIN_JUCER_METADATA
   <GROUPCOMPONENT name="LFOGroup" id="92909cf09d44f991" memberName="LFOGroup" virtualName=""
                   explicitFocusOrder="0" pos="0 0 240 96" title="LFO"/>
   <SLIDER name="lfoSpeed" id="57e273c20e9f4d5e" memberName="lfoSpeed" virtualName=""
-          explicitFocusOrder="0" pos="16 16 48 48" min="0.0" max="30.0"
+          explicitFocusOrder="0" pos="16 24 48 48" min="0.0" max="30.0"
           int="1.0" style="RotaryVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <LABEL name="speedLabel" id="abdc5c483d1b1ed5" memberName="speedLabel"
-         virtualName="" explicitFocusOrder="0" pos="16 64 48 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="16 72 48 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Speed" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="lfoAmount" id="2af918ae339d8f03" memberName="lfoAmount"
-          virtualName="" explicitFocusOrder="0" pos="72 16 48 48" min="0.0"
+          virtualName="" explicitFocusOrder="0" pos="72 24 48 48" min="0.0"
           max="1.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="amtLabel" id="83aec8890278a97e" memberName="amtLabel" virtualName=""
-         explicitFocusOrder="0" pos="72 64 56 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="72 72 56 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Amount&#10;" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="shapeLabel" id="ea7e028b75d72fb0" memberName="shapeLabel"
-         virtualName="" explicitFocusOrder="0" pos="160 64 56 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="160 72 56 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Shape" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="shapeComboBox" id="3df82e5817294763" memberName="shapeComboBox"
-            virtualName="" explicitFocusOrder="0" pos="136 32 88 24" editable="0"
+            virtualName="" explicitFocusOrder="0" pos="136 40 88 24" editable="0"
             layout="33" items="Sawtooth&#10;Pulse&#10;Sine&#10;Noise" textWhenNonSelected=""
             textWhenNoItems="(no choices)"/>
 </JUCER_COMPONENT>

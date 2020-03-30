@@ -49,7 +49,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     roomSize->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     roomSize->addListener (this);
 
-    roomSize->setBounds (8, 16, 56, 64);
+    roomSize->setBounds (8, 24, 56, 64);
 
     roomSIzeLbl.reset (new Label ("roomSIzeLbl",
                                   TRANS("Room size")));
@@ -69,7 +69,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     damping->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     damping->addListener (this);
 
-    damping->setBounds (64, 16, 56, 64);
+    damping->setBounds (64, 24, 56, 64);
 
     dampingLbl.reset (new Label ("dampingLbl",
                                  TRANS("Damping")));
@@ -89,7 +89,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     width->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     width->addListener (this);
 
-    width->setBounds (120, 16, 56, 64);
+    width->setBounds (120, 24, 56, 64);
 
     widthLbl.reset (new Label ("widthLbl",
                                TRANS("Width")));
@@ -109,7 +109,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     dryLevel->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     dryLevel->addListener (this);
 
-    dryLevel->setBounds (176, 16, 56, 64);
+    dryLevel->setBounds (176, 24, 56, 64);
 
     dryLbl.reset (new Label ("dryLbl",
                              TRANS("Dry\n")));
@@ -129,7 +129,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     wetLevel->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     wetLevel->addListener (this);
 
-    wetLevel->setBounds (232, 16, 56, 64);
+    wetLevel->setBounds (232, 24, 56, 64);
 
     wetLbl.reset (new Label ("wetLbl",
                              TRANS("Wet")));
@@ -149,7 +149,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     freeze->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     freeze->addListener (this);
 
-    freeze->setBounds (288, 16, 56, 64);
+    freeze->setBounds (288, 24, 56, 64);
 
     freezeLbl.reset (new Label ("freezeLbl",
                                 TRANS("Freeze\n")));
@@ -296,7 +296,7 @@ BEGIN_JUCER_METADATA
   <GROUPCOMPONENT name="reverbGroup" id="827b920ebb279fef" memberName="reverbGroup"
                   virtualName="" explicitFocusOrder="0" pos="0 0 352 112" title="Reverb"/>
   <SLIDER name="roomSize" id="3affdff2a3157f75" memberName="roomSize" virtualName=""
-          explicitFocusOrder="0" pos="8 16 56 64" min="0.0" max="1.0" int="0.01"
+          explicitFocusOrder="0" pos="8 24 56 64" min="0.0" max="1.0" int="0.01"
           style="RotaryVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <LABEL name="roomSIzeLbl" id="1abc27b61ccb8637" memberName="roomSIzeLbl"
@@ -305,7 +305,7 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="damping" id="b8bfc21a9c0ca3d0" memberName="damping" virtualName=""
-          explicitFocusOrder="0" pos="64 16 56 64" min="0.0" max="1.0"
+          explicitFocusOrder="0" pos="64 24 56 64" min="0.0" max="1.0"
           int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
@@ -315,7 +315,7 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="damping" id="63317514a3284189" memberName="width" virtualName=""
-          explicitFocusOrder="0" pos="120 16 56 64" min="0.0" max="1.0"
+          explicitFocusOrder="0" pos="120 24 56 64" min="0.0" max="1.0"
           int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
@@ -325,7 +325,7 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="dryLevel" id="246c47f37893dfef" memberName="dryLevel" virtualName=""
-          explicitFocusOrder="0" pos="176 16 56 64" min="0.0" max="1.0"
+          explicitFocusOrder="0" pos="176 24 56 64" min="0.0" max="1.0"
           int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
@@ -335,7 +335,7 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="wetLevel" id="6f75904fe54beef4" memberName="wetLevel" virtualName=""
-          explicitFocusOrder="0" pos="232 16 56 64" min="0.0" max="1.0"
+          explicitFocusOrder="0" pos="232 24 56 64" min="0.0" max="1.0"
           int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
@@ -345,7 +345,7 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="wetLevel" id="17f4021cbeb408a5" memberName="freeze" virtualName=""
-          explicitFocusOrder="0" pos="288 16 56 64" min="0.0" max="1.0"
+          explicitFocusOrder="0" pos="288 24 56 64" min="0.0" max="1.0"
           int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>

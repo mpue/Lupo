@@ -33,7 +33,9 @@ LupoAudioProcessorEditor::LupoAudioProcessorEditor (LupoAudioProcessor& p)
 LupoAudioProcessorEditor::~LupoAudioProcessorEditor()
 {
 	setLookAndFeel(nullptr);
-	// delete mainUI;
+	if (JUCEApplication::isStandaloneApp()) {
+		delete mainUI;
+	}
 }
 
 //==============================================================================

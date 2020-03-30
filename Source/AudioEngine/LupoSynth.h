@@ -18,6 +18,8 @@
 #include "StereoDelay.h"
 #include "StereoReverb.h"
 #include "StereoChorus.h"
+#include "Distortion.h"
+#include "Arpeggiator.h"
 #include "../Model.h"
 #include "../JuceLibraryCode/JuceHeader.h"
 
@@ -36,6 +38,7 @@ public:
 	void processMidi(MidiBuffer& midiMessages);
 	void prepareToPlay(double sampleRate, int bufferSize);	
 	void updateState();
+	Arpeggiator* getArpeggiator();
 
 	Oszillator* createOscillator(Oszillator::OscMode mode);
 	void configureOscillators(Oszillator::OscMode mode1, Oszillator::OscMode mode2, Oszillator::OscMode mode3, Oszillator::OscMode mode4);
@@ -62,6 +65,8 @@ private:
 	StereoDelay* delay;
 	StereoReverb* reverb;
 	StereoChorus* chorus;
+	Distortion* distortion;
+	Arpeggiator* arp;
 
 	int highestNote = 0;
 

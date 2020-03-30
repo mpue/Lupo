@@ -51,7 +51,7 @@ MixerChannelPanel::MixerChannelPanel (Model* model, AttachmentFactory* factory)
     volSlider->setTextBoxStyle (Slider::NoTextBox, true, 80, 20);
     volSlider->addListener (this);
 
-    volSlider->setBounds (8, 16, 48, 48);
+    volSlider->setBounds (8, 24, 48, 48);
 
     panSlider.reset (new Slider ("panSlider"));
     addAndMakeVisible (panSlider.get());
@@ -60,7 +60,7 @@ MixerChannelPanel::MixerChannelPanel (Model* model, AttachmentFactory* factory)
     panSlider->setTextBoxStyle (Slider::NoTextBox, true, 80, 20);
     panSlider->addListener (this);
 
-    panSlider->setBounds (64, 24, 32, 32);
+    panSlider->setBounds (64, 32, 32, 32);
 
     volumeLabel.reset (new Label ("volumeLabel",
                                   TRANS("Vol\n")));
@@ -71,7 +71,7 @@ MixerChannelPanel::MixerChannelPanel (Model* model, AttachmentFactory* factory)
     volumeLabel->setColour (TextEditor::textColourId, Colours::black);
     volumeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    volumeLabel->setBounds (16, 64, 31, 24);
+    volumeLabel->setBounds (16, 72, 31, 24);
 
     panLabel.reset (new Label ("panLabel",
                                TRANS("Pan\n")));
@@ -82,7 +82,7 @@ MixerChannelPanel::MixerChannelPanel (Model* model, AttachmentFactory* factory)
     panLabel->setColour (TextEditor::textColourId, Colours::black);
     panLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    panLabel->setBounds (64, 64, 40, 24);
+    panLabel->setBounds (64, 72, 40, 24);
 
 
     //[UserPreSize]
@@ -224,22 +224,22 @@ BEGIN_JUCER_METADATA
   <GROUPCOMPONENT name="channelGroup" id="9f266fdaeb7fb76b" memberName="channelGroup"
                   virtualName="" explicitFocusOrder="0" pos="0 0 104 96" title="CH1"/>
   <SLIDER name="volSlider" id="b16b5072d98a689d" memberName="volSlider"
-          virtualName="" explicitFocusOrder="0" pos="8 16 48 48" min="0.0"
+          virtualName="" explicitFocusOrder="0" pos="8 24 48 48" min="0.0"
           max="1.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="0" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <SLIDER name="panSlider" id="5c349ac21e02e861" memberName="panSlider"
-          virtualName="" explicitFocusOrder="0" pos="64 24 32 32" min="-2.0"
+          virtualName="" explicitFocusOrder="0" pos="64 32 32 32" min="-2.0"
           max="2.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="0" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="volumeLabel" id="7c2ca28cdcb89db2" memberName="volumeLabel"
-         virtualName="" explicitFocusOrder="0" pos="16 64 31 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="16 72 31 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Vol&#10;" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="panLabel" id="27664fc0db1a0720" memberName="panLabel" virtualName=""
-         explicitFocusOrder="0" pos="64 64 40 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="64 72 40 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Pan&#10;" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>

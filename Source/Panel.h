@@ -21,8 +21,6 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
-class Model;
-class AttachmentFactory;
 //[/Headers]
 
 
@@ -35,46 +33,40 @@ class AttachmentFactory;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class ChorusPanel  : public Component,
-                     public ChangeBroadcaster,
-                     public Slider::Listener
+class Panel  : public Component
 {
 public:
     //==============================================================================
-    ChorusPanel (Model* model, AttachmentFactory* factory);
-    ~ChorusPanel();
+    Panel ();
+    ~Panel();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
-	void initAttachments();
+	void updateConnector(Point<int> start, Point<int> end);
+
+
     //[/UserMethods]
 
     void paint (Graphics& g) override;
     void resized() override;
-    void sliderValueChanged (Slider* sliderThatWasMoved) override;
+    void mouseMove (const MouseEvent& e) override;
+    void mouseDown (const MouseEvent& e) override;
+    void mouseDrag (const MouseEvent& e) override;
+    void mouseUp (const MouseEvent& e) override;
 
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-	Model* model;
-	AttachmentFactory* factory;
+	Point<int> start;
+	Point<int> end;
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<GroupComponent> chorusGroup;
-    std::unique_ptr<Slider> delay;
-    std::unique_ptr<Label> delayLabel;
-    std::unique_ptr<Slider> modulation;
-    std::unique_ptr<Label> modLabel;
-    std::unique_ptr<Slider> feedback;
-    std::unique_ptr<Label> fblabel;
-    std::unique_ptr<Slider> mix;
-    std::unique_ptr<Label> mixLabel;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChorusPanel)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (Panel)
 };
 
 //[EndFile] You can add extra defines here...

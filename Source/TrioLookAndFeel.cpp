@@ -325,7 +325,7 @@ void TrioLookAndFeel::drawGroupComponentOutline(Graphics& g, int width, int heig
 
 	Path p;
 	auto x = indent;
-	auto y = f.getAscent() - 3.0f;
+	auto y = f.getAscent() + 0.0f;
 	auto w = jmax(0.0f, width - x * 2.0f);
 	auto h = jmax(0.0f, height - y - indent);
 	cs = jmin(cs, w * 0.5f, h * 0.5f);
@@ -356,14 +356,21 @@ void TrioLookAndFeel::drawGroupComponentOutline(Graphics& g, int width, int heig
 
 	auto alpha = group.isEnabled() ? 1.0f : 0.5f;
 
-	g.setColour(Colours::darkgrey.darker().withMultipliedAlpha(alpha));
 
+	g.setColour(Colours::darkgrey.withMultipliedAlpha(alpha));
+	
+	g.fillPath(p);
+	g.setColour(Colours::darkgrey.darker().withMultipliedAlpha(alpha));
 	g.strokePath(p, PathStrokeType(1.0f));
 
-	g.setColour(Colours::white.withMultipliedAlpha(alpha));
+	g.drawRect(roundToInt(x + textX), 3,
+		roundToInt(textW),
+		roundToInt(textH+2));
+
+	g.setColour(Colours::lightgrey.withMultipliedAlpha(alpha));
 	g.setFont(f);
 	g.drawText(text,
-		roundToInt(x + textX), 0,
+		roundToInt(x + textX), 3,
 		roundToInt(textW),
 		roundToInt(textH),
 		Justification::centred, true);

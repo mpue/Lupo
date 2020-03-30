@@ -49,7 +49,7 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
     amp_attack->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     amp_attack->addListener (this);
 
-    amp_attack->setBounds (8, 16, 64, 64);
+    amp_attack->setBounds (8, 24, 64, 64);
 
     amp_decay.reset (new Slider ("amp_decay"));
     addAndMakeVisible (amp_decay.get());
@@ -58,7 +58,7 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
     amp_decay->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     amp_decay->addListener (this);
 
-    amp_decay->setBounds (72, 16, 64, 64);
+    amp_decay->setBounds (72, 24, 64, 64);
 
     amp_sustain.reset (new Slider ("amp_sustain"));
     addAndMakeVisible (amp_sustain.get());
@@ -67,7 +67,7 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
     amp_sustain->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     amp_sustain->addListener (this);
 
-    amp_sustain->setBounds (136, 16, 64, 64);
+    amp_sustain->setBounds (136, 24, 64, 64);
 
     amp_release.reset (new Slider ("amp_release"));
     addAndMakeVisible (amp_release.get());
@@ -76,7 +76,7 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
     amp_release->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     amp_release->addListener (this);
 
-    amp_release->setBounds (200, 16, 64, 64);
+    amp_release->setBounds (200, 24, 64, 64);
 
     attack.reset (new Label ("attack",
                              TRANS("Attack")));
@@ -278,22 +278,22 @@ BEGIN_JUCER_METADATA
   <GROUPCOMPONENT name="new group" id="a42d8319e5f14b10" memberName="groupComponent"
                   virtualName="" explicitFocusOrder="0" pos="1 -3 279 115" title="Envelope"/>
   <SLIDER name="amp_attack" id="dd56ce6b5eccf295" memberName="amp_attack"
-          virtualName="" explicitFocusOrder="0" pos="8 16 64 64" min="0.0"
+          virtualName="" explicitFocusOrder="0" pos="8 24 64 64" min="0.0"
           max="10.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <SLIDER name="amp_decay" id="336632529c646979" memberName="amp_decay"
-          virtualName="" explicitFocusOrder="0" pos="72 16 64 64" min="0.0"
+          virtualName="" explicitFocusOrder="0" pos="72 24 64 64" min="0.0"
           max="5.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <SLIDER name="amp_sustain" id="cefe10e4212549e2" memberName="amp_sustain"
-          virtualName="" explicitFocusOrder="0" pos="136 16 64 64" min="0.0"
+          virtualName="" explicitFocusOrder="0" pos="136 24 64 64" min="0.0"
           max="1.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <SLIDER name="amp_release" id="9ced331028b46d97" memberName="amp_release"
-          virtualName="" explicitFocusOrder="0" pos="200 16 64 64" min="0.0"
+          virtualName="" explicitFocusOrder="0" pos="200 24 64 64" min="0.0"
           max="10.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>

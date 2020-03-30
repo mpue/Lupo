@@ -120,4 +120,8 @@ public:
 	float chrFeedback;
 	float chrMix;
 
+	float distMode = 0.0f;
+	float distDrive = 0.0f;
+	float distMix = 0.0f;
+
 };

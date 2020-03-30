@@ -26,6 +26,7 @@
 #include "AttachmentFactory.h"
 #include "PresetDialog.h"
 #include "AudioEngine/Oszillator.h"
+#include "Panel.h"
 //[/Headers]
 
 #include "MainUI.h"
@@ -41,14 +42,21 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 	this->processor = processor;
 	this->model = processor->getModel();
 	this->synth = processor->getSynth();
+	Arpeggiator* arp = this->synth->getArpeggiator();
 	Logger::getCurrentLogger()->writeToLog("GUI instance created.");
     //[/Constructor_pre]
+
+    GlassPanel.reset (new Panel());
+    addAndMakeVisible (GlassPanel.get());
+    GlassPanel->setName ("GlassPanel");
+
+    GlassPanel->setBounds (0, 0, 992, 840);
 
     ModulationGroup.reset (new GroupComponent ("ModulationGroup",
                                                TRANS("Modulation")));
     addAndMakeVisible (ModulationGroup.get());
 
-    ModulationGroup->setBounds (8, 544, 976, 144);
+    ModulationGroup->setBounds (8, 544, 792, 144);
 
     groupComponent.reset (new GroupComponent ("new group",
                                               TRANS("Amplifier")));
@@ -218,13 +226,13 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
     addAndMakeVisible (lfo1.get());
     lfo1->setName ("lfo1");
 
-    lfo1->setBounds (24, 568, 240, 96);
+    lfo1->setBounds (16, 568, 240, 96);
 
     lfo2.reset (new LFOPanel (model, factory));
     addAndMakeVisible (lfo2.get());
     lfo2->setName ("lfo2");
 
-    lfo2->setBounds (280, 568, 240, 96);
+    lfo2->setBounds (264, 568, 240, 96);
 
     FXGroup.reset (new GroupComponent ("FXGroup",
                                        TRANS("FX")));
@@ -242,7 +250,7 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
     addAndMakeVisible (auxEnvelope.get());
     auxEnvelope->setName ("auxEnvelope");
 
-    auxEnvelope->setBounds (608, 560, 280, 124);
+    auxEnvelope->setBounds (512, 560, 280, 124);
 
     delayPanel.reset (new DelayPanel (model, factory));
     addAndMakeVisible (delayPanel.get());
@@ -282,16 +290,6 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 
     presetCombo->setBounds (88, 16, 224, 24);
 
-    imageButton.reset (new ImageButton ("new button"));
-    addAndMakeVisible (imageButton.get());
-    imageButton->addListener (this);
-
-    imageButton->setImages (false, true, true,
-                            ImageCache::getFromMemory (logo_png, logo_pngSize), 1.000f, Colour (0x61040404),
-                            Image(), 1.000f, Colour (0x00000000),
-                            Image(), 1.000f, Colour (0x00000000));
-    imageButton->setBounds (600, 464, 376, 80);
-
     fmSlider.reset (new Slider ("fmSlider"));
     addAndMakeVisible (fmSlider.get());
     fmSlider->setRange (0, 1, 0);
@@ -311,6 +309,30 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
     fmLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
     fmLabel->setBounds (488, 512, 72, 24);
+
+    distGroup.reset (new GroupComponent ("distGroup",
+                                         TRANS("Distortion")));
+    addAndMakeVisible (distGroup.get());
+
+    distGroup->setBounds (592, 456, 392, 88);
+
+    distortionPanel.reset (new DistortionPanel (model, factory));
+    addAndMakeVisible (distortionPanel.get());
+    distortionPanel->setName ("distortionPanel");
+
+    distortionPanel->setBounds (616, 472, 288, 64);
+
+    arpGroup.reset (new GroupComponent ("arpGroup",
+                                        TRANS("Arpeggiator")));
+    addAndMakeVisible (arpGroup.get());
+
+    arpGroup->setBounds (800, 544, 184, 144);
+
+    arpPanel.reset (new ArpPanel (factory,arp));
+    addAndMakeVisible (arpPanel.get());
+    arpPanel->setName ("arpPanel");
+
+    arpPanel->setBounds (808, 560, 168, 120);
 
 
     //[UserPreSize]
@@ -356,7 +378,7 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 	chorusPanel.get()->addChangeListener(this);
 
 	addChangeListener(synth);
-	addMouseListener(this, true);
+	// addMouseListener(this, true);
 
 	factory->initState();
 
@@ -386,8 +408,13 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 	reverbPanel.get()->initAttachments();
 	chorusPanel.get()->initAttachments();
 	delayPanel.get()->initAttachments();
+	distortionPanel.get()->initAttachments();
+	arpPanel.get()->initAttachments();
 
 	synth->addChangeListener(this);
+
+	presetCombo->setText("init");
+	GlassPanel.get()->setVisible(false);
 
     //[/Constructor]
 }
@@ -397,8 +424,10 @@ MainUI::~MainUI()
     //[Destructor_pre]. You can add your own custom destruction code here..
 	removeAllChangeListeners();
 	delete dlg;
+
     //[/Destructor_pre]
 
+    GlassPanel = nullptr;
     ModulationGroup = nullptr;
     groupComponent = nullptr;
     groupComponent3 = nullptr;
@@ -432,9 +461,12 @@ MainUI::~MainUI()
     presetButton = nullptr;
     saveButton = nullptr;
     presetCombo = nullptr;
-    imageButton = nullptr;
     fmSlider = nullptr;
     fmLabel = nullptr;
+    distGroup = nullptr;
+    distortionPanel = nullptr;
+    arpGroup = nullptr;
+    arpPanel = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -452,10 +484,8 @@ void MainUI::paint (Graphics& g)
     //[UserPaint] Add your own custom painting code here..
 
 	g.setColour(Colours::white);
-	if (draggingConnection) {
-		g.drawLine(mouseDownPos.x, mouseDownPos.y, mousePos.x, mousePos.y, 2.0f);
 
-	}
+
 
 
 
@@ -601,11 +631,6 @@ void MainUI::buttonClicked (Button* buttonThatWasClicked)
 
         //[/UserButtonCode_saveButton]
     }
-    else if (buttonThatWasClicked == imageButton.get())
-    {
-        //[UserButtonCode_imageButton] -- add your button handler code here..
-        //[/UserButtonCode_imageButton]
-    }
 
     //[UserbuttonClicked_Post]
 	updatePresetList();
@@ -649,25 +674,67 @@ void MainUI::updatePresetList() {
 
 }
 
+Component * MainUI::findComponentAtMousePosition(Point<int> mousePos, Component* parent)
+{
+	for (int i = 0; i < parent->getNumChildComponents(); i++) {
+		Component* child = parent->getChildComponent(i);
+		if (child->getBounds().contains(mousePos)) {
+			return child;
+		}
+		else {
+			return findComponentAtMousePosition(mousePos, child);
+		}
+	}
+
+	return nullptr;
+}
+
 void MainUI::mouseDown(const MouseEvent & event)
 {
-	// mouseDownPos = event.getPosition();
+	/*
+	GlassPanel.get()->setVisible(true);
+	mouseDownPos = event.getPosition();
+	if (event.mods.middleButtonModifier) {
+		draggingConnection = true;
+		modSource = findComponentAtMousePosition(mouseDownPos, this);
+	}
+	*/
 }
 
 void MainUI::mouseUp(const MouseEvent & event)
 {
-	// draggingConnection = false;
+	/*
+	GlassPanel.get()->setVisible(false);
+	if (event.mods.middleButtonModifier) {
+		draggingConnection = false;
+		if (modSource != nullptr && modTarget != nullptr) {
+			Logger::getCurrentLogger()->writeToLog("Connection from " + modSource->getName() + " to " + modTarget->getName());
+		}
+
+	}
+	*/
 }
 
 void MainUI::mouseDrag(const MouseEvent & event)
 {
-	// draggingConnection = true;
-	// repaint();
+	/*
+	if (GlassPanel.get()->isVisible()) {
+		GlassPanel.get()->updateConnector(mouseDownPos, mousePos);
+	}
+	mousePos = event.getPosition();
+	repaint();
+	*/
 }
 
 void MainUI::mouseMove(const MouseEvent & event)
 {
-	// mousePos = event.getPosition();
+	/*
+	 mousePos = event.getPosition();
+	 if (draggingConnection) {
+		repaint();
+		modTarget = findComponentAtMousePosition(mouseDownPos, this);
+	 }
+	 */
 }
 
 //[/MiscUserCode]
@@ -688,8 +755,11 @@ BEGIN_JUCER_METADATA
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
                  overlayOpacity="0.330" fixedSize="0" initialWidth="1300" initialHeight="900">
   <BACKGROUND backgroundColour="ff606060"/>
+  <GENERICCOMPONENT name="GlassPanel" id="341b1345fa2fc01f" memberName="GlassPanel"
+                    virtualName="" explicitFocusOrder="0" pos="0 0 992 840" class="Panel"
+                    params=""/>
   <GROUPCOMPONENT name="ModulationGroup" id="bbbc621090753013" memberName="ModulationGroup"
-                  virtualName="" explicitFocusOrder="0" pos="8 544 976 144" title="Modulation"/>
+                  virtualName="" explicitFocusOrder="0" pos="8 544 792 144" title="Modulation"/>
   <GROUPCOMPONENT name="new group" id="fddf59086c1c83a4" memberName="groupComponent"
                   virtualName="" explicitFocusOrder="0" pos="592 48 392 160" title="Amplifier"/>
   <GROUPCOMPONENT name="new group" id="be488b129ef124bc" memberName="groupComponent3"
@@ -769,9 +839,9 @@ BEGIN_JUCER_METADATA
                     virtualName="" explicitFocusOrder="0" pos="240 304 216 232" class="OscillatorPanel"
                     params="model, factory"/>
   <GENERICCOMPONENT name="lfo1" id="5309e7d420abc98c" memberName="lfo1" virtualName=""
-                    explicitFocusOrder="0" pos="24 568 240 96" class="LFOPanel" params="model, factory"/>
+                    explicitFocusOrder="0" pos="16 568 240 96" class="LFOPanel" params="model, factory"/>
   <GENERICCOMPONENT name="lfo2" id="6e5eaff17ef4b84d" memberName="lfo2" virtualName=""
-                    explicitFocusOrder="0" pos="280 568 240 96" class="LFOPanel"
+                    explicitFocusOrder="0" pos="264 568 240 96" class="LFOPanel"
                     params="model, factory"/>
   <GROUPCOMPONENT name="FXGroup" id="85cf2fc9be4f7bcf" memberName="FXGroup" virtualName=""
                   explicitFocusOrder="0" pos="8 688 976 136" title="FX"/>
@@ -779,7 +849,7 @@ BEGIN_JUCER_METADATA
                     virtualName="" explicitFocusOrder="0" pos="16 704 352 112" class="ReverbPanel"
                     params="model, factory"/>
   <GENERICCOMPONENT name="auxEnvelope" id="b597ff273ac7fb29" memberName="auxEnvelope"
-                    virtualName="" explicitFocusOrder="0" pos="608 560 280 124" class="EnvelopePanel"
+                    virtualName="" explicitFocusOrder="0" pos="512 560 280 124" class="EnvelopePanel"
                     params="model, factory"/>
   <GENERICCOMPONENT name="delayPanel" id="f7f617a6d8249b19" memberName="delayPanel"
                     virtualName="" explicitFocusOrder="0" pos="376 704 264 112" class="DelayPanel"
@@ -796,12 +866,6 @@ BEGIN_JUCER_METADATA
   <COMBOBOX name="presetCombo" id="d63a422738bbc6a6" memberName="presetCombo"
             virtualName="" explicitFocusOrder="0" pos="88 16 224 24" editable="1"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
-  <IMAGEBUTTON name="new button" id="3861c7a908a49591" memberName="imageButton"
-               virtualName="" explicitFocusOrder="0" pos="600 464 376 80" buttonText="new button"
-               connectedEdges="0" needsCallback="1" radioGroupId="0" keepProportions="1"
-               resourceNormal="logo_png" opacityNormal="1.0" colourNormal="61040404"
-               resourceOver="" opacityOver="1.0" colourOver="0" resourceDown=""
-               opacityDown="1.0" colourDown="0"/>
   <SLIDER name="fmSlider" id="69f0d2ae761ae29c" memberName="fmSlider" virtualName=""
           explicitFocusOrder="0" pos="496 456 64 56" min="0.0" max="1.0"
           int="0.0" style="RotaryVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
@@ -811,6 +875,16 @@ BEGIN_JUCER_METADATA
          edBkgCol="0" labelText="FM osc1-&gt;osc2" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+  <GROUPCOMPONENT name="distGroup" id="7ba7ed3f872d0a19" memberName="distGroup"
+                  virtualName="" explicitFocusOrder="0" pos="592 456 392 88" title="Distortion"/>
+  <GENERICCOMPONENT name="distortionPanel" id="aca878e23294d78d" memberName="distortionPanel"
+                    virtualName="" explicitFocusOrder="0" pos="616 472 288 64" class="DistortionPanel"
+                    params="model, factory"/>
+  <GROUPCOMPONENT name="arpGroup" id="9465491d90d794f8" memberName="arpGroup" virtualName=""
+                  explicitFocusOrder="0" pos="800 544 184 144" title="Arpeggiator"/>
+  <GENERICCOMPONENT name="arpPanel" id="28f6a1e250ee9be9" memberName="arpPanel" virtualName=""
+                    explicitFocusOrder="0" pos="808 560 168 120" class="ArpPanel"
+                    params="factory,arp"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

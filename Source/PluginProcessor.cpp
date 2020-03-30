@@ -105,6 +105,17 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("lfo2Amount", "Lfo2 amount", 0, 1.0, 0);
 	factory->createParam("fmAmount", "FM amount", 0, 1.0, 0);
 
+	factory->createParam("distDrive", "Drive", 0, 5.0, 0);
+	factory->createParam("distMix", "Distortion Mix", 0, 1.0, 0);
+	factory->createParam("distMode", "Distortion MOde", 0, 3.0, 0);
+
+	factory->createParam("arpEnabled", "Arp enabled", 0, 1.0, 0);
+	factory->createParam("arpSpeed", "Arp speed", 0, 1.0, 0);
+	factory->createParam("arpOctaves", "Arp Octaves", 0, 3.0, 0);
+	factory->createParam("arpMode", "Arp mode", 0, 1.0, 0);
+
+	
+
 	bypass = parameters->createAndAddParameter("bypass", "bypass", "Bypass", NormalisableRange<float>(0, 1),0, nullptr, nullptr);
 	
 	Logger::getCurrentLogger()->writeToLog("Building preset list");
@@ -132,11 +143,11 @@ LupoAudioProcessor::LupoAudioProcessor()
 }
 
 LupoAudioProcessor::~LupoAudioProcessor()
-{	/*
-	lupo.reset();
-	model.reset();
-	parameters.reset();
-	 */	
+{
+	if (JUCEApplication::isStandaloneApp()) {		
+		lupo.reset();
+		model.reset();
+	}
 // delete messageBus;
 	Logger::getCurrentLogger()->writeToLog("Lupo is dead.");
 }

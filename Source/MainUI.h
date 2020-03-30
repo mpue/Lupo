@@ -32,9 +32,12 @@
 #include "MixerChannelPanel.h"
 #include "GraphicalEnvelope.h"
 #include "PluginProcessor.h"
+#include "DistortionPanel.h"
+#include "ArpPanel.h"
 class Model;
 class AttachmentFactory;
 class PresetDialog;
+class Panel;
 //[/Headers]
 
 
@@ -67,6 +70,9 @@ public:
 	void mouseDrag(const MouseEvent& event) override;
 	void mouseMove(const MouseEvent& event) override;
 	void updatePresetList();
+	Component* findComponentAtMousePosition(Point<int> mousePos, Component* parent);
+
+
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -92,9 +98,13 @@ private:
 	vector<std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment>>* sliderAttachments;
 	PresetDialog* dlg;
 
+	Component* modSource = nullptr;
+	Component* modTarget = nullptr;
+
     //[/UserVariables]
 
     //==============================================================================
+    std::unique_ptr<Panel> GlassPanel;
     std::unique_ptr<GroupComponent> ModulationGroup;
     std::unique_ptr<GroupComponent> groupComponent;
     std::unique_ptr<GroupComponent> groupComponent3;
@@ -128,9 +138,12 @@ private:
     std::unique_ptr<TextButton> presetButton;
     std::unique_ptr<TextButton> saveButton;
     std::unique_ptr<ComboBox> presetCombo;
-    std::unique_ptr<ImageButton> imageButton;
     std::unique_ptr<Slider> fmSlider;
     std::unique_ptr<Label> fmLabel;
+    std::unique_ptr<GroupComponent> distGroup;
+    std::unique_ptr<DistortionPanel> distortionPanel;
+    std::unique_ptr<GroupComponent> arpGroup;
+    std::unique_ptr<ArpPanel> arpPanel;
 
 
     //==============================================================================

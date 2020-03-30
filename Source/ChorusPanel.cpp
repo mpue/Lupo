@@ -49,7 +49,7 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
     delay->setTextBoxStyle (Slider::NoTextBox, false, 80, 12);
     delay->addListener (this);
 
-    delay->setBounds (8, 16, 56, 64);
+    delay->setBounds (8, 24, 56, 64);
 
     delayLabel.reset (new Label ("delayLabel",
                                  TRANS("Delay\n")));
@@ -69,7 +69,7 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
     modulation->setTextBoxStyle (Slider::NoTextBox, false, 80, 12);
     modulation->addListener (this);
 
-    modulation->setBounds (64, 16, 56, 64);
+    modulation->setBounds (64, 24, 56, 64);
 
     modLabel.reset (new Label ("modLabel",
                                TRANS("Modulation\n")));
@@ -89,7 +89,7 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
     feedback->setTextBoxStyle (Slider::NoTextBox, false, 80, 12);
     feedback->addListener (this);
 
-    feedback->setBounds (120, 16, 56, 64);
+    feedback->setBounds (120, 24, 56, 64);
 
     fblabel.reset (new Label ("fblabel",
                               TRANS("Feedback")));
@@ -109,7 +109,7 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
     mix->setTextBoxStyle (Slider::NoTextBox, false, 80, 12);
     mix->addListener (this);
 
-    mix->setBounds (176, 16, 56, 64);
+    mix->setBounds (176, 24, 56, 64);
 
     mixLabel.reset (new Label ("mixLabel",
                                TRANS("Mix\n")));
@@ -237,7 +237,7 @@ BEGIN_JUCER_METADATA
   <GROUPCOMPONENT name="chorusGroup" id="eacd1de0d050c8e2" memberName="chorusGroup"
                   virtualName="" explicitFocusOrder="0" pos="0 0 240 112" title="Chorus"/>
   <SLIDER name="delay" id="abab2f5032a25de2" memberName="delay" virtualName=""
-          explicitFocusOrder="0" pos="8 16 56 64" min="0.0" max="1.0" int="0.01"
+          explicitFocusOrder="0" pos="8 24 56 64" min="0.0" max="1.0" int="0.01"
           style="RotaryVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="12" skewFactor="1.0" needsCallback="1"/>
   <LABEL name="delayLabel" id="94f67f48984c9459" memberName="delayLabel"
@@ -246,7 +246,7 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="modulation" id="fb30fdbeb23f1267" memberName="modulation"
-          virtualName="" explicitFocusOrder="0" pos="64 16 56 64" min="0.0"
+          virtualName="" explicitFocusOrder="0" pos="64 24 56 64" min="0.0"
           max="1.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="12" skewFactor="1.0"
           needsCallback="1"/>
@@ -256,7 +256,7 @@ BEGIN_JUCER_METADATA
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="feedback" id="2216e6c2e45b40a1" memberName="feedback" virtualName=""
-          explicitFocusOrder="0" pos="120 16 56 64" min="0.0" max="1.0"
+          explicitFocusOrder="0" pos="120 24 56 64" min="0.0" max="1.0"
           int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="12" skewFactor="1.0"
           needsCallback="1"/>
@@ -266,7 +266,7 @@ BEGIN_JUCER_METADATA
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="mix" id="f1be319ec0c8f888" memberName="mix" virtualName=""
-          explicitFocusOrder="0" pos="176 16 56 64" min="0.0" max="1.0"
+          explicitFocusOrder="0" pos="176 24 56 64" min="0.0" max="1.0"
           int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="12" skewFactor="1.0"
           needsCallback="1"/>

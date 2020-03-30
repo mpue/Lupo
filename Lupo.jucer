@@ -41,12 +41,18 @@
         <FILE id="aOdW8A" name="Topic.h" compile="0" resource="0" file="Source/MessageBus/Topic.h"/>
       </GROUP>
       <GROUP id="{73B48C3D-9605-CFBE-4AA4-97CEABC11729}" name="UI">
+        <FILE id="eve0WY" name="ArpPanel.cpp" compile="1" resource="0" file="Source/ArpPanel.cpp"/>
+        <FILE id="ey2qwJ" name="ArpPanel.h" compile="0" resource="0" file="Source/ArpPanel.h"/>
         <FILE id="oN5BfN" name="AttachmentFactory.h" compile="0" resource="0"
               file="Source/AttachmentFactory.h"/>
         <FILE id="fzdpsu" name="ChorusPanel.cpp" compile="1" resource="0" file="Source/ChorusPanel.cpp"/>
         <FILE id="v0hFu3" name="ChorusPanel.h" compile="0" resource="0" file="Source/ChorusPanel.h"/>
         <FILE id="SzCDGd" name="DelayPanel.cpp" compile="1" resource="0" file="Source/DelayPanel.cpp"/>
         <FILE id="lgwdag" name="DelayPanel.h" compile="0" resource="0" file="Source/DelayPanel.h"/>
+        <FILE id="UjFMe0" name="DistortionPanel.cpp" compile="1" resource="0"
+              file="Source/DistortionPanel.cpp"/>
+        <FILE id="SUc1HO" name="DistortionPanel.h" compile="0" resource="0"
+              file="Source/DistortionPanel.h"/>
         <FILE id="ftY232" name="EnvelopePanel.cpp" compile="1" resource="0"
               file="Source/EnvelopePanel.cpp"/>
         <FILE id="bOOBt5" name="EnvelopePanel.h" compile="0" resource="0" file="Source/EnvelopePanel.h"/>
@@ -67,6 +73,8 @@
               file="Source/OscillatorPanel.cpp"/>
         <FILE id="f1U1bO" name="OscillatorPanel.h" compile="0" resource="0"
               file="Source/OscillatorPanel.h"/>
+        <FILE id="Ro2aP8" name="Panel.cpp" compile="1" resource="0" file="Source/Panel.cpp"/>
+        <FILE id="WVo6H1" name="Panel.h" compile="0" resource="0" file="Source/Panel.h"/>
         <FILE id="JY1OHb" name="PresetDialog.cpp" compile="1" resource="0"
               file="Source/PresetDialog.cpp"/>
         <FILE id="aKKnxp" name="PresetDialog.h" compile="0" resource="0" file="Source/PresetDialog.h"/>
@@ -79,6 +87,8 @@
       <GROUP id="{E619D4C1-110E-416E-055B-B61301338B21}" name="AudioEngine">
         <FILE id="sGv9jB" name="ADSR.cpp" compile="1" resource="0" file="Source/AudioEngine/ADSR.cpp"/>
         <FILE id="eKShKB" name="ADSR.h" compile="0" resource="0" file="Source/AudioEngine/ADSR.h"/>
+        <FILE id="giZTPK" name="Arpeggiator.cpp" compile="1" resource="0" file="Source/AudioEngine/Arpeggiator.cpp"/>
+        <FILE id="BZcCQd" name="Arpeggiator.h" compile="0" resource="0" file="Source/AudioEngine/Arpeggiator.h"/>
         <FILE id="qEI9sy" name="AudioProcessorModule.h" compile="0" resource="0"
               file="Source/AudioEngine/AudioProcessorModule.h"/>
         <FILE id="ob2Wl8" name="BasicDelayLine.cpp" compile="1" resource="0"

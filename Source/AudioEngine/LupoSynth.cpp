@@ -33,6 +33,8 @@ LupoSynth::LupoSynth(Model* model) {
 	filter->setModAmount(0);
 	delay = new StereoDelay();
 	reverb = new StereoReverb();	
+	distortion = new Distortion();
+	arp = new Arpeggiator();
 }
 
 LupoSynth::~LupoSynth() {
@@ -51,8 +53,10 @@ LupoSynth::~LupoSynth() {
 	delete delay;
 	delete reverb;
 	delete chorus;
+	delete distortion;
 	delete lfo1;
 	delete lfo2;
+	delete arp;
 }
 
 Oszillator* LupoSynth::createOscillator(Oszillator::OscMode mode) {
@@ -142,6 +146,7 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 		modEnvelopes->at(i)->setSustainLevel(.8);
 	}
 
+	arp->prepareToPlay(sampleRate, bufferSize);
 
 	// updateState();
 
@@ -236,13 +241,15 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 	}
 
 	filter->setKeyTrack(highestNote);
+	
 
 }
 
 void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) {
 
+	this->arp->processBlock(buffer, midiMessages);
 	this->processMidi(midiMessages);
-	
+
 	for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
 
 		float valueL = 0;
@@ -254,17 +261,17 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 				valueL += voices->at(i)->process(0) * mainVolume * 4;				
 				valueR += voices->at(i)->process(1) * mainVolume * 4;
 			}
-		}
+		}		
 		
-		buffer.addSample(0, sample, valueL);
-		buffer.addSample(1, sample, valueR);
+		buffer.addSample(0, sample, distortion->processSample(valueL));
+		buffer.addSample(1, sample, distortion->processSample(valueR));
 		
 		for (int i = 0; i < modEnvelopes->size(); i++) {
 			modEnvelopes->at(i)->process();
 		}
+
 		lfo1->process();
 		lfo2->process();
-
 	}
 
 	leftOut = buffer.getWritePointer(0);
@@ -277,6 +284,11 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 }
 
 void LupoSynth::updateState() {
+}
+
+Arpeggiator * LupoSynth::getArpeggiator()
+{
+	return arp;
 }
 
 
@@ -535,7 +547,16 @@ void LupoSynth::parameterChanged(const String & parameterID, float newValue)
 	else if (parameterID == "lfo2Shape") {
 		lfo2->setMode(newValue);
 	}
-
+	else if (parameterID == "distDrive") {
+		distortion->controls.drive = newValue;
+	}
+	else if (parameterID == "distMix") {
+		distortion->controls.mix = newValue;
+	}
+	else if (parameterID == "distMode") {
+		distortion->controls.mode = newValue;
+	}
+	
 }
 
 void LupoSynth::parameterValueChanged(int parameterIndex, float newValue)

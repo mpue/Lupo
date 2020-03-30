@@ -35,14 +35,14 @@ class AttachmentFactory;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class ChorusPanel  : public Component,
-                     public ChangeBroadcaster,
-                     public Slider::Listener
+class DistortionPanel  : public Component,
+                         public Slider::Listener,
+                         public ComboBox::Listener
 {
 public:
     //==============================================================================
-    ChorusPanel (Model* model, AttachmentFactory* factory);
-    ~ChorusPanel();
+    DistortionPanel (Model* model, AttachmentFactory* factory);
+    ~DistortionPanel();
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -52,29 +52,27 @@ public:
     void paint (Graphics& g) override;
     void resized() override;
     void sliderValueChanged (Slider* sliderThatWasMoved) override;
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
 
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-	Model* model;
 	AttachmentFactory* factory;
+	Model* model;
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<GroupComponent> chorusGroup;
-    std::unique_ptr<Slider> delay;
-    std::unique_ptr<Label> delayLabel;
-    std::unique_ptr<Slider> modulation;
-    std::unique_ptr<Label> modLabel;
-    std::unique_ptr<Slider> feedback;
-    std::unique_ptr<Label> fblabel;
-    std::unique_ptr<Slider> mix;
+    std::unique_ptr<Slider> driveSlider;
+    std::unique_ptr<Slider> mixSlider;
+    std::unique_ptr<Label> driveLabel;
     std::unique_ptr<Label> mixLabel;
+    std::unique_ptr<ComboBox> modeCombo;
+    std::unique_ptr<Label> modeLabel;
 
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ChorusPanel)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DistortionPanel)
 };
 
 //[EndFile] You can add extra defines here...
