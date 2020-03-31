@@ -247,11 +247,15 @@ void LupoAudioProcessor::setSelectedProgram(juce::String name) {
 
 const String LupoAudioProcessor::getProgramName (int index)
 {
+	if (programNames.size() < 1) {
+		return "init";
+	}
+
 	if (getNumPrograms() > 0 && index < getNumPrograms() && index >= 0) {
 		return programNames.at(index);
 	}
 
-	return "Empty";
+	return "init";
 }
 
 void LupoAudioProcessor::changeProgramName (int index, const String& newName)
@@ -328,11 +332,12 @@ void LupoAudioProcessor::getStateInformation (MemoryBlock& destData)
 	/*
 	Logger::getCurrentLogger()->writeToLog("getStateInformation");
 
+	*/
 	MemoryOutputStream stream;
 	parameters->state.writeToStream(stream);	
 	destData.append(stream.getData(), stream.getDataSize());
-	*/
-	
+
+	/*
 	if (parameters == nullptr) {
 		return;
 	}
@@ -341,6 +346,7 @@ void LupoAudioProcessor::getStateInformation (MemoryBlock& destData)
 		ScopedPointer<XmlElement> xml(parameters->state.createXml());
 		copyXmlToBinary(*xml, destData);
 	}
+	*/
 	
 	
 }
@@ -348,7 +354,7 @@ void LupoAudioProcessor::getStateInformation (MemoryBlock& destData)
 void LupoAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
 	
-	
+	/*
 	if (sizeInBytes > 0) {
 		ScopedPointer<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
 		if (xmlState != nullptr)
@@ -359,14 +365,16 @@ void LupoAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 				}
 			}
 
+			
 	}
-	/*
+	*/
+	
 	if (parameters->state.isValid()) {
 		MemoryInputStream stream(data, sizeInBytes, false);
 		parameters->state.readFromStream(stream);
 		lupo->updateState();
 	}
-	*/
+	
 }
 
 //==============================================================================

@@ -620,8 +620,7 @@ void MainUI::buttonClicked (Button* buttonThatWasClicked)
 				}
 
 				itemId++;
-
-				this->presetCombo->addItem(presetName, itemId);
+				
 				// this->presetBox->setSelectedId(itemId);
 
 			}
@@ -629,11 +628,11 @@ void MainUI::buttonClicked (Button* buttonThatWasClicked)
 			xml = nullptr;
 		}
 
+		updatePresetList();
         //[/UserButtonCode_saveButton]
     }
 
     //[UserbuttonClicked_Post]
-	updatePresetList();
     //[/UserbuttonClicked_Post]
 }
 
