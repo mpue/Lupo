@@ -28,8 +28,11 @@ LupoAudioProcessor::LupoAudioProcessor()
 {
 	String appDataPath = File::getSpecialLocation(File::userApplicationDataDirectory).getFullPathName();
 
+
 	model.reset(new Model());
-	lupo.reset(new LupoSynth(model.get()));
+	matrix = new ModMatrix();
+
+	lupo.reset(new LupoSynth(model.get(),matrix));
 	parameters = new AudioProcessorValueTreeState(*this, nullptr);
 
 	factory = new AttachmentFactory(this, lupo.get());
@@ -147,6 +150,7 @@ LupoAudioProcessor::~LupoAudioProcessor()
 	if (JUCEApplication::isStandaloneApp()) {		
 		lupo.reset();
 		model.reset();
+		delete matrix;
 	}
 // delete messageBus;
 	Logger::getCurrentLogger()->writeToLog("Lupo is dead.");

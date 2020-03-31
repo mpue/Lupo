@@ -9,28 +9,21 @@
 */
 
 #pragma once
-#include "Sawtooth.h"
+#include "MultimodeOscillator.h"
+#include "Modulator.h"
+#include "ModTarget.h"
+#include <vector>
 
-class OscGroup {
+class OscGroup : public ModTarget {
 
 public:
-	OscGroup(double sampleRate, int bufferSize);
+	OscGroup();
 	~OscGroup();
-
-	float process(int voice) ;
-	float getOutput() ;
-	void setFine(float fine) ;
-	float getFine() const ;
-
-	void setPitch(int pitch);
-	int getPitch();
-
-	virtual void setFrequency(int voice,double frequency) ;
-	virtual void reset() ;
-
+	virtual void setModulator(Modulator* mod);
+	void addTarget(ModTarget* target);
+	std::vector<ModTarget*> getTargets();
 private:
-	float frequency;
-	float fine;
-	Sawtooth* saw[128];
-	int pitch;
+	std::vector<ModTarget*> targets;
+	
+	Modulator* modulator;
 };

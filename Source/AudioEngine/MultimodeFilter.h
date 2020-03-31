@@ -32,7 +32,6 @@ public:
     virtual void coefficients(float sampleRate,float frequency, float resonance) override;
     virtual void processStereo(float *const left, float *const right, const int numSamples) override;
     virtual void setModulator(Modulator* mod) override;
-    virtual void setModAmount(float amount) override;
     void setMode(Mode mode);
 	void setKeyTrack(int track);
 
@@ -48,8 +47,6 @@ private:
     ScopedPointer<HighPassFilter> highPassRight;
     
     Mode mode;
-
-	float modAmount = 0;
 
 	int keyTrack;
 

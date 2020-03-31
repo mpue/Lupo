@@ -20,7 +20,9 @@
 #include "StereoChorus.h"
 #include "Distortion.h"
 #include "Arpeggiator.h"
+#include "OscGroup.h"
 #include "../Model.h"
+#include "../ModMatrix.h"
 #include "../JuceLibraryCode/JuceHeader.h"
 
 class LupoSynth : public ChangeListener, 
@@ -31,7 +33,7 @@ class LupoSynth : public ChangeListener,
 	
 public:
 
-	LupoSynth(Model* model);
+	LupoSynth(Model* model, ModMatrix* modMatrix);
 	~LupoSynth();
 
 	void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages);	
@@ -40,13 +42,13 @@ public:
 	void updateState();
 	Arpeggiator* getArpeggiator();
 
-	Oszillator* createOscillator(Oszillator::OscMode mode);
+	MultimodeOscillator* createOscillator(Oszillator::OscMode mode);
 	void configureOscillators(Oszillator::OscMode mode1, Oszillator::OscMode mode2, Oszillator::OscMode mode3, Oszillator::OscMode mode4);
 	void changeListenerCallback(ChangeBroadcaster* source) override;
 	void parameterChanged(const String& parameterID, float newValue) override;
 	void parameterValueChanged(int parameterIndex, float newValue) override;
 	void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override;
-
+	ModMatrix* getModMatrix();
 private:
 	Model* model;
 	vector<Voice*>* voices;	
@@ -59,14 +61,21 @@ private:
 	int currentSample = 0;
 	int numVoices = 0;
 
+	OscGroup* oscGroup1;
+	OscGroup* oscGroup2;
+	OscGroup* oscGroup3;
+	OscGroup* oscGroup4;
+
 	MultimodeOscillator* lfo1;
 	MultimodeOscillator* lfo2;
+	MultimodeOscillator* lfo3;
 
 	StereoDelay* delay;
 	StereoReverb* reverb;
 	StereoChorus* chorus;
 	Distortion* distortion;
 	Arpeggiator* arp;
+	ModMatrix* matrix;
 
 	int highestNote = 0;
 

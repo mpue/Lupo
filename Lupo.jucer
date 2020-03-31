@@ -22,6 +22,17 @@
             file="Images/oscillator_square_48.png"/>
     </GROUP>
     <GROUP id="{172FB074-0DA4-14B0-F615-01D1F806371C}" name="Source">
+      <FILE id="NJH6XE" name="ModSlotConfig.cpp" compile="1" resource="0"
+            file="Source/ModSlotConfig.cpp"/>
+      <FILE id="Cb5p9a" name="ModSlotConfig.h" compile="0" resource="0" file="Source/ModSlotConfig.h"/>
+      <FILE id="wTmIeK" name="DummyModulator.h" compile="0" resource="0"
+            file="Source/DummyModulator.h"/>
+      <FILE id="U7rILB" name="ModMatrix.cpp" compile="1" resource="0" file="Source/ModMatrix.cpp"/>
+      <FILE id="yTC21j" name="ModMatrix.h" compile="0" resource="0" file="Source/ModMatrix.h"/>
+      <FILE id="YxjX7b" name="ModMatrixConfig.cpp" compile="1" resource="0"
+            file="Source/ModMatrixConfig.cpp"/>
+      <FILE id="rPMGLd" name="ModMatrixConfig.h" compile="0" resource="0"
+            file="Source/ModMatrixConfig.h"/>
       <FILE id="XiFEss" name="BlitSquare.cpp" compile="1" resource="0" file="Source/BlitSquare.cpp"/>
       <FILE id="U30oV1" name="BlitSquare.h" compile="0" resource="0" file="Source/BlitSquare.h"/>
       <FILE id="ZvSdSy" name="Stk.cpp" compile="1" resource="0" file="Source/Stk.cpp"/>
@@ -69,6 +80,14 @@
         <FILE id="WEYxFH" name="MixerChannelPanel.h" compile="0" resource="0"
               file="Source/MixerChannelPanel.h"/>
         <FILE id="HGJwq9" name="Model.h" compile="0" resource="0" file="Source/Model.h"/>
+        <FILE id="JQtF3C" name="ModMatrixPanel.cpp" compile="1" resource="0"
+              file="Source/ModMatrixPanel.cpp"/>
+        <FILE id="bj5OQM" name="ModMatrixPanel.h" compile="0" resource="0"
+              file="Source/ModMatrixPanel.h"/>
+        <FILE id="V3WVib" name="ModMatrixTable.cpp" compile="1" resource="0"
+              file="Source/ModMatrixTable.cpp"/>
+        <FILE id="G6G2Wk" name="ModMatrixTable.h" compile="0" resource="0"
+              file="Source/ModMatrixTable.h"/>
         <FILE id="BN6bBt" name="OscillatorPanel.cpp" compile="1" resource="0"
               file="Source/OscillatorPanel.cpp"/>
         <FILE id="f1U1bO" name="OscillatorPanel.h" compile="0" resource="0"

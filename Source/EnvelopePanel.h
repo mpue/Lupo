@@ -62,7 +62,6 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<GroupComponent> groupComponent;
     std::unique_ptr<Slider> amp_attack;
     std::unique_ptr<Slider> amp_decay;
     std::unique_ptr<Slider> amp_sustain;

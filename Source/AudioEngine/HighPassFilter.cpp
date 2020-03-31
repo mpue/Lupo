@@ -17,7 +17,6 @@ HighPassFilter::HighPassFilter() {
     this->filter1 = new IIRFilter();
     this->filter2 = new IIRFilter();
     this->modulator = 0;
-	this->modAmount = 0;
 }
 
 HighPassFilter::~HighPassFilter() {
@@ -50,7 +49,7 @@ void HighPassFilter::process(float *in, float *out, int numSamples) {
         if (SynthLab::ADSR* env = dynamic_cast<SynthLab::ADSR*>(this->modulator)) {
             
             if(env->getState() != SynthLab::ADSR::env_idle) {
-                f =  this->frequency + (modulator->getOutput() * this->modAmount * (22000 - this->frequency));
+                f =  this->frequency + (modulator->getOutput() * modulator->getModAmount() * (22000 - this->frequency));
             }
             else {
                 env->reset();
@@ -58,7 +57,7 @@ void HighPassFilter::process(float *in, float *out, int numSamples) {
             
         }
         else {
-            f =  this->frequency + (modulator->getOutput() * this->modAmount * 1000);
+            f =  this->frequency + (modulator->getOutput() * modulator->getModAmount() * 1000);
             // modulator->process();
         }
         
@@ -84,6 +83,3 @@ void HighPassFilter::setModulator(Modulator* mod) {
     this->modulator = mod;
 }
 
-void HighPassFilter::setModAmount(float amount) {
-    this->modAmount = amount;
-}

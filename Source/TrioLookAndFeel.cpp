@@ -410,9 +410,9 @@ void TrioLookAndFeel::drawScrollbarButton (Graphics& g, ScrollBar& bar,
                        width * 0.7f, height * 0.9f);
     
     if (isButtonDown)
-        g.setColour (Colours::white);
+        g.setColour (Colours::grey);
     else if (isMouseOverButton)
-        g.setColour (Colours::white.withAlpha (0.7f));
+        g.setColour (Colours::grey.withAlpha (0.7f));
     else
         g.setColour (bar.findColour (ScrollBar::thumbColourId).withAlpha (0.5f));
     
@@ -427,7 +427,7 @@ void TrioLookAndFeel::drawScrollbar (Graphics& g, ScrollBar& bar,
                                     bool isScrollbarVertical, int thumbStartPosition, int thumbSize,
                                     bool isMouseOver, bool isMouseDown)
 {
-    g.fillAll (bar.findColour (ScrollBar::backgroundColourId));
+    g.fillAll (Colours::darkgrey.darker());
     
     g.setColour (bar.findColour (ScrollBar::thumbColourId)
                  .withAlpha ((isMouseOver || isMouseDown) ? 0.4f : 0.15f));
@@ -455,8 +455,7 @@ void TrioLookAndFeel::drawScrollbar (Graphics& g, ScrollBar& bar,
                              thumbSize, height - 2);
         }
         
-        g.setColour (bar.findColour (ScrollBar::thumbColourId)
-                     .withAlpha ((isMouseOver || isMouseDown) ? 0.95f : 0.7f));
+        g.setColour (Colours::darkgrey.withAlpha ((isMouseOver || isMouseDown) ? 0.95f : 0.7f));
         
         g.fillRect (thumb);
         
@@ -525,7 +524,7 @@ void TrioLookAndFeel::drawShinyButtonShape(Graphics& g,
 
 void TrioLookAndFeel::drawTableHeaderBackground(Graphics &g, TableHeaderComponent &header)
 {
-	g.fillAll(Colours::darkorange);
+	g.fillAll(Colours::darkgrey);
 
 	/*
 	Rectangle<int> area(header.getLocalBounds());
@@ -569,3 +568,18 @@ void TrioLookAndFeel::drawTableHeaderColumn(Graphics &g, const String & columnNa
 	g.setFont(Font(height * 0.5f, Font::bold));
 	g.drawFittedText(columnName, area, Justification::centredLeft, 1);
 }*/
+
+void TrioLookAndFeel::drawTabButton(TabBarButton& button, Graphics& g, bool isMouseOver, bool isMouseDown)
+{
+	Path tabShape;
+	createTabButtonShape(button, tabShape, isMouseOver, isMouseDown);
+
+	auto activeArea = button.getActiveArea();
+	tabShape.applyTransform(AffineTransform::translation((float)activeArea.getX(),
+		(float)activeArea.getY()));
+
+	// DropShadow(Colours::black.withAlpha(0.5f), 2, Point<int>(0, 1)).drawForPath(g, tabShape);
+
+	fillTabButtonShape(button, g, tabShape, isMouseOver, isMouseDown);
+	drawTabButtonText(button, g, isMouseOver, isMouseDown);
+}

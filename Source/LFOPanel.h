@@ -69,7 +69,6 @@ private:
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<GroupComponent> LFOGroup;
     std::unique_ptr<Slider> lfoSpeed;
     std::unique_ptr<Label> speedLabel;
     std::unique_ptr<Slider> lfoAmount;

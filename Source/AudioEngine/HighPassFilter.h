@@ -22,7 +22,7 @@ public:
     virtual void coefficients(float sampleRate, float frequency, float resonance) override;
     virtual void process(float *in, float *out,int numSamples);
     virtual void setModulator(Modulator* mod) override;
-    virtual void setModAmount(float amount) override;
+    
     
     HighPassFilter();
     virtual ~HighPassFilter();
@@ -32,7 +32,6 @@ private:
     juce::ScopedPointer<juce::IIRFilter> filter2;
     Modulator* modulator;
     float frequency;
-    float modAmount;
     float resonance;
     JUCE_LEAK_DETECTOR(HighPassFilter);
     

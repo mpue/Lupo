@@ -75,6 +75,9 @@ public:
 	void drawTableHeaderColumn(Graphics&, const String& columnName, int columnId,
 		int width, int height, bool isMouseOver, bool isMouseDown,
 		int columnFlags) override;*/
+
+
+	void drawTabButton(TabBarButton& button, Graphics& g, bool isMouseOver, bool isMouseDown) override;
 };
 
 

@@ -17,7 +17,6 @@ LowPassFilter::LowPassFilter() {
     this->filter1 = new IIRFilter();
     this->filter2 = new IIRFilter();
     this->modulator = 0;
-	this->modAmount = 0;
 }
 
 LowPassFilter::~LowPassFilter() {
@@ -59,7 +58,7 @@ void LowPassFilter::process(float *in, float *out, int numSamples) {
         if (SynthLab::ADSR* env = dynamic_cast<SynthLab::ADSR*>(this->modulator)) {
         
             if(env->getState() != SynthLab::ADSR::env_idle) {
-                f =  this->frequency + (modulator->getOutput() * this->modAmount * (22000 - this->frequency));
+                f =  this->frequency + (modulator->getOutput() * modulator->getModAmount() * (22000 - this->frequency));
             }
             else {
                 env->reset();
@@ -67,7 +66,7 @@ void LowPassFilter::process(float *in, float *out, int numSamples) {
             
         }
         else {
-	           f =  this->frequency + (modulator->getOutput() * this->modAmount * 1000);            
+	           f =  this->frequency + (modulator->getOutput() * modulator->getModAmount() * 1000);
         }
 
         if (f <= 0) {
@@ -95,6 +94,3 @@ void LowPassFilter::setModulator(Modulator* mod) {
     this->modulator = mod;
 }
 
-void LowPassFilter::setModAmount(float amount) {
-    this->modAmount = amount;
-}

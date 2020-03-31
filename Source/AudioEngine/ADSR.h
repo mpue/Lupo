@@ -106,7 +106,6 @@ inline float ADSR::process() {
                 state = env_idle;
             }
     }
-
     
     return (output / 128) * velocity;
 }
@@ -133,7 +132,7 @@ inline void ADSR::reset() {
 }
 
 inline float ADSR::getOutput() {
-	return output;
+	return output * modAmount;
 }
 }
 

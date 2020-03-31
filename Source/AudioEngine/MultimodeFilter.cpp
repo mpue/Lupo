@@ -23,7 +23,6 @@ MultimodeFilter::MultimodeFilter() {
     
     this->mode = LOWPASS;
 	this->keyTrack = 0;
-	this->modAmount = 0;
 }
 
 MultimodeFilter::~MultimodeFilter() {
@@ -87,16 +86,6 @@ void MultimodeFilter::setModulator(Modulator* mod) {
     this->highPassRight->setModulator(mod);
 }
 
-void MultimodeFilter::setModAmount(float amount) {
-    this->lowPassLeftStage1->setModAmount(amount);
-    this->lowPassRightStage1->setModAmount(amount);
-
-	this->lowPassLeftStage2->setModAmount(amount);
-	this->lowPassRightStage2->setModAmount(amount);
-
-    this->highPassLeft->setModAmount(amount);
-    this->highPassRight->setModAmount(amount);
-}
 
 void MultimodeFilter::setKeyTrack(int track) {
 	this->keyTrack = track;

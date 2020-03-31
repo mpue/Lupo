@@ -19,9 +19,9 @@ public:
     inline virtual ~ModTarget() {};
     
     virtual void setModulator(Modulator* mod) = 0;
-    virtual void setModAmount(float amount) = 0;
-    
-    
+
+private:
+	
     
 };
 

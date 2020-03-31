@@ -27,6 +27,7 @@
 #include "PresetDialog.h"
 #include "AudioEngine/Oszillator.h"
 #include "Panel.h"
+#include "ModMatrixPanel.h"
 //[/Headers]
 
 #include "MainUI.h"
@@ -42,8 +43,10 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 	this->processor = processor;
 	this->model = processor->getModel();
 	this->synth = processor->getSynth();
+	this->matrixModel = new ModMatrixModel(this->synth->getModMatrix());
 	Arpeggiator* arp = this->synth->getArpeggiator();
 	Logger::getCurrentLogger()->writeToLog("GUI instance created.");
+
     //[/Constructor_pre]
 
     GlassPanel.reset (new Panel());
@@ -222,18 +225,6 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 
     osc4Panel->setBounds (240, 304, 216, 232);
 
-    lfo1.reset (new LFOPanel (model, factory));
-    addAndMakeVisible (lfo1.get());
-    lfo1->setName ("lfo1");
-
-    lfo1->setBounds (16, 568, 240, 96);
-
-    lfo2.reset (new LFOPanel (model, factory));
-    addAndMakeVisible (lfo2.get());
-    lfo2->setName ("lfo2");
-
-    lfo2->setBounds (264, 568, 240, 96);
-
     FXGroup.reset (new GroupComponent ("FXGroup",
                                        TRANS("FX")));
     addAndMakeVisible (FXGroup.get());
@@ -245,12 +236,6 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
     reverbPanel->setName ("reverbPanel");
 
     reverbPanel->setBounds (16, 704, 352, 112);
-
-    auxEnvelope.reset (new EnvelopePanel (model, factory));
-    addAndMakeVisible (auxEnvelope.get());
-    auxEnvelope->setName ("auxEnvelope");
-
-    auxEnvelope->setBounds (512, 560, 280, 124);
 
     delayPanel.reset (new DelayPanel (model, factory));
     addAndMakeVisible (delayPanel.get());
@@ -334,6 +319,23 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 
     arpPanel->setBounds (808, 560, 168, 120);
 
+    modulationTab.reset (new TabbedComponent (TabbedButtonBar::TabsAtBottom));
+    addAndMakeVisible (modulationTab.get());
+    modulationTab->setTabBarDepth (22);
+    modulationTab->addTab (TRANS("LFO 1"), Colour (0x00000000), new LFOPanel (model, factory), true);
+    modulationTab->addTab (TRANS("LFO 2"), Colour (0x00000000), new LFOPanel (model, factory), true);
+    modulationTab->addTab (TRANS("LFO 3"), Colours::lightgrey, new LFOPanel (model, factory), true);
+    modulationTab->addTab (TRANS("ENV"), Colour (0x00000000), new EnvelopePanel (model, factory), true);
+    modulationTab->setCurrentTabIndex (0);
+
+    modulationTab->setBounds (24, 568, 264, 120);
+
+    modMatrix.reset (new ModMatrixPanel (matrixModel));
+    addAndMakeVisible (modMatrix.get());
+    modMatrix->setName ("modMatrix");
+
+    modMatrix->setBounds (296, 560, 496, 120);
+
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -372,7 +374,14 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 	ampEnvelope.get()->addChangeListener(this);
 	filterEnvelope.get()->addChangeListener(this);
-	auxEnvelope.get()->addChangeListener(this);
+
+	LFOPanel* lfo1 = dynamic_cast<LFOPanel*> (modulationTab.get()->getTabContentComponent(0));
+	LFOPanel* lfo2 = dynamic_cast<LFOPanel*> (modulationTab.get()->getTabContentComponent(1));
+	LFOPanel* lfo3 = dynamic_cast<LFOPanel*> (modulationTab.get()->getTabContentComponent(2));
+	EnvelopePanel* auxEnvelope = dynamic_cast<EnvelopePanel*> (modulationTab.get()->getTabContentComponent(3));
+	auxEnvelope->setName("auxEnvelope");
+
+	auxEnvelope->addChangeListener(this);
 	delayPanel.get()->addChangeListener(this);
 	reverbPanel.get()->addChangeListener(this);
 	chorusPanel.get()->addChangeListener(this);
@@ -400,10 +409,14 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 	ampEnvelope.get()->initAttachments();
 	filterEnvelope.get()->initAttachments();
-	auxEnvelope.get()->initAttachments();
+	auxEnvelope->initAttachments();
 
-	lfo1.get()->initAttachments();
-	lfo2.get()->initAttachments();
+	lfo1->setName("lfo1");
+	lfo2->setName("lfo2");
+	lfo3->setName("lfo2");
+	lfo1->initAttachments();
+	lfo2->initAttachments();
+	lfo3->initAttachments();
 
 	reverbPanel.get()->initAttachments();
 	chorusPanel.get()->initAttachments();
@@ -415,6 +428,8 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 	presetCombo->setText("init");
 	GlassPanel.get()->setVisible(false);
+
+	resized();
 
     //[/Constructor]
 }
@@ -451,11 +466,8 @@ MainUI::~MainUI()
     ch3Panel = nullptr;
     ch4Panel = nullptr;
     osc4Panel = nullptr;
-    lfo1 = nullptr;
-    lfo2 = nullptr;
     FXGroup = nullptr;
     reverbPanel = nullptr;
-    auxEnvelope = nullptr;
     delayPanel = nullptr;
     chorusPanel = nullptr;
     presetButton = nullptr;
@@ -467,6 +479,8 @@ MainUI::~MainUI()
     distortionPanel = nullptr;
     arpGroup = nullptr;
     arpPanel = nullptr;
+    modulationTab = nullptr;
+    modMatrix = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -620,7 +634,7 @@ void MainUI::buttonClicked (Button* buttonThatWasClicked)
 				}
 
 				itemId++;
-				
+
 				// this->presetBox->setSelectedId(itemId);
 
 			}
@@ -837,18 +851,10 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="osc4Panel" id="e90f31bb4430d4b4" memberName="osc4Panel"
                     virtualName="" explicitFocusOrder="0" pos="240 304 216 232" class="OscillatorPanel"
                     params="model, factory"/>
-  <GENERICCOMPONENT name="lfo1" id="5309e7d420abc98c" memberName="lfo1" virtualName=""
-                    explicitFocusOrder="0" pos="16 568 240 96" class="LFOPanel" params="model, factory"/>
-  <GENERICCOMPONENT name="lfo2" id="6e5eaff17ef4b84d" memberName="lfo2" virtualName=""
-                    explicitFocusOrder="0" pos="264 568 240 96" class="LFOPanel"
-                    params="model, factory"/>
   <GROUPCOMPONENT name="FXGroup" id="85cf2fc9be4f7bcf" memberName="FXGroup" virtualName=""
                   explicitFocusOrder="0" pos="8 688 976 136" title="FX"/>
   <GENERICCOMPONENT name="reverbPanel" id="c574c98e1dd9ac8a" memberName="reverbPanel"
                     virtualName="" explicitFocusOrder="0" pos="16 704 352 112" class="ReverbPanel"
-                    params="model, factory"/>
-  <GENERICCOMPONENT name="auxEnvelope" id="b597ff273ac7fb29" memberName="auxEnvelope"
-                    virtualName="" explicitFocusOrder="0" pos="512 560 280 124" class="EnvelopePanel"
                     params="model, factory"/>
   <GENERICCOMPONENT name="delayPanel" id="f7f617a6d8249b19" memberName="delayPanel"
                     virtualName="" explicitFocusOrder="0" pos="376 704 264 112" class="DelayPanel"
@@ -884,6 +890,21 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="arpPanel" id="28f6a1e250ee9be9" memberName="arpPanel" virtualName=""
                     explicitFocusOrder="0" pos="808 560 168 120" class="ArpPanel"
                     params="factory,arp"/>
+  <TABBEDCOMPONENT name="modulationTab" id="272892ff46aad47f" memberName="modulationTab"
+                   virtualName="" explicitFocusOrder="0" pos="24 568 264 120" orientation="bottom"
+                   tabBarDepth="22" initialTab="0">
+    <TAB name="LFO 1" colour="0" useJucerComp="0" contentClassName="LFOPanel"
+         constructorParams="model, factory" jucerComponentFile=""/>
+    <TAB name="LFO 2" colour="0" useJucerComp="0" contentClassName="LFOPanel"
+         constructorParams="model, factory" jucerComponentFile=""/>
+    <TAB name="LFO 3" colour="ffd3d3d3" useJucerComp="0" contentClassName="LFOPanel"
+         constructorParams="model, factory" jucerComponentFile=""/>
+    <TAB name="ENV" colour="0" useJucerComp="0" contentClassName="EnvelopePanel"
+         constructorParams="model, factory" jucerComponentFile=""/>
+  </TABBEDCOMPONENT>
+  <GENERICCOMPONENT name="modMatrix" id="19567bfe8c90898e" memberName="modMatrix"
+                    virtualName="" explicitFocusOrder="0" pos="296 560 496 120" class="ModMatrixPanel"
+                    params="matrixModel"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

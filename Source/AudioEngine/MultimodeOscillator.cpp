@@ -48,9 +48,6 @@ void MultimodeOscillator::setModulator(Modulator* mod) {
     this->modulator = mod;
 }
 
-void MultimodeOscillator::setModAmount(float amount) {
-    this->modAmount = amount;
-}
 
 float MultimodeOscillator::getOutput() {
     if (this->mode == SAW) {
@@ -75,15 +72,25 @@ float MultimodeOscillator::process() {
     
     if (this->mode == SAW) {
 		if (this->modulator != nullptr) {
-			saw->setPitchMod(modulator->getOutput() * modAmount);	
+			saw->setPitchMod(modulator->getOutput() * modulator->getModAmount());	
 			saw->setFine(fine);
 		}
         return this->saw->process();
     }
     else if (this->mode == SINE) {
+		if (this->modulator != nullptr) {
+			sine->setPitchMod(modulator->getOutput() * modulator->getModAmount());
+			sine->setFine(fine);
+		}
+
         return this->sine->process();
     }
     else if (this->mode == PULSE) {
+		if (this->modulator != nullptr) {
+			sine->setPitchMod(modulator->getOutput() * modulator->getModAmount());
+			sine->setFine(fine);
+		}
+
         return this->pulse->process();
     }
     else if(this->mode == NOISE) {

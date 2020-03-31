@@ -12,15 +12,17 @@
 #include "LowPassFilter.h"
 #include "MultimodeOscillator.h"
 #include "Sampler.h"
+#include "../ModMatrix.h"
+#include "Modulation.h"
 
 #ifndef M_PI
 #define M_PI       3.14159265358979323846 
 #endif
 
 
-LupoSynth::LupoSynth(Model* model) {
+LupoSynth::LupoSynth(Model* model, ModMatrix* modMatrix) {
 	this->model = model;
-
+	this->matrix = modMatrix;
 	modEnvelopes = new vector<SynthLab::ADSR*>();
 
 	for (int i = 0; i < 3; i++) {
@@ -30,11 +32,34 @@ LupoSynth::LupoSynth(Model* model) {
 
 	this->filter = new MultimodeFilter();
 	filter->setModulator(modEnvelopes->at(0));
-	filter->setModAmount(0);
 	delay = new StereoDelay();
 	reverb = new StereoReverb();	
 	distortion = new Distortion();
 	arp = new Arpeggiator();
+	
+	modMatrix->registerSource("LFO1", 1);
+	modMatrix->registerSource("LFO2", 2);
+	modMatrix->registerSource("LFO2", 3);
+	modMatrix->registerSource("AUX", 4);
+
+	modMatrix->registerTarget("Osc 1 pitch", 1);
+	modMatrix->registerTarget("Osc 2 pitch", 2);
+	modMatrix->registerTarget("Osc 3 pitch", 3);
+	modMatrix->registerTarget("Osc 4 pitch", 4);
+
+	modMatrix->registerTarget("Filter cutoff", 5);
+
+	oscGroup1 = new OscGroup();
+	oscGroup2 = new OscGroup();
+	oscGroup3 = new OscGroup();
+	oscGroup4 = new OscGroup();
+
+	for (int i = 0; i < 6; i++) {
+		modMatrix->addModulation(new Modulation(nullptr,nullptr));
+	}
+
+
+
 }
 
 LupoSynth::~LupoSynth() {
@@ -57,11 +82,15 @@ LupoSynth::~LupoSynth() {
 	delete lfo1;
 	delete lfo2;
 	delete arp;
+	delete oscGroup1;
+	delete oscGroup2;
+	delete oscGroup3;
+	delete oscGroup4;
 }
 
-Oszillator* LupoSynth::createOscillator(Oszillator::OscMode mode) {
+MultimodeOscillator* LupoSynth::createOscillator(Oszillator::OscMode mode) {
 
-	Oszillator* osc = nullptr;
+	MultimodeOscillator* osc = nullptr;
 
 	switch (mode) {
 	case Oszillator::OscMode::SAW: {
@@ -74,13 +103,6 @@ Oszillator* LupoSynth::createOscillator(Oszillator::OscMode mode) {
 		osc->setMode(Oszillator::OscMode::SINE);
 		break;
 	}
-
-	case Oszillator::OscMode::SAMPLE: {
-		osc = new Sampler(sampleRate, bufferSize);
-		osc->setMode(Oszillator::OscMode::SINE);
-		break;
-	}
-
 	default:
 		break;
 	}
@@ -101,10 +123,15 @@ void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscM
 
 		Voice* v = new Voice(sampleRate);
 
-		Oszillator* osc1 = createOscillator(mode1);
-		Oszillator* osc2 = createOscillator(mode2);
-		Oszillator* osc3 = createOscillator(mode3);
-		Oszillator* osc4 = createOscillator(mode4);
+		MultimodeOscillator* osc1 = createOscillator(mode1);
+		MultimodeOscillator* osc2 = createOscillator(mode2);
+		MultimodeOscillator* osc3 = createOscillator(mode3);
+		MultimodeOscillator* osc4 = createOscillator(mode4);
+
+		oscGroup1->addTarget(osc1);
+		oscGroup2->addTarget(osc2);
+		oscGroup3->addTarget(osc3);
+		oscGroup4->addTarget(osc4);
 
 		v->addOszillator(osc1);
 		v->addOszillator(osc2);
@@ -131,22 +158,39 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	lfo1->setMode(2.0f);
 	lfo2 = new MultimodeOscillator(sampleRate, bufferSize);
 	lfo2->setMode(2.0f);
+	lfo3 = new MultimodeOscillator(sampleRate, bufferSize);
+	lfo3->setMode(2.0f);
+
 
 	// filter->setModulator(lfo2);
-	lfo2->setModAmount(0);
 	lfo1->setModAmount(0);
+	lfo2->setModAmount(0);
+	lfo3->setModAmount(0);
 
 	lfo1->setFrequency(0);
 	lfo2->setFrequency(0);
+	lfo3->setFrequency(0);
 	
 	for (int i = 0; i < modEnvelopes->size(); i++) {
 		modEnvelopes->at(i)->setAttackRate(0 * sampleRate);  // 1 second
 		modEnvelopes->at(i)->setDecayRate(1 * sampleRate);
 		modEnvelopes->at(i)->setReleaseRate(1 * sampleRate);
 		modEnvelopes->at(i)->setSustainLevel(.8);
+		modEnvelopes->at(i)->setModAmount(0);
 	}
 
 	arp->prepareToPlay(sampleRate, bufferSize);
+
+	matrix->addModulator(lfo1);
+	matrix->addModulator(lfo2);
+	matrix->addModulator(lfo3);
+	matrix->addModulator(modEnvelopes->at(0));
+
+	matrix->addModTarget(oscGroup1);
+	matrix->addModTarget(oscGroup2);
+	matrix->addModTarget(oscGroup3);
+	matrix->addModTarget(oscGroup4);
+	matrix->addModTarget(filter);
 
 	// updateState();
 
@@ -252,6 +296,7 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 
 	for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
 
+		
 		float valueL = 0;
 		float valueR = 0;
 
@@ -265,13 +310,8 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 		
 		buffer.addSample(0, sample, distortion->processSample(valueL));
 		buffer.addSample(1, sample, distortion->processSample(valueR));
-		
-		for (int i = 0; i < modEnvelopes->size(); i++) {
-			modEnvelopes->at(i)->process();
-		}
 
-		lfo1->process();
-		lfo2->process();
+		matrix->process();
 	}
 
 	leftOut = buffer.getWritePointer(0);
@@ -310,7 +350,7 @@ void LupoSynth::parameterChanged(const String & parameterID, float newValue)
 		mainVolume = newValue;
 	}
 	else if (parameterID == "envAmt") {
-		filter->setModAmount(newValue);
+	
 	}
 	else if (parameterID == "ampAttack") {
 		for (int i = 0; i < voices->size(); i++) {
@@ -529,9 +569,11 @@ void LupoSynth::parameterChanged(const String & parameterID, float newValue)
 		lfo1->setFrequency(newValue);
 	}
 	else if (parameterID == "lfo1Amount") {
+		/*
 		for (int i = 0; i < voices->size(); i++) {
 			voices->at(i)->setModAmount(newValue * 10);
 		}
+		*/
 	}
 	else if (parameterID == "fmAmount") {
 	}
@@ -542,7 +584,7 @@ void LupoSynth::parameterChanged(const String & parameterID, float newValue)
 		lfo2->setFrequency(newValue);
 	}
 	else if (parameterID == "lfo2Amount") {
-		filter->setModAmount(newValue);
+		
 	}
 	else if (parameterID == "lfo2Shape") {
 		lfo2->setMode(newValue);
@@ -565,4 +607,9 @@ void LupoSynth::parameterValueChanged(int parameterIndex, float newValue)
 
 void LupoSynth::parameterGestureChanged(int parameterIndex, bool gestureIsStarting)
 {
+}
+
+ModMatrix * LupoSynth::getModMatrix()
+{
+	return matrix;
 }

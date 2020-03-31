@@ -13,6 +13,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "AudioEngine/LupoSynth.h"
 #include "Model.h"
+#include "ModMatrix.h"
 class AttachmentFactory;
 //==============================================================================
 /**
@@ -71,6 +72,7 @@ public:
 	bool prepared = false;
 	LupoSynth* getSynth();
 	Model* getModel();
+	ModMatrix* matrix;
 private:
     //==============================================================================
 

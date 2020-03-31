@@ -34,6 +34,8 @@
 #include "PluginProcessor.h"
 #include "DistortionPanel.h"
 #include "ArpPanel.h"
+class ModMatrixPanel;
+class ModMatrixModel;
 class Model;
 class AttachmentFactory;
 class PresetDialog;
@@ -101,6 +103,9 @@ private:
 	Component* modSource = nullptr;
 	Component* modTarget = nullptr;
 
+	ModMatrixModel* matrixModel;
+
+
     //[/UserVariables]
 
     //==============================================================================
@@ -128,11 +133,8 @@ private:
     std::unique_ptr<MixerChannelPanel> ch3Panel;
     std::unique_ptr<MixerChannelPanel> ch4Panel;
     std::unique_ptr<OscillatorPanel> osc4Panel;
-    std::unique_ptr<LFOPanel> lfo1;
-    std::unique_ptr<LFOPanel> lfo2;
     std::unique_ptr<GroupComponent> FXGroup;
     std::unique_ptr<ReverbPanel> reverbPanel;
-    std::unique_ptr<EnvelopePanel> auxEnvelope;
     std::unique_ptr<DelayPanel> delayPanel;
     std::unique_ptr<ChorusPanel> chorusPanel;
     std::unique_ptr<TextButton> presetButton;
@@ -144,6 +146,8 @@ private:
     std::unique_ptr<DistortionPanel> distortionPanel;
     std::unique_ptr<GroupComponent> arpGroup;
     std::unique_ptr<ArpPanel> arpPanel;
+    std::unique_ptr<TabbedComponent> modulationTab;
+    std::unique_ptr<ModMatrixPanel> modMatrix;
 
 
     //==============================================================================

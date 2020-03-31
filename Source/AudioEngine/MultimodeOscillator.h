@@ -30,8 +30,7 @@ public:
     virtual void setFrequency(double frequency) override;
     virtual void setVolume(float volume) override;
     virtual float getOutput() override;
-    virtual void setModulator(Modulator* mod) override;
-    virtual void setModAmount(float amount) override;
+    virtual void setModulator(Modulator* mod) override;    
     virtual void reset() override;
     virtual void setSlave(Oszillator* slave) override;
     virtual void setSync(bool sync) override;
@@ -42,7 +41,6 @@ private:
     Sine* sine;
     Pulse* pulse;
     WhiteNoise* noise;
-    float modAmount = 0;
     Modulator* modulator;
 };
 

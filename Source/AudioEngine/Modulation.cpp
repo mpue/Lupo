@@ -26,17 +26,17 @@ Modulation::~Modulation() {
     }
     */
     
-    this->targets.clear();
 }
 
 Modulation::Modulation(Modulator* modulator, ModTarget* target) {
-    this->modulator = modulator;
-    target->setModulator(modulator);
-    this->targets.push_back(target);
+	this->modulator = modulator;
+	if (target != nullptr) {
+		target->setModulator(modulator);
+	}
 }
 
 void Modulation::process() {
-    if (this->modulator != NULL) {
+    if (this->modulator != nullptr) {
         this->modulator->process();
     }
 }
@@ -49,14 +49,10 @@ void Modulation::setModulator(Modulator *modulator) {
     this->modulator = modulator;
 }
 
-void Modulation::addTarget(ModTarget* target) {
+void Modulation::setTarget(ModTarget* target) {
     target->setModulator(this->modulator);
-    this->targets.push_back(target);
 }
 
-vector<ModTarget*> Modulation::getTargets() {
-    return targets;
-}
 
 void Modulation::setEnabled(bool enabled) {
     this->enabled = enabled;

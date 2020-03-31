@@ -52,7 +52,6 @@ public:
     bool isPlaying() const;
 
     virtual void setModulator(Modulator* mod) override;
-    virtual void setModAmount(float amount) override;
     
 	SynthLab::ADSR* getAmpEnvelope();
 

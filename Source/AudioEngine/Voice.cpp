@@ -204,16 +204,6 @@ SynthLab::ADSR* Voice::getAmpEnvelope() {
     return ampEnvelope;
 }
 
-void Voice::setModAmount(float amount ) {
-    this->modAmount = amount;
-	for (int i = 0; i < oscillators.size(); i++) {
-		MultimodeOscillator* mmo = dynamic_cast<MultimodeOscillator*>(oscillators.at(i));
-		if (mmo != nullptr) {
-			mmo->setModAmount(amount);
-		}
-	}
-}
-
 void Voice::setModulator(Modulator* modulator) {
 	this->modulator = modulator;
 	for (int i = 0; i < oscillators.size(); i++) {

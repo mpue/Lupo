@@ -25,23 +25,22 @@ public:
      Modulation(Modulator* modulator, ModTarget *target);
      Modulation();
      ~Modulation();
-    
-    vector<ModTarget*> getTargets();
-    
+   
     Modulator* getModulator();
-    void addTarget(ModTarget* target);
+    void setTarget(ModTarget* target);
     void setModulator(Modulator* modulator);
     void process();
     void setEnabled(bool enabled);
     bool isEnabled();
-    
+	
+	
     
 private:
     
-    vector<ModTarget*> targets;
-    Modulator* modulator = NULL;
-    bool enabled = false;
     
+    Modulator* modulator = nullptr;
+    bool enabled = true;
+	
 };
 
 

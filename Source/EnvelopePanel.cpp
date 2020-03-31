@@ -36,12 +36,6 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
 	this->factory = factory;
     //[/Constructor_pre]
 
-    groupComponent.reset (new GroupComponent ("new group",
-                                              TRANS("Envelope")));
-    addAndMakeVisible (groupComponent.get());
-
-    groupComponent->setBounds (1, -3, 279, 115);
-
     amp_attack.reset (new Slider ("amp_attack"));
     addAndMakeVisible (amp_attack.get());
     amp_attack->setRange (0, 10, 0.01);
@@ -49,7 +43,7 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
     amp_attack->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     amp_attack->addListener (this);
 
-    amp_attack->setBounds (8, 24, 64, 64);
+    amp_attack->setBounds (0, 8, 64, 64);
 
     amp_decay.reset (new Slider ("amp_decay"));
     addAndMakeVisible (amp_decay.get());
@@ -58,7 +52,7 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
     amp_decay->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     amp_decay->addListener (this);
 
-    amp_decay->setBounds (72, 24, 64, 64);
+    amp_decay->setBounds (64, 8, 64, 64);
 
     amp_sustain.reset (new Slider ("amp_sustain"));
     addAndMakeVisible (amp_sustain.get());
@@ -67,7 +61,7 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
     amp_sustain->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     amp_sustain->addListener (this);
 
-    amp_sustain->setBounds (136, 24, 64, 64);
+    amp_sustain->setBounds (128, 8, 64, 64);
 
     amp_release.reset (new Slider ("amp_release"));
     addAndMakeVisible (amp_release.get());
@@ -76,7 +70,7 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
     amp_release->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     amp_release->addListener (this);
 
-    amp_release->setBounds (200, 24, 64, 64);
+    amp_release->setBounds (192, 8, 64, 64);
 
     attack.reset (new Label ("attack",
                              TRANS("Attack")));
@@ -87,7 +81,7 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
     attack->setColour (TextEditor::textColourId, Colours::black);
     attack->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    attack->setBounds (16, 80, 56, 24);
+    attack->setBounds (8, 64, 56, 24);
 
     decay.reset (new Label ("decay",
                             TRANS("Decay\n")));
@@ -98,7 +92,7 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
     decay->setColour (TextEditor::textColourId, Colours::black);
     decay->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    decay->setBounds (80, 80, 56, 24);
+    decay->setBounds (72, 64, 56, 24);
 
     sustain.reset (new Label ("sustain",
                               TRANS("Sustain")));
@@ -109,7 +103,7 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
     sustain->setColour (TextEditor::textColourId, Colours::black);
     sustain->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    sustain->setBounds (144, 80, 56, 24);
+    sustain->setBounds (136, 64, 56, 24);
 
     Release.reset (new Label ("Release",
                               TRANS("Release")));
@@ -120,7 +114,7 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
     Release->setColour (TextEditor::textColourId, Colours::black);
     Release->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    Release->setBounds (208, 80, 56, 24);
+    Release->setBounds (200, 64, 56, 24);
 
 
     //[UserPreSize]
@@ -138,7 +132,6 @@ EnvelopePanel::~EnvelopePanel()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
-    groupComponent = nullptr;
     amp_attack = nullptr;
     amp_decay = nullptr;
     amp_sustain = nullptr;
@@ -275,45 +268,43 @@ BEGIN_JUCER_METADATA
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
                  overlayOpacity="0.330" fixedSize="0" initialWidth="600" initialHeight="400">
   <BACKGROUND backgroundColour="0"/>
-  <GROUPCOMPONENT name="new group" id="a42d8319e5f14b10" memberName="groupComponent"
-                  virtualName="" explicitFocusOrder="0" pos="1 -3 279 115" title="Envelope"/>
   <SLIDER name="amp_attack" id="dd56ce6b5eccf295" memberName="amp_attack"
-          virtualName="" explicitFocusOrder="0" pos="8 24 64 64" min="0.0"
+          virtualName="" explicitFocusOrder="0" pos="0 8 64 64" min="0.0"
           max="10.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <SLIDER name="amp_decay" id="336632529c646979" memberName="amp_decay"
-          virtualName="" explicitFocusOrder="0" pos="72 24 64 64" min="0.0"
+          virtualName="" explicitFocusOrder="0" pos="64 8 64 64" min="0.0"
           max="5.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <SLIDER name="amp_sustain" id="cefe10e4212549e2" memberName="amp_sustain"
-          virtualName="" explicitFocusOrder="0" pos="136 24 64 64" min="0.0"
+          virtualName="" explicitFocusOrder="0" pos="128 8 64 64" min="0.0"
           max="1.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <SLIDER name="amp_release" id="9ced331028b46d97" memberName="amp_release"
-          virtualName="" explicitFocusOrder="0" pos="200 24 64 64" min="0.0"
+          virtualName="" explicitFocusOrder="0" pos="192 8 64 64" min="0.0"
           max="10.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="attack" id="4938c10e2b6678d9" memberName="attack" virtualName=""
-         explicitFocusOrder="0" pos="16 80 56 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="8 64 56 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Attack" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="decay" id="b3fe82ab215c0350" memberName="decay" virtualName=""
-         explicitFocusOrder="0" pos="80 80 56 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="72 64 56 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Decay&#10;" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="sustain" id="3a9c1db62849c1a4" memberName="sustain" virtualName=""
-         explicitFocusOrder="0" pos="144 80 56 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="136 64 56 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Sustain" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <LABEL name="Release" id="a532e9811921ca43" memberName="Release" virtualName=""
-         explicitFocusOrder="0" pos="208 80 56 24" edTextCol="ff000000"
+         explicitFocusOrder="0" pos="200 64 56 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Release" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>

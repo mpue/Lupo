@@ -15,7 +15,14 @@ public:
     inline virtual ~Modulator() {};
     virtual float process() = 0;
     virtual float getOutput() = 0;
-    
+	virtual void setModAmount(float amount) {
+		this->modAmount = amount;
+	}
+	virtual float getModAmount() {
+		return this->modAmount;
+	}
+protected:
+	float modAmount = 0;
 };
 
 #endif /* Modulator_h */
