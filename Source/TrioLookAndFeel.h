@@ -78,6 +78,9 @@ public:
 
 
 	void drawTabButton(TabBarButton& button, Graphics& g, bool isMouseOver, bool isMouseDown) override;
+
+	void fillTabButtonShape(TabBarButton& button, Graphics& g, const Path& path,
+		bool /*isMouseOver*/, bool /*isMouseDown*/) override;
 };
 
 

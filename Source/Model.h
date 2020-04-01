@@ -90,6 +90,7 @@ public:
 	float osc2Volume;
 	float osc2Pan;
 	float osc2Shape;
+	bool osc2Sync = false;
 
 	float osc3Pitch;
 	float osc3Fine;

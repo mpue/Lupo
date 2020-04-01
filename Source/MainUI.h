@@ -148,6 +148,8 @@ private:
     std::unique_ptr<ArpPanel> arpPanel;
     std::unique_ptr<TabbedComponent> modulationTab;
     std::unique_ptr<ModMatrixPanel> modMatrix;
+    std::unique_ptr<ComboBox> filterMode;
+    std::unique_ptr<Label> filterModeLabel;
 
 
     //==============================================================================

@@ -39,15 +39,17 @@ LupoSynth::LupoSynth(Model* model, ModMatrix* modMatrix) {
 	
 	modMatrix->registerSource("LFO1", 1);
 	modMatrix->registerSource("LFO2", 2);
-	modMatrix->registerSource("LFO2", 3);
+	modMatrix->registerSource("LFO3", 3);
 	modMatrix->registerSource("AUX", 4);
 
 	modMatrix->registerTarget("Osc 1 pitch", 1);
 	modMatrix->registerTarget("Osc 2 pitch", 2);
 	modMatrix->registerTarget("Osc 3 pitch", 3);
 	modMatrix->registerTarget("Osc 4 pitch", 4);
-
 	modMatrix->registerTarget("Filter cutoff", 5);
+	modMatrix->registerTarget("LFO1", 6);
+	modMatrix->registerTarget("LFO2", 7);
+	modMatrix->registerTarget("LFO3", 8);
 
 	oscGroup1 = new OscGroup();
 	oscGroup2 = new OscGroup();
@@ -191,7 +193,9 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	matrix->addModTarget(oscGroup3);
 	matrix->addModTarget(oscGroup4);
 	matrix->addModTarget(filter);
-
+	matrix->addModTarget(lfo1);
+	matrix->addModTarget(lfo2);
+	matrix->addModTarget(lfo3);
 	// updateState();
 
 }
@@ -312,6 +316,7 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 		buffer.addSample(1, sample, distortion->processSample(valueR));
 
 		matrix->process();
+		modEnvelopes->at(0)->process();
 	}
 
 	leftOut = buffer.getWritePointer(0);
@@ -324,6 +329,13 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 }
 
 void LupoSynth::updateState() {
+	if (model->osc2Sync) {
+		for (int i = 0; i < voices->size(); i++) {
+			voices->at(i)->getOscillator(0)->setSlave(voices->at(i)->getOscillator(1));
+			voices->at(i)->getOscillator(0)->setSync(true);
+		}
+	}
+
 }
 
 Arpeggiator * LupoSynth::getArpeggiator()
@@ -349,9 +361,6 @@ void LupoSynth::parameterChanged(const String & parameterID, float newValue)
 	else if (parameterID == "mainVolume") {
 		mainVolume = newValue;
 	}
-	else if (parameterID == "envAmt") {
-	
-	}
 	else if (parameterID == "ampAttack") {
 		for (int i = 0; i < voices->size(); i++) {
 			voices->at(i)->getAmpEnvelope()->setAttackRate(newValue * sampleRate * 2);
@@ -371,6 +380,15 @@ void LupoSynth::parameterChanged(const String & parameterID, float newValue)
 		for (int i = 0; i < voices->size(); i++) {
 			voices->at(i)->getAmpEnvelope()->setReleaseRate(newValue * sampleRate * 2);
 		}
+	}
+	else if (parameterID == "filterMode") {
+		if (newValue == 0.0f) {
+			filter->setMode(MultimodeFilter::LOWPASS);
+		}
+		else if (newValue == 1.0f) {
+			filter->setMode(MultimodeFilter::HIGHPASS);
+		}
+
 	}
 	else if (parameterID == "filAttack") {
 		modEnvelopes->at(0)->setAttackRate(newValue * sampleRate);
@@ -598,7 +616,9 @@ void LupoSynth::parameterChanged(const String & parameterID, float newValue)
 	else if (parameterID == "distMode") {
 		distortion->controls.mode = newValue;
 	}
-	
+	else if (parameterID == "envAmt") {
+		modEnvelopes->at(0)->setModAmount(newValue);
+	}
 }
 
 void LupoSynth::parameterValueChanged(int parameterIndex, float newValue)

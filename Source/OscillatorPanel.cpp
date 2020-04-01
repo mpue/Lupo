@@ -247,7 +247,9 @@ void OscillatorPanel::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == syncButton.get())
     {
         //[UserButtonCode_syncButton] -- add your button handler code here..
-
+		if (getName().startsWith("osc2")) {
+			model->osc2Sync = true;
+		}
         //[/UserButtonCode_syncButton]
     }
 

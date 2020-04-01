@@ -324,7 +324,7 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
     modulationTab->setTabBarDepth (22);
     modulationTab->addTab (TRANS("LFO 1"), Colour (0x00000000), new LFOPanel (model, factory), true);
     modulationTab->addTab (TRANS("LFO 2"), Colour (0x00000000), new LFOPanel (model, factory), true);
-    modulationTab->addTab (TRANS("LFO 3"), Colours::lightgrey, new LFOPanel (model, factory), true);
+    modulationTab->addTab (TRANS("LFO 3"), Colour (0x00000000), new LFOPanel (model, factory), true);
     modulationTab->addTab (TRANS("ENV"), Colour (0x00000000), new EnvelopePanel (model, factory), true);
     modulationTab->setCurrentTabIndex (0);
 
@@ -335,6 +335,29 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
     modMatrix->setName ("modMatrix");
 
     modMatrix->setBounds (296, 560, 496, 120);
+
+    filterMode.reset (new ComboBox ("filterMode"));
+    addAndMakeVisible (filterMode.get());
+    filterMode->setEditableText (false);
+    filterMode->setJustificationType (Justification::centredLeft);
+    filterMode->setTextWhenNothingSelected (String());
+    filterMode->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
+    filterMode->addItem (TRANS("LP"), 1);
+    filterMode->addItem (TRANS("HP"), 2);
+    filterMode->addListener (this);
+
+    filterMode->setBounds (864, 392, 64, 24);
+
+    filterModeLabel.reset (new Label ("filterModeLabel",
+                                      TRANS("Filter Mode")));
+    addAndMakeVisible (filterModeLabel.get());
+    filterModeLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
+    filterModeLabel->setJustificationType (Justification::centredLeft);
+    filterModeLabel->setEditable (false, false, false);
+    filterModeLabel->setColour (TextEditor::textColourId, Colours::black);
+    filterModeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    filterModeLabel->setBounds (864, 424, 88, 24);
 
 
     //[UserPreSize]
@@ -396,6 +419,7 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 	factory->createSliderAttachment("mainVolume", mainVolume.get());
 	factory->createSliderAttachment("envAmt", envAmt.get());
 	factory->createSliderAttachment("fmAmount", fmSlider.get());
+	factory->createComboAttachment("filterMode", filterMode.get());
 
 	osc1Panel.get()->initAttachments();
 	osc2Panel.get()->initAttachments();
@@ -481,6 +505,8 @@ MainUI::~MainUI()
     arpPanel = nullptr;
     modulationTab = nullptr;
     modMatrix = nullptr;
+    filterMode = nullptr;
+    filterModeLabel = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -660,6 +686,11 @@ void MainUI::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
         //[UserComboBoxCode_presetCombo] -- add your combo box handling code here..
 		processor->setSelectedProgram(comboBoxThatHasChanged->getText());
         //[/UserComboBoxCode_presetCombo]
+    }
+    else if (comboBoxThatHasChanged == filterMode.get())
+    {
+        //[UserComboBoxCode_filterMode] -- add your combo box handling code here..
+        //[/UserComboBoxCode_filterMode]
     }
 
     //[UsercomboBoxChanged_Post]
@@ -897,7 +928,7 @@ BEGIN_JUCER_METADATA
          constructorParams="model, factory" jucerComponentFile=""/>
     <TAB name="LFO 2" colour="0" useJucerComp="0" contentClassName="LFOPanel"
          constructorParams="model, factory" jucerComponentFile=""/>
-    <TAB name="LFO 3" colour="ffd3d3d3" useJucerComp="0" contentClassName="LFOPanel"
+    <TAB name="LFO 3" colour="0" useJucerComp="0" contentClassName="LFOPanel"
          constructorParams="model, factory" jucerComponentFile=""/>
     <TAB name="ENV" colour="0" useJucerComp="0" contentClassName="EnvelopePanel"
          constructorParams="model, factory" jucerComponentFile=""/>
@@ -905,6 +936,14 @@ BEGIN_JUCER_METADATA
   <GENERICCOMPONENT name="modMatrix" id="19567bfe8c90898e" memberName="modMatrix"
                     virtualName="" explicitFocusOrder="0" pos="296 560 496 120" class="ModMatrixPanel"
                     params="matrixModel"/>
+  <COMBOBOX name="filterMode" id="57cc12196967d2de" memberName="filterMode"
+            virtualName="" explicitFocusOrder="0" pos="864 392 64 24" editable="0"
+            layout="33" items="LP&#10;HP" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
+  <LABEL name="filterModeLabel" id="d585a6de95ddee95" memberName="filterModeLabel"
+         virtualName="" explicitFocusOrder="0" pos="864 424 88 24" edTextCol="ff000000"
+         edBkgCol="0" labelText="Filter Mode" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

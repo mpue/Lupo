@@ -51,7 +51,7 @@ void TrioLookAndFeel::drawRotarySlider	(	Graphics & 	g,
     
     // Logger::getCurrentLogger()->writeToLog("==========" +String(sliderPosProportional));
     
-    g.setColour(Colours::darkorange);
+    g.setColour(Colours::darkred);
     {
         Path filledArc;
         filledArc.addPieSegment (rx+1, ry+1, rw-0.5, rw-0.5, rotaryStartAngle, angle, thickness);
@@ -80,7 +80,7 @@ void TrioLookAndFeel::drawToggleButton (Graphics& g, ToggleButton& button,
                                              0,0,
                                              button.getHeight(),button.getHeight(),
                                              5.0f,
-                                             Colours::darkorange,
+                                             Colours::darkred,
                                              1.0f,
                                              false,false,false,false);
     }
@@ -467,7 +467,7 @@ void TrioLookAndFeel::drawScrollbar (Graphics& g, ScrollBar& bar,
             for (int i = 3; --i >= 0;)
             {
                 const float linePos = thumbStartPosition + thumbSize / 2 + (i - 1) * 4.0f;
-                g.setColour (Colours::orange.withAlpha (0.15f));
+                g.setColour (Colours::red.withAlpha (0.15f));
                 
                 if (isScrollbarVertical)
                 {
@@ -546,9 +546,9 @@ void TrioLookAndFeel::drawTableHeaderBackground(Graphics &g, TableHeaderComponen
 void TrioLookAndFeel::drawTableHeaderColumn(Graphics &g, const String & columnName, int columnId, int width, int height, bool isMouseOver, bool isMouseDown, int columnFlags)
 {
 	if (isMouseDown)
-		g.fillAll(Colours::orange);
+		g.fillAll(Colours::red);
 	else if (isMouseOver)
-		g.fillAll(Colours::darkorange);
+		g.fillAll(Colours::darkred);
 
 	Rectangle<int> area(width, height);
 	area.reduce(4, 0);
@@ -582,4 +582,24 @@ void TrioLookAndFeel::drawTabButton(TabBarButton& button, Graphics& g, bool isMo
 
 	fillTabButtonShape(button, g, tabShape, isMouseOver, isMouseDown);
 	drawTabButtonText(button, g, isMouseOver, isMouseDown);
+}
+
+void TrioLookAndFeel::fillTabButtonShape(TabBarButton& button, Graphics& g, const Path& path,
+	bool /*isMouseOver*/, bool /*isMouseDown*/)
+{
+	auto tabBackground = button.getTabBackgroundColour();
+	const bool isFrontTab = button.isFrontTab();
+
+	if (isFrontTab)
+		g.setColour(Colours::lightgrey);
+	else
+		g.setColour(Colours::grey);
+
+	g.fillPath(path);
+
+	g.setColour(button.findColour(isFrontTab ? TabbedButtonBar::frontOutlineColourId
+		: TabbedButtonBar::tabOutlineColourId, false)
+		.withMultipliedAlpha(button.isEnabled() ? 1.0f : 0.5f));
+
+	g.strokePath(path, PathStrokeType(isFrontTab ? 1.0f : 0.5f));
 }

@@ -234,7 +234,7 @@ Component * ModMatrixModel::refreshComponentForCell(int rowNumber, int columnId,
 
 		if (amountSlider == nullptr) {
 			amountSlider = new Slider(Slider::SliderStyle::LinearBar,juce::Slider::NoTextBox);
-			amountSlider->setRange(0, 10, 0.1);
+			amountSlider->setRange(0, 20, 0.1);
 			amountSlider->addListener(this);
 		}
 		amountSlider->setName("Amount_" + String(rowNumber));

@@ -9,7 +9,7 @@
 */
 
 #include "Sawtooth.h"
-
+#include "../Stk.h"
 #define _USE_MATH_DEFINES
 
 #include <math.h>
@@ -18,7 +18,8 @@
 using namespace std;
 
 Sawtooth::Sawtooth(float sampleRate, int buffersize) : Oszillator(sampleRate) {
-    this->volume = 1.0f;
+	this->bufferSIze = buffersize;
+	this->volume = 1.0f;
     this->frequency = 440.0f;
     this->fine = 0.0f;
     this->p = 0.0f;      //current position
@@ -36,14 +37,19 @@ float Sawtooth::getOutput() {
 }
 
 void Sawtooth::reset() {
-    this->p = 0;
 	blitsaw->reset();
 }
 
 
 float Sawtooth::process() {
-	return blitsaw->tick() * volume;
-
+	if (this->slave != 0 && sync) {
+		if (blitsaw->resetFlag) {
+			slave->reset();
+			blitsaw->resetFlag = false;
+		}	
+	}
+	currentSample = (currentSample + 1) % bufferSIze;
+	return blitsaw->tick() * volume;	
 }
 
 void Sawtooth::setFrequency(double frequency) {

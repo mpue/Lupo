@@ -44,6 +44,8 @@ public:
     float dc;     //dc offset
     float saw;    //output
     float lastValue;
+	int currentSample = 0;
+	int bufferSIze = 0;
 };
 
 

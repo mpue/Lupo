@@ -73,6 +73,8 @@ class BlitSaw: public Generator
     will trigger an StkError exception.
   */
   StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
+  StkFloat phase_;
+  bool resetFlag = false;
 
  protected:
 
@@ -81,7 +83,6 @@ class BlitSaw: public Generator
   unsigned int nHarmonics_;
   unsigned int m_;
   StkFloat rate_;
-  StkFloat phase_;
   StkFloat p_;
   StkFloat C2_;
   StkFloat a_;
@@ -119,7 +120,10 @@ inline StkFloat BlitSaw :: tick( void )
   state_ = tmp * 0.995;
 
   phase_ += rate_;
-  if ( phase_ >= PI ) phase_ -= PI;
+  if (phase_ >= PI) {
+	  phase_ -= PI;
+	  resetFlag = true;
+  }
     
   lastFrame_[0] = tmp;
 	return lastFrame_[0];

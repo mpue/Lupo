@@ -51,6 +51,7 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("filDecay", "Decay", 0.0f, 10.0f, 1.0);
 	factory->createParam("filSustain", "Sustain", 0.0f, 1.0f, 0.0);
 	factory->createParam("filRelease", "Release", 0.0f, 10.0f, 1.0);
+	factory->createParam("filterMode", "Filter Mode", 0.0f, 1.0f, 0.0);
 
 	factory->createParam("auxAttack", "Attack", 0.0f, 10.0, 0.0);
 	factory->createParam("auxDecay", "Decay", 0.0f, 10.0f, 1.0);
