@@ -28,6 +28,7 @@ public:
    
     Modulator* getModulator();
     void setTarget(ModTarget* target);
+	void clearTarget();
     void setModulator(Modulator* modulator);
     void process();
     void setEnabled(bool enabled);
@@ -39,6 +40,7 @@ private:
     
     
     Modulator* modulator = nullptr;
+	ModTarget* target = nullptr;
     bool enabled = true;
 	
 };

@@ -184,7 +184,7 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	matrix->addModulator(lfo1);
 	matrix->addModulator(lfo2);
 	matrix->addModulator(lfo3);
-	matrix->addModulator(modEnvelopes->at(0));
+	matrix->addModulator(modEnvelopes->at(1));
 
 	matrix->addModTarget(oscGroup1);
 	matrix->addModTarget(oscGroup2);

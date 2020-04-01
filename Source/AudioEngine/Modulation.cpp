@@ -30,6 +30,7 @@ Modulation::~Modulation() {
 
 Modulation::Modulation(Modulator* modulator, ModTarget* target) {
 	this->modulator = modulator;
+	
 	if (target != nullptr) {
 		target->setModulator(modulator);
 	}
@@ -50,7 +51,19 @@ void Modulation::setModulator(Modulator *modulator) {
 }
 
 void Modulation::setTarget(ModTarget* target) {
-    target->setModulator(this->modulator);
+	if (this->target != nullptr) {
+		this->target->setModulator(nullptr);		
+	}
+	this->target = target;
+    this->target->setModulator(this->modulator);
+}
+
+void Modulation::clearTarget()
+{	
+	if (this->target != nullptr) {
+		this->target->setModulator(nullptr);
+	}
+
 }
 
 

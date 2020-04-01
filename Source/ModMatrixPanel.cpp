@@ -144,54 +144,32 @@ void ModMatrixModel::paintCell (Graphics& g,
 
 void ModMatrixModel::comboBoxChanged(ComboBox * comboBoxThatHasChanged)
 {
+	const int index = comboBoxThatHasChanged->getName().substring(comboBoxThatHasChanged->getName().lastIndexOf("_") + 1).getIntValue();
+	
 	if (comboBoxThatHasChanged->getName().startsWith("Source")) {
-		if (comboBoxThatHasChanged->getName().endsWith("0")) {
-			matrix->getModulations().at(0)->setModulator(matrix->getModulators().at(comboBoxThatHasChanged->getSelectedItemIndex()));
-		}
-		if (comboBoxThatHasChanged->getName().endsWith("1")) {
-			matrix->getModulations().at(1)->setModulator(matrix->getModulators().at(comboBoxThatHasChanged->getSelectedItemIndex()));
-		}
-		if (comboBoxThatHasChanged->getName().endsWith("2")) {
-			matrix->getModulations().at(2)->setModulator(matrix->getModulators().at(comboBoxThatHasChanged->getSelectedItemIndex()));
-		}
-		if (comboBoxThatHasChanged->getName().endsWith("3")) {
-			matrix->getModulations().at(3)->setModulator(matrix->getModulators().at(comboBoxThatHasChanged->getSelectedItemIndex()));
+		for (int i = 0; i < matrix->getModulations().size(); i++) {
+			if (i == index) {
+				matrix->getModulations().at(i)->setModulator(matrix->getModulators().at(comboBoxThatHasChanged->getSelectedItemIndex()));
+			}
+
 		}
 	}
 	if (comboBoxThatHasChanged->getName().startsWith("Target")) {
-		if (comboBoxThatHasChanged->getName().endsWith("0")) {
-			matrix->getModulations().at(0)->setTarget(matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex()));
+		for (int i = 0; i < matrix->getModulations().size(); i++) {
+			if (i == index) {
+				matrix->getModulations().at(i)->setTarget(matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex()));
+			}
+
 		}
-		if (comboBoxThatHasChanged->getName().endsWith("1")) {
-			matrix->getModulations().at(1)->setTarget(matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex()));
-		}
-		if (comboBoxThatHasChanged->getName().endsWith("2")) {
-			matrix->getModulations().at(2)->setTarget(matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex()));
-		}
-		if (comboBoxThatHasChanged->getName().endsWith("3")) {
-			matrix->getModulations().at(3)->setTarget(matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex()));
-		}
-		if (comboBoxThatHasChanged->getName().endsWith("4")) {
-			matrix->getModulations().at(4)->setTarget(matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex()));
-		}
+
 	}
+
 }
 
 void ModMatrixModel::sliderValueChanged(Slider * slider)
 {
-	if (slider->getName().endsWith("0")) {
-		matrix->getModulations().at(0)->getModulator()->setModAmount(slider->getValue());
-	}
-	else if (slider->getName().endsWith("1")) {
-		matrix->getModulations().at(1)->getModulator()->setModAmount(slider->getValue());
-	}
-	else if (slider->getName().endsWith("2")) {
-		matrix->getModulations().at(2)->getModulator()->setModAmount(slider->getValue());
-	}
-	else if (slider->getName().endsWith("3")) {
-		matrix->getModulations().at(3)->getModulator()->setModAmount(slider->getValue());
-	}
-
+	const int index = slider->getName().substring(slider->getName().lastIndexOf("_") + 1).getIntValue();
+	matrix->getModulations().at(index)->getModulator()->setModAmount(slider->getValue());
 }
 
 
@@ -231,7 +209,7 @@ Component * ModMatrixModel::refreshComponentForCell(int rowNumber, int columnId,
 			}
 			sourceCombo->addListener(this);
 		}
-
+		sourceCombo->setName("Source_" + String(rowNumber));
 		return sourceCombo;
 	}
 	else if (columnId == 2) {
@@ -246,6 +224,7 @@ Component * ModMatrixModel::refreshComponentForCell(int rowNumber, int columnId,
 			}
 			targetCombo->addListener(this);
 		}
+		targetCombo->setName("Target_" + String(rowNumber));
 		return targetCombo;	
 	}
 
@@ -255,10 +234,10 @@ Component * ModMatrixModel::refreshComponentForCell(int rowNumber, int columnId,
 
 		if (amountSlider == nullptr) {
 			amountSlider = new Slider(Slider::SliderStyle::LinearBar,juce::Slider::NoTextBox);
-			amountSlider->setName("Amount_" + String(rowNumber));
 			amountSlider->setRange(0, 10, 0.1);
 			amountSlider->addListener(this);
 		}
+		amountSlider->setName("Amount_" + String(rowNumber));
 
 		return amountSlider;
 		
