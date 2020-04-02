@@ -8,6 +8,7 @@
 
 #include "ModMatrixPanel.h"
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "AttachmentFactory.h"
 
 #ifdef JUCE_WINDOWS
 #include <Windows.h>
@@ -32,11 +33,12 @@ using juce::ScopedPointer;
 
 ModMatrixPanel::ModMatrixPanel (ModMatrixModel* model)  {
     
+	
     // addMouseListener(this, true);
 	table = new TableListBox("modMatrixTable", model);
-    table->getHeader().addColumn("Source", 1, 200);
-    table->getHeader().addColumn("Destination", 2, 200);
-	table->getHeader().addColumn("Amount", 3, 50);
+    table->getHeader().addColumn("Source", 1, 100);
+    table->getHeader().addColumn("Destination", 2, 100);
+	table->getHeader().addColumn("Amount", 3, 250);
     table->setAutoSizeMenuOptionShown(true);
     table->getHeader().setStretchToFitActive(true);
 	table->setOpaque(false);
@@ -109,8 +111,9 @@ void ModMatrixPanel::mouseDoubleClick(const juce::MouseEvent &event) {
 // Model
 //===========================================================================
 
-ModMatrixModel::ModMatrixModel(ModMatrix* matrix) {
+ModMatrixModel::ModMatrixModel(ModMatrix* matrix, AttachmentFactory* factory) {
 	this->matrix = matrix;
+	this->factory = factory;
 }
 
 int ModMatrixModel::getNumRows() {
@@ -169,7 +172,9 @@ void ModMatrixModel::comboBoxChanged(ComboBox * comboBoxThatHasChanged)
 void ModMatrixModel::sliderValueChanged(Slider * slider)
 {
 	const int index = slider->getName().substring(slider->getName().lastIndexOf("_") + 1).getIntValue();
-	matrix->getModulations().at(index)->getModulator()->setModAmount(slider->getValue());
+	if (matrix->getModulations().at(index)->getModulator() != nullptr) {
+		matrix->getModulations().at(index)->getModulator()->setModAmount(slider->getValue());
+	}
 }
 
 
@@ -208,6 +213,7 @@ Component * ModMatrixModel::refreshComponentForCell(int rowNumber, int columnId,
 				it++;
 			}
 			sourceCombo->addListener(this);
+			factory->createComboAttachment("Source_" + String(rowNumber), sourceCombo);
 		}
 		sourceCombo->setName("Source_" + String(rowNumber));
 		return sourceCombo;
@@ -223,6 +229,7 @@ Component * ModMatrixModel::refreshComponentForCell(int rowNumber, int columnId,
 				it++;
 			}
 			targetCombo->addListener(this);
+			factory->createComboAttachment("Target_" + String(rowNumber), targetCombo);
 		}
 		targetCombo->setName("Target_" + String(rowNumber));
 		return targetCombo;	
@@ -236,6 +243,7 @@ Component * ModMatrixModel::refreshComponentForCell(int rowNumber, int columnId,
 			amountSlider = new Slider(Slider::SliderStyle::LinearBar,juce::Slider::NoTextBox);
 			amountSlider->setRange(0, 20, 0.1);
 			amountSlider->addListener(this);
+			factory->createSliderAttachment("Amount_" + String(rowNumber), amountSlider);
 		}
 		amountSlider->setName("Amount_" + String(rowNumber));
 

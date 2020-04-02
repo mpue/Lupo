@@ -18,11 +18,16 @@ public:
 
 	Model() {
 		
-		cutoff = 18000.0f;
-		resonance = 0.5f;
+		cutoff1 = 18000.0f;
+		resonance1 = 0.5f;
+		envAmt1 = 0.5f;
+
+		cutoff2 = 18000.0f;
+		resonance2 = 0.5f;
+		envAmt2 = 0.5f;
+
+
 		mainVolume = 2.0f;
-		envAmt = 0.5f;
-		
 		osc1Pitch = 0;
 		osc1Fine = 0;
 		osc1Volume = 1.0f;
@@ -58,11 +63,15 @@ public:
 	~Model() {}
 
 
-	float cutoff;
-	float resonance;
+	float cutoff1;
+	float resonance1;
+	float envAmt1;
+
+	float cutoff2;
+	float resonance2;
+	float envAmt2;
+
 	float mainVolume;
-	float envAmt;
-	
 	float ampAttack = 0;
 	float ampDecay = 3;
 	float ampSustain = 0.1f;

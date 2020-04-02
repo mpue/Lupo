@@ -10,11 +10,12 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "ModMatrix.h"
+class AttachmentFactory;
 
 class ModMatrixModel : public juce::TableListBoxModel,public ComboBox::Listener, public Slider::Listener {
 public:
     
-    ModMatrixModel(ModMatrix* matrix);
+	ModMatrixModel(ModMatrix* matrix, AttachmentFactory* factory);
     
     virtual void paintRowBackground (juce::Graphics& g,
                                      int rowNumber,
@@ -41,8 +42,10 @@ public:
     
 private:
 	ModMatrix* matrix;
+	AttachmentFactory* factory;
 
 };
+
 
 class ModMatrixPanel  : public juce::Component,  public juce::ChangeListener, public ChangeBroadcaster {
     
@@ -66,7 +69,8 @@ public:
     }
     
     
-private:
+
+private:	
     ModMatrixModel* model = nullptr;
     juce::TableListBox* table = nullptr;
     juce::Viewport* view = nullptr;

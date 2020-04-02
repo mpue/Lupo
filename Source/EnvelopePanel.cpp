@@ -177,10 +177,10 @@ void EnvelopePanel::sliderValueChanged (Slider* sliderThatWasMoved)
 		if (getName() == "ampEnvelope") {
 			model->ampAttack = sliderThatWasMoved->getValue();
 		}
-		if (getName() == "filterEnvelope") {
+		if (getName() == "auxEnvelope1") {
 			model->fltAttack = sliderThatWasMoved->getValue();
 		}
-		if (getName() == "auxEnvelope") {
+		if (getName() == "auxEnvelope2") {
 			model->auxAttack = sliderThatWasMoved->getValue();
 		}
 
@@ -193,10 +193,10 @@ void EnvelopePanel::sliderValueChanged (Slider* sliderThatWasMoved)
 		if (getName() == "ampEnvelope") {
 			model->ampDecay = sliderThatWasMoved->getValue();
 		}
-		if (getName() == "filterEnvelope") {
+		if (getName() == "auxEnvelope1") {
 			model->fltDecay = sliderThatWasMoved->getValue();
 		}
-		if (getName() == "auxEnvelope") {
+		if (getName() == "auxEnvelope2") {
 			model->auxDecay = sliderThatWasMoved->getValue();
 		}
 
@@ -208,10 +208,10 @@ void EnvelopePanel::sliderValueChanged (Slider* sliderThatWasMoved)
 		if (getName() == "ampEnvelope") {
 			model->ampSustain = sliderThatWasMoved->getValue();
 		}
-		if (getName() == "filterEnvelope") {
+		if (getName() == "auxEnvelope1") {
 			model->fltSustain = sliderThatWasMoved->getValue();
 		}
-		if (getName() == "auxEnvelope") {
+		if (getName() == "auxEnvelope2") {
 			model->auxSustain = sliderThatWasMoved->getValue();
 		}
 
@@ -223,10 +223,10 @@ void EnvelopePanel::sliderValueChanged (Slider* sliderThatWasMoved)
 		if (getName() == "ampEnvelope") {
 			model->ampRelease = sliderThatWasMoved->getValue();
 		}
-		if (getName() == "filterEnvelope") {
+		if (getName() == "auxEnvelope1") {
 			model->fltRelease = sliderThatWasMoved->getValue();
 		}
-		if (getName() == "auxEnvelope") {
+		if (getName() == "auxEnvelope2") {
 			model->ampRelease = sliderThatWasMoved->getValue();
 		}
         //[/UserSliderCode_amp_release]
@@ -243,12 +243,25 @@ void EnvelopePanel::sliderValueChanged (Slider* sliderThatWasMoved)
 
 void EnvelopePanel::initAttachments()
 {
-	String prefix = getName().substring(0, 3);
+	if (getName() == "ampEnvelope") {
+		factory->createSliderAttachment("ampAttack", amp_attack.get());
+		factory->createSliderAttachment("ampDecay", amp_decay.get());
+		factory->createSliderAttachment("ampSustain", amp_sustain.get());
+		factory->createSliderAttachment("ampRelease", amp_release.get());
+	}
+	else if (getName() == "auxEnvelope1") {
+		factory->createSliderAttachment("auxAttack1", amp_attack.get());
+		factory->createSliderAttachment("auxDecay1", amp_decay.get());
+		factory->createSliderAttachment("auxSustain1", amp_sustain.get());
+		factory->createSliderAttachment("auxRelease1", amp_release.get());
+	}
+	else if (getName() == "auxEnvelope2") {
+		factory->createSliderAttachment("auxAttack2", amp_attack.get());
+		factory->createSliderAttachment("auxDecay2", amp_decay.get());
+		factory->createSliderAttachment("auxSustain2", amp_sustain.get());
+		factory->createSliderAttachment("auxRelease2", amp_release.get());
+	}
 
-	factory->createSliderAttachment(prefix + "Attack", amp_attack.get());
-	factory->createSliderAttachment(prefix + "Decay", amp_decay.get());
-	factory->createSliderAttachment(prefix + "Sustain", amp_sustain.get());
-	factory->createSliderAttachment(prefix + "Release", amp_release.get());
 
 }
 //[/MiscUserCode]

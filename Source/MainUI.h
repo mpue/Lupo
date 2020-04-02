@@ -34,6 +34,7 @@
 #include "PluginProcessor.h"
 #include "DistortionPanel.h"
 #include "ArpPanel.h"
+#include "FilterPanel.h"
 class ModMatrixPanel;
 class ModMatrixModel;
 class Model;
@@ -113,20 +114,13 @@ private:
     std::unique_ptr<GroupComponent> ModulationGroup;
     std::unique_ptr<GroupComponent> groupComponent;
     std::unique_ptr<GroupComponent> groupComponent3;
-    std::unique_ptr<GroupComponent> groupComponent6;
-    std::unique_ptr<Slider> fltCutoff;
-    std::unique_ptr<Slider> fltResonance;
-    std::unique_ptr<Label> Cutoff;
-    std::unique_ptr<Label> Res;
+    std::unique_ptr<GroupComponent> filterGroup1;
     std::unique_ptr<OscillatorPanel> osc1Panel;
     std::unique_ptr<OscillatorPanel> osc3Panel;
     std::unique_ptr<OscillatorPanel> osc2Panel;
     std::unique_ptr<EnvelopePanel> ampEnvelope;
-    std::unique_ptr<EnvelopePanel> filterEnvelope;
     std::unique_ptr<Slider> mainVolume;
     std::unique_ptr<Label> volumeLabel;
-    std::unique_ptr<Slider> envAmt;
-    std::unique_ptr<Label> Amt;
     std::unique_ptr<GroupComponent> mixerGroiup;
     std::unique_ptr<MixerChannelPanel> ch1Panel;
     std::unique_ptr<MixerChannelPanel> ch2Panel;
@@ -148,8 +142,9 @@ private:
     std::unique_ptr<ArpPanel> arpPanel;
     std::unique_ptr<TabbedComponent> modulationTab;
     std::unique_ptr<ModMatrixPanel> modMatrix;
-    std::unique_ptr<ComboBox> filterMode;
-    std::unique_ptr<Label> filterModeLabel;
+    std::unique_ptr<FilterPanel> filterPanel1;
+    std::unique_ptr<GroupComponent> filterGroup2;
+    std::unique_ptr<FilterPanel> filterPanel2;
 
 
     //==============================================================================

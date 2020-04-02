@@ -55,7 +55,8 @@ private:
 	vector<SynthLab::ADSR*>* modEnvelopes;
 	float sampleRate;
 	int bufferSize;
-	MultimodeFilter* filter;
+	MultimodeFilter* filter1;
+	MultimodeFilter* filter2;
 	float cutoff = 15000.0f;
 	float resonance = 1.0f;
 	int currentSample = 0;

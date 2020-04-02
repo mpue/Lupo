@@ -37,26 +37,32 @@ LupoAudioProcessor::LupoAudioProcessor()
 
 	factory = new AttachmentFactory(this, lupo.get());
 
-	factory->createParam("cutoff", "Cutoff", 0.01f, 15000.0, 12000.0);
-	factory->createParam("resonance", "Resonance", 0.01f, 5.0f, 1.0);
+	factory->createParam("cutoff1", "Cutoff", 0.01f, 15000.0, 12000.0);
+	factory->createParam("resonance1", "Resonance", 0.01f, 5.0f, 1.0);
+	factory->createParam("envAmt1", "Filter amount", 0.01f, 1.0f, 1.0);
+	factory->createParam("filterMode1", "Filter Mode", 0.0f, 1.0f, 0.0);
+
+	factory->createParam("cutoff2", "Cutoff", 0.01f, 15000.0, 12000.0);
+	factory->createParam("resonance2", "Resonance", 0.01f, 5.0f, 1.0);
+	factory->createParam("envAmt2", "Filter amount", 0.01f, 1.0f, 1.0);
+	factory->createParam("filterMode2", "Filter Mode", 0.0f, 1.0f, 0.0);
+
 	factory->createParam("mainVolume", "Main Volume", 0.01f, 2.0f, 1.0);
-	factory->createParam("envAmt", "Filter amount", 0.01f, 1.0f, 1.0);
 
 	factory->createParam("ampAttack", "Attack", 0.0f, 10.0, 0.0);
 	factory->createParam("ampDecay", "Decay", 0.0f, 10.0f, 1.0);
 	factory->createParam("ampSustain", "Sustain", 0.0f, 1.0f, 0.0);
 	factory->createParam("ampRelease", "Release", 0.0f, 10.0f, 1.0);
 
-	factory->createParam("filAttack", "Attack", 0.0f, 10.0, 0.0);
-	factory->createParam("filDecay", "Decay", 0.0f, 10.0f, 1.0);
-	factory->createParam("filSustain", "Sustain", 0.0f, 1.0f, 0.0);
-	factory->createParam("filRelease", "Release", 0.0f, 10.0f, 1.0);
-	factory->createParam("filterMode", "Filter Mode", 0.0f, 1.0f, 0.0);
+	factory->createParam("auxAttack1", "ENV 1 Attack", 0.0f, 10.0, 0.0);
+	factory->createParam("auxDecay1", "ENV 1 Decay", 0.0f, 10.0f, 1.0);
+	factory->createParam("auxSustain1", "ENV 1 Sustain", 0.0f, 1.0f, 0.0);
+	factory->createParam("auxRelease1", "ENV 1Release", 0.0f, 10.0f, 1.0);
 
-	factory->createParam("auxAttack", "Attack", 0.0f, 10.0, 0.0);
-	factory->createParam("auxDecay", "Decay", 0.0f, 10.0f, 1.0);
-	factory->createParam("auxSustain", "Sustain", 0.0f, 1.0f, 0.0);
-	factory->createParam("auxRelease", "Release", 0.0f, 10.0f, 1.0);
+	factory->createParam("auxAttack2", "ENV 2 Attack", 0.0f, 10.0, 0.0);
+	factory->createParam("auxDecay2", "ENV 2 Decay", 0.0f, 10.0f, 1.0);
+	factory->createParam("auxSustain2", "ENV 2 Sustain", 0.0f, 1.0f, 0.0);
+	factory->createParam("auxRelease2", "ENV 2 Release", 0.0f, 10.0f, 1.0);
 
 	factory->createParam("dlyTimeLeft", "DelayL", 0.0f, 1000.0, 0.0);
 	factory->createParam("dlyTimeRight", "DelayR", 0.0f, 1000.0f, 1.0);
@@ -118,7 +124,11 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("arpOctaves", "Arp Octaves", 0, 3.0, 0);
 	factory->createParam("arpMode", "Arp mode", 0, 1.0, 0);
 
-	
+	for (int i = 0; i < 6; i++) {
+		factory->createParam("Source_" + String(i), "Matrix source" + String(i), 0.0f, 5.0f, 0.0);
+		factory->createParam("Target_" + String(i), "Matrix target" + String(i), 0.0f, 5.0f, 0.0);
+		factory->createParam("Amount_" + String(i), "Matrix amount" + String(i), 0.0f, 20.0f, 0.0);
+	}
 
 	bypass = parameters->createAndAddParameter("bypass", "bypass", "Bypass", NormalisableRange<float>(0, 1),0, nullptr, nullptr);
 	
