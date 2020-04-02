@@ -2,7 +2,7 @@
 
 Lupo is a virtual analogue synth with 4 oscillators.
 
-![Lupo](Images/Lupo.jpg)
+![Lupo](Images/lupo.jpg)
 
 ## Features
 
