@@ -14,6 +14,23 @@ Lupo is a virtual analogue synth with 4 oscillators.
 * 2 Modulation envelopes
 * 4 Effects: Chorus, Stereo Delay, Reverb and Distortion
 
+## Notice
+
+Although it's already usable, the project is in early development state. If you intend to create patches for the synth, they might not work in later versions. 
+
+### Known issues
+
+* Fiddling with the modulation matrix causes sometimes crashes
+* Not all parameters are clamped to meaningful ranges, which leads to strange sounds
+* PWM is not working at all
+* the sync button makes only sense for the second oscillator
+* The arpeggiator is not tempo syncable
+
+## What is planned?
+
+In the next weeks I'll finish the PWM section, work on stability and provide
+a bunch of nice patches.
+
 ## Getting Started
 
 Build it by yourself using the Projucer from the JUCE framework.
