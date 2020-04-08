@@ -33,7 +33,7 @@ a bunch of nice patches.
 
 ## Getting Started
 
-Build it by yourself using the Projucer from the JUCE framework.
+Take the VS2017 project from the Builds folder, currently only Visual Studio 2017 is available.
 
 ## License
 
