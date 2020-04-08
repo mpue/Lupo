@@ -57,7 +57,7 @@ LupoSynth::LupoSynth(Model* model, ModMatrix* modMatrix) {
 	oscGroup4 = new OscGroup();
 
 	for (int i = 0; i < 6; i++) {
-		modMatrix->addModulation(new Modulation(nullptr,nullptr));
+		modMatrix->addModulation(new Modulation(nullptr,nullptr),i);
 	}
 
 }
@@ -344,7 +344,6 @@ void LupoSynth::updateState() {
 			voices[i]->getOscillator(0)->setSync(true);
 		}
 	}
-
 
 
 }
@@ -732,13 +731,13 @@ ModMatrix * LupoSynth::getModMatrix()
 }
 
 void LupoSynth::updateMatrix() {
-	for (int i = 0; i < matrix->getModulations().size(); i++) {
-		matrix->getModulations().at(i)->setTarget(matrix->getModTargets().at(model->modTarget[i]));
-		matrix->getModulations().at(i)->setModulator(matrix->getModulators().at(model->modSource[i]));	
+	for (int i = 0; i < 6; i++) {
+		matrix->getModulations()[i]->setTarget(matrix->getModTargets().at(model->modTarget[i]));
+		matrix->getModulations()[i]->setModulator(matrix->getModulators().at(model->modSource[i]));	
 	}
-	for (int i = 0; i < matrix->getModulations().size(); i++) {
-		if (matrix->getModulations().at(i)->getModulator() != nullptr) {
-			matrix->getModulations().at(i)->getModulator()->setModAmount(model->modAmount[i]);
+	for (int i = 0; i <6 ; i++) {
+		if (matrix->getModulations()[i]->getModulator() != nullptr) {
+			matrix->getModulations()[i]->getModulator()->setModAmount(model->modAmount[i]);
 		}
 	}
 }

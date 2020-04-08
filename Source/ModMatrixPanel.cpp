@@ -150,17 +150,17 @@ void ModMatrixModel::comboBoxChanged(ComboBox * comboBoxThatHasChanged)
 	const int index = comboBoxThatHasChanged->getName().substring(comboBoxThatHasChanged->getName().lastIndexOf("_") + 1).getIntValue();
 	
 	if (comboBoxThatHasChanged->getName().startsWith("Source")) {
-		for (int i = 0; i < matrix->getModulations().size(); i++) {
+		for (int i = 0; i < 6; i++) {
 			if (i == index) {
-				matrix->getModulations().at(i)->setModulator(matrix->getModulators().at(comboBoxThatHasChanged->getSelectedItemIndex()));
+				matrix->getModulations()[i]->setModulator(matrix->getModulators().at(comboBoxThatHasChanged->getSelectedItemIndex()));
 			}
 
 		}
 	}
 	if (comboBoxThatHasChanged->getName().startsWith("Target")) {
-		for (int i = 0; i < matrix->getModulations().size(); i++) {
+		for (int i = 0; i < 6; i++) {
 			if (i == index) {
-				matrix->getModulations().at(i)->setTarget(matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex()));
+				matrix->getModulations()[i]->setTarget(matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex()));
 			}
 
 		}
@@ -172,8 +172,8 @@ void ModMatrixModel::comboBoxChanged(ComboBox * comboBoxThatHasChanged)
 void ModMatrixModel::sliderValueChanged(Slider * slider)
 {
 	const int index = slider->getName().substring(slider->getName().lastIndexOf("_") + 1).getIntValue();
-	if (matrix->getModulations().at(index)->getModulator() != nullptr) {
-		matrix->getModulations().at(index)->getModulator()->setModAmount(slider->getValue());
+	if (matrix->getModulations()[index]->getModulator() != nullptr) {
+		matrix->getModulations()[index]->getModulator()->setModAmount(slider->getValue());
 	}
 }
 

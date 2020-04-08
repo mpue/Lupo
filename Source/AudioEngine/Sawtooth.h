@@ -35,7 +35,7 @@ class Sawtooth : public Oszillator, public Modulator {
 public:
 
 	void setSpread(float spread);
-    virtual float process() override;
+
     virtual float getOutput() override;
     virtual void setFine(float fine) override;
     virtual float getFine() const override;
@@ -45,7 +45,7 @@ public:
     Sawtooth(float sampleRate, int buffersize);
 	~Sawtooth();
     float fine;
-    virtual void setFrequency(double frequency) override;
+    
     virtual void reset() override;
     
     float p;      //current position
@@ -60,6 +60,35 @@ public:
 	int bufferSIze = 0;
 	float spread = 0.1;
 	float value = 0;
+
+	inline float process() override {
+		if (this->slave != 0 && sync) {
+			if (blitsaw[0]->resetFlag) {
+				slave->reset();
+				blitsaw[0]->resetFlag = false;
+			}
+		}
+
+		if (spread == 0.0f) {
+			return blitsaw[0]->tick() * volume;
+		}
+		else {
+			value = 0;
+			for (int i = 0; i < 8; i++) {
+				value += blitsaw[i]->tick();
+			}
+			return value * volume;
+
+		}
+	}
+
+	inline void setFrequency(double frequency) override {
+		this->frequency = frequency;
+		blitsaw[0]->setFrequency(frequency + this->fine + pitchMod);
+		for (int i = 1; i < 8; i++) {
+			blitsaw[i]->setFrequency(frequency + this->fine + pitchMod + scales[i - 1] * spread);
+		}
+	}
 
 
 };

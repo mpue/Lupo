@@ -75,7 +75,7 @@ class BlitSaw: public Generator
   StkFrames& tick( StkFrames& frames, unsigned int channel = 0 );
   StkFloat phase_;
   bool resetFlag = false;
-
+  double fast_sin(double x);
  protected:
 
   void updateHarmonics( void );
@@ -89,6 +89,35 @@ class BlitSaw: public Generator
   StkFloat state_;
 
 };
+
+inline double BlitSaw::fast_sin(double x) {
+	int k;
+	double y;
+	double z;
+
+	z = x;
+	z *= 0.3183098861837907;
+	z += 6755399441055744.0;
+	k = *((int *)&z);
+	z = k;
+	z *= 3.1415926535897932;
+	x -= z;
+	y = x;
+	y *= x;
+	z = 0.0073524681968701;
+	z *= y;
+	z -= 0.1652891139701474;
+	z *= y;
+	z += 0.9996919862959676;
+	x *= z;
+	k &= 1;
+	k += k;
+	z = k;
+	z *= x;
+	x -= z;
+
+	return x;
+}
 
 inline StkFloat BlitSaw :: tick( void )
 {
@@ -108,11 +137,11 @@ inline StkFloat BlitSaw :: tick( void )
 
   // Avoid a divide by zero, or use of a denormalized divisor 
   // at the sinc peak, which has a limiting value of m_ / p_.
-  StkFloat tmp, denominator = sin( phase_ );
+  StkFloat tmp, denominator = fast_sin( phase_ );
   if ( fabs(denominator) <= std::numeric_limits<StkFloat>::epsilon() )
     tmp = a_;
   else {
-    tmp =  sin( m_ * phase_ );
+    tmp = fast_sin( m_ * phase_ );
     tmp /= p_ * denominator;
   }
 

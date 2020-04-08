@@ -24,6 +24,10 @@
             file="Images/oscillator_square_48.png"/>
     </GROUP>
     <GROUP id="{172FB074-0DA4-14B0-F615-01D1F806371C}" name="Source">
+      <GROUP id="{5373EDDD-05FE-A031-89BE-4A1C92AD4090}" name="SpeedTrig">
+        <FILE id="dG4drC" name="SpeedTrig.cpp" compile="1" resource="0" file="Source/SpeedTrig/SpeedTrig.cpp"/>
+        <FILE id="ymGJFz" name="SpeedTrig.h" compile="0" resource="0" file="Source/SpeedTrig/SpeedTrig.h"/>
+      </GROUP>
       <FILE id="NJH6XE" name="ModSlotConfig.cpp" compile="1" resource="0"
             file="Source/ModSlotConfig.cpp"/>
       <FILE id="Cb5p9a" name="ModSlotConfig.h" compile="0" resource="0" file="Source/ModSlotConfig.h"/>

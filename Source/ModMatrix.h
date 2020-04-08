@@ -30,20 +30,34 @@ public:
     ModMatrix();
     ~ModMatrix();
     
-    void addModulation(Modulation* mod);
-    vector<Modulation*> getModulations();
-
-	void addModulator(Modulator* m);
-	vector<Modulator*> getModulators();
-
+    void addModulation(Modulation* mod, int index );
+    void addModulator(Modulator* m);
 	void addModTarget(ModTarget* m);
-	vector<ModTarget*> getModTargets();
-
-
     void registerSource(String source, int id);
     void registerTarget(String target, int id);
-    
-    void process();
+
+	inline void process() {
+		for (int i = 0; i < 6; i++) {
+			if (this->modulations[i]->isEnabled()) {
+				this->modulations[i]->process();
+			}
+		}
+	}
+
+	inline Modulation** getModulations() {
+		return modulations;
+	}
+
+	inline vector<Modulator*> getModulators()
+	{
+		return modulators;
+	}
+
+	inline vector<ModTarget*> getModTargets()
+	{
+		return targets;
+	}
+
     
     map<int,String>* getSources();
     map<int,String>* getTargets();
@@ -62,7 +76,7 @@ public:
 	}
 
 private:
-    vector<Modulation*> modulations;
+    Modulation** modulations;
 	vector<Modulator*> modulators;
 	vector<ModTarget*> targets;
     

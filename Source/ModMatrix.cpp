@@ -14,15 +14,15 @@ ModMatrix::ModMatrix() {
     this->modSources = new std::map<int,String>();
     this->modTargets = new std::map<int,String>();	
 	this->dummy = new DummyModulator();
-
+	this->modulations = new Modulation*[6];
 }
 
 ModMatrix::~ModMatrix() {
 	
     removeAllChangeListeners();
 	
-    for(std::vector<Modulation*>::iterator it = modulations.begin(); it != modulations.end(); ++it) {
-        delete *it;
+	for (int i = 0; i < 6; i++) {
+        delete modulations[i];
     }
 	
     modSources->clear();
@@ -33,41 +33,28 @@ ModMatrix::~ModMatrix() {
 	delete dummy;
 }
 
-void ModMatrix::process() {
-    for (int i = 0; i < modulations.size();i++) {
-        if (this->modulations.at(i)->isEnabled()) {
-            this->modulations.at(i)->process();
-        }
-    }
+
+
+
+void ModMatrix::addModulation(Modulation *mod, int index) {
+    this->modulations[index] = mod ;
 }
 
-void ModMatrix::addModulation(Modulation *mod) {
-    this->modulations.push_back(mod);
-}
 
-vector<Modulation*> ModMatrix::getModulations() {
-    return modulations;
-}
 
 void ModMatrix::addModulator(Modulator * m)
 {
 	modulators.push_back(m);
 }
 
-vector<Modulator*> ModMatrix::getModulators()
-{
-	return modulators;
-}
+
 
 void ModMatrix::addModTarget(ModTarget * m)
 {
 	targets.push_back(m);
 }
 
-vector<ModTarget*> ModMatrix::getModTargets()
-{
-	return targets;
-}
+
 
 void ModMatrix::registerSource(String source, int id) {
     this->modSources->insert(std::make_pair(id,source));
@@ -105,7 +92,7 @@ void ModMatrix::setConfig(ModMatrixConfig* config)
 {
 	this->config = config;
 
-	this->modulations.clear();
+	
 	
 	for (int i = 0; i < config->getNumConfigs();i++) {
 		ModSlotConfig* msc = config->getSlotConfig(i);
@@ -116,7 +103,7 @@ void ModMatrix::setConfig(ModMatrixConfig* config)
 		mod->setEnabled(msc->isSlotEnabled());
 		*/
 		if (msc->getSourceId() == 1) {
-			modulations.at(i)->setModulator(dummy);
+			modulations[i]->setModulator(dummy);
 		}
 		// LFO 1
 		else if (msc->getSourceId() == 2) {
@@ -217,8 +204,8 @@ void ModMatrix::createDefaultConfig()
 	if (config != nullptr) {
 		delete config;
 
-		for (int i = 0; i < modulations.size(); i++) {
-			modulations.at(i)->setEnabled(false);
+		for (int i = 0; i < 6; i++) {
+			modulations[i]->setEnabled(false);
 		}
 
 	}
