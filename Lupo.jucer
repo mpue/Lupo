@@ -11,6 +11,8 @@
       <FILE id="HLPRSK" name="Knob_48.png" compile="0" resource="1" file="Images/Knob_48.png"/>
       <FILE id="e9enOd" name="Knob_64.png" compile="0" resource="1" file="Images/Knob_64.png"/>
       <FILE id="dLLdn7" name="Knob_128.png" compile="0" resource="1" file="Images/Knob_128.png"/>
+      <FILE id="LQzskC" name="knob_shadow_64.png" compile="0" resource="1"
+            file="Images/knob_shadow_64.png"/>
       <FILE id="wCxM6Q" name="logo.png" compile="0" resource="1" file="Images/logo.png"/>
       <FILE id="op0Ayv" name="oscillator_noise_48.png" compile="0" resource="1"
             file="Images/oscillator_noise_48.png"/>
@@ -160,6 +162,9 @@
         <FILE id="kfX76j" name="Pulse.h" compile="0" resource="0" file="Source/AudioEngine/Pulse.h"/>
         <FILE id="ZzaGWR" name="Random.cpp" compile="1" resource="0" file="Source/AudioEngine/Random.cpp"/>
         <FILE id="wobyGb" name="Random.h" compile="0" resource="0" file="Source/AudioEngine/Random.h"/>
+        <FILE id="XFYU0X" name="SampleAndHold.cpp" compile="1" resource="0"
+              file="Source/AudioEngine/SampleAndHold.cpp"/>
+        <FILE id="BB9c3y" name="SampleAndHold.h" compile="0" resource="0" file="Source/AudioEngine/SampleAndHold.h"/>
         <FILE id="Ekevo5" name="Sampler.cpp" compile="1" resource="0" file="Source/AudioEngine/Sampler.cpp"/>
         <FILE id="OE64o2" name="Sampler.h" compile="0" resource="0" file="Source/AudioEngine/Sampler.h"/>
         <FILE id="OBN49G" name="Sawtooth.cpp" compile="1" resource="0" file="Source/AudioEngine/Sawtooth.cpp"/>

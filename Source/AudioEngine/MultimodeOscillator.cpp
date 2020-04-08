@@ -7,8 +7,11 @@
 //
 
 #include "MultimodeOscillator.h"
-
-
+#include "Sine.h"
+#include "WhiteNoise.h"
+#include "Sawtooth.h"
+#include "Pulse.h"
+#include "SampleAndHold.h"
 
 MultimodeOscillator::MultimodeOscillator(float sampleRate,int buffersize) : Oszillator(sampleRate) {
     this->volume = 1.0f;
@@ -19,7 +22,8 @@ MultimodeOscillator::MultimodeOscillator(float sampleRate,int buffersize) : Oszi
     this->saw = new Sawtooth(sampleRate, buffersize);
     this->pulse = new Pulse(sampleRate, buffersize);
     this->noise = new WhiteNoise(sampleRate, buffersize);
-    this->mode = OscMode::SAW;
+	this->sah = new SampleAndHold(sampleRate, buffersize);
+	this->mode = OscMode::SAW;
     this->modulator = nullptr;
 	this->pan = 0.0f;
 }
@@ -29,12 +33,15 @@ MultimodeOscillator::~MultimodeOscillator() {
     delete saw;
     delete pulse;
     delete noise;
+	delete sah;
 }
 
 void MultimodeOscillator::setFrequency(double frequency) {
-    this->saw->setFrequency(frequency);
-    this->sine->setFrequency(frequency);
-    this->pulse->setFrequency(frequency);
+	this->frequency = frequency;
+	this->saw->setFrequency(this->frequency + this->fine);
+    this->sine->setFrequency(this->frequency + this->fine);
+    this->pulse->setFrequency(this->frequency + this->fine);
+	this->sah->setFrequency(this->frequency + this->fine);
 }
 
 void MultimodeOscillator::setVolume(float volume) {
@@ -42,6 +49,7 @@ void MultimodeOscillator::setVolume(float volume) {
     this->sine->setVolume(volume);
     this->pulse->setVolume(volume);
     this->noise->setVolume(volume);
+	this->sah->setVolume(volume);
 }
 
 void MultimodeOscillator::setModulator(Modulator* mod) {
@@ -62,6 +70,9 @@ float MultimodeOscillator::getOutput() {
     else if(this->mode == NOISE) {
         return this->noise->getOutput();
     }
+	else if (this->mode = SAMPLE) {
+		return this->sah->getOutput();
+	}
     else {
         return 0;
     }
@@ -72,23 +83,20 @@ float MultimodeOscillator::process() {
     
     if (this->mode == SAW) {
 		if (this->modulator != nullptr) {
-			saw->setPitchMod(modulator->getOutput() * modulator->getModAmount());	
-			saw->setFine(fine);
+			saw->setFrequency(modulator->getOutput() * modulator->getModAmount() + this->frequency + this->fine);
 		}
         return this->saw->process();
     }
     else if (this->mode == SINE) {
 		if (this->modulator != nullptr) {
-			sine->setPitchMod(modulator->getOutput() * modulator->getModAmount());
-			sine->setFine(fine);
+			sine->setFrequency(modulator->getOutput() * modulator->getModAmount() + this->frequency + this->fine);
 		}
 
         return this->sine->process();
     }
     else if (this->mode == PULSE) {
 		if (this->modulator != nullptr) {
-			sine->setPitchMod(modulator->getOutput() * modulator->getModAmount());
-			sine->setFine(fine);
+			pulse->setFrequency(modulator->getOutput() * modulator->getModAmount() + this->frequency + this->fine);			
 		}
 
         return this->pulse->process();
@@ -96,6 +104,10 @@ float MultimodeOscillator::process() {
     else if(this->mode == NOISE) {
         return this->noise->process();
     }
+	else if (this->mode == SAMPLE) {
+		return this->sah->process();
+	}
+
     else {
         return 0;
     }
@@ -125,4 +137,9 @@ void MultimodeOscillator::setSlave(Oszillator *slave) {
 
 void MultimodeOscillator::setSync(bool sync) {
     this->saw->setSync(sync);
+}
+
+void MultimodeOscillator::setSpread(float spread)
+{
+	this->saw->setSpread(spread);
 }

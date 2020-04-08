@@ -12,16 +12,19 @@ namespace BinaryData
     const int            DSEG14ClassicRegular_ttfSize = 28416;
 
     extern const char*   Knob_32_png;
-    const int            Knob_32_pngSize = 207362;
+    const int            Knob_32_pngSize = 186292;
 
     extern const char*   Knob_48_png;
-    const int            Knob_48_pngSize = 446229;
+    const int            Knob_48_pngSize = 413882;
 
     extern const char*   Knob_64_png;
-    const int            Knob_64_pngSize = 762558;
+    const int            Knob_64_pngSize = 495933;
 
     extern const char*   Knob_128_png;
-    const int            Knob_128_pngSize = 2692011;
+    const int            Knob_128_pngSize = 2713110;
+
+    extern const char*   knob_shadow_64_png;
+    const int            knob_shadow_64_pngSize = 3236;
 
     extern const char*   logo_png;
     const int            logo_pngSize = 19035;
@@ -39,7 +42,7 @@ namespace BinaryData
     const int            oscillator_square_48_pngSize = 17545;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 10;
+    const int namedResourceListSize = 11;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];

@@ -84,6 +84,9 @@ void Oszillator::setMode(float mode) {
 	else if (mode == 3.0f) {
 		this->mode = OscMode::NOISE;
 	}
+	else if (mode == 4.0f) {
+		this->mode = OscMode::SAMPLE;
+	}
 
 }
 

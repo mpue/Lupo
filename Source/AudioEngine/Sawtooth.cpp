@@ -29,7 +29,17 @@ Sawtooth::Sawtooth(float sampleRate, int buffersize) : Oszillator(sampleRate) {
     this->dc = -0.498f / this->pmax;
     this->lastValue = 0;
 	this->saw = 0;
-	blitsaw = new stk::BlitSaw();
+	for (int i = 0; i < 8; i++) {
+		blitsaw[i] = new stk::BlitSaw();
+
+	}
+}
+
+Sawtooth::~Sawtooth()
+{
+	for (int i = 0; i < 8; i++) {
+		delete blitsaw[i];
+	}
 }
 
 float Sawtooth::getOutput() {
@@ -37,24 +47,44 @@ float Sawtooth::getOutput() {
 }
 
 void Sawtooth::reset() {
-	blitsaw->reset();
+	for (int i = 0; i < 8; i++) {
+		blitsaw[i]->reset();
+	}
 }
 
 
+void Sawtooth::setSpread(float spread)
+{
+	this->spread = spread;
+}
+
 float Sawtooth::process() {
 	if (this->slave != 0 && sync) {
-		if (blitsaw->resetFlag) {
+		if (blitsaw[0]->resetFlag) {
 			slave->reset();
-			blitsaw->resetFlag = false;
-		}	
+			blitsaw[0]->resetFlag = false;
+		}
 	}
-	currentSample = (currentSample + 1) % bufferSIze;
-	return blitsaw->tick() * volume;	
+	
+	if (spread == 0.0f) {
+		return blitsaw[0]->tick() * volume;
+	}
+	else {
+		value = 0;
+		for (int i = 0; i < 8; i++) {
+			value += blitsaw[i]->tick();
+		}
+		return value * volume;
+		
+	 }
 }
 
 void Sawtooth::setFrequency(double frequency) {
     this->frequency = frequency;
-	blitsaw->setFrequency(frequency+ this->fine + pitchMod);
+	blitsaw[0]->setFrequency(frequency + this->fine + pitchMod);
+	for (int i = 1; i < 8; i++) {
+		blitsaw[i]->setFrequency(frequency + this->fine + pitchMod + scales[i-1] * spread);
+	}
 }
 
 void Sawtooth::setFine(float fine) {

@@ -47,7 +47,7 @@ OscillatorPanel::OscillatorPanel (Model* model, AttachmentFactory* factory)
     addAndMakeVisible (oscPitch.get());
     oscPitch->setRange (-36, 36, 1);
     oscPitch->setSliderStyle (Slider::RotaryVerticalDrag);
-    oscPitch->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
+    oscPitch->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     oscPitch->addListener (this);
 
     oscPitch->setBounds (16, 24, 80, 80);
@@ -67,10 +67,10 @@ OscillatorPanel::OscillatorPanel (Model* model, AttachmentFactory* factory)
     addAndMakeVisible (oscFine.get());
     oscFine->setRange (-1, 1, 0.01);
     oscFine->setSliderStyle (Slider::RotaryVerticalDrag);
-    oscFine->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
+    oscFine->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     oscFine->addListener (this);
 
-    oscFine->setBounds (120, 40, 64, 64);
+    oscFine->setBounds (120, 32, 64, 64);
 
     fineLabel.reset (new Label ("fineLabel",
                                 TRANS("Fine\n")));
@@ -83,25 +83,25 @@ OscillatorPanel::OscillatorPanel (Model* model, AttachmentFactory* factory)
 
     fineLabel->setBounds (136, 104, 39, 24);
 
-    pwSlider.reset (new Slider ("pwSlider"));
-    addAndMakeVisible (pwSlider.get());
-    pwSlider->setRange (0, 1, 0.01);
-    pwSlider->setSliderStyle (Slider::RotaryVerticalDrag);
-    pwSlider->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
-    pwSlider->addListener (this);
+    spreadSlider.reset (new Slider ("spreadSlider"));
+    addAndMakeVisible (spreadSlider.get());
+    spreadSlider->setRange (0, 0.1, 0.001);
+    spreadSlider->setSliderStyle (Slider::RotaryVerticalDrag);
+    spreadSlider->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    spreadSlider->addListener (this);
 
-    pwSlider->setBounds (24, 128, 64, 64);
+    spreadSlider->setBounds (24, 128, 64, 64);
 
-    pwLabel.reset (new Label ("pwLabel",
-                              TRANS("PW\n")));
-    addAndMakeVisible (pwLabel.get());
-    pwLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
-    pwLabel->setJustificationType (Justification::centredLeft);
-    pwLabel->setEditable (false, false, false);
-    pwLabel->setColour (TextEditor::textColourId, Colours::black);
-    pwLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    spreadLabel.reset (new Label ("spreadLabel",
+                                  TRANS("Spread\n")));
+    addAndMakeVisible (spreadLabel.get());
+    spreadLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
+    spreadLabel->setJustificationType (Justification::centredLeft);
+    spreadLabel->setEditable (false, false, false);
+    spreadLabel->setColour (TextEditor::textColourId, Colours::black);
+    spreadLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    pwLabel->setBounds (40, 192, 39, 24);
+    spreadLabel->setBounds (32, 192, 56, 24);
 
     syncButton.reset (new ToggleButton ("syncButton"));
     addAndMakeVisible (syncButton.get());
@@ -158,8 +158,8 @@ OscillatorPanel::~OscillatorPanel()
     pitchlabel1 = nullptr;
     oscFine = nullptr;
     fineLabel = nullptr;
-    pwSlider = nullptr;
-    pwLabel = nullptr;
+    spreadSlider = nullptr;
+    spreadLabel = nullptr;
     syncButton = nullptr;
     shapeComboBox = nullptr;
     shapeLabel = nullptr;
@@ -227,10 +227,10 @@ void OscillatorPanel::sliderValueChanged (Slider* sliderThatWasMoved)
 		}
         //[/UserSliderCode_oscFine]
     }
-    else if (sliderThatWasMoved == pwSlider.get())
+    else if (sliderThatWasMoved == spreadSlider.get())
     {
-        //[UserSliderCode_pwSlider] -- add your slider handling code here..
-        //[/UserSliderCode_pwSlider]
+        //[UserSliderCode_spreadSlider] -- add your slider handling code here..
+        //[/UserSliderCode_spreadSlider]
     }
 
     //[UsersliderValueChanged_Post]
@@ -301,33 +301,39 @@ void OscillatorPanel::initAttachments()
 		factory->createSliderAttachment("osc1Pitch", oscPitch.get());
 		factory->createSliderAttachment("osc1Fine", oscFine.get());
 		factory->createComboAttachment("osc1Shape", shapeComboBox.get());
+		factory->createSliderAttachment("osc1Spread", spreadSlider.get());
 
 	}
 	else if (getName().startsWith("osc2")) {
 		factory->createSliderAttachment("osc2Pitch", oscPitch.get());
 		factory->createSliderAttachment("osc2Fine", oscFine.get());
 		factory->createComboAttachment("osc2Shape", shapeComboBox.get());
+		factory->createSliderAttachment("osc2Spread", spreadSlider.get());
 	}
 	else if (getName().startsWith("osc3")) {
 		factory->createSliderAttachment("osc3Pitch", oscPitch.get());
 		factory->createSliderAttachment("osc3Fine", oscFine.get());
 		factory->createComboAttachment("osc3Shape", shapeComboBox.get());
+		factory->createSliderAttachment("osc3Spread", spreadSlider.get());
 	}
 
 	else if (getName().startsWith("osc4")) {
 		factory->createSliderAttachment("osc4Pitch", oscPitch.get());
 		factory->createSliderAttachment("osc4Fine", oscFine.get());
 		factory->createComboAttachment("osc4Shape", shapeComboBox.get());
+		factory->createSliderAttachment("osc4Spread", spreadSlider.get());
 	}
 
 	oscPitch.get()->textFromValueFunction = [](double value)
 	{
-		return String(roundDoubleToInt(value));
+		return String((int)(value));
 
 	};
 	oscPitch.get()->valueFromTextFunction = [](String text) {
 		return text.getIntValue();
 	};
+
+	oscPitch.get()->setRange(-36, 36, 1);
 
 }
 //[/MiscUserCode]
@@ -351,17 +357,16 @@ BEGIN_JUCER_METADATA
                   virtualName="" explicitFocusOrder="0" pos="0 0 208 232" title="Osc 1"/>
   <SLIDER name="oscPitch" id="57e273c20e9f4d5e" memberName="oscPitch" virtualName=""
           explicitFocusOrder="0" pos="16 24 80 80" min="-36.0" max="36.0"
-          int="1.0" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
+          int="1.0" style="RotaryVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
+          textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <LABEL name="pitchlabel1" id="abdc5c483d1b1ed5" memberName="pitchlabel1"
          virtualName="" explicitFocusOrder="0" pos="40 104 39 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Pitch" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <SLIDER name="oscFine" id="533f1365e15f5919" memberName="oscFine" virtualName=""
-          explicitFocusOrder="0" pos="120 40 64 64" min="-1.0" max="1.0"
-          int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
+          explicitFocusOrder="0" pos="120 32 64 64" min="-1.0" max="1.0"
+          int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="fineLabel" id="bd9e25fff1c8157f" memberName="fineLabel"
@@ -369,16 +374,16 @@ BEGIN_JUCER_METADATA
          edBkgCol="0" labelText="Fine&#10;" editableSingleClick="0" editableDoubleClick="0"
          focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
          kerning="0.0" bold="0" italic="0" justification="33"/>
-  <SLIDER name="pwSlider" id="ebf7f16f43baf87" memberName="pwSlider" virtualName=""
-          explicitFocusOrder="0" pos="24 128 64 64" min="0.0" max="1.0"
-          int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
+  <SLIDER name="spreadSlider" id="ebf7f16f43baf87" memberName="spreadSlider"
+          virtualName="" explicitFocusOrder="0" pos="24 128 64 64" min="0.0"
+          max="0.1" int="0.001" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
-  <LABEL name="pwLabel" id="7770108089bbf43b" memberName="pwLabel" virtualName=""
-         explicitFocusOrder="0" pos="40 192 39 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="PW&#10;" editableSingleClick="0" editableDoubleClick="0"
-         focusDiscardsChanges="0" fontname="Default font" fontsize="12.0"
-         kerning="0.0" bold="0" italic="0" justification="33"/>
+  <LABEL name="spreadLabel" id="7770108089bbf43b" memberName="spreadLabel"
+         virtualName="" explicitFocusOrder="0" pos="32 192 56 24" edTextCol="ff000000"
+         edBkgCol="0" labelText="Spread&#10;" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TOGGLEBUTTON name="syncButton" id="9febd9e09778ff94" memberName="syncButton"
                 virtualName="" explicitFocusOrder="0" pos="112 192 56 24" buttonText="sync"
                 connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>

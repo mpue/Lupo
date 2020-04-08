@@ -11,16 +11,17 @@
 
 #include <stdio.h>
 
-#include "Oszillator.h"
-#include "Sine.h"
-#include "Sawtooth.h"
-#include "Pulse.h"
-#include "WhiteNoise.h"
+#include "Oszillator.h";
 #include "ModTarget.h"
 
+class Sine;
+class Sawtooth;
+class Pulse;
+class WhiteNoise;
+class SampleAndHold; 
+
 class MultimodeOscillator : public Oszillator, public Modulator, public ModTarget {
-    
-    
+        
 public:
     MultimodeOscillator(float sampleRate, int buffersize);
     ~MultimodeOscillator();
@@ -34,14 +35,17 @@ public:
     virtual void reset() override;
     virtual void setSlave(Oszillator* slave) override;
     virtual void setSync(bool sync) override;
+	void setSpread(float spread);
     
 private:
-    float fine;
     Sawtooth* saw;
     Sine* sine;
     Pulse* pulse;
     WhiteNoise* noise;
-    Modulator* modulator;
+	SampleAndHold* sah;
+    Modulator* modulator = nullptr;
+    float fine = 0;
+	float frequency = 0;
 };
 
 #endif /* MultimodeOscillator_hpp */

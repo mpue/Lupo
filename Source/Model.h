@@ -26,7 +26,6 @@ public:
 		resonance2 = 0.5f;
 		envAmt2 = 0.5f;
 
-
 		mainVolume = 2.0f;
 		osc1Pitch = 0;
 		osc1Fine = 0;
@@ -133,5 +132,10 @@ public:
 	float distMode = 0.0f;
 	float distDrive = 0.0f;
 	float distMix = 0.0f;
+
+	float modAmount[6] = { 0.0f };
+	int modSource[6] = { 0 };
+	int modTarget[6] = { 0 };
+		
 
 };

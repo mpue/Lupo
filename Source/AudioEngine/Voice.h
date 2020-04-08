@@ -31,8 +31,7 @@ public:
     Voice(float sampleRate);
     ~Voice();
     
-    void addOszillator(Oszillator* o);
-    vector<Oszillator*> getOszillators() const;
+    void addOszillator(Oszillator* o, int index);
     Oszillator* getOscillator(int num);
     
     float process(int channel);
@@ -70,9 +69,10 @@ public:
 
 	void setOscVolume(int osc, float volume);
 	void setOscPan(int osc, float pan);
+	void setOscSpread(int osc, float spread);
 
 private:
-    vector<Oszillator*> oscillators;
+    Oszillator* oscillators[4];
     float sampleRate;
     int noteNumber = 0;
     int pitch = 0;

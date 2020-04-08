@@ -75,6 +75,23 @@ void MultimodeFilter::processStereo(float *const left, float *const right, const
     }
 }
 
+void MultimodeFilter::processMono(int channel, float * const samples, const int numSamples)
+{
+	if (this->enabled) {
+		if (this->mode == Mode::LOWPASS) {
+			this->lowPassLeftStage1->process(samples, 0, numSamples);
+			this->lowPassLeftStage2->process(samples, 0, numSamples);
+
+
+		}
+		else {
+			this->highPassLeft->process(samples, 0, numSamples);
+		}
+
+	}
+
+}
+
 void MultimodeFilter::setModulator(Modulator* mod) {
     this->lowPassLeftStage1->setModulator(mod);
     this->lowPassRightStage1->setModulator(mod);

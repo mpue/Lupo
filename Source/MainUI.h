@@ -56,6 +56,7 @@ class Panel;
 class MainUI  : public Component,
                 public ChangeBroadcaster,
                 public ChangeListener,
+                public AudioProcessorValueTreeState::Listener,
                 public Slider::Listener,
                 public Button::Listener,
                 public ComboBox::Listener
@@ -74,8 +75,7 @@ public:
 	void mouseMove(const MouseEvent& event) override;
 	void updatePresetList();
 	Component* findComponentAtMousePosition(Point<int> mousePos, Component* parent);
-
-
+	void parameterChanged(const String& parameterID, float newValue) override;
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -135,7 +135,6 @@ private:
     std::unique_ptr<TextButton> saveButton;
     std::unique_ptr<ComboBox> presetCombo;
     std::unique_ptr<Slider> fmSlider;
-    std::unique_ptr<Label> fmLabel;
     std::unique_ptr<GroupComponent> distGroup;
     std::unique_ptr<DistortionPanel> distortionPanel;
     std::unique_ptr<GroupComponent> arpGroup;
@@ -145,6 +144,11 @@ private:
     std::unique_ptr<FilterPanel> filterPanel1;
     std::unique_ptr<GroupComponent> filterGroup2;
     std::unique_ptr<FilterPanel> filterPanel2;
+    std::unique_ptr<Label> filterModeLabel;
+    std::unique_ptr<ComboBox> filterModeCombo;
+    std::unique_ptr<ToggleButton> cutoffLink;
+    std::unique_ptr<Label> label;
+    std::unique_ptr<TextEditor> mainDisplay;
 
 
     //==============================================================================

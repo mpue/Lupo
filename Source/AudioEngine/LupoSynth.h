@@ -49,14 +49,19 @@ public:
 	void parameterValueChanged(int parameterIndex, float newValue) override;
 	void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override;
 	ModMatrix* getModMatrix();
+	bool cutoffLink = false;
+	void updateMatrix();
 private:
 	Model* model;
-	vector<Voice*>* voices;	
+	Voice* voices[128];
 	vector<SynthLab::ADSR*>* modEnvelopes;
 	float sampleRate;
 	int bufferSize;
 	MultimodeFilter* filter1;
 	MultimodeFilter* filter2;
+
+	float filterMode = 1.0f;
+
 	float cutoff = 15000.0f;
 	float resonance = 1.0f;
 	int currentSample = 0;

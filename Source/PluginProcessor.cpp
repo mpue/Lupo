@@ -86,27 +86,31 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("osc1Volume", "Osc1 volume", 0, 1.0, 1);
 	factory->createParam("osc1Pan", "Osc1 pan", -1.0, 1.0, 0);
 	factory->createParam("osc1Shape", "Osc1 shape", 0, 3.0, 0);
+	factory->createParam("osc1Spread", "Osc1 spread", 0, 1.0, 0);
 
 	factory->createParam("osc2Pitch", "Osc2 pitch", -36, 36, 0);
 	factory->createParam("osc2Fine", "Osc2 fine", -1.0, 1.0, 0);
 	factory->createParam("osc2Volume", "Osc2 volume", 0, 1.0, 1);
 	factory->createParam("osc2Pan", "Osc2 pan", -1.0, 1.0, 0);
 	factory->createParam("osc2Shape", "Osc2 shape", 0, 3.0, 0);
+	factory->createParam("osc2Spread", "Osc2 spread", 0, 1.0, 0);
 
 	factory->createParam("osc3Pitch", "Osc3 pitch", -36, 36, 0);
 	factory->createParam("osc3Fine", "Osc3 fine", -1.0, 1.0, 0);
 	factory->createParam("osc3Volume", "Osc3 volume", 0, 1.0, 1);
 	factory->createParam("osc3Pan", "Osc3 pan", -1.0, 1.0, 0);
 	factory->createParam("osc3Shape", "Osc3 shape", 0, 3.0, 0);
+	factory->createParam("osc3Spread", "Osc3 spread", 0, 1.0, 0);
 
 	factory->createParam("osc4Pitch", "Osc4 pitch", -36, 36, 0);
 	factory->createParam("osc4Fine", "Osc4 fine", -1.0, 1.0, 0);
 	factory->createParam("osc4Volume", "Osc4 volume", 0, 1.0, 1);
 	factory->createParam("osc4Pan", "Osc4 pan", -1.0, 1.0, 0);
 	factory->createParam("osc4Shape", "Osc4 shape", 0, 3.0, 0);
+	factory->createParam("osc4Spread", "Osc4 spread", 0, 1.0, 0);
 
-	factory->createParam("lfo1Shape", "Lfo1 shape", 0, 3.0, 0);
-	factory->createParam("lfo2Shape", "Lfo2 shape", 0, 3.0, 0);
+	factory->createParam("lfo1Shape", "Lfo1 shape", 0, 4.0, 0);
+	factory->createParam("lfo2Shape", "Lfo2 shape", 0, 4.0, 0);
 
 	factory->createParam("lfo1Speed", "Lfo1 speed", 0, 10.0, 0);
 	factory->createParam("lfo2Speed", "Lfo2 speed", 0, 10.0, 0);
@@ -123,11 +127,14 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("arpSpeed", "Arp speed", 0, 1.0, 0);
 	factory->createParam("arpOctaves", "Arp Octaves", 0, 3.0, 0);
 	factory->createParam("arpMode", "Arp mode", 0, 1.0, 0);
+	
+	factory->createParam("filterMode", "Filter mode", 0, 1.0, 0);
+	factory->createParam("cutoffLink", "Cutoff link", 0, 1.0, 0);
 
 	for (int i = 0; i < 6; i++) {
-		factory->createParam("Source_" + String(i), "Matrix source" + String(i), 0.0f, 5.0f, 0.0);
-		factory->createParam("Target_" + String(i), "Matrix target" + String(i), 0.0f, 5.0f, 0.0);
-		factory->createParam("Amount_" + String(i), "Matrix amount" + String(i), 0.0f, 20.0f, 0.0);
+		factory->createParam("Source_" + String(i), "Matrix source " + String(i), 0.0f, 5.0f, 0.0);
+		factory->createParam("Target_" + String(i), "Matrix target " + String(i), 0.0f, 5.0f, 0.0);
+		factory->createParam("Amount_" + String(i), "Matrix amount " + String(i), 0.0f, 20.0f, 0.0);
 	}
 
 	bypass = parameters->createAndAddParameter("bypass", "bypass", "Bypass", NormalisableRange<float>(0, 1),0, nullptr, nullptr);

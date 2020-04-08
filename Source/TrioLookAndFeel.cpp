@@ -33,7 +33,8 @@ void TrioLookAndFeel::drawRotarySlider	(	Graphics & 	g,
     
     // This is the binary image data that uses very little CPU when rotating
     Image myStrip = ImageCache::getFromMemory (BinaryData::Knob_64_png, BinaryData::Knob_64_pngSize);
-    
+    Image dropShadow = ImageCache::getFromMemory(BinaryData::knob_shadow_64_png, BinaryData::knob_shadow_64_pngSize);
+
     const float angle = rotaryStartAngle + sliderPosProportional * (rotaryEndAngle - rotaryStartAngle);
     const float radius = jmin (width / 2.0f, height / 2.0f) ;
     const float centreX = x + width * 0.5f;
@@ -51,13 +52,18 @@ void TrioLookAndFeel::drawRotarySlider	(	Graphics & 	g,
     
     // Logger::getCurrentLogger()->writeToLog("==========" +String(sliderPosProportional));
     
-    g.setColour(Colours::darkred);
+    g.setColour(Colours::darkorange.darker());
     {
         Path filledArc;
         filledArc.addPieSegment (rx+1, ry+1, rw-0.5, rw-0.5, rotaryStartAngle, angle, thickness);
         g.fillPath (filledArc);
     }
-    
+	
+
+	g.drawImage(dropShadow, 0, 0, slider.getWidth(), slider.getWidth(), 0, 0, dropShadow.getWidth(), dropShadow.getHeight());
+
+
+
     g.drawImage(myStrip,
                 (int)rx,
                 (int)ry,
@@ -80,7 +86,7 @@ void TrioLookAndFeel::drawToggleButton (Graphics& g, ToggleButton& button,
                                              0,0,
                                              button.getHeight(),button.getHeight(),
                                              5.0f,
-                                             Colours::darkred,
+                                             Colours::darkorange.darker(),
                                              1.0f,
                                              false,false,false,false);
     }
@@ -235,7 +241,7 @@ void TrioLookAndFeel::drawLabel (Graphics& g, Label& label)
         const Font font (getLabelFont (label));
         
         g.setColour (Colours::lightgrey.withMultipliedAlpha (alpha));
-        g.setFont (Font("Verdana","bold",12.0f));
+        g.setFont (Font("Arial","bold",13.0f));
         
         Rectangle<int> textArea (label.getBorderSize().subtractedFrom (label.getLocalBounds()).expanded(3, 1));
     
@@ -548,7 +554,7 @@ void TrioLookAndFeel::drawTableHeaderColumn(Graphics &g, const String & columnNa
 	if (isMouseDown)
 		g.fillAll(Colours::red);
 	else if (isMouseOver)
-		g.fillAll(Colours::darkred);
+		g.fillAll(Colours::darkorange.darker());
 
 	Rectangle<int> area(width, height);
 	area.reduce(4, 0);

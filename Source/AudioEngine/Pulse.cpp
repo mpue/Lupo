@@ -40,7 +40,7 @@ float Pulse::process() {
 
 void Pulse::setFrequency(double frequency) {
     this->frequency = frequency;
-	blitSquare->setFrequency(frequency + this->fine);
+	blitSquare->setFrequency(frequency);
     //this->step = ((frequency + (double)this->fine) * 2 * M_PI / sampleRate);
 }
 

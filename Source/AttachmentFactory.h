@@ -56,6 +56,28 @@ public:
 		delete comboAttachments;
 	};
 
+	StringArray AttachmentFactory::getSliderParams()
+	{
+		return {
+			"cutoff1","resonance1","mainVolume","envAmt1",
+			"cutoff2","resonance2","envAmt2",
+			"ampAttack","ampDecay","ampSustain","ampRelease",
+			"fltAttack", "fltDecay", "fltSustain", "fltRelease",
+			"auxAttack1", "auxDecay1","auxSustain1","auxRelease1",
+			"auxAttack2", "auxDecay2","auxSustain2","auxRelease2",
+			"lfo1Shape", "lfo1Speed","lfo1Amount",
+			"lfo2Shape", "lfo2Speed","lfo2Amount",
+			"lfo3Shape", "lfo3Speed","lfo3Amount",
+			"osc1Pitch","osc1Fine","osc1Volume","osc1Pan",
+			"osc2Pitch","osc2Fine","osc2Volume","osc2Pan"
+			"osc3Pitch","osc3Fine","osc3Volume","osc3Pan",
+			"osc4Pitch","osc4Fine","osc4Volume","osc4Pan",
+			"dlyTimeLeft", "dlyTimeRight", "dlyFeedback","dlyMix",
+			"rvbRoomSize", "rvbDdamping", "rvbWetLevel", "rvbDryLevel", "rvbWidth", "rvbFreezeMode",
+			"chrDelay", "chrModulation", "chrFeedback", "chrMix",
+			"filterMode","cutoffLink"
+		};
+	}
 private:
 
 	vector<AudioProcessorValueTreeState::SliderAttachment*>* attachments;
@@ -81,22 +103,6 @@ private:
 	MultimodeOscillator::OscMode osc3Shape;
 	MultimodeOscillator::OscMode osc4Shape;
 */
-	StringArray AttachmentFactory::getSliderParams()
-	{
-		return {
-			"cutoff","resonance","mainVolume","envAmt",
-			"ampAttack","ampDecay","ampSustain","ampRelease",
-			"fltAttack", "fltDecay", "fltSustain", "fltRelease",
-			"auxAttack", "auxDecay","auxSustain","auxRelease",
-			"osc1Pitch","osc1Fine","osc1Volume","osc1Pan",
-			"osc2Pitch","osc2Fine","osc2Volume","osc2Pan"
-			"osc3Pitch","osc3Fine","osc3Volume","osc3Pan",
-			"osc4Pitch","osc2Fine","osc4Volume","osc4Pan"
-			"dlyTimeLeft", "dlyTimeRight", "dlyFeedback","dlyMix",
-			"rvbRoomSize", "rvbDdamping", "rvbWetLevel", "rvbDryLevel", "rvbWidth", "rvbFreezeMode",
-			"chrDelay", "chrModulation", "chrFeedback", "chrMix"
-		};
-	}
 
 	LupoAudioProcessor* processor;
 	LupoSynth* lupo;

@@ -97,6 +97,7 @@ LFOPanel::LFOPanel (Model* model, AttachmentFactory* factory)
     shapeComboBox->addItem (TRANS("Pulse"), 2);
     shapeComboBox->addItem (TRANS("Sine"), 3);
     shapeComboBox->addItem (TRANS("Noise"), 4);
+    shapeComboBox->addItem (TRANS("S&H"), 5);
     shapeComboBox->addListener (this);
 
     shapeComboBox->setBounds (128, 24, 88, 24);
@@ -237,8 +238,8 @@ BEGIN_JUCER_METADATA
          kerning="0.0" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="shapeComboBox" id="3df82e5817294763" memberName="shapeComboBox"
             virtualName="" explicitFocusOrder="0" pos="128 24 88 24" editable="0"
-            layout="33" items="Sawtooth&#10;Pulse&#10;Sine&#10;Noise" textWhenNonSelected=""
-            textWhenNoItems="(no choices)"/>
+            layout="33" items="Sawtooth&#10;Pulse&#10;Sine&#10;Noise&#10;S&amp;H"
+            textWhenNonSelected="" textWhenNoItems="(no choices)"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

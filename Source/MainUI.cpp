@@ -28,6 +28,7 @@
 #include "AudioEngine/Oszillator.h"
 #include "Panel.h"
 #include "ModMatrixPanel.h"
+#include <math.h>
 //[/Headers]
 
 #include "MainUI.h"
@@ -47,6 +48,14 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 	Arpeggiator* arp = this->synth->getArpeggiator();
 	Logger::getCurrentLogger()->writeToLog("GUI instance created.");
 
+	for (int i = 0; i < factory->getSliderParams().size(); i++) {
+		processor->parameters->addParameterListener(factory->getSliderParams().getReference(i),this);
+	}
+	for (int i = 0; i < 6; i++) {
+		processor->parameters->addParameterListener("Source_" + String(i), this);
+		processor->parameters->addParameterListener("Target_" + String(i), this);
+		processor->parameters->addParameterListener("Amount_" + String(i), this);
+	}
     //[/Constructor_pre]
 
     GlassPanel.reset (new Panel());
@@ -65,7 +74,7 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
                                               TRANS("Amplifier")));
     addAndMakeVisible (groupComponent.get());
 
-    groupComponent->setBounds (592, 48, 392, 160);
+    groupComponent->setBounds (592, 48, 392, 104);
 
     groupComponent3.reset (new GroupComponent ("new group",
                                                TRANS("Oscilators")));
@@ -77,7 +86,7 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
                                             TRANS("Filter 1")));
     addAndMakeVisible (filterGroup1.get());
 
-    filterGroup1->setBounds (592, 208, 392, 120);
+    filterGroup1->setBounds (592, 208, 392, 112);
 
     osc1Panel.reset (new OscillatorPanel (model, factory));
     addAndMakeVisible (osc1Panel.get());
@@ -101,16 +110,16 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
     addAndMakeVisible (ampEnvelope.get());
     ampEnvelope->setName ("ampEnvelope");
 
-    ampEnvelope->setBounds (608, 72, 280, 124);
+    ampEnvelope->setBounds (608, 64, 288, 80);
 
     mainVolume.reset (new Slider ("mainVolume"));
     addAndMakeVisible (mainVolume.get());
     mainVolume->setRange (0, 2, 0.01);
     mainVolume->setSliderStyle (Slider::RotaryVerticalDrag);
-    mainVolume->setTextBoxStyle (Slider::TextBoxBelow, false, 80, 20);
+    mainVolume->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     mainVolume->addListener (this);
 
-    mainVolume->setBounds (904, 80, 64, 64);
+    mainVolume->setBounds (904, 72, 56, 56);
 
     volumeLabel.reset (new Label ("volumeLabel",
                                   TRANS("Main volume")));
@@ -121,7 +130,7 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
     volumeLabel->setColour (TextEditor::textColourId, Colours::black);
     volumeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    volumeLabel->setBounds (896, 160, 80, 24);
+    volumeLabel->setBounds (904, 120, 64, 24);
 
     mixerGroiup.reset (new GroupComponent ("mixerGroiup",
                                            TRANS("Mixer")));
@@ -216,18 +225,7 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
     fmSlider->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     fmSlider->addListener (this);
 
-    fmSlider->setBounds (496, 456, 64, 56);
-
-    fmLabel.reset (new Label ("fmLabel",
-                              TRANS("FM osc1->osc2")));
-    addAndMakeVisible (fmLabel.get());
-    fmLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
-    fmLabel->setJustificationType (Justification::centredLeft);
-    fmLabel->setEditable (false, false, false);
-    fmLabel->setColour (TextEditor::textColourId, Colours::black);
-    fmLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    fmLabel->setBounds (488, 512, 72, 24);
+    fmSlider->setBounds (496, 464, 64, 56);
 
     distGroup.reset (new GroupComponent ("distGroup",
                                          TRANS("Distortion")));
@@ -239,7 +237,7 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
     addAndMakeVisible (distortionPanel.get());
     distortionPanel->setName ("distortionPanel");
 
-    distortionPanel->setBounds (616, 472, 288, 64);
+    distortionPanel->setBounds (608, 472, 288, 64);
 
     arpGroup.reset (new GroupComponent ("arpGroup",
                                         TRANS("Arpeggiator")));
@@ -275,19 +273,74 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
     addAndMakeVisible (filterPanel1.get());
     filterPanel1->setName ("filterPanel1");
 
-    filterPanel1->setBounds (608, 224, 360, 96);
+    filterPanel1->setBounds (608, 224, 360, 88);
 
     filterGroup2.reset (new GroupComponent ("filterGroup2",
                                             TRANS("Filter 2")));
     addAndMakeVisible (filterGroup2.get());
 
-    filterGroup2->setBounds (592, 328, 392, 120);
+    filterGroup2->setBounds (592, 344, 392, 112);
 
     filterPanel2.reset (new FilterPanel (model, factory));
     addAndMakeVisible (filterPanel2.get());
     filterPanel2->setName ("filterPanel2");
 
-    filterPanel2->setBounds (608, 344, 360, 96);
+    filterPanel2->setBounds (608, 360, 360, 80);
+
+    filterModeLabel.reset (new Label ("filterModeLabel",
+                                      TRANS("Filter mode")));
+    addAndMakeVisible (filterModeLabel.get());
+    filterModeLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
+    filterModeLabel->setJustificationType (Justification::centredLeft);
+    filterModeLabel->setEditable (false, false, false);
+    filterModeLabel->setColour (TextEditor::textColourId, Colours::black);
+    filterModeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    filterModeLabel->setBounds (824, 324, 64, 24);
+
+    filterModeCombo.reset (new ComboBox ("new combo box"));
+    addAndMakeVisible (filterModeCombo.get());
+    filterModeCombo->setEditableText (false);
+    filterModeCombo->setJustificationType (Justification::centredLeft);
+    filterModeCombo->setTextWhenNothingSelected (String());
+    filterModeCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
+    filterModeCombo->addItem (TRANS("Serial"), 1);
+    filterModeCombo->addItem (TRANS("Parallel"), 2);
+    filterModeCombo->addListener (this);
+
+    filterModeCombo->setBounds (896, 324, 88, 24);
+
+    cutoffLink.reset (new ToggleButton ("cutoffLink"));
+    addAndMakeVisible (cutoffLink.get());
+    cutoffLink->setButtonText (String());
+    cutoffLink->addListener (this);
+
+    cutoffLink->setBounds (688, 324, 32, 24);
+
+    label.reset (new Label ("new label",
+                            TRANS("Cutoff link")));
+    addAndMakeVisible (label.get());
+    label->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
+    label->setJustificationType (Justification::centredLeft);
+    label->setEditable (false, false, false);
+    label->setColour (TextEditor::textColourId, Colours::black);
+    label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+
+    label->setBounds (720, 324, 64, 24);
+
+    mainDisplay.reset (new TextEditor ("mainDisplay"));
+    addAndMakeVisible (mainDisplay.get());
+    mainDisplay->setMultiLine (false);
+    mainDisplay->setReturnKeyStartsNewLine (false);
+    mainDisplay->setReadOnly (true);
+    mainDisplay->setScrollbarsShown (false);
+    mainDisplay->setCaretVisible (false);
+    mainDisplay->setPopupMenuEnabled (false);
+    mainDisplay->setColour (TextEditor::textColourId, Colour (0xffff4400));
+    mainDisplay->setColour (TextEditor::backgroundColourId, Colours::black);
+    mainDisplay->setText (String());
+
+    mainDisplay->setBounds (592, 152, 392, 56);
 
 
     //[UserPreSize]
@@ -351,6 +404,9 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 	factory->createSliderAttachment("fmAmount", fmSlider.get());
 	factory->createSliderAttachment("mainVolume", mainVolume.get());
+	factory->createComboAttachment("filterMode", filterModeCombo.get());
+
+	factory->createButtonAttachment("cutoffLink", cutoffLink.get());
 
 	filterPanel1->initAttachments();
 	filterPanel2->initAttachments();
@@ -386,6 +442,11 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 	presetCombo->setText("init");
 	GlassPanel.get()->setVisible(false);
+
+	mainDisplay.get()->setFont(Font(Typeface::createSystemTypefaceFor(BinaryData::DSEG14ClassicRegular_ttf,
+		BinaryData::DSEG14ClassicRegular_ttfSize)));
+
+	mainDisplay.get()->setText("Lupo V1.0");
 
 	resized();
 
@@ -425,7 +486,6 @@ MainUI::~MainUI()
     saveButton = nullptr;
     presetCombo = nullptr;
     fmSlider = nullptr;
-    fmLabel = nullptr;
     distGroup = nullptr;
     distortionPanel = nullptr;
     arpGroup = nullptr;
@@ -435,6 +495,11 @@ MainUI::~MainUI()
     filterPanel1 = nullptr;
     filterGroup2 = nullptr;
     filterPanel2 = nullptr;
+    filterModeLabel = nullptr;
+    filterModeCombo = nullptr;
+    cutoffLink = nullptr;
+    label = nullptr;
+    mainDisplay = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -580,6 +645,11 @@ void MainUI::buttonClicked (Button* buttonThatWasClicked)
 		updatePresetList();
         //[/UserButtonCode_saveButton]
     }
+    else if (buttonThatWasClicked == cutoffLink.get())
+    {
+        //[UserButtonCode_cutoffLink] -- add your button handler code here..
+        //[/UserButtonCode_cutoffLink]
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -595,6 +665,11 @@ void MainUI::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
         //[UserComboBoxCode_presetCombo] -- add your combo box handling code here..
 		processor->setSelectedProgram(comboBoxThatHasChanged->getText());
         //[/UserComboBoxCode_presetCombo]
+    }
+    else if (comboBoxThatHasChanged == filterModeCombo.get())
+    {
+        //[UserComboBoxCode_filterModeCombo] -- add your combo box handling code here..
+        //[/UserComboBoxCode_filterModeCombo]
     }
 
     //[UsercomboBoxChanged_Post]
@@ -636,6 +711,19 @@ Component * MainUI::findComponentAtMousePosition(Point<int> mousePos, Component*
 
 	return nullptr;
 }
+
+void MainUI::parameterChanged(const String & parameterID, float newValue)
+{
+	for (int i = 0; i < processor->getNumParameters(); i++) {
+		if (processor->getParameterID(i) == parameterID) {
+			mainDisplay->setText(processor->getParameters().getUnchecked(i)->getLabel() + " - " + String(newValue,2));
+			break;
+		}
+	}
+
+}
+
+
 
 void MainUI::mouseDown(const MouseEvent & event)
 {
@@ -698,7 +786,7 @@ void MainUI::mouseMove(const MouseEvent & event)
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="MainUI" componentName=""
-                 parentClasses="public Component, public ChangeBroadcaster, public ChangeListener"
+                 parentClasses="public Component, public ChangeBroadcaster, public ChangeListener, public AudioProcessorValueTreeState::Listener"
                  constructorParams="LupoAudioProcessor* processor, AttachmentFactory* factory"
                  variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
                  overlayOpacity="0.330" fixedSize="0" initialWidth="1300" initialHeight="900">
@@ -709,11 +797,11 @@ BEGIN_JUCER_METADATA
   <GROUPCOMPONENT name="ModulationGroup" id="bbbc621090753013" memberName="ModulationGroup"
                   virtualName="" explicitFocusOrder="0" pos="8 544 792 144" title="Modulation"/>
   <GROUPCOMPONENT name="new group" id="fddf59086c1c83a4" memberName="groupComponent"
-                  virtualName="" explicitFocusOrder="0" pos="592 48 392 160" title="Amplifier"/>
+                  virtualName="" explicitFocusOrder="0" pos="592 48 392 104" title="Amplifier"/>
   <GROUPCOMPONENT name="new group" id="be488b129ef124bc" memberName="groupComponent3"
                   virtualName="" explicitFocusOrder="0" pos="8 48 456 496" title="Oscilators"/>
   <GROUPCOMPONENT name="filterGroup1" id="d21f32d49ecf1836" memberName="filterGroup1"
-                  virtualName="" explicitFocusOrder="0" pos="592 208 392 120" title="Filter 1"/>
+                  virtualName="" explicitFocusOrder="0" pos="592 208 392 112" title="Filter 1"/>
   <GENERICCOMPONENT name="osc1Panel" id="de6e8c64c8286c8d" memberName="osc1Panel"
                     virtualName="" explicitFocusOrder="0" pos="16 64 216 232" class="OscillatorPanel"
                     params="model, factory"/>
@@ -724,15 +812,15 @@ BEGIN_JUCER_METADATA
                     virtualName="" explicitFocusOrder="0" pos="240 64 216 232" class="OscillatorPanel"
                     params="model, factory"/>
   <GENERICCOMPONENT name="ampEnvelope" id="2e9f4701bbd4595c" memberName="ampEnvelope"
-                    virtualName="" explicitFocusOrder="0" pos="608 72 280 124" class="EnvelopePanel"
+                    virtualName="" explicitFocusOrder="0" pos="608 64 288 80" class="EnvelopePanel"
                     params="model, factory"/>
   <SLIDER name="mainVolume" id="8750195bcc6f4ab5" memberName="mainVolume"
-          virtualName="" explicitFocusOrder="0" pos="904 80 64 64" min="0.0"
-          max="2.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="TextBoxBelow"
+          virtualName="" explicitFocusOrder="0" pos="904 72 56 56" min="0.0"
+          max="2.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <LABEL name="volumeLabel" id="594cc943c91cef9d" memberName="volumeLabel"
-         virtualName="" explicitFocusOrder="0" pos="896 160 80 24" edTextCol="ff000000"
+         virtualName="" explicitFocusOrder="0" pos="904 120 64 24" edTextCol="ff000000"
          edBkgCol="0" labelText="Main volume" editableSingleClick="0"
          editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
          fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
@@ -774,18 +862,13 @@ BEGIN_JUCER_METADATA
             virtualName="" explicitFocusOrder="0" pos="88 16 224 24" editable="1"
             layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <SLIDER name="fmSlider" id="69f0d2ae761ae29c" memberName="fmSlider" virtualName=""
-          explicitFocusOrder="0" pos="496 456 64 56" min="0.0" max="1.0"
+          explicitFocusOrder="0" pos="496 464 64 56" min="0.0" max="1.0"
           int="0.0" style="RotaryVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
           textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
-  <LABEL name="fmLabel" id="5b0b7ed57f4efafc" memberName="fmLabel" virtualName=""
-         explicitFocusOrder="0" pos="488 512 72 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="FM osc1-&gt;osc2" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <GROUPCOMPONENT name="distGroup" id="7ba7ed3f872d0a19" memberName="distGroup"
                   virtualName="" explicitFocusOrder="0" pos="592 456 392 88" title="Distortion"/>
   <GENERICCOMPONENT name="distortionPanel" id="aca878e23294d78d" memberName="distortionPanel"
-                    virtualName="" explicitFocusOrder="0" pos="616 472 288 64" class="DistortionPanel"
+                    virtualName="" explicitFocusOrder="0" pos="608 472 288 64" class="DistortionPanel"
                     params="model, factory"/>
   <GROUPCOMPONENT name="arpGroup" id="9465491d90d794f8" memberName="arpGroup" virtualName=""
                   explicitFocusOrder="0" pos="800 544 184 144" title="Arpeggiator"/>
@@ -810,13 +893,34 @@ BEGIN_JUCER_METADATA
                     virtualName="" explicitFocusOrder="0" pos="296 560 496 120" class="ModMatrixPanel"
                     params="matrixModel"/>
   <GENERICCOMPONENT name="filterPanel1" id="ab18dcaf405ed80c" memberName="filterPanel1"
-                    virtualName="" explicitFocusOrder="0" pos="608 224 360 96" class="FilterPanel"
+                    virtualName="" explicitFocusOrder="0" pos="608 224 360 88" class="FilterPanel"
                     params="model, factory"/>
   <GROUPCOMPONENT name="filterGroup2" id="9faaaa60818a688b" memberName="filterGroup2"
-                  virtualName="" explicitFocusOrder="0" pos="592 328 392 120" title="Filter 2"/>
+                  virtualName="" explicitFocusOrder="0" pos="592 344 392 112" title="Filter 2"/>
   <GENERICCOMPONENT name="filterPanel2" id="a87879f1db2ff94f" memberName="filterPanel2"
-                    virtualName="" explicitFocusOrder="0" pos="608 344 360 96" class="FilterPanel"
+                    virtualName="" explicitFocusOrder="0" pos="608 360 360 80" class="FilterPanel"
                     params="model, factory"/>
+  <LABEL name="filterModeLabel" id="fbc4b7abb7ac3ff4" memberName="filterModeLabel"
+         virtualName="" explicitFocusOrder="0" pos="824 324 64 24" edTextCol="ff000000"
+         edBkgCol="0" labelText="Filter mode" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+  <COMBOBOX name="new combo box" id="626a4dd7c895070d" memberName="filterModeCombo"
+            virtualName="" explicitFocusOrder="0" pos="896 324 88 24" editable="0"
+            layout="33" items="Serial&#10;Parallel" textWhenNonSelected=""
+            textWhenNoItems="(no choices)"/>
+  <TOGGLEBUTTON name="cutoffLink" id="9912bdda16f7b389" memberName="cutoffLink"
+                virtualName="" explicitFocusOrder="0" pos="688 324 32 24" buttonText=""
+                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
+  <LABEL name="new label" id="266b573f0945ea7c" memberName="label" virtualName=""
+         explicitFocusOrder="0" pos="720 324 64 24" edTextCol="ff000000"
+         edBkgCol="0" labelText="Cutoff link" editableSingleClick="0"
+         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+  <TEXTEDITOR name="mainDisplay" id="f9a1e2075d65330a" memberName="mainDisplay"
+              virtualName="" explicitFocusOrder="0" pos="592 152 392 56" textcol="ffff4400"
+              bkgcol="ff000000" initialText="" multiline="0" retKeyStartsLine="0"
+              readonly="1" scrollbars="0" caret="0" popupmenu="0"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
