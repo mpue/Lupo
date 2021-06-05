@@ -28,6 +28,7 @@ public:
    
     Modulator* getModulator();
     void setTarget(ModTarget* target);
+    ModTarget* getTarget();
 	void clearTarget();
     void setModulator(Modulator* modulator);
     void process();

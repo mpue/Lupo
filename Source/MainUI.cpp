@@ -7,7 +7,7 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 5.4.3
+  Created with Projucer version: 5.4.7
 
   ------------------------------------------------------------------------------
 
@@ -263,12 +263,6 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 
     modulationTab->setBounds (24, 568, 264, 120);
 
-    modMatrix.reset (new ModMatrixPanel (matrixModel));
-    addAndMakeVisible (modMatrix.get());
-    modMatrix->setName ("modMatrix");
-
-    modMatrix->setBounds (296, 560, 496, 120);
-
     filterPanel1.reset (new FilterPanel (model, factory));
     addAndMakeVisible (filterPanel1.get());
     filterPanel1->setName ("filterPanel1");
@@ -342,6 +336,12 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 
     mainDisplay->setBounds (592, 152, 392, 56);
 
+    modMatrix.reset (new ModPanel (this->synth->getModMatrix(), model, factory));
+    addAndMakeVisible (modMatrix.get());
+    modMatrix->setName ("modMatrix");
+
+    modMatrix->setBounds (296, 560, 496, 120);
+
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -361,6 +361,7 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 	osc1Panel.get()->SetTitle("Osc 1");
 	osc2Panel.get()->SetTitle("Osc 2");
 	osc3Panel.get()->SetTitle("Osc 3");
+	osc4Panel.get()->SetTitle("Osc 4");
 
 
 	ch1Panel.get()->SetTitle("Ch 1");
@@ -427,7 +428,7 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 	lfo1->setName("lfo1");
 	lfo2->setName("lfo2");
-	lfo3->setName("lfo2");
+	lfo3->setName("lfo3");
 	lfo1->initAttachments();
 	lfo2->initAttachments();
 	lfo3->initAttachments();
@@ -437,6 +438,7 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 	delayPanel.get()->initAttachments();
 	distortionPanel.get()->initAttachments();
 	arpPanel.get()->initAttachments();
+	modMatrix.get()->initAttachments();
 
 	synth->addChangeListener(this);
 
@@ -491,7 +493,6 @@ MainUI::~MainUI()
     arpGroup = nullptr;
     arpPanel = nullptr;
     modulationTab = nullptr;
-    modMatrix = nullptr;
     filterPanel1 = nullptr;
     filterGroup2 = nullptr;
     filterPanel2 = nullptr;
@@ -500,6 +501,7 @@ MainUI::~MainUI()
     cutoffLink = nullptr;
     label = nullptr;
     mainDisplay = nullptr;
+    modMatrix = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -575,7 +577,7 @@ void MainUI::buttonClicked (Button* buttonThatWasClicked)
 		processor->getValueTreeState()->getParameter("osc3Shape")->setValue(model->osc3Shape);
 		processor->getValueTreeState()->getParameter("osc4Shape")->setValue(model->osc4Shape);
 
-		ScopedPointer<XmlElement> xml(processor->getValueTreeState()->state.createXml());
+		std::unique_ptr<XmlElement> xml(processor->getValueTreeState()->state.createXml());
 
 		String appDataPath = File::getSpecialLocation(File::userApplicationDataDirectory).getFullPathName();
 
@@ -889,9 +891,6 @@ BEGIN_JUCER_METADATA
     <TAB name="ENV 2" colour="0" useJucerComp="0" contentClassName="EnvelopePanel"
          constructorParams="model, factory" jucerComponentFile=""/>
   </TABBEDCOMPONENT>
-  <GENERICCOMPONENT name="modMatrix" id="19567bfe8c90898e" memberName="modMatrix"
-                    virtualName="" explicitFocusOrder="0" pos="296 560 496 120" class="ModMatrixPanel"
-                    params="matrixModel"/>
   <GENERICCOMPONENT name="filterPanel1" id="ab18dcaf405ed80c" memberName="filterPanel1"
                     virtualName="" explicitFocusOrder="0" pos="608 224 360 88" class="FilterPanel"
                     params="model, factory"/>
@@ -921,6 +920,9 @@ BEGIN_JUCER_METADATA
               virtualName="" explicitFocusOrder="0" pos="592 152 392 56" textcol="ffff4400"
               bkgcol="ff000000" initialText="" multiline="0" retKeyStartsLine="0"
               readonly="1" scrollbars="0" caret="0" popupmenu="0"/>
+  <GENERICCOMPONENT name="modMatrix" id="19567bfe8c90898e" memberName="modMatrix"
+                    virtualName="" explicitFocusOrder="0" pos="296 560 496 120" class="ModPanel"
+                    params="this-&gt;synth-&gt;getModMatrix(), model, factory"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA

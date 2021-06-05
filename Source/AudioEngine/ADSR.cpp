@@ -25,7 +25,7 @@
 SynthLab::ADSR::ADSR(void) {
     reset();
     setAttackRate(0);
-    setDecayRate(0);
+    setDecayRate(1 * 48000);
     setReleaseRate(0);
     setSustainLevel(1.0);
     setTargetRatioA(0.3);

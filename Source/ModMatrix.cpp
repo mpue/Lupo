@@ -15,6 +15,9 @@ ModMatrix::ModMatrix() {
     this->modTargets = new std::map<int,String>();	
 	this->dummy = new DummyModulator();
 	this->modulations = new Modulation*[6];
+	for (int i = 0; i < 6; i++) {
+		modulations[i] = new Modulation(nullptr,nullptr);
+	}	
 }
 
 ModMatrix::~ModMatrix() {
@@ -33,28 +36,15 @@ ModMatrix::~ModMatrix() {
 	delete dummy;
 }
 
-
-
-
-void ModMatrix::addModulation(Modulation *mod, int index) {
-    this->modulations[index] = mod ;
-}
-
-
-
 void ModMatrix::addModulator(Modulator * m)
 {
 	modulators.push_back(m);
 }
 
-
-
 void ModMatrix::addModTarget(ModTarget * m)
 {
 	targets.push_back(m);
 }
-
-
 
 void ModMatrix::registerSource(String source, int id) {
     this->modSources->insert(std::make_pair(id,source));

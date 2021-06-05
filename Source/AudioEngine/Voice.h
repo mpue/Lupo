@@ -81,7 +81,7 @@ private:
     void calculateFrequencyTable();
     bool playing;
 	SynthLab::ADSR* ampEnvelope;
-    Modulator* modulator;
+	Modulator* modulator = nullptr;
     float pitchBend;
     float duration;
     float time;

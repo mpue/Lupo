@@ -59,6 +59,7 @@ public:
     virtual void reset() = 0;
 
 	void setPitchMod(float mod);
+    bool enabled = false;
     
 protected:
     

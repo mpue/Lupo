@@ -115,7 +115,7 @@ float Sampler::getSampleAt(int channel, long pos){
 
 void Sampler::loadSample(File file) {
 	WavAudioFormat waf;
-    AudioFormatReader* reader = waf.createReaderFor(file.createInputStream(),true);
+    AudioFormatReader* reader = waf.createReaderFor(file.createInputStream().get(),true);
     
     if (reader == nullptr) {
         return;

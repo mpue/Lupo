@@ -7,7 +7,7 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 5.4.3
+  Created with Projucer version: 5.4.7
 
   ------------------------------------------------------------------------------
 
@@ -35,6 +35,7 @@
 #include "DistortionPanel.h"
 #include "ArpPanel.h"
 #include "FilterPanel.h"
+#include "ModPanel.h"
 class ModMatrixPanel;
 class ModMatrixModel;
 class Model;
@@ -64,7 +65,7 @@ class MainUI  : public Component,
 public:
     //==============================================================================
     MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory);
-    ~MainUI();
+    ~MainUI() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
@@ -140,7 +141,6 @@ private:
     std::unique_ptr<GroupComponent> arpGroup;
     std::unique_ptr<ArpPanel> arpPanel;
     std::unique_ptr<TabbedComponent> modulationTab;
-    std::unique_ptr<ModMatrixPanel> modMatrix;
     std::unique_ptr<FilterPanel> filterPanel1;
     std::unique_ptr<GroupComponent> filterGroup2;
     std::unique_ptr<FilterPanel> filterPanel2;
@@ -149,6 +149,7 @@ private:
     std::unique_ptr<ToggleButton> cutoffLink;
     std::unique_ptr<Label> label;
     std::unique_ptr<TextEditor> mainDisplay;
+    std::unique_ptr<ModPanel> modMatrix;
 
 
     //==============================================================================

@@ -7,7 +7,7 @@
   the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
   and re-saved.
 
-  Created with Projucer version: 5.4.3
+  Created with Projucer version: 5.4.7
 
   ------------------------------------------------------------------------------
 
@@ -21,10 +21,9 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
-
-
-class AttachmentFactory;
 class Model;
+class AttachmentFactory;
+class ModMatrix;
 //[/Headers]
 
 
@@ -37,52 +36,60 @@ class Model;
     Describe your class and how it works here!
                                                                     //[/Comments]
 */
-class ReverbPanel  : public Component,
-                     public ChangeBroadcaster,
-                     public Slider::Listener,
-                     public Button::Listener
+class ModPanel  : public Component,
+                  public ComboBox::Listener,
+                  public Slider::Listener
 {
 public:
     //==============================================================================
-    ReverbPanel (Model* model, AttachmentFactory* factory);
-    ~ReverbPanel();
+    ModPanel (ModMatrix* matrix,Model* model, AttachmentFactory* factory);
+    ~ModPanel() override;
 
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 	void initAttachments();
+	void populateSources(ComboBox* combo);
+	void populateTargets(ComboBox* combo);
+
     //[/UserMethods]
 
     void paint (Graphics& g) override;
     void resized() override;
+    void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
     void sliderValueChanged (Slider* sliderThatWasMoved) override;
-    void buttonClicked(Button* buttonThatWasClicked) override;
+
 
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
-	Model* model;
 	AttachmentFactory* factory;
-    bool enabled = false;
+	Model* model;
+	ModMatrix* matrix;
     //[/UserVariables]
 
     //==============================================================================
-    std::unique_ptr<GroupComponent> reverbGroup;
-    std::unique_ptr<Slider> roomSize;
-    std::unique_ptr<Label> roomSIzeLbl;
-    std::unique_ptr<Slider> damping;
-    std::unique_ptr<Label> dampingLbl;
-    std::unique_ptr<Slider> width;
-    std::unique_ptr<Label> widthLbl;
-    std::unique_ptr<Slider> dryLevel;
-    std::unique_ptr<Label> dryLbl;
-    std::unique_ptr<Slider> wetLevel;
-    std::unique_ptr<Label> wetLbl;
-    std::unique_ptr<Slider> freeze;
-    std::unique_ptr<Label> freezeLbl;
-    std::unique_ptr<ToggleButton> reverbEnabledButton;
+    std::unique_ptr<ComboBox> Source_1;
+    std::unique_ptr<ComboBox> Source_2;
+    std::unique_ptr<ComboBox> Source_3;
+    std::unique_ptr<ComboBox> Source_4;
+    std::unique_ptr<ComboBox> Source_5;
+    std::unique_ptr<ComboBox> Source_0;
+    std::unique_ptr<ComboBox> Target_0;
+    std::unique_ptr<ComboBox> Target_1;
+    std::unique_ptr<ComboBox> Target_2;
+    std::unique_ptr<ComboBox> Target_3;
+    std::unique_ptr<ComboBox> Target_4;
+    std::unique_ptr<ComboBox> Target_5;
+    std::unique_ptr<Slider> Amount_0;
+    std::unique_ptr<Slider> Amount_1;
+    std::unique_ptr<Slider> Amount_2;
+    std::unique_ptr<Slider> Amount_3;
+    std::unique_ptr<Slider> Amount_4;
+    std::unique_ptr<Slider> Amount_5;
+
 
     //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ReverbPanel)
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ModPanel)
 };
 
 //[EndFile] You can add extra defines here...

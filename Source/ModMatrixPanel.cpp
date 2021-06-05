@@ -44,6 +44,7 @@ ModMatrixPanel::ModMatrixPanel (ModMatrixModel* model)  {
 	table->setOpaque(false);
 	
     this->model = model;
+	
 	view  = new Viewport();
     view->setViewedComponent(table);
 	addAndMakeVisible(view);
@@ -117,7 +118,7 @@ ModMatrixModel::ModMatrixModel(ModMatrix* matrix, AttachmentFactory* factory) {
 }
 
 int ModMatrixModel::getNumRows() {
-	return 5;
+	return 6;
 }
 
 void ModMatrixModel::paintCell (Graphics& g,
@@ -153,6 +154,7 @@ void ModMatrixModel::comboBoxChanged(ComboBox * comboBoxThatHasChanged)
 		for (int i = 0; i < 6; i++) {
 			if (i == index) {
 				matrix->getModulations()[i]->setModulator(matrix->getModulators().at(comboBoxThatHasChanged->getSelectedItemIndex()));
+				break;
 			}
 
 		}
@@ -161,6 +163,7 @@ void ModMatrixModel::comboBoxChanged(ComboBox * comboBoxThatHasChanged)
 		for (int i = 0; i < 6; i++) {
 			if (i == index) {
 				matrix->getModulations()[i]->setTarget(matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex()));
+				break;
 			}
 
 		}
@@ -172,8 +175,11 @@ void ModMatrixModel::comboBoxChanged(ComboBox * comboBoxThatHasChanged)
 void ModMatrixModel::sliderValueChanged(Slider * slider)
 {
 	const int index = slider->getName().substring(slider->getName().lastIndexOf("_") + 1).getIntValue();
-	if (matrix->getModulations()[index]->getModulator() != nullptr) {
-		matrix->getModulations()[index]->getModulator()->setModAmount(slider->getValue());
+
+	Modulator* m = matrix->getModulations()[index]->getModulator();
+ 
+	if (m != NULL) {
+		m->setModAmount(slider->getValue());
 	}
 }
 

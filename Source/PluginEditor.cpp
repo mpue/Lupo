@@ -22,16 +22,16 @@ LupoAudioProcessorEditor::LupoAudioProcessorEditor (LupoAudioProcessor& p)
     // editor's size to whatever you need it to be.
 	setLookAndFeel(&tlf);
     setSize (1000, 900);	
+	setResizable(true, true);
 	mainUI = new MainUI(&p, p.getFactory());
 	addAndMakeVisible(mainUI);
 	mainUI->updatePresetList();
-	if (p.selectedProgram.length() > 0) {
-		p.setSelectedProgram(p.selectedProgram);
-	}	
+	loadSettings();
 }
 
 LupoAudioProcessorEditor::~LupoAudioProcessorEditor()
 {
+	saveSettings();
 	setLookAndFeel(nullptr);
 	if (JUCEApplication::isStandaloneApp()) {
 		delete mainUI;
@@ -52,4 +52,56 @@ void LupoAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+}
+
+
+void LupoAudioProcessorEditor::saveSettings()
+{
+	String userHome = File::getSpecialLocation(File::userHomeDirectory).getFullPathName();
+	File appDir = File(userHome + "/.Lupo");
+
+	if (!appDir.exists()) {
+		appDir.createDirectory();
+	}
+
+	File configFile = File(userHome + "/.Lupo/settings.xml");
+
+	if (!configFile.exists()) {
+		configFile.create();
+	}
+	else {
+		configFile.deleteFile();
+		configFile = File(userHome + "/.Lupo/settings.xml");
+		configFile.create();
+	}
+
+	ValueTree* v = new ValueTree("Settings");
+
+	
+
+	std::unique_ptr<XmlElement> xml = v->createXml();
+	xml->writeToFile(configFile, "");
+
+	xml = nullptr;
+	delete v;
+}
+
+void LupoAudioProcessorEditor::loadSettings()
+{
+	String userHome = File::getSpecialLocation(File::userHomeDirectory).getFullPathName();
+
+	File appDir = File(userHome + "/.Lupo");
+
+	if (!appDir.exists()) {
+		appDir.createDirectory();
+	}
+
+	File configFile = File(userHome + "/.Lupo/settings.xml");
+
+	if (configFile.exists()) {
+		std::unique_ptr<XmlElement> xml = XmlDocument(configFile).getDocumentElement();
+		ValueTree v = ValueTree::fromXml(*xml.get());
+		
+		xml = nullptr;
+	}
 }

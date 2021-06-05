@@ -1,9 +1,9 @@
 /*
   ==============================================================================
 
-    Model.h
-    Created: 19 Mar 2020 7:08:09pm
-    Author:  mpue
+	Model.h
+	Created: 19 Mar 2020 7:08:09pm
+	Author:  mpue
 
   ==============================================================================
 */
@@ -17,7 +17,7 @@ class Model {
 public:
 
 	Model() {
-		
+
 		cutoff1 = 18000.0f;
 		resonance1 = 0.5f;
 		envAmt1 = 0.5f;
@@ -47,6 +47,8 @@ public:
 		osc4Volume = 1.0f;
 		osc4Pan = 0;
 		osc4Shape = 0.0f;
+
+
 
 		dlyTimeLeft = 500;
 		dlyTimeRight = 375;
@@ -98,7 +100,7 @@ public:
 	float osc2Volume;
 	float osc2Pan;
 	float osc2Shape;
-	bool osc2Sync = false;
+	bool osc1Sync = false;
 
 	float osc3Pitch;
 	float osc3Fine;
@@ -123,6 +125,7 @@ public:
 	float rvbDryLevel = 1.0f;     /**< Dry level, 0 to 1.0 */
 	float rvbWidth = 1.0f;     /**< Reverb width, 0 to 1.0, where 1.0 is very wide. */
 	float rvbFreezeMode = 0.0f;
+	float reverbEnabled = false;
 
 	float chrDelay;
 	float chrModulation;
@@ -134,8 +137,31 @@ public:
 	float distMix = 0.0f;
 
 	float modAmount[6] = { 0.0f };
+
+	bool osc1Enabled = true;
+	bool osc2Enabled = false;
+	bool osc3Enabled = false;
+	bool osc4Enabled = false;
+
+
+	int getModSource(int source) {
+		return this->modSource[source];
+	}
+
+	int getModTarget(int target) {
+		return this->modTarget[target];
+	}
+
+	void setModSource(int index, int source) {
+		modSource[index] = source;
+	}
+
+	void setModTarget(int index, int target) {
+		modTarget[index] = target;
+	}
+
+private:
+
 	int modSource[6] = { 0 };
 	int modTarget[6] = { 0 };
-		
-
 };

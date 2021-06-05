@@ -12,6 +12,7 @@
 #include "Sawtooth.h"
 #include "Pulse.h"
 #include "SampleAndHold.h"
+#include "../DummyModulator.h"
 
 MultimodeOscillator::MultimodeOscillator(float sampleRate,int buffersize) : Oszillator(sampleRate) {
     this->volume = 1.0f;
@@ -70,7 +71,7 @@ float MultimodeOscillator::getOutput() {
     else if(this->mode == NOISE) {
         return this->noise->getOutput();
     }
-	else if (this->mode = SAMPLE) {
+	else if (this->mode == SAMPLE) {
 		return this->sah->getOutput();
 	}
     else {
@@ -79,26 +80,27 @@ float MultimodeOscillator::getOutput() {
 }
 
 float MultimodeOscillator::process() {
-    
-    
+
+    if (!enabled) {
+        return 0;
+    }
+
+	float mod = 0;
+
+	if (modulator != nullptr) {
+		mod = modulator->getOutput() * modulator->getModAmount();
+	}
+
     if (this->mode == SAW) {
-		if (this->modulator != nullptr) {
-			saw->setFrequency(modulator->getOutput() * modulator->getModAmount() + this->frequency + this->fine);
-		}
+		saw->setFrequency(mod + this->frequency + this->fine);
         return this->saw->process();
     }
     else if (this->mode == SINE) {
-		if (this->modulator != nullptr) {
-			sine->setFrequency(modulator->getOutput() * modulator->getModAmount() + this->frequency + this->fine);
-		}
-
+		sine->setFrequency(mod + this->frequency + this->fine);
         return this->sine->process();
     }
     else if (this->mode == PULSE) {
-		if (this->modulator != nullptr) {
-			pulse->setFrequency(modulator->getOutput() * modulator->getModAmount() + this->frequency + this->fine);			
-		}
-
+		pulse->setFrequency(mod + this->frequency + this->fine);			
         return this->pulse->process();
     }
     else if(this->mode == NOISE) {

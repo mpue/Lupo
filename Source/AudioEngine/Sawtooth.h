@@ -70,19 +70,25 @@ public:
 		}
 
 		if (spread == 0.0f) {
-			return blitsaw[0]->tick() * volume;
+			saw = blitsaw[0]->tick();
+			return saw * volume;
 		}
 		else {
 			value = 0;
 			for (int i = 0; i < 8; i++) {
 				value += blitsaw[i]->tick();
 			}
+			//value /= 2;
+			saw = value;
 			return value * volume;
 
 		}
 	}
 
 	inline void setFrequency(double frequency) override {
+		if (frequency == 0) {
+			frequency = 0.01;
+		}
 		this->frequency = frequency;
 		blitsaw[0]->setFrequency(frequency + this->fine + pitchMod);
 		for (int i = 1; i < 8; i++) {

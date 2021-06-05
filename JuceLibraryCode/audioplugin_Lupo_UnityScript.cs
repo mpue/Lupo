@@ -13,7 +13,7 @@ public class audioplugin_LupoGUI : IAudioEffectPluginGUI
     public override string Vendor         { get { return "Matthias Pueski"; } }
 
     //==============================================================================
-	[DllImport("audioplugin_Lupo")] static extern System.IntPtr getRenderCallback();
+    [DllImport("audioplugin_Lupo")] static extern System.IntPtr getRenderCallback();
 
     [DllImport("audioplugin_Lupo")] static extern void unityInitialiseTexture (int id, System.IntPtr texture, int width, int height);
 
@@ -38,10 +38,10 @@ public class audioplugin_LupoGUI : IAudioEffectPluginGUI
         }
 
         public void repaint (Rect r)
-        { 
+        {
             Vector2 newScreenPosition = GUIUtility.GUIToScreenPoint (r.position);
 
-            if (bounds != r 
+            if (bounds != r
                 || screenPosition != newScreenPosition)
             {
                 screenPosition = newScreenPosition;
@@ -51,7 +51,7 @@ public class audioplugin_LupoGUI : IAudioEffectPluginGUI
                 setupTexture();
             }
 
-			GL.IssuePluginEvent (getRenderCallback(), instanceID);
+            GL.IssuePluginEvent (getRenderCallback(), instanceID);
 
             texture.SetPixels32 (pixels);
             texture.Apply();
@@ -69,7 +69,7 @@ public class audioplugin_LupoGUI : IAudioEffectPluginGUI
 
             Vector2 relativePos = new Vector2 (mousePos.x - bounds.x, mousePos.y - bounds.y);
 
-            if (eventType == EventType.MouseDown)    
+            if (eventType == EventType.MouseDown)
             {
                 unityMouseDown (instanceID, relativePos.x, relativePos.y, mods, Event.current.button);
                 GUIUtility.hotControl = GUIUtility.GetControlID (FocusType.Passive);
@@ -79,7 +79,7 @@ public class audioplugin_LupoGUI : IAudioEffectPluginGUI
                 unityMouseUp (instanceID, relativePos.x, relativePos.y, mods);
                 GUIUtility.hotControl = 0;
             }
-            else if (eventType == EventType.MouseDrag)    
+            else if (eventType == EventType.MouseDrag)
             {
                 unityMouseDrag (instanceID, relativePos.x, relativePos.y, mods, Event.current.button);
             }

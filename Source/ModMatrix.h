@@ -30,7 +30,6 @@ public:
     ModMatrix();
     ~ModMatrix();
     
-    void addModulation(Modulation* mod, int index );
     void addModulator(Modulator* m);
 	void addModTarget(ModTarget* m);
     void registerSource(String source, int id);

@@ -25,5 +25,5 @@ public:
 private:
 	std::vector<ModTarget*> targets;
 	
-	Modulator* modulator;
+	Modulator* modulator = nullptr;
 };

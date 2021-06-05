@@ -50,12 +50,13 @@ void Modulation::setModulator(Modulator *modulator) {
     this->modulator = modulator;
 }
 
-void Modulation::setTarget(ModTarget* target) {
-	if (this->target != nullptr) {
-		this->target->setModulator(nullptr);		
-	}
+void Modulation::setTarget(ModTarget* target) {		
 	this->target = target;
-    this->target->setModulator(this->modulator);
+}
+
+ModTarget* Modulation::getTarget()
+{
+    return target;
 }
 
 void Modulation::clearTarget()

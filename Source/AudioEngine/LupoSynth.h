@@ -24,6 +24,7 @@
 #include "../Model.h"
 #include "../ModMatrix.h"
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "../DummyModulator.h"
 
 class LupoSynth : public ChangeListener, 
 			      public AudioProcessorValueTreeState::Listener, 
@@ -39,7 +40,7 @@ public:
 	void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages);	
 	void processMidi(MidiBuffer& midiMessages);
 	void prepareToPlay(double sampleRate, int bufferSize);	
-	void updateState();
+	void updateState(ValueTree state);
 	Arpeggiator* getArpeggiator();
 
 	MultimodeOscillator* createOscillator(Oszillator::OscMode mode);
@@ -50,6 +51,7 @@ public:
 	void parameterGestureChanged(int parameterIndex, bool gestureIsStarting) override;
 	ModMatrix* getModMatrix();
 	bool cutoffLink = false;
+	bool running = true;
 	void updateMatrix();
 private:
 	Model* model;
@@ -75,6 +77,8 @@ private:
 	MultimodeOscillator* lfo1;
 	MultimodeOscillator* lfo2;
 	MultimodeOscillator* lfo3;
+
+	DummyModulator* dummyModulator;
 
 	StereoDelay* delay;
 	StereoReverb* reverb;

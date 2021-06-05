@@ -162,6 +162,13 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
 
     freezeLbl->setBounds (296, 80, 48, 24);
 
+    reverbEnabledButton.reset(new ToggleButton("reverbEnabled"));
+    addAndMakeVisible(reverbEnabledButton.get());
+    reverbEnabledButton->setButtonText(String());
+    reverbEnabledButton->addListener(this);
+
+    reverbEnabledButton->setBounds(318, 0, 32, 24);
+    reverbEnabledButton->setAlwaysOnTop(true);
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -191,7 +198,7 @@ ReverbPanel::~ReverbPanel()
     wetLbl = nullptr;
     freeze = nullptr;
     freezeLbl = nullptr;
-
+    reverbEnabledButton  = nullptr;
 
     //[Destructor]. You can add your own custom destruction code here..
     //[/Destructor]
@@ -263,6 +270,11 @@ void ReverbPanel::sliderValueChanged (Slider* sliderThatWasMoved)
     //[/UsersliderValueChanged_Post]
 }
 
+void ReverbPanel::buttonClicked(Button* buttonThatWasClicked)
+{
+    enabled = !enabled;
+    model->reverbEnabled = enabled;
+}
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
@@ -274,6 +286,7 @@ void ReverbPanel::initAttachments()
 	factory->createSliderAttachment("rvbDryLevel", dryLevel.get());
 	factory->createSliderAttachment("rvbWidth", width.get());
 	factory->createSliderAttachment("rvbFreezeMode", freeze.get());
+    factory->createButtonAttachment("rvbEnabled", reverbEnabledButton.get());
 }
 
 //[/MiscUserCode]

@@ -79,6 +79,7 @@ private:
 	Model* model;
 	AttachmentFactory* factory;
 	int id;
+    bool enabled = false;
     //[/UserVariables]
 
     //==============================================================================
@@ -92,6 +93,7 @@ private:
     std::unique_ptr<ToggleButton> syncButton;
     std::unique_ptr<ComboBox> shapeComboBox;
     std::unique_ptr<Label> shapeLabel;
+    std::unique_ptr<ToggleButton> oscEnabledButton;
 
 
     //==============================================================================

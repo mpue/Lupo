@@ -135,6 +135,14 @@ OscillatorPanel::OscillatorPanel (Model* model, AttachmentFactory* factory)
 
     shapeLabel->setBounds (104, 160, 71, 24);
 
+    oscEnabledButton.reset(new ToggleButton("oscEnabled"));
+    addAndMakeVisible(oscEnabledButton.get());
+    oscEnabledButton->setButtonText(String());
+    oscEnabledButton->addListener(this);
+    oscEnabledButton->setBounds(176, 0, 32, 24);
+    oscEnabledButton->setAlwaysOnTop(true);
+    oscEnabledButton->addListener(this);
+
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -163,6 +171,7 @@ OscillatorPanel::~OscillatorPanel()
     syncButton = nullptr;
     shapeComboBox = nullptr;
     shapeLabel = nullptr;
+    oscEnabledButton = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -247,10 +256,26 @@ void OscillatorPanel::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == syncButton.get())
     {
         //[UserButtonCode_syncButton] -- add your button handler code here..
-		if (getName().startsWith("osc2")) {
-			model->osc2Sync = true;
+		if (getName().startsWith("osc1")) {
+			model->osc1Sync = true;
 		}
+
         //[/UserButtonCode_syncButton]
+    }
+    if (buttonThatWasClicked == oscEnabledButton.get()) {
+        
+        if (getName().startsWith("osc1")) {
+            model->osc1Enabled = oscEnabledButton->getToggleState();
+        }
+        if (getName().startsWith("osc2")) {
+            model->osc2Enabled = oscEnabledButton->getToggleState();
+        }
+        if (getName().startsWith("osc3")) {
+            model->osc3Enabled = oscEnabledButton->getToggleState();
+        }
+        if (getName().startsWith("osc4")) {
+            model->osc4Enabled = oscEnabledButton->getToggleState();
+        }
     }
 
     //[UserbuttonClicked_Post]
@@ -302,6 +327,8 @@ void OscillatorPanel::initAttachments()
 		factory->createSliderAttachment("osc1Fine", oscFine.get());
 		factory->createComboAttachment("osc1Shape", shapeComboBox.get());
 		factory->createSliderAttachment("osc1Spread", spreadSlider.get());
+        factory->createButtonAttachment("osc1Sync", syncButton.get());
+        factory->createButtonAttachment("osc1Enabled", oscEnabledButton.get());
 
 	}
 	else if (getName().startsWith("osc2")) {
@@ -309,12 +336,14 @@ void OscillatorPanel::initAttachments()
 		factory->createSliderAttachment("osc2Fine", oscFine.get());
 		factory->createComboAttachment("osc2Shape", shapeComboBox.get());
 		factory->createSliderAttachment("osc2Spread", spreadSlider.get());
+        factory->createButtonAttachment("osc2Enabled", oscEnabledButton.get());
 	}
 	else if (getName().startsWith("osc3")) {
 		factory->createSliderAttachment("osc3Pitch", oscPitch.get());
 		factory->createSliderAttachment("osc3Fine", oscFine.get());
 		factory->createComboAttachment("osc3Shape", shapeComboBox.get());
 		factory->createSliderAttachment("osc3Spread", spreadSlider.get());
+        factory->createButtonAttachment("osc3Enabled", oscEnabledButton.get());
 	}
 
 	else if (getName().startsWith("osc4")) {
@@ -322,6 +351,7 @@ void OscillatorPanel::initAttachments()
 		factory->createSliderAttachment("osc4Fine", oscFine.get());
 		factory->createComboAttachment("osc4Shape", shapeComboBox.get());
 		factory->createSliderAttachment("osc4Spread", spreadSlider.get());
+        factory->createButtonAttachment("osc4Enabled", oscEnabledButton.get());
 	}
 
 	oscPitch.get()->textFromValueFunction = [](double value)
@@ -334,6 +364,11 @@ void OscillatorPanel::initAttachments()
 	};
 
 	oscPitch.get()->setRange(-36, 36, 1);
+    
+    if (getName().startsWith("osc1")) {
+        oscEnabledButton->setToggleState(true, juce::NotificationType::dontSendNotification);
+    }
+
 
 }
 //[/MiscUserCode]

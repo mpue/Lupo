@@ -75,6 +75,7 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("rvbDryLevel", "DryLevel", 0.0f, 1.0f, 0.0);
 	factory->createParam("rvbWidth", "Width", 0.0f, 1.0f, 0.0);
 	factory->createParam("rvbFreezeMode", "Freeze", 0.0f, 1.0f, 0.0);
+	factory->createParam("rvbEnabled", "Reverb enabled", 0, 1.0, 0);
 
 	factory->createParam("chrDelay", "Delay", 0.0f, 1.0, 0.0);
 	factory->createParam("chrModulation", "MOdulation", 0.0f, 1.0f, 1.0);
@@ -87,6 +88,8 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("osc1Pan", "Osc1 pan", -1.0, 1.0, 0);
 	factory->createParam("osc1Shape", "Osc1 shape", 0, 3.0, 0);
 	factory->createParam("osc1Spread", "Osc1 spread", 0, 1.0, 0);
+	factory->createParam("osc1Enabled", "Osc1 enabled", 0, 1.0, 0);
+	factory->createParam("osc1Sync", "Osc1 sync", 0, 1.0, 1);
 
 	factory->createParam("osc2Pitch", "Osc2 pitch", -36, 36, 0);
 	factory->createParam("osc2Fine", "Osc2 fine", -1.0, 1.0, 0);
@@ -94,6 +97,7 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("osc2Pan", "Osc2 pan", -1.0, 1.0, 0);
 	factory->createParam("osc2Shape", "Osc2 shape", 0, 3.0, 0);
 	factory->createParam("osc2Spread", "Osc2 spread", 0, 1.0, 0);
+	factory->createParam("osc2Enabled", "Osc2 enabled", 0, 1.0, 0);
 
 	factory->createParam("osc3Pitch", "Osc3 pitch", -36, 36, 0);
 	factory->createParam("osc3Fine", "Osc3 fine", -1.0, 1.0, 0);
@@ -101,6 +105,7 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("osc3Pan", "Osc3 pan", -1.0, 1.0, 0);
 	factory->createParam("osc3Shape", "Osc3 shape", 0, 3.0, 0);
 	factory->createParam("osc3Spread", "Osc3 spread", 0, 1.0, 0);
+	factory->createParam("osc3Enabled", "Osc3 enabled", 0, 1.0, 0);
 
 	factory->createParam("osc4Pitch", "Osc4 pitch", -36, 36, 0);
 	factory->createParam("osc4Fine", "Osc4 fine", -1.0, 1.0, 0);
@@ -108,15 +113,20 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("osc4Pan", "Osc4 pan", -1.0, 1.0, 0);
 	factory->createParam("osc4Shape", "Osc4 shape", 0, 3.0, 0);
 	factory->createParam("osc4Spread", "Osc4 spread", 0, 1.0, 0);
+	factory->createParam("osc4Enabled", "Osc4 enabled", 0, 1.0, 0);
 
 	factory->createParam("lfo1Shape", "Lfo1 shape", 0, 4.0, 0);
 	factory->createParam("lfo2Shape", "Lfo2 shape", 0, 4.0, 0);
+	factory->createParam("lfo3Shape", "Lfo3 shape", 0, 4.0, 0);
 
 	factory->createParam("lfo1Speed", "Lfo1 speed", 0, 10.0, 0);
 	factory->createParam("lfo2Speed", "Lfo2 speed", 0, 10.0, 0);
+	factory->createParam("lfo3Speed", "Lfo3 speed", 0, 10.0, 0);
 
 	factory->createParam("lfo1Amount", "Lfo1 amount", 0, 1.0, 0);
 	factory->createParam("lfo2Amount", "Lfo2 amount", 0, 1.0, 0);
+	factory->createParam("lfo3Amount", "Lfo3 amount", 0, 1.0, 0);
+
 	factory->createParam("fmAmount", "FM amount", 0, 1.0, 0);
 
 	factory->createParam("distDrive", "Drive", 0, 5.0, 0);
@@ -131,8 +141,9 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("filterMode", "Filter mode", 0, 1.0, 0);
 	factory->createParam("cutoffLink", "Cutoff link", 0, 1.0, 0);
 
+
 	for (int i = 0; i < 6; i++) {
-		factory->createParam("Source_" + String(i), "Matrix source " + String(i), 0.0f, 5.0f, 0.0);
+		factory->createParam("Source_" + String(i), "Matrix source " + String(i), 0.0f, 4.0f, 0.0);
 		factory->createParam("Target_" + String(i), "Matrix target " + String(i), 0.0f, 5.0f, 0.0);
 		factory->createParam("Amount_" + String(i), "Matrix amount " + String(i), 0.0f, 20.0f, 0.0);
 	}
@@ -166,6 +177,7 @@ LupoAudioProcessor::LupoAudioProcessor()
 LupoAudioProcessor::~LupoAudioProcessor()
 {
 	if (JUCEApplication::isStandaloneApp()) {		
+		// delete factory;
 		lupo.reset();
 		model.reset();
 		delete matrix;
@@ -242,6 +254,8 @@ void LupoAudioProcessor::setSelectedProgram(juce::String name) {
 
 	Logger::getCurrentLogger()->writeToLog("Loading preset "+name);
 
+	lupo->running = false;
+
 	if (!prepared) {
 		return;
 	}
@@ -254,17 +268,20 @@ void LupoAudioProcessor::setSelectedProgram(juce::String name) {
 
 	if (preset.exists()) {
 
-		ScopedPointer<XmlElement> xml = XmlDocument(preset).getDocumentElement();
+		std::unique_ptr<XmlElement> xml = XmlDocument(preset).getDocumentElement();
 		ValueTree state = ValueTree::fromXml(*xml.get());
 		
 		getValueTreeState()->state = state;
 
 		xml = nullptr;
 		this->selectedProgram = name;
-		lupo->updateState();
+
+		lupo->updateState(state);
+		
 		Logger::getCurrentLogger()->writeToLog("Updating synth state");
 	}
 
+	lupo->running = true;
 }
 
 const String LupoAudioProcessor::getProgramName (int index)
@@ -351,52 +368,17 @@ AudioProcessorEditor* LupoAudioProcessor::createEditor()
 //==============================================================================
 void LupoAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-	/*
-	Logger::getCurrentLogger()->writeToLog("getStateInformation");
-
-	*/
-	MemoryOutputStream stream;
-	parameters->state.writeToStream(stream);	
-	destData.append(stream.getData(), stream.getDataSize());
-
-	/*
-	if (parameters == nullptr) {
-		return;
-	}
-	if (parameters->state.isValid()) {
-		parameters->state.setProperty("program", getCurrentProgram(), nullptr);
-		ScopedPointer<XmlElement> xml(parameters->state.createXml());
-		copyXmlToBinary(*xml, destData);
-	}
-	*/
-	
-	
+	int program = getCurrentProgram();
+	String name = getProgramName(program);
+	destData.append(name.getCharPointer(),name.length());	
 }
 
 void LupoAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-	
-	/*
-	if (sizeInBytes > 0) {
-		ScopedPointer<XmlElement> xmlState(getXmlFromBinary(data, sizeInBytes));
-		if (xmlState != nullptr)
-			if (xmlState->hasTagName(parameters->state.getType())) {
-				parameters->state = ValueTree::fromXml(*xmlState);
-				if (parameters->state.hasProperty("program")) {
-					setSelectedProgram(getProgramName(parameters->state.getProperty("program")));
-				}
-			}
-
-			
-	}
-	*/
-	
-	if (parameters->state.isValid()) {
-		MemoryInputStream stream(data, sizeInBytes, false);
-		parameters->state.readFromStream(stream);
-		lupo->updateState();
-	}
-	
+	char* _name = (char*)data;	
+	String name = juce::String(_name,sizeInBytes);
+	setSelectedProgram(name);
+	//lupo->updateState(getValueTreeState()->state);
 }
 
 //==============================================================================
@@ -406,7 +388,7 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
     return new LupoAudioProcessor();
 }
 
-LupoSynth* LupoAudioProcessor::getSynth() {
+LupoSynth	* LupoAudioProcessor::getSynth() {
 	return lupo.get();
 }
 
