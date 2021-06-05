@@ -43,7 +43,6 @@ private:
     Pulse* pulse = nullptr;
     WhiteNoise* noise = nullptr;
 	SampleAndHold* sah = nullptr;
-    Modulator* modulator = nullptr;
     float fine = 0;
 	float frequency = 0;
 };

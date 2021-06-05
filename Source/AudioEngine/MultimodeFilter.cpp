@@ -101,6 +101,7 @@ void MultimodeFilter::setModulator(Modulator* mod) {
 
     this->highPassLeft->setModulator(mod);
     this->highPassRight->setModulator(mod);
+	this->modulator = mod;
 }
 
 

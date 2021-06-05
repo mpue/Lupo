@@ -206,6 +206,7 @@ void Voice::setModulator(Modulator* modulator) {
 			}
 		}
 	}
+    this->modulator = modulator;
 	
 }
 

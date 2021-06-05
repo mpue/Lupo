@@ -85,7 +85,6 @@ LupoSynth::~LupoSynth() {
 	delete oscGroup2;
 	delete oscGroup3;
 	delete oscGroup4;
-	
 
 }
 
@@ -117,7 +116,6 @@ MultimodeOscillator* LupoSynth::createOscillator(Oszillator::OscMode mode) {
 }
 
 void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscMode mode2, Oszillator::OscMode mode3, Oszillator::OscMode mode4) {
-
 
 	for (int i = 0; i < 128; i++) {
 
@@ -238,7 +236,6 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 				// }
 			}
 
-
 			if (!voices[noteNumber]->isPlaying()) {
 				voices[noteNumber]->setPlaying(true);
 				numVoices++;
@@ -247,7 +244,6 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 			voices[noteNumber]->setNoteAndVelocity(noteNumber, m.getVelocity());
 			voices[noteNumber]->setDuration(250);
 			voices[noteNumber]->setTime(elapsed);
-
 
 		}
 		if (m.isNoteOff())
@@ -269,7 +265,6 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 			if (numVoices < 0) {
 				numVoices = 0;
 			}
-
 
 		}
 		if (m.isAftertouch())
@@ -305,8 +300,6 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 	}
 
 	filter1->setKeyTrack(highestNote);
-
-
 }
 
 void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) {
@@ -314,7 +307,6 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 	if (!running) {
 		return;
 	}
-
 
 	for (auto i =0; i < 2; ++i)
 		buffer.clear(i, 0, buffer.getNumSamples());
@@ -366,7 +358,6 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 
 void LupoSynth::updateState(ValueTree state) {
 
-
 	for (int j = 0; j < state.getNumChildren(); j++) {
 
 		String parameterID = state.getChild(j).getProperty("id");
@@ -407,7 +398,6 @@ Arpeggiator* LupoSynth::getArpeggiator()
 	return arp;
 }
 
-
 void LupoSynth::changeListenerCallback(ChangeBroadcaster* source) {
 	// updateState();
 	for (int i = 0; i < 128; i++) {
@@ -416,8 +406,6 @@ void LupoSynth::changeListenerCallback(ChangeBroadcaster* source) {
 		voices[i]->getOscillator(2)->enabled = model->osc3Enabled;
 		voices[i]->getOscillator(3)->enabled = model->osc4Enabled;
 	}
-
-
 }
 
 void LupoSynth::parameterChanged(const String& parameterID, float newValue)
@@ -472,8 +460,6 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 	else if (parameterID == "envAmt2") {
 		modEnvelopes->at(1)->setModAmount(newValue);
 	}
-
-
 	else if (parameterID == "mainVolume") {
 		mainVolume = newValue;
 	}
@@ -553,27 +539,22 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 			voices[i]->getOscillator(0)->setFine(newValue);
 			voices[i]->updateOscillator(0);
 		}
-
 	}
 	else if (parameterID == "osc1Volume") {
 		for (int i = 0; i < 128; i++) {
 			voices[i]->setOscVolume(0, newValue);
 		}
-
 	}
 	else if (parameterID == "osc1Pan") {
 		for (int i = 0; i < 128; i++) {
 			voices[i]->setOscPan(0, newValue);
 		}
-
 	}
-
 	else if (parameterID == "osc1Spread") {
 		for (int i = 0; i < 128; i++) {
 			voices[i]->setOscSpread(0, newValue);
 		}
 	}
-
 	else if (parameterID == "osc2Pitch") {
 		for (int i = 0; i < 128; i++) {
 			voices[i]->getOscillator(1)->setPitch(newValue);
@@ -601,7 +582,6 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 			voices[i]->setOscSpread(1, newValue);
 		}
 	}
-
 	else if (parameterID == "osc3Pitch") {
 		for (int i = 0; i < 128; i++) {
 			voices[i]->getOscillator(2)->setPitch(newValue);
@@ -808,28 +788,21 @@ ModMatrix* LupoSynth::getModMatrix()
 
 void LupoSynth::updateMatrix() {
 
-	for (int i = 0; i < 6; i++) {
-		matrix->getModulations()[i]->setEnabled(false);
-	}
 
 	for (int i = 0; i < 6; i++) {
 
+		Modulation* modulation = matrix->getModulations()[i];
 
 		ModTarget* target = matrix->getModTargets().at(model->getModTarget(i));
 		Modulator* mod = matrix->getModulators().at(model->getModSource(i));
 
 		if (mod != nullptr) {
-			Logger::getCurrentLogger()->writeToLog(mod->getName());
-			matrix->getModulations()[i]->setModulator(mod);
+			modulation->setModulator(mod);			
+			modulation->setTarget(target);
+			target->setModulator(mod);
 			mod->setModAmount(model->modAmount[i]);
-			matrix->getModulations()[i]->setEnabled(true);
 		}
-		else {			
-			matrix->getModulations()[i]->setEnabled(false);			
-		}
-		matrix->getModulations()[i]->setTarget(target);
-		target->setModulator(mod);
-
-
+		
 	}
+	
 }

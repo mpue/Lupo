@@ -30,7 +30,6 @@ public:
 private:
     juce::ScopedPointer<juce::IIRFilter> filter1;
     juce::ScopedPointer<juce::IIRFilter> filter2;
-	Modulator* modulator = nullptr;
     float frequency;
     float resonance;
     JUCE_LEAK_DETECTOR(HighPassFilter);

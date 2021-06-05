@@ -141,7 +141,6 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("filterMode", "Filter mode", 0, 1.0, 0);
 	factory->createParam("cutoffLink", "Cutoff link", 0, 1.0, 0);
 
-
 	for (int i = 0; i < 6; i++) {
 		factory->createParam("Source_" + String(i), "Matrix source " + String(i), 0.0f, 4.0f, 0.0);
 		factory->createParam("Target_" + String(i), "Matrix target " + String(i), 0.0f, 5.0f, 0.0);

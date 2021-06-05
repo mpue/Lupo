@@ -20,9 +20,14 @@ public:
     
     virtual void setModulator(Modulator* mod) = 0;
 
-private:
+    virtual Modulator* getModulator() {
+        return modulator;
+    }
+
+protected:
 	
-    
+    Modulator* modulator = nullptr;
+
 };
 
 

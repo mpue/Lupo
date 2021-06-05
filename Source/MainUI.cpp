@@ -336,18 +336,21 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 
     mainDisplay->setBounds (592, 152, 392, 56);
 
+    Viewport* vp = new Viewport("ModMatrix");
+    vp->setBounds(296, 560, 496, 120);
     modMatrix.reset (new ModPanel (this->synth->getModMatrix(), model, factory));
-    addAndMakeVisible (modMatrix.get());
+
+    vp->setViewedComponent(modMatrix.get());
+    vp->setScrollBarsShown(true, false);
+    addAndMakeVisible (vp);
     modMatrix->setName ("modMatrix");
 
-    modMatrix->setBounds (296, 560, 496, 120);
-
+    modMatrix->setBounds (0, 0, 496, 240);
 
     //[UserPreSize]
     //[/UserPreSize]
 
     setSize (1300, 900);
-
 
     //[Constructor] You can add your own custom stuff here..
 
@@ -357,12 +360,10 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 	dlg->setBounds(x, y, getWidth(), getHeight());
 	addChildComponent(dlg);
 
-
 	osc1Panel.get()->SetTitle("Osc 1");
 	osc2Panel.get()->SetTitle("Osc 2");
 	osc3Panel.get()->SetTitle("Osc 3");
 	osc4Panel.get()->SetTitle("Osc 4");
-
 
 	ch1Panel.get()->SetTitle("Ch 1");
 	ch2Panel.get()->SetTitle("Ch 2");
