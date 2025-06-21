@@ -24,6 +24,8 @@ public:
         return modulator;
     }
 
+    virtual void applyModulation(float value) = 0;
+
 protected:
 	
     Modulator* modulator = nullptr;

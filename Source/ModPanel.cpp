@@ -298,117 +298,63 @@ void ModPanel::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == Source_0.get())
     {
         Modulator* modulator = matrix->getModulators().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        //[UserComboBoxCode_Source_0] -- add your combo box handling code here..
-        matrix->getModulations()[0]->getTarget()->setModulator(modulator);
-		matrix->getModulations()[0]->setModulator(modulator);
-        
-        //[/UserComboBoxCode_Source_0]
+        matrix->getModulations()[0]->setModulator(modulator);        
     }
     else if (comboBoxThatHasChanged == Source_1.get())
     {
-	    Modulator* modulator = matrix->getModulators().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        //[UserComboBoxCode_Source_1] -- add your combo box handling code here..
-        matrix->getModulations()[1]->getTarget()->setModulator(modulator);
+        Modulator* modulator = matrix->getModulators().at(comboBoxThatHasChanged->getSelectedItemIndex());
         matrix->getModulations()[1]->setModulator(modulator);
-        //[/UserComboBoxCode_Source_1]
     }
     else if (comboBoxThatHasChanged == Source_2.get())
     {
         Modulator* modulator = matrix->getModulators().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        //[UserComboBoxCode_Source_2] -- add your combo box handling code here..
-        matrix->getModulations()[2]->getTarget()->setModulator(modulator);
-		matrix->getModulations()[2]->setModulator(modulator);
-        //[/UserComboBoxCode_Source_2]
+        matrix->getModulations()[2]->setModulator(modulator);
     }
     else if (comboBoxThatHasChanged == Source_3.get())
     {
         Modulator* modulator = matrix->getModulators().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        //[UserComboBoxCode_Source_3] -- add your combo box handling code here..
-        matrix->getModulations()[3]->getTarget()->setModulator(modulator);
-		matrix->getModulations()[3]->setModulator(modulator);
-        //[/UserComboBoxCode_Source_3]
+        matrix->getModulations()[3]->setModulator(modulator);
     }
     else if (comboBoxThatHasChanged == Source_4.get())
     {
         Modulator* modulator = matrix->getModulators().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        //[UserComboBoxCode_Source_4] -- add your combo box handling code here..
-        matrix->getModulations()[4]->getTarget()->setModulator(modulator);
-		matrix->getModulations()[4]->setModulator(modulator);
-        //[/UserComboBoxCode_Source_4]
+        matrix->getModulations()[4]->setModulator(modulator);
     }
     else if (comboBoxThatHasChanged == Source_5.get())
     {
         Modulator* modulator = matrix->getModulators().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        //[UserComboBoxCode_Source_5] -- add your combo box handling code here..
-        matrix->getModulations()[5]->getTarget()->setModulator(modulator);
-		matrix->getModulations()[5]->setModulator(modulator);
-        //[/UserComboBoxCode_Source_5]
+        matrix->getModulations()[5]->setModulator(modulator);
     }
     else if (comboBoxThatHasChanged == Target_0.get())
     {
         ModTarget* target = matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        //[UserComboBoxCode_Target_0] -- add your combo box handling code here..
-
-        Modulator* modulator = matrix->getModulations()[0]->getTarget()->getModulator();
-        matrix->getModulations()[0]->getTarget()->setModulator(nullptr);
-        target->setModulator(modulator);
-        matrix->getModulations()[1]->setTarget(target);
-        //[/UserComboBoxCode_Target_0]
+        matrix->getModulations()[0]->setTarget(target);
     }
     else if (comboBoxThatHasChanged == Target_1.get())
     {
         ModTarget* target = matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        //[UserComboBoxCode_Target_1] -- add your combo box handling code here..
-        Modulator* modulator = matrix->getModulations()[1]->getTarget()->getModulator();
-        matrix->getModulations()[1]->getTarget()->setModulator(nullptr);
-        target->setModulator(modulator);
-
-		matrix->getModulations()[1]->setTarget(target);
-        //[/UserComboBoxCode_Target_1]
+        matrix->getModulations()[1]->setTarget(target);
     }
     else if (comboBoxThatHasChanged == Target_2.get())
     {
         ModTarget* target = matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        //[UserComboBoxCode_Target_2] -- add your combo box handling code here..
-        Modulator* modulator = matrix->getModulations()[2]->getTarget()->getModulator();
-        matrix->getModulations()[2]->getTarget()->setModulator(nullptr);
-        target->setModulator(modulator);
-
-		matrix->getModulations()[2]->setTarget(target);
-        //[/UserComboBoxCode_Target_2]
+        matrix->getModulations()[2]->setTarget(target);
     }
     else if (comboBoxThatHasChanged == Target_3.get())
     {
         ModTarget* target = matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        //[UserComboBoxCode_Target_3] -- add your combo box handling code here..
-        Modulator* modulator = matrix->getModulations()[3]->getTarget()->getModulator();
-        matrix->getModulations()[3]->getTarget()->setModulator(nullptr);
-        target->setModulator(modulator);
+        matrix->getModulations()[3]->setTarget(target);
 
-		matrix->getModulations()[3]->setTarget(target);
-        //[/UserComboBoxCode_Target_3]
     }
     else if (comboBoxThatHasChanged == Target_4.get())
     {
         ModTarget* target = matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        //[UserComboBoxCode_Target_4] -- add your combo box handling code here..
-        Modulator* modulator = matrix->getModulations()[4]->getTarget()->getModulator();
-        matrix->getModulations()[4]->getTarget()->setModulator(nullptr);
-        target->setModulator(modulator);
-
-		matrix->getModulations()[4]->setTarget(target);
-        //[/UserComboBoxCode_Target_4]
+        matrix->getModulations()[4]->setTarget(target);
     }
     else if (comboBoxThatHasChanged == Target_5.get())
     {
         ModTarget* target = matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        //[UserComboBoxCode_Target_5] -- add your combo box handling code here..
-        Modulator* modulator = matrix->getModulations()[5]->getTarget()->getModulator();
-        matrix->getModulations()[5]->getTarget()->setModulator(nullptr);
-        target->setModulator(modulator);
-
-		matrix->getModulations()[5]->setTarget(target);
-        //[/UserComboBoxCode_Target_5]
+        matrix->getModulations()[5]->setTarget(target);
     }
 
     //[UsercomboBoxChanged_Post]

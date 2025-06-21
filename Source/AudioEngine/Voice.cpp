@@ -42,6 +42,14 @@ Voice::~Voice() {
     
 }
 
+void Voice::applyModulation(float value) 
+{    		
+	for (int i = 0; i < 4; i++) {
+		oscillators[i]->applyModulation(value);
+	}
+
+}
+
 void Voice::setNoteAndVelocity(int note, int velocity) {
 
 	this->noteNumber = note;
@@ -71,7 +79,7 @@ void Voice::setPitchBend(float bend) {
     }
 }
 
-void Voice::addOszillator(Oszillator* o, int index) {
+void Voice::addOszillator(MultimodeOscillator* o, int index) {
     this->oscillators[index] = o;
 }
 

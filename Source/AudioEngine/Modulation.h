@@ -15,12 +15,10 @@
 #include "ModTarget.h"
 #include <vector>
 
-
 using namespace std;
 
 class Modulation {
-    
-    
+   
 public:
      Modulation(Modulator* modulator, ModTarget *target);
      Modulation();
@@ -31,14 +29,11 @@ public:
     ModTarget* getTarget();
 	void clearTarget();
     void setModulator(Modulator* modulator);
-    void process();
+    float process();
     void setEnabled(bool enabled);
     bool isEnabled();
-	
-	
     
 private:
-    
     
     Modulator* modulator = nullptr;
 	ModTarget* target = nullptr;

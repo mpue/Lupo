@@ -18,6 +18,8 @@ ModMatrix::ModMatrix() {
 	for (int i = 0; i < 6; i++) {
 		modulations[i] = new Modulation(nullptr,nullptr);
 	}	
+	
+
 }
 
 ModMatrix::~ModMatrix() {

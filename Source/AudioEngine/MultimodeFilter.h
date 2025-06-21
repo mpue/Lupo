@@ -35,6 +35,15 @@ public:
     virtual void setModulator(Modulator* mod) override;
     void setMode(Mode mode);
 	void setKeyTrack(int track);
+    virtual void applyModulation(float value) override {
+        lowPassRightStage1->applyModulation(value);
+        lowPassLeftStage1->applyModulation(value);
+        lowPassRightStage2->applyModulation(value);
+        lowPassLeftStage2->applyModulation(value);
+        highPassLeft->applyModulation(value);
+        highPassRight->applyModulation(value);
+    }
+        
 
 private:
     

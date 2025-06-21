@@ -1,4 +1,4 @@
-/*
+﻿/*
   ==============================================================================
 
     ModMatrix.h
@@ -35,13 +35,33 @@ public:
     void registerSource(String source, int id);
     void registerTarget(String target, int id);
 
-	inline void process() {
-		for (int i = 0; i < 6; i++) {
-			if (this->modulations[i]->isEnabled()) {
-				this->modulations[i]->process();
-			}
-		}
-	}
+    inline float process() {
+        // Ziel → akkumulierte Modulation
+        std::map<ModTarget*, float> accumulated;
+
+        // Sammle Modulationen pro Ziel
+        for (int i = 0; i < 6; ++i) {
+            if (this->modulations[i] && this->modulations[i]->isEnabled()) {
+                ModTarget* target = this->modulations[i]->getTarget();
+                if (target != nullptr && this->modulations[i]->getModulator() != nullptr) {
+
+
+                    float modValue = this->modulations[i]->process() * this->modulations[i]->getModulator()->getModAmount();
+                    accumulated[target] += modValue; // Akkumuliere
+                }
+            }
+        }
+
+        // Wende akkumulierte Werte auf jedes Ziel an
+        for (auto& pair : accumulated) {
+            ModTarget* target = pair.first;
+            float value = pair.second;
+            target->applyModulation(value);
+        }
+
+        return 0.0f; // aktuell wird nichts direkt zurückgegeben
+    }
+
 
 	inline Modulation** getModulations() {
 		return modulations;

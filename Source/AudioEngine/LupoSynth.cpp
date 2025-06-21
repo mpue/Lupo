@@ -200,8 +200,8 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	matrix->addModTarget(filter2);
 
 	matrix->getModulations()[0]->setModulator(lfo1);
-	matrix->getModulations()[0]->setTarget(oscGroup1);
-	lfo1->setModAmount(1);
+	matrix->getModulations()[0]->setTarget(oscGroup1);	
+
 	lfo1->enabled = true;
 	lfo2->enabled = true;
 	lfo3->enabled = true;
@@ -333,6 +333,7 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 
 		matrix->process();
 		modEnvelopes->at(0)->process();
+		lfo1->process();
 	}
 
 	leftOut = buffer.getWritePointer(0);
@@ -349,8 +350,10 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 		filter2->processMono(1, rightOut, buffer.getNumSamples());
 	}
 
-	chorus->processStereo(leftOut, rightOut, buffer.getNumSamples());
+	chorus->processStereo(leftOut, rightOut, buffer.getNumSamples());	
 	delay->processStereo(leftOut, rightOut, buffer.getNumSamples());
+
+
 	if (model->reverbEnabled) {
 		reverb->processStereo(leftOut, rightOut, buffer.getNumSamples());
 	}
@@ -698,11 +701,7 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		lfo1->setFrequency(newValue);
 	}
 	else if (parameterID == "lfo1Amount") {
-		/*
-		for (int i = 0; i < 128; i++) {
-			voices[i]->setModAmount(newValue * 10);
-		}
-		*/
+		lfo1->setModAmount(newValue);
 	}
 	else if (parameterID == "fmAmount") {
 	}
@@ -713,7 +712,7 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		lfo2->setFrequency(newValue);
 	}
 	else if (parameterID == "lfo2Amount") {
-
+		lfo2->setModAmount(newValue);
 	}
 	else if (parameterID == "lfo2Shape") {
 		lfo2->setMode(newValue);
@@ -722,7 +721,7 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		lfo3->setFrequency(newValue);
 	}
 	else if (parameterID == "lfo3Amount") {
-
+		lfo3->setModAmount(newValue);
 	}
 	else if (parameterID == "lfo3Shape") {
 		lfo3->setMode(newValue);
@@ -745,25 +744,25 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 
 	else if (parameterID.startsWith("Amount")) {
 		const int i = parameterID.substring(parameterID.lastIndexOf("_") + 1).getIntValue();
-		model->modAmount[i] = newValue;
-		matrix->getModulations()[i]->getModulator()->setModAmount(newValue);		
+		//model->modAmount[i] = newValue;
+		//matrix->getModulations()[i]->getModulator()->setModAmount(newValue);		
 		// updateMatrix();
 	}
 	else if (parameterID.startsWith("Target")) {
 		const int i = parameterID.substring(parameterID.lastIndexOf("_") + 1).getIntValue();
-		model->setModTarget(i,(int)newValue);
-		Modulator* mod = matrix->getModulators().at(model->getModSource(newValue));		
-		ModTarget* target = matrix->getModulations()[i]->getTarget();		
-		matrix->getModulations()[i]->getTarget()->setModulator(nullptr);
-		matrix->getModulations()[i]->setTarget(target);
-		target->setModulator(mod);
+		//model->setModTarget(i,(int)newValue);
+		//Modulator* mod = matrix->getModulators().at(model->getModSource(newValue));		
+		//ModTarget* target = matrix->getModulations()[i]->getTarget();		
+		//matrix->getModulations()[i]->getTarget()->setModulator(nullptr);
+		//matrix->getModulations()[i]->setTarget(target);
+		//target->setModulator(mod);
 		// updateMatrix();
 	}
 	else if (parameterID.startsWith("Source")) {
 		const int i = parameterID.substring(parameterID.lastIndexOf("_") + 1).getIntValue();
-		model->setModSource(i, (int)newValue);
-		Modulator* mod = matrix->getModulators().at(model->getModSource(newValue));
-		matrix->getModulations()[i]->setModulator(mod);
+		//model->setModSource(i, (int)newValue);
+		//Modulator* mod = matrix->getModulators().at(model->getModSource(newValue));
+		//matrix->getModulations()[i]->setModulator(mod);
 		// updateMatrix();
 	}
 	for (int i = 0; i < 6; i++) {

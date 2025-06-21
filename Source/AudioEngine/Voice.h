@@ -13,7 +13,7 @@
 
 #include <vector>
 
-#include "Oszillator.h"
+#include "MultimodeOscillator.h"
 #include "Sawtooth.h"
 #include "Modulator.h"
 #include "Note.h"
@@ -30,8 +30,9 @@ public:
         
     Voice(float sampleRate);
     ~Voice();
-    
-    void addOszillator(Oszillator* o, int index);
+    void applyModulation(float value) override;
+
+    void addOszillator(MultimodeOscillator* o, int index);
     Oszillator* getOscillator(int num);
     
     float process(int channel);
@@ -72,7 +73,7 @@ public:
 	void setOscSpread(int osc, float spread);
 
 private:
-    Oszillator* oscillators[4];
+    MultimodeOscillator* oscillators[4];
     float sampleRate;
     int noteNumber = 0;
     int pitch = 0;

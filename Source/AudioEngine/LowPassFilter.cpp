@@ -1,4 +1,4 @@
-//
+﻿//
 //  LowPassFilter.cpp
 //  Trio
 //
@@ -9,6 +9,11 @@
 
 #include "LowPassFilter.h"
 #include "ADSR.h"
+
+template <typename T>
+T clamp(T value, T min, T max) {
+    return std::max(min, std::min(value, max));
+}
 
 using juce::IIRFilter;
 using juce::IIRCoefficients;
@@ -48,46 +53,28 @@ void LowPassFilter::coefficients(float sampleRate, float frequency, float resona
     filter2->setCoefficients(ic1);
 }
 
-void LowPassFilter::process(float *in, float *out, int numSamples) {
-    
-    float f = frequency;
-    
-    if (this->modulator != 0) {
-    
-        
-        if (SynthLab::ADSR* env = dynamic_cast<SynthLab::ADSR*>(this->modulator)) {
-        
-            if(env->getState() != SynthLab::ADSR::env_idle) {
-                f =  this->frequency + (modulator->getOutput() * modulator->getModAmount() * (22000 - this->frequency));
-            }
-            else {
-                env->reset();
-            }
-            
-        }
-        else {
-	           f =  this->frequency + (modulator->getOutput() * modulator->getModAmount() * 1000);
-        }
+void LowPassFilter::process(float* in, float* out, int numSamples) {
 
-        if (f <= 0) {
-            f = 0.1;
-        }
-        if (f > 22000) {
-            f = 22000;
-        }
-		if (resonance <= 0) {
-			resonance = 0.001f;
-		}
-
-        IIRCoefficients ic1  = IIRCoefficients::makeLowPass (44100, f, this->resonance);
-
-        filter1->setCoefficients(ic1);
-        filter2->setCoefficients(ic1);
+    float modValue = 0.0f;
+    if (modulator != nullptr) {
+        modValue = modulator->getOutput();  // Universeller Zugriff
     }
 
-    this->filter1->processSamples(in,numSamples);
-    // in -= numSamples;
-    // this->filter2->processSamples(in,numSamples);
+    float f = frequency + modValue * modulationDepth; // modulationDepth = z. B. 5000.0f
+
+    // Clamp
+    f = clamp(f, 20.0f, 20000.0f);
+
+    if (std::abs(f - lastFrequency) > 0.1f) {
+        IIRCoefficients ic = IIRCoefficients::makeLowPass(44100.0, f, std::max(resonance, 0.001f));
+        filter1->setCoefficients(ic);
+        filter2->setCoefficients(ic);
+        lastFrequency = f;
+    }
+
+    filter1->processSamples(in, numSamples);
+    // Optional zweite Stufe:
+    // filter2->processSamples(in, numSamples);
 }
 
 void LowPassFilter::setModulator(Modulator* mod) {

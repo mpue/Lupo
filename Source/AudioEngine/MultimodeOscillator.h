@@ -37,6 +37,12 @@ public:
     virtual void setSync(bool sync) override;
 	void setSpread(float spread);
     
+
+
+    virtual void applyModulation(float value) override {
+        this->currentModulatedValue = value;
+    }
+
 private:
     Sawtooth* saw = nullptr;
     Sine* sine = nullptr;
@@ -45,6 +51,7 @@ private:
 	SampleAndHold* sah = nullptr;
     float fine = 0;
 	float frequency = 0;
+    float currentModulatedValue = 0.0f;
 };
 
 #endif /* MultimodeOscillator_hpp */

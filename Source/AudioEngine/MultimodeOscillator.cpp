@@ -57,7 +57,6 @@ void MultimodeOscillator::setModulator(Modulator* mod) {
     this->modulator = mod;
 }
 
-
 float MultimodeOscillator::getOutput() {
     if (this->mode == SAW) {
         return this->saw->getOutput();
@@ -85,11 +84,9 @@ float MultimodeOscillator::process() {
         return 0;
     }
 
-	float mod = 0;
+    float mod = currentModulatedValue;
 
-	if (modulator != nullptr) {
-		mod = modulator->getOutput() * modulator->getModAmount();
-	}
+    //&Logger::getCurrentLogger()->writeToLog ("LFO Out: " + juce::String(mod));
 
     if (this->mode == SAW) {
 		saw->setFrequency(mod + this->frequency + this->fine);

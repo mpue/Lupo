@@ -36,10 +36,11 @@ Modulation::Modulation(Modulator* modulator, ModTarget* target) {
 	}
 }
 
-void Modulation::process() {
+float Modulation::process() {
     if (this->modulator != nullptr) {
-        this->modulator->process();
+        return this->modulator->process();
     }
+    return 0;
 }
 
 Modulator* Modulation::getModulator() {

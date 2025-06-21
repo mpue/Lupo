@@ -123,9 +123,9 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("lfo2Speed", "Lfo2 speed", 0, 10.0, 0);
 	factory->createParam("lfo3Speed", "Lfo3 speed", 0, 10.0, 0);
 
-	factory->createParam("lfo1Amount", "Lfo1 amount", 0, 1.0, 0);
-	factory->createParam("lfo2Amount", "Lfo2 amount", 0, 1.0, 0);
-	factory->createParam("lfo3Amount", "Lfo3 amount", 0, 1.0, 0);
+	factory->createParam("lfo1Amount", "Lfo1 amount", 0, 10.0, 0);
+	factory->createParam("lfo2Amount", "Lfo2 amount", 0, 10.0, 0);
+	factory->createParam("lfo3Amount", "Lfo3 amount", 0, 10.0, 0);
 
 	factory->createParam("fmAmount", "FM amount", 0, 1.0, 0);
 
@@ -342,7 +342,6 @@ bool LupoAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 
 void LupoAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-
 	lupo->processBlock(buffer,midiMessages);
 }
 
