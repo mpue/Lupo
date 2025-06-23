@@ -10,10 +10,6 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "AttachmentFactory.h"
 
-#ifdef JUCE_WINDOWS
-#include <Windows.h>
-#endif // JUCE_WI
-
 #include <map>
 
 using juce::File;

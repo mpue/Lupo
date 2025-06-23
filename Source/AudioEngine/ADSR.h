@@ -21,6 +21,7 @@
 
 #include <iostream>
 #include "Modulator.h"
+#include "ModTarget.h"
 
 #include "../JuceLibraryCode/JuceHeader.h"
 
@@ -29,12 +30,14 @@ using namespace std;
 namespace SynthLab {
 
 
-	class ADSR : public Modulator {
+	class ADSR : public Modulator , public ModTarget {
 	public:
 		ADSR(void);
 		~ADSR(void);
 		float process(void);
-		float getOutput(void);
+		float getOutput(void) {
+			return output;
+		}
 		int getState(void);
 		void gate(int on);
 		void setAttackRate(float rate);
@@ -48,6 +51,13 @@ namespace SynthLab {
 		void setTargetRatioA(float targetRatio);
 		void setTargetRatioDR(float targetRatio);
 		void reset(void);
+		void setModulator(Modulator* mod) override {
+			this->modulator = mod;
+		}	
+
+		void applyModulation(float value) override {
+			this->modAmount = value;
+		}
 
 		enum envState {
 			env_idle = 0,
