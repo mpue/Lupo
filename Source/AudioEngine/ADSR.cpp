@@ -30,6 +30,7 @@ SynthLab::ADSR::ADSR(void) {
     setSustainLevel(1.0);
     setTargetRatioA(0.3);
     setTargetRatioDR(0.0001);
+    setModAmount(1.0);
 }
 
 SynthLab::ADSR::~ADSR(void) {

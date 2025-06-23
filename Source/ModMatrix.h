@@ -40,7 +40,7 @@ public:
         std::map<ModTarget*, float> accumulated;
 
         // Sammle Modulationen pro Ziel
-        for (int i = 0; i < 6; ++i) {
+        for (int i = 0; i < 6+128; ++i) {
             if (this->modulations[i] && this->modulations[i]->isEnabled()) {
                 ModTarget* target = this->modulations[i]->getTarget();
                 if (target != nullptr && this->modulations[i]->getModulator() != nullptr) {

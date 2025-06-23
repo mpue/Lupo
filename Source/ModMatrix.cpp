@@ -14,11 +14,15 @@ ModMatrix::ModMatrix() {
     this->modSources = new std::map<int,String>();
     this->modTargets = new std::map<int,String>();	
 	this->dummy = new DummyModulator();
-	this->modulations = new Modulation*[6];
+	this->modulations = new Modulation*[6+128];
 	for (int i = 0; i < 6; i++) {
 		modulations[i] = new Modulation(nullptr,nullptr);
 	}	
-	
+	// for the per voice modulations
+	for (int i = 6; i < 6+128; i++) {
+		modulations[i] = new Modulation(nullptr, nullptr);
+		modulations[i]->setEnabled(true);
+	}
 
 }
 
@@ -26,7 +30,7 @@ ModMatrix::~ModMatrix() {
 	
     removeAllChangeListeners();
 	
-	for (int i = 0; i < 6; i++) {
+	for (int i = 0; i < 6 + 128; i++) {
         delete modulations[i];
     }
 	
