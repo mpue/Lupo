@@ -57,7 +57,7 @@ void LowPassFilter::process(float* in, float* out, int numSamples) {
 
     float modValue = currentModulatedValue;
 
-    float f = frequency + modValue * modulationDepth; // modulationDepth = z. B. 5000.0f
+    float f = frequency * modValue * modulationDepth; // modulationDepth = z. B. 5000.0f
 
     // Clamp
     f = clamp(f, 20.0f, 20000.0f);

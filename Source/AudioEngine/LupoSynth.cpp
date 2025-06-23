@@ -30,10 +30,7 @@ LupoSynth::LupoSynth(Model* model, ModMatrix* modMatrix) {
 		SynthLab::ADSR* env = new SynthLab::ADSR();
 		modEnvelopes->push_back(env);
 	}
-
-	this->filter1 = new MultimodeFilter();
-	this->filter2 = new MultimodeFilter();
-	filter1->setModulator(modEnvelopes->at(0));
+	
 	delay = new StereoDelay();
 	reverb = new StereoReverb();
 	distortion = new Distortion();
@@ -71,8 +68,6 @@ LupoSynth::~LupoSynth() {
 		delete voices[i];
 	}
 
-	delete filter1;
-	delete filter2;
 	delete delay;
 	delete reverb;
 	delete chorus;
@@ -136,6 +131,10 @@ void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscM
 		v->addOszillator(osc3, 2);
 		v->addOszillator(osc4, 3);
 
+		// v->getFilter1()->setModulator(modEnvelopes->at(0));
+		v->getFilter1()->coefficients(sampleRate, 15000.0f, 1.0f);
+		v->getFilter2()->coefficients(sampleRate, 15000.0f, 1.0f);		
+
 		voices[i] = v;
 	}
 }
@@ -146,8 +145,6 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	this->sampleRate = sampleRate;
 	this->bufferSize = samplesPerBlock;
 
-	filter1->coefficients(sampleRate, 15000.0f, 1.0f);
-	filter2->coefficients(sampleRate, 18000.0f, 0.01f);
 	configureOscillators(Oszillator::OscMode::SAW, Oszillator::OscMode::SAW, Oszillator::OscMode::SAW, Oszillator::OscMode::SAW);
 
 	chorus = new StereoChorus(sampleRate, bufferSize);
@@ -158,10 +155,8 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	lfo2 = new MultimodeOscillator(sampleRate, bufferSize);
 	lfo2->setMode(2.0f);
 	lfo3 = new MultimodeOscillator(sampleRate, bufferSize);
-	lfo3->setMode(2.0f);
+	lfo3->setMode(2.0f);	
 
-
-	filter1->setModulator(modEnvelopes->at(0));
 	lfo1->setModAmount(0);
 	lfo2->setModAmount(0);
 	lfo3->setModAmount(0);
@@ -183,24 +178,35 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	lfo1->setName("LFO1");
 	lfo2->setName("LFO2");
 	lfo3->setName("LFO3");
+	
 	modEnvelopes->at(0)->setName("ENV1");
 	modEnvelopes->at(1)->setName("ENV2");
 
 	matrix->addModulator(lfo1);
 	matrix->addModulator(lfo2);
 	matrix->addModulator(lfo3);
-	matrix->addModulator(modEnvelopes->at(0));
-	matrix->addModulator(modEnvelopes->at(1));
 
 	matrix->addModTarget(oscGroup1);
 	matrix->addModTarget(oscGroup2);
 	matrix->addModTarget(oscGroup3);
 	matrix->addModTarget(oscGroup4);
-	matrix->addModTarget(filter1);
-	matrix->addModTarget(filter2);
+	matrix->addModulator(modEnvelopes->at(0));
+	matrix->addModulator(modEnvelopes->at(1));
+
+	for (int i = 0; i < 128; i++) {
+		matrix->addModulator(voices[i]->getFilterEnvelope());
+		matrix->addModTarget(voices[i]->getFilter1());	
+		matrix->addModTarget(voices[i]->getFilter2());
+		voices[i]->getFilter1()->setModulator(voices[i]->getFilterEnvelope());
+		voices[i]->getFilter2()->setModulator(voices[i]->getFilterEnvelope());
+		matrix->getModulations()[i+6]->setModulator(voices[i]->getFilterEnvelope());
+		matrix->getModulations()[i+6]->setTarget(voices[i]->getFilter1());
+	}
 
 	matrix->getModulations()[0]->setModulator(lfo1);
 	matrix->getModulations()[0]->setTarget(oscGroup1);	
+
+
 
 	lfo1->enabled = true;
 	lfo2->enabled = true;
@@ -231,8 +237,8 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 			}
 
 			for (int envIdx = 0; envIdx < this->modEnvelopes->size(); envIdx++) {
-				//if (numVoices == 0) {
-				modEnvelopes->at(envIdx)->gate(true);
+				// if (numVoices == 0) {
+					modEnvelopes->at(envIdx)->gate(true);
 				// }
 			}
 
@@ -241,17 +247,19 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 				numVoices++;
 			}
 			voices[noteNumber]->getAmpEnvelope()->gate(true);
+			voices[noteNumber]->getFilterEnvelope()->gate(true);
 			voices[noteNumber]->setNoteAndVelocity(noteNumber, m.getVelocity());
 			voices[noteNumber]->setDuration(250);
 			voices[noteNumber]->setTime(elapsed);
 
 		}
-		if (m.isNoteOff())
+		if (m.isNoteOff() || m.isAllNotesOff())
 		{
 			int noteNumber = m.getNoteNumber();
 
 			voices[noteNumber]->setPlaying(false);
 			voices[noteNumber]->getAmpEnvelope()->gate(false);
+			voices[noteNumber]->getFilterEnvelope()->gate(false);
 			numVoices--;
 
 			if (numVoices == 0) {
@@ -299,7 +307,11 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 
 	}
 
-	filter1->setKeyTrack(highestNote);
+	for (int i = 0;i < 128; i++) {
+		voices[i]->getFilter1()->setKeyTrack(highestNote);
+		voices[i]->getFilter2()->setKeyTrack(highestNote);
+	}
+
 }
 
 void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages) {
@@ -339,16 +351,20 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 	leftOut = buffer.getWritePointer(0);
 	rightOut = buffer.getWritePointer(1);
 
-	// serial
-	if (filterMode == 0.0f) {
-		filter1->processStereo(leftOut, rightOut, buffer.getNumSamples());
-		filter2->processStereo(leftOut, rightOut, buffer.getNumSamples());
-	}
-	// parallel
-	else {
-		filter1->processMono(0, leftOut, buffer.getNumSamples());
-		filter2->processMono(1, rightOut, buffer.getNumSamples());
-	}
+	//// serial
+	//if (filterMode == 0.0f) {
+	//	for (int i = 0; i < 128; i++) {
+	//		voices[i]->getFilter1()->processStereo(leftOut, rightOut, buffer.getNumSamples());
+	//		voices[i]->getFilter2()->processStereo(leftOut, rightOut, buffer.getNumSamples());
+	//	}
+	//}
+	//// parallel
+	//else {
+	//	for (int i = 0; i < 128; i++) {
+	//		voices[i]->getFilter1()->processMono(0, leftOut, buffer.getNumSamples());
+	//		voices[i]->getFilter2()->processMono(1, rightOut, buffer.getNumSamples());
+	//	}
+	//}
 
 	chorus->processStereo(leftOut, rightOut, buffer.getNumSamples());	
 	delay->processStereo(leftOut, rightOut, buffer.getNumSamples());
@@ -421,20 +437,40 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		model->cutoff1 = newValue;
 		if (cutoffLink) {
 			model->cutoff2 = newValue;
-			filter2->coefficients(sampleRate, model->cutoff1, model->resonance2);
+
+			for (int i = 0; i < 128; i++) {
+				voices[i]->getFilter2()->coefficients(sampleRate, model->cutoff1, model->resonance2);
+			}
+			// filter2->coefficients(sampleRate, model->cutoff1, model->resonance2);
 		}
-		filter1->coefficients(sampleRate, model->cutoff1, model->resonance1);
+		else {
+			for (int i = 0; i < 128; i++) {
+				voices[i]->getFilter1()->coefficients(sampleRate, model->cutoff1, model->resonance1);
+			}
+		}
+		//filter1->coefficients(sampleRate, model->cutoff1, model->resonance1);
 	}
 	else if (parameterID == "resonance1") {
 		model->resonance1 = newValue;
-		filter1->coefficients(sampleRate, model->cutoff1, model->resonance1);
+		
+		for (int i = 0; i < 128; i++) {
+			voices[i]->getFilter1()->coefficients(sampleRate, model->cutoff1, model->resonance1);
+		}
+		
+		// filter1->coefficients(sampleRate, model->cutoff1, model->resonance1);
 	}
 	else if (parameterID == "filterMode1") {
 		if (newValue == 0.0f) {
-			filter1->setMode(MultimodeFilter::LOWPASS);
+			for (int i = 0; i < 128; i++) {
+				voices[i]->getFilter1()->setMode(MultimodeFilter::LOWPASS);
+			}
+			// filter1->setMode(MultimodeFilter::LOWPASS);
 		}
 		else if (newValue == 1.0f) {
-			filter1->setMode(MultimodeFilter::HIGHPASS);
+			for (int i = 0; i < 128; i++) {
+				voices[i]->getFilter1()->setMode(MultimodeFilter::HIGHPASS);
+			}
+			//filter1->setMode(MultimodeFilter::HIGHPASS);
 		}
 	}
 	else if (parameterID == "envAmt1") {
@@ -443,21 +479,38 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 
 	if (parameterID == "cutoff2") {
 		model->cutoff2 = newValue;
-		filter2->coefficients(sampleRate, model->cutoff2, model->resonance2);
+		for (int i = 0; i < 128; i++) {
+			voices[i]->getFilter2()->coefficients(sampleRate, model->cutoff2, model->resonance2);
+		}
+		// filter2->coefficients(sampleRate, model->cutoff2, model->resonance2);
 	}
 	else if (parameterID == "resonance2") {
 		model->resonance2 = newValue;
 		if (cutoffLink) {
-			filter2->coefficients(sampleRate, model->cutoff1, model->resonance2);
+			for (int i = 0; i < 128; i++) {
+				voices[i]->getFilter2()->coefficients(sampleRate, model->cutoff1, model->resonance2);
+			}
+			// filter2->coefficients(sampleRate, model->cutoff1, model->resonance2);
 		}
-		filter2->coefficients(sampleRate, model->cutoff2, model->resonance2);
+		else {
+			for (int i = 0; i < 128; i++) {
+				voices[i]->getFilter2()->coefficients(sampleRate, model->cutoff2, model->resonance2);
+			}
+		}
+		//	filter2->coefficients(sampleRate, model->cutoff2, model->resonance2);
 	}
 	else if (parameterID == "filterMode2") {
 		if (newValue == 0.0f) {
-			filter2->setMode(MultimodeFilter::LOWPASS);
+			for (int i = 0; i < 128; i++) {
+				voices[i]->getFilter2()->setMode(MultimodeFilter::LOWPASS);
+			}
+			// filter2->setMode(MultimodeFilter::LOWPASS);
 		}
 		else if (newValue == 1.0f) {
-			filter2->setMode(MultimodeFilter::HIGHPASS);
+			for (int i = 0; i < 128; i++) {
+				voices[i]->getFilter2()->setMode(MultimodeFilter::HIGHPASS);
+			}
+			// filter2->setMode(MultimodeFilter::HIGHPASS);
 		}
 	}
 	else if (parameterID == "envAmt2") {
@@ -487,16 +540,25 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		}
 	}
 	else if (parameterID == "auxAttack1") {
-		modEnvelopes->at(0)->setAttackRate(newValue * sampleRate * 4);
+		for (int i = 0; i < 128; i++) {
+			voices[i]->getFilterEnvelope()->setAttackRate(newValue* sampleRate * 4);
+		}		
 	}
 	else if (parameterID == "auxDecay1") {
-		modEnvelopes->at(0)->setDecayRate(newValue * sampleRate * 4);
+		for (int i = 0; i < 128; i++) {			
+			voices[i]->getFilterEnvelope()->setDecayRate(newValue * sampleRate * 4);
+		}
 	}
 	else if (parameterID == "auxSustain1") {
-		modEnvelopes->at(0)->setSustainLevel(newValue);
+		for (int i = 0; i < 128; i++) {
+			voices[i]->getFilterEnvelope()->setSustainLevel(newValue);
+		}
 	}
 	else if (parameterID == "auxRelease1") {
-		modEnvelopes->at(0)->setReleaseRate(newValue * sampleRate * 4);
+		for (int i = 0; i < 128; i++) {
+			voices[i]->getFilterEnvelope()->setReleaseRate(newValue * sampleRate * 4);
+		}
+
 	}
 	else if (parameterID == "auxAttack2") {
 		modEnvelopes->at(1)->setAttackRate(newValue * sampleRate * 4);

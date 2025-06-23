@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "MultimodeOscillator.h"
+#include "MultimodeFilter.h"
 #include "Sawtooth.h"
 #include "Modulator.h"
 #include "Note.h"
@@ -54,6 +55,7 @@ public:
     virtual void setModulator(Modulator* mod) override;
     
 	SynthLab::ADSR* getAmpEnvelope();
+    SynthLab::ADSR* getFilterEnvelope();
 
     float getSampleRate();
     
@@ -72,7 +74,17 @@ public:
 	void setOscPan(int osc, float pan);
 	void setOscSpread(int osc, float spread);
 
+    MultimodeFilter* getFilter1() {
+        return filter1;
+    }
+    MultimodeFilter* getFilter2() {
+        return filter2;       
+    }
+
+    
 private:
+    MultimodeFilter* filter1;
+    MultimodeFilter* filter2;
     MultimodeOscillator* oscillators[4];
     float sampleRate;
     int noteNumber = 0;
@@ -82,6 +94,8 @@ private:
     void calculateFrequencyTable();
     bool playing;
 	SynthLab::ADSR* ampEnvelope;
+	SynthLab::ADSR* filterEnvelope;
+	// Modulation
 	Modulator* modulator = nullptr;
     float pitchBend;
     float duration;

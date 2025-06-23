@@ -1,4 +1,4 @@
-/*
+﻿/*
   ==============================================================================
 
     Voice.cpp
@@ -21,25 +21,36 @@ Voice::Voice(float sampleRate) {
     this->calculateFrequencyTable();
     this->playing = false;
     this->ampEnvelope = new SynthLab::ADSR();
+    this->filterEnvelope = new SynthLab::ADSR();
     this->modulator = 0;
     this->pitchBend = 1;
     
+    this->filter1 = new MultimodeFilter();
+    this->filter2 = new MultimodeFilter();
+
     ampEnvelope->setAttackRate(0 * sampleRate);  // 1 second
     ampEnvelope->setDecayRate(1 * sampleRate);
     ampEnvelope->setReleaseRate(1 * sampleRate);
     ampEnvelope->setSustainLevel(.8);
 
+    filterEnvelope->setAttackRate(0 * sampleRate);  // 1 second
+    filterEnvelope->setDecayRate(1 * sampleRate);
+    filterEnvelope->setReleaseRate(1 * sampleRate);
+    filterEnvelope->setSustainLevel(.8);
 
 }
 
 Voice::~Voice() {
 	if (ampEnvelope != NULL)
 		delete ampEnvelope;
-    
+    if (filterEnvelope != NULL)
+		delete filterEnvelope;
 	for (int i = 0; i < 4; i++) {
         delete oscillators[i];
     }
-    
+    delete filter1;
+    delete filter2;
+        
 }
 
 void Voice::applyModulation(float value) 
@@ -47,7 +58,8 @@ void Voice::applyModulation(float value)
 	for (int i = 0; i < 4; i++) {
 		oscillators[i]->applyModulation(value);
 	}
-
+    filter1->applyModulation(value);
+    filter2->applyModulation(value);
 }
 
 void Voice::setNoteAndVelocity(int note, int velocity) {
@@ -87,41 +99,52 @@ Oszillator* Voice::getOscillator(int num) {
 	return oscillators[num];
 }
 
-float Voice::process(int channel) {
-    
-    value = 0;
-    
-	if(ampEnvelope->getState() != SynthLab::ADSR::env_idle) {
-        
-        float amplitude = (1.0f / (float) 127) * this->velocity;
+float Voice::process(int channel)
+{
+    float outL = 0.0f;
+    float outR = 0.0f;
+
+    if (ampEnvelope->getState() != SynthLab::ADSR::env_idle) {
+
+        float amplitude = (velocity / 127.0f) * ampEnvelope->process();
+
 
         for (int i = 0; i < 4; i++) {
-            
-            if (oscillators[i]->enabled) {
+            if (!oscillators[i]->enabled)
+                continue;
 
-                if (i == 1 && oscillators[i - 1]->enabled && oscillators[i - 1]->isSync()) {
-                    oscillators[i - 1]->reset();
-                }
-
-			    if (channel == 0) {
-				    value += oscillators[i]->process() * cos((M_PI*(oscillators[i]->getPan() + 1) / 4)) * amplitude * ampEnvelope->process();;
-			    }
-			    else {
-				    value += oscillators[i]->process() * sin((M_PI*(oscillators[i]->getPan() + 1) / 4)) * amplitude * ampEnvelope->process();;
-			    }
-			    if (modulator != nullptr) {	
-				    oscillators[i]->setPitchMod(modulator->getOutput() * this->modAmount );
-			    }
+            if (i == 1 && oscillators[i - 1]->enabled && oscillators[i - 1]->isSync()) {
+                oscillators[i - 1]->reset();
             }
 
-		}
+            float pan = oscillators[i]->getPan();
+            float gain = (channel == 0)
+                ? cosf((float)M_PI * (pan + 1.0f) / 4.0f)
+                : sinf((float)M_PI * (pan + 1.0f) / 4.0f);
+
+            float sample = oscillators[i]->process();
+
+            if (modulator != nullptr) {
+                oscillators[i]->setPitchMod(modulator->getOutput() * this->modAmount);
+            }
+
+            if (channel == 0)
+                outL += sample * gain * amplitude;
+            else
+                outR += sample * gain * amplitude;
+        }
+
+        // Filter nach der Summe
+        filter1->processStereo(&outL, &outR, 1);
+        filter2->processStereo(&outL, &outR, 1);
     }
     else {
         ampEnvelope->reset();
     }
 
-    return value;    
+    return (channel == 0) ? outL : outR;
 }
+
 
 void Voice::setNoteNumber(int number) {
     this->noteNumber = number;
@@ -202,6 +225,11 @@ float Voice::getSampleRate() {
 SynthLab::ADSR* Voice::getAmpEnvelope() {
     return ampEnvelope;
 }
+
+SynthLab::ADSR* Voice::getFilterEnvelope() {
+    return filterEnvelope;
+}
+
 
 void Voice::setModulator(Modulator* modulator) {
 	
