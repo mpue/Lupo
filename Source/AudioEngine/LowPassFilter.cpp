@@ -55,10 +55,7 @@ void LowPassFilter::coefficients(float sampleRate, float frequency, float resona
 
 void LowPassFilter::process(float* in, float* out, int numSamples) {
 
-    float modValue = 0.0f;
-    if (modulator != nullptr) {
-        modValue = modulator->getOutput();  // Universeller Zugriff
-    }
+    float modValue = currentModulatedValue;
 
     float f = frequency + modValue * modulationDepth; // modulationDepth = z. B. 5000.0f
 
