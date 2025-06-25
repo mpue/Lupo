@@ -13,9 +13,9 @@
 class StereoEffect {
     
 public:
-    inline virtual ~StereoEffect() {};
+    virtual ~StereoEffect() {};
     virtual void processStereo(float *const left, float *const right, const int numSamples) = 0;
-    inline void setEnabled(bool _enabled) {
+    void setEnabled(bool _enabled) {
         this->enabled = _enabled;
     }
 

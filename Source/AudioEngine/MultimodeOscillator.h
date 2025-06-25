@@ -13,12 +13,13 @@
 
 #include "Oszillator.h";
 #include "ModTarget.h"
+#include "Sine.h"
+#include "Sawtooth.h"
+#include "Pulse.h"
+#include "WhiteNoise.h"
+#include "SampleAndHold.h"
 
-class Sine;
-class Sawtooth;
-class Pulse;
-class WhiteNoise;
-class SampleAndHold; 
+
 
 class MultimodeOscillator : public Oszillator, public Modulator, public ModTarget {
         
@@ -36,13 +37,17 @@ public:
     virtual void setSlave(Oszillator* slave) override;
     virtual void setSync(bool sync) override;
 	void setSpread(float spread);
-    
-
 
     virtual void applyModulation(float value) override {
         this->currentModulatedValue = value;
     }
 
+    void setSampleRate(double sampleRate) override {
+        this->sine->setSampleRate(sampleRate);
+        this->saw->setSampleRate(sampleRate);
+        this->pulse->setSampleRate(sampleRate);
+        this->noise->setSampleRate(sampleRate);
+    }
 private:
     Sawtooth* saw = nullptr;
     Sine* sine = nullptr;

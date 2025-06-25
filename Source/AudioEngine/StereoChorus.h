@@ -13,9 +13,8 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "StereoEffect.h"
-
-class Sine;
-class FractionalDelayBuffer;
+#include "FractionalDelayBuffer.h"
+#include "Sine.h"
 
 
 class StereoChorus : public StereoEffect {
@@ -26,6 +25,25 @@ public:
 	~StereoChorus();
 
 	void processStereo(float* const left, float* const right, const int numSamples);
+
+	void prepareToPlay(double sampleRate, int bufferSize) {
+		
+		this->sampleRate = sampleRate;
+		this->bufferSize = bufferSize;
+
+		if (leftOsc == nullptr) {
+			leftOsc = new Sine(sampleRate, bufferSize);
+		}
+		if (rightOsc == nullptr) {
+			rightOsc = new Sine(sampleRate, bufferSize);
+		}
+
+		leftBuffer->setBufferSize((int)sampleRate / 10);
+		rightBuffer->setBufferSize((int)sampleRate / 10);
+		leftOsc->setFrequency(0.5);
+		rightOsc->setFrequency(0.6);
+
+	}
 
 	float modulation = 0.0f;
 	float delay = 0.00f;

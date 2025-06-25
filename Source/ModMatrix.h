@@ -35,7 +35,7 @@ public:
     void registerSource(String source, int id);
     void registerTarget(String target, int id);
 
-    inline float process() {
+    float process() {
         // Ziel → akkumulierte Modulation
         std::map<ModTarget*, float> accumulated;
 
@@ -63,16 +63,16 @@ public:
     }
 
 
-	inline Modulation** getModulations() {
+	Modulation** getModulations() {
 		return modulations;
 	}
 
-	inline vector<Modulator*> getModulators()
+	vector<Modulator*> getModulators()
 	{
 		return modulators;
 	}
 
-	inline vector<ModTarget*> getModTargets()
+	vector<ModTarget*> getModTargets()
 	{
 		return targets;
 	}

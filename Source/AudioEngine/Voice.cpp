@@ -20,13 +20,13 @@ Voice::Voice(float sampleRate) {
     this->sampleRate = sampleRate;
     this->calculateFrequencyTable();
     this->playing = false;
-    this->ampEnvelope = new SynthLab::ADSR();
-    this->filterEnvelope = new SynthLab::ADSR();
+    this->ampEnvelope = std::make_unique<SynthLab::ADSR>();
+    this->filterEnvelope = std::make_unique<SynthLab::ADSR>();
     this->modulator = 0;
     this->pitchBend = 1;
     
-    this->filter1 = new MultimodeFilter();
-    this->filter2 = new MultimodeFilter();
+    this->filter1 = std::make_unique<MultimodeFilter>();
+    this->filter2 = std::make_unique<MultimodeFilter>(); 
 
     ampEnvelope->setAttackRate(0 * sampleRate);  // 1 second
     ampEnvelope->setDecayRate(1 * sampleRate);
@@ -37,20 +37,9 @@ Voice::Voice(float sampleRate) {
     filterEnvelope->setDecayRate(1 * sampleRate);
     filterEnvelope->setReleaseRate(1 * sampleRate);
     filterEnvelope->setSustainLevel(.8);
-
-}
-
-Voice::~Voice() {
-	if (ampEnvelope != NULL)
-		delete ampEnvelope;
-    if (filterEnvelope != NULL)
-		delete filterEnvelope;
-	for (int i = 0; i < 4; i++) {
-        delete oscillators[i];
-    }
-    delete filter1;
-    delete filter2;
-        
+    filterEnvelope->setTargetRatioA(0.1f);
+    filterEnvelope->setTargetRatioDR(0.01f);
+  
 }
 
 void Voice::applyModulation(float value) 
@@ -67,22 +56,11 @@ void Voice::setNoteAndVelocity(int note, int velocity) {
 	this->noteNumber = note;
 	this->velocity = velocity;
 
-	oscillators[0]->setFrequency((midiNote[noteNumber + oscillators[0]->getPitch()]) * pitchBend);
-	oscillators[1]->setFrequency((midiNote[noteNumber + oscillators[1]->getPitch()]) * pitchBend);
-	oscillators[2]->setFrequency((midiNote[noteNumber + oscillators[2]->getPitch()]) * pitchBend);
-	oscillators[3]->setFrequency((midiNote[noteNumber + oscillators[3]->getPitch()]) * pitchBend);
-
-	/*
-    for(std::vector<Oszillator*>::iterator it = oscillators.begin(); it != oscillators.end(); ++it) {
-        Oszillator* o = *it;
-        
-        if (note != NULL)
-            o->setFrequency((midiNote[noteNumber + o->getPitch()]) * pitchBend);
+    for (int i = 0; i < 4; i++) {
+	    oscillators[i]->setFrequency((midiNote[noteNumber + oscillators[i]->getPitch()]) * pitchBend);
     }
-	*/
+
 }
-
-
 
 void Voice::setPitchBend(float bend) {
     this->pitchBend = bend;
@@ -91,12 +69,12 @@ void Voice::setPitchBend(float bend) {
     }
 }
 
-void Voice::addOszillator(MultimodeOscillator* o, int index) {
-    this->oscillators[index] = o;
+void Voice::addOszillator(std::unique_ptr<MultimodeOscillator> o, int index) {
+    this->oscillators.push_back(std::move(o));
 }
 
 Oszillator* Voice::getOscillator(int num) {
-	return oscillators[num];
+	return oscillators.at(num).get();
 }
 
 float Voice::process(int channel)
@@ -107,7 +85,6 @@ float Voice::process(int channel)
     if (ampEnvelope->getState() != SynthLab::ADSR::env_idle) {
 
         float amplitude = (velocity / 127.0f) * ampEnvelope->process();
-
 
         for (int i = 0; i < 4; i++) {
             if (!oscillators[i]->enabled)
@@ -133,10 +110,9 @@ float Voice::process(int channel)
             else
                 outR += sample * gain * amplitude;
         }
-
-        // Filter nach der Summe
+        
         filter1->processStereo(&outL, &outR, 1);
-        filter2->processStereo(&outL, &outR, 1);
+        // filter2->processStereo(&outL, &outR, 1);
     }
     else {
         ampEnvelope->reset();
@@ -172,7 +148,7 @@ void Voice::setOscPan(int osc,float pan) {
 
 void Voice::setOscSpread(int osc, float spread)
 {
-	MultimodeOscillator* mmo = dynamic_cast<MultimodeOscillator*>(oscillators[osc]);
+	MultimodeOscillator* mmo = oscillators.at(osc).get();
 	mmo->setSpread(spread);
 }
 
@@ -185,8 +161,7 @@ void Voice::setOctave(int number) {
 
 void Voice::setOffset(int number) {
     this->offset = number;
-	for (int i = 0; i < 4; i++) {
-     
+	for (int i = 0; i < 4; i++) {     
 		oscillators[i]->setFrequency((midiNote[noteNumber + oscillators[i]->getPitch() + this->offset + this->octave * 12]) * pitchBend);
     }
 }
@@ -217,17 +192,34 @@ bool Voice::isPlaying() const {
     return this->playing;
 }
 
+void Voice::setSampleRate(double rate) {
+    this->sampleRate = rate;
+    ampEnvelope->setAttackRate(0 * sampleRate);  // 1 second
+    ampEnvelope->setDecayRate(1 * sampleRate);
+    ampEnvelope->setReleaseRate(1 * sampleRate);
+    ampEnvelope->setSustainLevel(.8);
+
+    filterEnvelope->setAttackRate(0 * sampleRate);  // 1 second
+    filterEnvelope->setDecayRate(1 * sampleRate);
+    filterEnvelope->setReleaseRate(1 * sampleRate);
+    filterEnvelope->setSustainLevel(.8);
+
+    for (int i = 0; i < 4; i++) {
+        oscillators[i]->setSampleRate(rate);
+    }
+   
+}
 
 float Voice::getSampleRate() {
     return this->sampleRate;
 }
 
 SynthLab::ADSR* Voice::getAmpEnvelope() {
-    return ampEnvelope;
+    return ampEnvelope.get();
 }
 
 SynthLab::ADSR* Voice::getFilterEnvelope() {
-    return filterEnvelope;
+    return filterEnvelope.get();
 }
 
 
@@ -236,7 +228,7 @@ void Voice::setModulator(Modulator* modulator) {
 	if (modulator) {
 		this->modulator = modulator;
 		for (int i = 0; i < 4; i++) {
-			MultimodeOscillator* mmo = dynamic_cast<MultimodeOscillator*>(oscillators[i]);
+			MultimodeOscillator* mmo = oscillators.at(i).get();                
 			if (mmo != nullptr) {
 				mmo->setModulator(modulator);
 			}

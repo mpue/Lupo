@@ -19,13 +19,6 @@ StereoChorus::StereoChorus(float sampleRate, int bufferSize) {
 	leftBuffer = new FractionalDelayBuffer();
 	rightBuffer = new FractionalDelayBuffer();
 
-	leftOsc = new Sine(sampleRate, bufferSize);
-	rightOsc = new Sine(sampleRate, bufferSize);
-
-	leftBuffer->setBufferSize((int)sampleRate / 10);
-	rightBuffer->setBufferSize((int)sampleRate / 10);
-	leftOsc->setFrequency(0.5);
-	rightOsc->setFrequency(0.6);
 }
 
 StereoChorus::~StereoChorus() {
@@ -60,7 +53,6 @@ void StereoChorus::processStereo(float * left, float * right, const int numSampl
 
 			l_combined = l_xn + r_yn * feedback;
 			r_combined = r_xn + l_yn * feedback;
-
 
 			leftBuffer->addSample(l_combined);
 			rightBuffer->addSample(r_combined);

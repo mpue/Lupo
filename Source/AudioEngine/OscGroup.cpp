@@ -11,6 +11,7 @@
 #include "OscGroup.h"
 
 OscGroup::OscGroup() {
+	modulator = nullptr;
 }
 
 OscGroup::~OscGroup() {
@@ -18,8 +19,18 @@ OscGroup::~OscGroup() {
 
 void OscGroup::setModulator(Modulator * mod)
 {
+	if (mod == nullptr) {
+		return;
+	}
+
+	if (modulator == mod) {
+		return; // no change
+	}
+
 	for (int i = 0; i < targets.size();i++) {
-		targets.at(i)->setModulator(mod);
+		if (targets.at(i) != nullptr) {
+			targets.at(i)->setModulator(mod);			
+		}
 	}
 }
 

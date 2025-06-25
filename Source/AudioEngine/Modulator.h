@@ -13,7 +13,7 @@
 class Modulator {
 public:
     
-    inline virtual ~Modulator() {};
+    virtual ~Modulator() {};
     virtual float process() = 0;
     virtual float getOutput() = 0;
 	

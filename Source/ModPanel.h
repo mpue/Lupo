@@ -58,6 +58,8 @@ public:
     void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
     void sliderValueChanged (Slider* sliderThatWasMoved) override;
 
+    void setTargetForSlot(int slot, int targetIndex);
+
 
 
 private:

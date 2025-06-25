@@ -63,7 +63,7 @@ public:
 
 	~Model() {}
 
-
+	float maxVoices = 32;
 	float cutoff1;
 	float resonance1;
 	float envAmt1;

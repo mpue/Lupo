@@ -61,7 +61,7 @@ public:
 	float spread = 0.1;
 	float value = 0;
 
-	inline float process() override {
+	float process() override {
 		if (this->slave != 0 && sync) {
 			if (blitsaw[0]->resetFlag) {
 				slave->reset();
@@ -85,7 +85,7 @@ public:
 		}
 	}
 
-	inline void setFrequency(double frequency) override {
+	void setFrequency(double frequency) override {
 		if (frequency == 0) {
 			frequency = 0.01;
 		}
