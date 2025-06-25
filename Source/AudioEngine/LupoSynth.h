@@ -35,15 +35,15 @@ class LupoSynth : public ChangeListener,
 public:
 
 	LupoSynth(Model* model, ModMatrix* modMatrix);
-	~LupoSynth();
+	~LupoSynth() = default;
 
 	void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages);	
 	void processMidi(MidiBuffer& midiMessages);
 	void prepareToPlay(double sampleRate, int bufferSize);	
 	void updateState(ValueTree state);
 	Arpeggiator* getArpeggiator();
-
-	MultimodeOscillator* createOscillator(Oszillator::OscMode mode);
+	Voice* LupoSynth::findFreeVoice();
+	std::unique_ptr<MultimodeOscillator> createOscillator(Oszillator::OscMode mode);
 	void configureOscillators(Oszillator::OscMode mode1, Oszillator::OscMode mode2, Oszillator::OscMode mode3, Oszillator::OscMode mode4);
 	void changeListenerCallback(ChangeBroadcaster* source) override;
 	void parameterChanged(const String& parameterID, float newValue) override;
@@ -53,13 +53,14 @@ public:
 	bool cutoffLink = false;
 	bool running = true;
 	void updateMatrix();
+	void configureModulation();
 private:
-	Model* model;
-	Voice* voices[128];
-	vector<SynthLab::ADSR*>* modEnvelopes;
+	Model* model;	
+	using ADSRPtr = std::unique_ptr<SynthLab::ADSR>;
+	vector<ADSRPtr> modEnvelopes;
 	float sampleRate;
 	int bufferSize;
-
+	std::vector<std::unique_ptr<Voice>> voices;
 	float filterMode = 1.0f;
 
 	float cutoff = 15000.0f;
@@ -67,22 +68,23 @@ private:
 	int currentSample = 0;
 	int numVoices = 0;
 
-	OscGroup* oscGroup1;
-	OscGroup* oscGroup2;
-	OscGroup* oscGroup3;
-	OscGroup* oscGroup4;
+	std::unique_ptr<OscGroup> oscGroup1;
+	std::unique_ptr<OscGroup> oscGroup2;
+	std::unique_ptr<OscGroup> oscGroup3;
+	std::unique_ptr<OscGroup> oscGroup4;
 
-	MultimodeOscillator* lfo1;
-	MultimodeOscillator* lfo2;
-	MultimodeOscillator* lfo3;
+	std::unique_ptr<MultimodeOscillator> lfo1;
+	std::unique_ptr<MultimodeOscillator> lfo2;
+	std::unique_ptr<MultimodeOscillator> lfo3;
 
-	DummyModulator* dummyModulator;
+	std::unique_ptr <DummyModulator> dummyModulator;
 
-	StereoDelay* delay;
-	StereoReverb* reverb;
-	StereoChorus* chorus;
-	Distortion* distortion;
-	Arpeggiator* arp;
+	std::unique_ptr<StereoDelay> delay;
+	std::unique_ptr<StereoReverb> reverb;
+	std::unique_ptr<StereoChorus> chorus = nullptr;
+	std::unique_ptr<Distortion>	distortion;
+	std::unique_ptr<Arpeggiator> arp;
+	
 	ModMatrix* matrix;
 
 	int highestNote = 0;
@@ -98,4 +100,6 @@ private:
 
 	float volume[4];
 	float pan[4];
+
+	bool prepared = false;
 };

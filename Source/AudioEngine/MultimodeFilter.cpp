@@ -70,8 +70,7 @@ void MultimodeFilter::processStereo(float *const left, float *const right, const
         else {
             this->highPassLeft->process(left, 0, numSamples);
             this->highPassRight->process(right, 0, numSamples);
-        }
-   
+        }   
     }
 }
 

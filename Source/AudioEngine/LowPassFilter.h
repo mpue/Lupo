@@ -35,7 +35,7 @@ private:
     float resonance;
     float currentModulatedValue = 0.0f;
 
-    float modulationDepth = 5000.0f;
+    float modulationDepth = 10000.0f;
     float lastFrequency = 0.0f;
 
     JUCE_LEAK_DETECTOR(LowPassFilter);

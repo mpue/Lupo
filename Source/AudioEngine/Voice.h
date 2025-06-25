@@ -30,10 +30,12 @@ class Voice : public ModTarget {
 public:
         
     Voice(float sampleRate);
-    ~Voice();
+    ~Voice() {
+        oscillators.clear();
+    };
     void applyModulation(float value) override;
 
-    void addOszillator(MultimodeOscillator* o, int index);
+    void addOszillator(std::unique_ptr<MultimodeOscillator> o, int index);
     Oszillator* getOscillator(int num);
     
     float process(int channel);
@@ -57,6 +59,7 @@ public:
 	SynthLab::ADSR* getAmpEnvelope();
     SynthLab::ADSR* getFilterEnvelope();
 
+    void setSampleRate(double rate);
     float getSampleRate();
     
     void setPitchBend(float bend);
@@ -75,26 +78,26 @@ public:
 	void setOscSpread(int osc, float spread);
 
     MultimodeFilter* getFilter1() {
-        return filter1;
+        return filter1.get();
     }
     MultimodeFilter* getFilter2() {
-        return filter2;       
+        return filter2.get();       
     }
 
     
 private:
-    MultimodeFilter* filter1;
-    MultimodeFilter* filter2;
-    MultimodeOscillator* oscillators[4];
-    float sampleRate;
+    std::unique_ptr<MultimodeFilter> filter1;
+    std::unique_ptr<MultimodeFilter> filter2;
+    std::vector<std::unique_ptr<MultimodeOscillator>> oscillators;
+    float sampleRate = 44100;
     int noteNumber = 0;
     int pitch = 0;
-    int velocity;
-    double midiNote[128];
+    int velocity = 0;
+    double midiNote[128] = { 0 };
     void calculateFrequencyTable();
-    bool playing;
-	SynthLab::ADSR* ampEnvelope;
-	SynthLab::ADSR* filterEnvelope;
+    bool playing = false;
+    std::unique_ptr <SynthLab::ADSR> ampEnvelope;
+    std::unique_ptr <SynthLab::ADSR> filterEnvelope;
 	// Modulation
 	Modulator* modulator = nullptr;
     float pitchBend;

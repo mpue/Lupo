@@ -44,7 +44,9 @@ public:
     virtual int getPitch();
     void setPitchBend(float bend);
     float getPitchBend() const;
-    
+    virtual void setSampleRate(double sampleRate) {
+        this->sampleRate = sampleRate;
+    };
     virtual void setFine(float fine) {};
     virtual float getFine() const { return 0; };
     

@@ -327,34 +327,27 @@ void ModPanel::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     }
     else if (comboBoxThatHasChanged == Target_0.get())
     {
-        ModTarget* target = matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        matrix->getModulations()[0]->setTarget(target);
+        setTargetForSlot(0, comboBoxThatHasChanged->getSelectedItemIndex());
     }
     else if (comboBoxThatHasChanged == Target_1.get())
     {
-        ModTarget* target = matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        matrix->getModulations()[1]->setTarget(target);
+        setTargetForSlot(1, comboBoxThatHasChanged->getSelectedItemIndex());
     }
     else if (comboBoxThatHasChanged == Target_2.get())
     {
-        ModTarget* target = matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        matrix->getModulations()[2]->setTarget(target);
+        setTargetForSlot(2, comboBoxThatHasChanged->getSelectedItemIndex());
     }
     else if (comboBoxThatHasChanged == Target_3.get())
     {
-        ModTarget* target = matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        matrix->getModulations()[3]->setTarget(target);
-
+        setTargetForSlot(3, comboBoxThatHasChanged->getSelectedItemIndex());
     }
     else if (comboBoxThatHasChanged == Target_4.get())
     {
-        ModTarget* target = matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        matrix->getModulations()[4]->setTarget(target);
+        setTargetForSlot(4, comboBoxThatHasChanged->getSelectedItemIndex());
     }
     else if (comboBoxThatHasChanged == Target_5.get())
     {
-        ModTarget* target = matrix->getModTargets().at(comboBoxThatHasChanged->getSelectedItemIndex());
-        matrix->getModulations()[5]->setTarget(target);
+        setTargetForSlot(5, comboBoxThatHasChanged->getSelectedItemIndex());
     }
 
     //[UsercomboBoxChanged_Post]
@@ -409,6 +402,7 @@ void ModPanel::sliderValueChanged (Slider* sliderThatWasMoved)
         //[/UserSliderCode_Amount_5]
     }
 
+
     //[UsersliderValueChanged_Post]
     //[/UsersliderValueChanged_Post]
 }
@@ -441,6 +435,40 @@ void ModPanel::initAttachments()
 	factory->createSliderAttachment("Amount_5", Amount_5.get());
 
 }
+
+void ModPanel::setTargetForSlot (int slot, int targetIndex)
+{
+    if (targetIndex < 0 || targetIndex >= matrix->getModTargets().size()) {
+        return;
+    }
+
+    // --- Modulation holen ---------------------------------------------------
+    const auto& mods = matrix->getModulations();
+    // jassert (isPositiveAndBelow (slot, mods.size()));        // Bounds-Check
+
+    Modulation* modulation = mods[slot];
+    jassert (modulation != nullptr);
+
+    // --- bisheriges Target abmelden ----------------------------------------
+    if (auto* oldTarget = modulation->getTarget())
+        oldTarget->setModulator (nullptr);
+
+    // --- neues Target holen -------------------------------------------------
+    auto& targets = matrix->getModTargets();
+    jassert (isPositiveAndBelow (targetIndex, targets.size()));
+
+    ModTarget* newTarget = targets[targetIndex];
+    jassert (newTarget != nullptr);
+
+    // --- neues Target setzen -----------------------------------------------
+    modulation->setTarget (newTarget);
+
+    // --- Modulator mit neuem Target verbinden ------------------------------
+    if (auto* mod = modulation->getModulator())              // nach setTarget erneut holen!
+        newTarget->setModulator (mod);
+}
+
+
 void ModPanel::populateSources(ComboBox * combo)
 {
 	for (std::map<int, String>::iterator it = matrix->getSources()->begin(); it != matrix->getSources()->end();) {

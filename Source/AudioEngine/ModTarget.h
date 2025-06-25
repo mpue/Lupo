@@ -16,7 +16,7 @@ class ModTarget {
 
 public:
     
-    inline virtual ~ModTarget() {};
+    virtual ~ModTarget() {};
     
     virtual void setModulator(Modulator* mod) = 0;
 
