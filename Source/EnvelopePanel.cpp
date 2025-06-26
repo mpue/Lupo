@@ -38,7 +38,7 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
 
     amp_attack.reset (new Slider ("amp_attack"));
     addAndMakeVisible (amp_attack.get());
-    amp_attack->setRange (0, 10, 0.01);
+    amp_attack->setRange (0, 2, 0.01);
     amp_attack->setSliderStyle (Slider::RotaryVerticalDrag);
     amp_attack->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     amp_attack->addListener (this);
@@ -47,7 +47,7 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
 
     amp_decay.reset (new Slider ("amp_decay"));
     addAndMakeVisible (amp_decay.get());
-    amp_decay->setRange (0, 5, 0.01);
+    amp_decay->setRange (0, 3, 0.01);
     amp_decay->setSliderStyle (Slider::RotaryVerticalDrag);
     amp_decay->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     amp_decay->addListener (this);
@@ -65,7 +65,7 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
 
     amp_release.reset (new Slider ("amp_release"));
     addAndMakeVisible (amp_release.get());
-    amp_release->setRange (0, 10, 0.01);
+    amp_release->setRange (0, 2, 0.01);
     amp_release->setSliderStyle (Slider::RotaryVerticalDrag);
     amp_release->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     amp_release->addListener (this);

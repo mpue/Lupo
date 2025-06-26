@@ -118,8 +118,12 @@ void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscM
 
 Voice* LupoSynth::findFreeVoice() {
 	for (auto& v : voices) {
-		if (!v->isPlaying()) return v.get();
+		if (!v->isPlaying() && v->getAmpEnvelope()->getState() == SynthLab::ADSR::env_idle) {
+			Logger::getCurrentLogger()->writeToLog("Found free voice: " + String(v->getNoteNumber()));
+			return v.get();
+		}
 	}
+	Logger::getCurrentLogger()->writeToLog("No free voice found");
 	return nullptr;
 }
 
@@ -169,9 +173,9 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 
 			if (voice) {
 				if (!voice->isPlaying()) {
-					voice->setPlaying(true);
 					numVoices++;
 				}
+				voice->setPlaying(true);
 				voice->getAmpEnvelope()->gate(true);
 				voice->getFilterEnvelope()->gate(true);
 				voice->setNoteAndVelocity(noteNumber, m.getVelocity());
@@ -186,10 +190,10 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 
 			for (auto& voice : voices) {
 				if (voice->isPlaying() && voice->getNoteNumber() == noteNumber) {
-					voice->setPlaying(false);
 					voice->getAmpEnvelope()->gate(false);
 					voice->getFilterEnvelope()->gate(false);
 					numVoices--;
+					voice->setPlaying(false);
 					break; // nur erste passende Stimme freigeben
 				}
 			}
@@ -202,6 +206,7 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 				numVoices = 0; // Schutz
 			}
 		}
+
 
 	}
 	if (m.isAftertouch())
