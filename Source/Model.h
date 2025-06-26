@@ -18,6 +18,8 @@ public:
 
 	Model() {
 
+		outputGaindB = 12.0f;
+
 		cutoff1 = 18000.0f;
 		resonance1 = 0.5f;
 		envAmt1 = 0.5f;
@@ -63,7 +65,8 @@ public:
 
 	~Model() {}
 
-	float maxVoices = 32;
+	float outputGaindB;
+	float maxVoices = 64;
 	float cutoff1;
 	float resonance1;
 	float envAmt1;

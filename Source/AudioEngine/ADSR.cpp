@@ -28,8 +28,8 @@ SynthLab::ADSR::ADSR(void) {
     setDecayRate(1 * 48000);
     setReleaseRate(0);
     setSustainLevel(1.0);
-    setTargetRatioA(0.3);
-    setTargetRatioDR(0.0001);
+    setTargetRatioA(0.001);
+    setTargetRatioDR(0.001);
     setModAmount(1.0);
 }
 
@@ -37,7 +37,7 @@ SynthLab::ADSR::~ADSR(void) {
 }
 
 void SynthLab::ADSR::setAttackRate(float rate) {
-    attackRate = rate;
+    attackRate = rate * 1000;
     attackCoef = calcCoef(rate, targetRatioA);
     attackBase = (1.0 + targetRatioA) * (1.0 - attackCoef);
 }
@@ -57,7 +57,7 @@ float SynthLab::ADSR::getDecayRate() {
 }
 
 void SynthLab::ADSR::setReleaseRate(float rate) {
-    releaseRate = rate;
+    releaseRate = rate * 1000;
     releaseCoef = calcCoef(rate, targetRatioDR);
     releaseBase = -targetRatioDR * (1.0 - releaseCoef);
 }
