@@ -357,13 +357,13 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 			model->cutoff1 = newValue;
 
 			for (auto& voice : voices) {
-				voice->getFilter1()->coefficients(sampleRate, model->cutoff1, model->resonance1);
-				voice->getFilter2()->coefficients(sampleRate, model->cutoff1, model->resonance2);
+				voice->getFilter1()->setFrequency(model->cutoff1);
+				voice->getFilter2()->setFrequency(model->cutoff1);
 			}
 		}
 		else {
 			for (auto& voice : voices) {
-				voice->getFilter1()->coefficients(sampleRate, newValue, model->resonance1);
+				voice->getFilter1()->setFrequency(model->cutoff1);				
 			}
 		}
 
@@ -373,7 +373,7 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		model->resonance1 = newValue;
 
 		for (auto& voice : voices) {
-			voice->getFilter1()->coefficients(sampleRate, model->cutoff1, model->resonance1);
+			voice->getFilter1()->setResonance(model->resonance1);
 		}
 
 		// filter1->coefficients(sampleRate, model->cutoff1, model->resonance1);
@@ -401,9 +401,9 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 	if (parameterID == "cutoff2") {
 		model->cutoff2 = newValue;
 		for (auto& voice : voices) {
-			voice->getFilter2()->coefficients(sampleRate, model->cutoff2, model->resonance2);
+			voice->getFilter2()->setResonance(newValue);
 		}
-		// filter2->coefficients(sampleRate, model->cutoff2, model->resonance2);
+	
 	}
 	else if (parameterID == "resonance2") {
 		model->resonance2 = newValue;

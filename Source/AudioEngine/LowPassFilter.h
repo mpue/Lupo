@@ -18,13 +18,25 @@ public:
     void process(float* in, int numSamples);
     void setModulator(Modulator* mod) override;
     void applyModulation(float value) override { currentModulatedValue = value; }
+    void setFrequency(float frequency) {
+        this->frequency = frequency;
+        svf1.setCutoffFrequency(juce::jlimit(0.1f,22000.0f,frequency * currentModulatedValue * modulationDepth));
+        svf2.setCutoffFrequency(juce::jlimit(0.1f, 22000.0f, frequency * currentModulatedValue * modulationDepth));
+    }
+
+    void setResonance(float resonance) {
+        this->resonance = resonance;
+        svf1.setResonance(juce::jlimit(0.05f, 5.0f, resonance));
+        svf2.setResonance(juce::jlimit(0.05f, 5.0f, resonance));
+    }
 
 private:
     //
     // ⇢ ersetzt beide IIR-Stufen
     //
-   juce::dsp::StateVariableTPTFilter<float> svf;
-        
+   juce::dsp::StateVariableTPTFilter<float> svf1;
+   juce::dsp::StateVariableTPTFilter<float> svf2;
+
    juce::dsp::ProcessSpec spec{ 44100.0, 512, 1 };
 
     float frequency = 1000.0f;

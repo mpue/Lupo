@@ -1,4 +1,4 @@
-/*
+﻿/*
   ==============================================================================
 
     This file was auto-generated!
@@ -14,6 +14,7 @@
 #include "PluginProcessor.h"
 #include "MainUI.h"
 #include "TrioLookAndFeel.h"
+#include "RetroLookAndFeel.h"
 
 class AttachmentFactory;
 
@@ -38,6 +39,11 @@ private:
     LupoAudioProcessor& processor;
 	MainUI* mainUI;
 	TrioLookAndFeel tlf;
+    RetroLookAndFeel rlf;
+	
+    // ──────────────────────────────────────────────────────────────────────────────
+
+
 	
 	AttachmentFactory* factory;
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LupoAudioProcessorEditor)
