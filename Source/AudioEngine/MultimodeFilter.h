@@ -33,6 +33,16 @@ public:
     virtual void processStereo(float *const left, float *const right, const int numSamples) override;
 	virtual void processMono(int channel, float *const samples, const int numSamples);
     virtual void setModulator(Modulator* mod) override;
+    void setFrequency(float frequency) {
+    	this->frequency = frequency;		
+        this->lowPassLeftStage1->setFrequency(frequency);
+        this->lowPassRightStage1->setFrequency(frequency);
+	}
+    void setResonance(float resooance) {
+        this->resonance = resooance;
+        lowPassLeftStage1->setResonance(resooance);
+        lowPassRightStage1->setResonance(resooance);
+    }
     void setMode(Mode mode);
 	void setKeyTrack(int track);
     virtual void applyModulation(float value) override {
@@ -61,6 +71,9 @@ private:
     Mode mode;
 
 	int keyTrack;
+
+    float frequency;
+    float resonance;
 
     JUCE_LEAK_DETECTOR(MultimodeFilter);
     

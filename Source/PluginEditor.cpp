@@ -52,6 +52,8 @@ void LupoAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
+	float scaleFactor = (1000.0f / 900.0f) / (getWidth() / getHeight());
+	Desktop::getInstance().setGlobalScaleFactor(scaleFactor);
 }
 
 

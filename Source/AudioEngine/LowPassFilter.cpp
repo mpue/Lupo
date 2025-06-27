@@ -6,8 +6,11 @@
 LowPassFilter::LowPassFilter()
 {
     smoothedCutoff.reset(spec.sampleRate, 0.02);            // 20 ms Glide
-    svf.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
-    svf.prepare(spec);
+    svf1.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
+    svf1.prepare(spec);
+    svf2.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
+    svf2.prepare(spec);
+
 }
 
 // Wird von außen einmal aufgerufen (z.B. prepareToPlay)
@@ -16,11 +19,13 @@ void LowPassFilter::coefficients(float newSampleRate,
     float newResonance)
 {
     spec.sampleRate = newSampleRate;
-    svf.prepare(spec);
-
+    svf1.prepare(spec);
+    svf2.prepare(spec);
     frequency = newFrequency;
     resonance = juce::jlimit(0.05f, 10.0f, newResonance);
-    svf.setResonance(resonance);
+    svf1.setResonance(resonance);
+    svf2.setResonance(resonance);
+    
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -42,14 +47,16 @@ void LowPassFilter::process(float* samples, int numSamples)
 
             if (std::abs(smooth - lastCutoff) > cutoffEpsilon)
             {
-                svf.setCutoffFrequency(smooth);
+                svf1.setCutoffFrequency(smooth);
+                svf2.setCutoffFrequency(smooth);    
                 lastCutoff = smooth;
             }
             updateCounter = 0;
         }
 
         // 3) Sample durch den Filter schicken
-        samples[i] = svf.processSample(0, samples[i]);
+        samples[i] = svf1.processSample(0, samples[i]);
+        samples[i] = svf2.processSample(0, samples[i]);
     }
 }
 
