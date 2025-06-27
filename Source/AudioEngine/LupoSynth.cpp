@@ -116,7 +116,7 @@ void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscM
 }
 
 
-Voice* LupoSynth::findFreeVoice() {
+Voice* LupoSynth::findFreeVoice(int noteNumber) {
 	for (auto& v : voices) {
 		if (!v->isPlaying() && v->getAmpEnvelope()->getState() == SynthLab::ADSR::env_idle) {
 			Logger::getCurrentLogger()->writeToLog("Found free voice: " + String(v->getNoteNumber()));
@@ -159,7 +159,7 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 		{
 			int noteNumber = m.getNoteNumber();
 
-			Voice* voice = findFreeVoice();
+			Voice* voice = findFreeVoice(noteNumber);
 
 			if (noteNumber > highestNote) {
 				highestNote = noteNumber;
@@ -167,7 +167,7 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 
 			for (auto& env : modEnvelopes) {
 				// if (numVoices == 0) {
-				env->gate(true);
+				// env->gate(true);
 				// }
 			}
 
@@ -200,7 +200,7 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 
 			if (numVoices <= 0) {
 				for (auto& env : modEnvelopes) {
-					env->gate(false);
+					// env->gate(false);
 				}
 				highestNote = 0;
 				numVoices = 0; // Schutz

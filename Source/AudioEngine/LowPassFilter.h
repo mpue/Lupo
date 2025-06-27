@@ -1,49 +1,45 @@
-//
-//  LowPassFilter.hpp
-//  Trio
-//
-//  Created by Matthias Pueski on 16.11.16.
-//
-//
-
-#ifndef LowPassFilter_hpp
+﻿#ifndef LowPassFilter_hpp
 #define LowPassFilter_hpp
 
-#include <stdio.h>
 #include "Filter.h"
 #include "Modulator.h"
 #include "ModTarget.h"
 
-#include "../JuceLibraryCode/JuceHeader.h"
+#include <juce_dsp/juce_dsp.h>
 
-class LowPassFilter : public Filter, public ModTarget {
-    
+class LowPassFilter : public Filter, public ModTarget
+{
 public:
-    virtual void coefficients(float sampleRate, float frequency, float resonance) override;
-    virtual void process(float *in, float *out,int numSamples);
-    virtual void setModulator(Modulator* mod) override;
-    
     LowPassFilter();
-    virtual ~LowPassFilter();
-    virtual void applyModulation(float value) override {
-		this->currentModulatedValue = value;
-	}
+    ~LowPassFilter() override = default;
+
+    // wie bisher
+    void coefficients(float sampleRate, float frequency, float resonance) override;
+    void process(float* in, int numSamples);
+    void setModulator(Modulator* mod) override;
+    void applyModulation(float value) override { currentModulatedValue = value; }
+
 private:
-    juce::IIRFilter* filter1;
-    juce::IIRFilter* filter2;
-    float frequency;
-    float resonance;
-    float currentModulatedValue = 0.0f;
+    //
+    // ⇢ ersetzt beide IIR-Stufen
+    //
+   juce::dsp::StateVariableTPTFilter<float> svf;
+        
+   juce::dsp::ProcessSpec spec{ 44100.0, 512, 1 };
 
-    double sampleRate = 44100.0;
+    float frequency = 1000.0f;
+    float resonance = 0.7f;
+    float currentModulatedValue = 1.0f;
 
-    float modulationDepth = 1000.0f;
-    float lastFrequency = 0.0f;
+    float modulationDepth = 1000.0f;    
+    int    updateCounter = 0;
+    int    updateInterval = 8;          // alle 8 Samples Coeffs erneuern
+    float  lastCutoff = -1.0f;      // merken, ob sich etwas geändert hat
+    float  cutoffEpsilon = 0.5f;
 
-    JUCE_LEAK_DETECTOR(LowPassFilter);
+    LinearSmoothedValue<float> smoothedCutoff;
 
+    JUCE_LEAK_DETECTOR(LowPassFilter)
 };
 
-
-#endif /* LowPassFilter_hpp */
-
+#endif

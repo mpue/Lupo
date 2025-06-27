@@ -42,6 +42,11 @@ void MultimodeFilter::setMode(Mode mode) {
 }
 
 void MultimodeFilter::coefficients(float sampleRate, float frequency, float resonance) {	
+
+	if (out = nullptr) {
+		out = new float[1024];
+	}
+
 	if (frequency <= 0) {
 		frequency = 0.1;
 	}
@@ -61,10 +66,10 @@ void MultimodeFilter::coefficients(float sampleRate, float frequency, float reso
 void MultimodeFilter::processStereo(float *const left, float *const right, const int numSamples) {
     if (this->enabled) {
         if (this->mode == Mode::LOWPASS) {
-            this->lowPassLeftStage1->process(left, 0, numSamples);
-            this->lowPassRightStage1->process(right, 0, numSamples);
-			this->lowPassLeftStage2->process(left, 0, numSamples);
-			this->lowPassRightStage2->process(right, 0, numSamples);
+            this->lowPassLeftStage1->process(left, numSamples);
+            this->lowPassRightStage1->process(right, numSamples);
+			this->lowPassLeftStage2->process(left, numSamples);
+			this->lowPassRightStage2->process(right, numSamples);
 			
 		}
         else {
@@ -78,8 +83,8 @@ void MultimodeFilter::processMono(int channel, float * const samples, const int 
 {
 	if (this->enabled) {
 		if (this->mode == Mode::LOWPASS) {
-			this->lowPassLeftStage1->process(samples, 0, numSamples);
-			this->lowPassLeftStage2->process(samples, 0, numSamples);
+			this->lowPassLeftStage1->process(samples, numSamples);
+			this->lowPassLeftStage2->process(samples, numSamples);
 
 
 		}

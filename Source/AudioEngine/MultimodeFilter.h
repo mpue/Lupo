@@ -55,6 +55,8 @@ private:
 
     ScopedPointer<HighPassFilter> highPassLeft;
     ScopedPointer<HighPassFilter> highPassRight;
+        
+    float* out;
     
     Mode mode;
 
