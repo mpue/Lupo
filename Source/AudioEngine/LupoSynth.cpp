@@ -255,13 +255,11 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 
 	for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
 
-
 		float valueL = 0;
 		float valueR = 0;
 
 		for (auto& voice : voices) {
 			if (voice->getAmpEnvelope()->getState() != SynthLab::ADSR::env_idle) {
-
 				valueL += voice->process(0) * mainVolume * 4;
 				valueR += voice->process(1) * mainVolume * 4;
 			}
@@ -272,26 +270,11 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 
 		matrix->process();
 		// modEnvelopes->at(0)->process();
-		lfo1->process();
+		// lfo1->process();
 	}
 
 	leftOut = buffer.getWritePointer(0);
 	rightOut = buffer.getWritePointer(1);
-
-	//// serial
-	//if (filterMode == 0.0f) {
-	//	for (auto& voice : voices) {
-	//		voice->getFilter1()->processStereo(leftOut, rightOut, buffer.getNumSamples());
-	//		voice->getFilter2()->processStereo(leftOut, rightOut, buffer.getNumSamples());
-	//	}
-	//}
-	//// parallel
-	//else {
-	//	for (auto& voice : voices) {
-	//		voice->getFilter1()->processMono(0, leftOut, buffer.getNumSamples());
-	//		voice->getFilter2()->processMono(1, rightOut, buffer.getNumSamples());
-	//	}
-	//}
 
 	if (chorus == nullptr) {
 		chorus = std::make_unique<StereoChorus>(sampleRate, bufferSize);
@@ -303,6 +286,10 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 	if (model->reverbEnabled) {
 		reverb->processStereo(leftOut, rightOut, buffer.getNumSamples());
 	}
+
+	float masterGain = Decibels::decibelsToGain(model->outputGaindB); // z. B. 6 dB
+	buffer.applyGain(masterGain);
+
 }
 
 void LupoSynth::updateState(ValueTree state) {
@@ -371,7 +358,7 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 
 			for (auto& voice : voices) {
 				voice->getFilter1()->coefficients(sampleRate, model->cutoff1, model->resonance1);
-				voice->getFilter1()->coefficients(sampleRate, model->cutoff1, model->resonance1);
+				voice->getFilter2()->coefficients(sampleRate, model->cutoff1, model->resonance2);
 			}
 		}
 		else {

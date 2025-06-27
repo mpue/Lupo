@@ -10,6 +10,7 @@
 
 #include "Voice.h"
 #include "MultimodeOscillator.h"
+#include "../fasttrig.hpp"
 
 #ifndef M_PI
 #define M_PI       3.14159265358979323846 
@@ -96,8 +97,8 @@ float Voice::process(int channel)
 
             float pan = oscillators[i]->getPan();
             float gain = (channel == 0)
-                ? cosf((float)M_PI * (pan + 1.0f) / 4.0f)
-                : sinf((float)M_PI * (pan + 1.0f) / 4.0f);
+                ? fast_trig::sin_fast(((float)M_PI * (pan + 1.0f) / 4.0f))
+                : fast_trig::cos_fast(((float)M_PI * (pan + 1.0f) / 4.0f));
 
             float sample = oscillators[i]->process();
 

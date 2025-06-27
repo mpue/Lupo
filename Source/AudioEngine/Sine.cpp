@@ -7,7 +7,7 @@
 //
 
 #include "Sine.h"
-
+#include "../fasttrig.hpp"
 #define _USE_MATH_DEFINES
 
 #include <math.h>
@@ -34,7 +34,7 @@ float Sine::process() {
     
     phase += step;
 
-    this->value = (float)(sin(phase) * this->volume);
+    this->value = (float)(fast_trig::sin_fast((phase) * this->volume));
     return this->value;
 }
 
