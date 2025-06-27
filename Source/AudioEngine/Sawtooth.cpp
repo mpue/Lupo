@@ -31,7 +31,6 @@ Sawtooth::Sawtooth(float sampleRate, int buffersize) : Oszillator(sampleRate) {
 	this->saw = 0;
 	for (int i = 0; i < 8; i++) {
 		blitsaw[i] = new stk::BlitSaw();
-
 	}
 }
 
@@ -52,13 +51,10 @@ void Sawtooth::reset() {
 	}
 }
 
-
 void Sawtooth::setSpread(float spread)
 {
 	this->spread = spread;
 }
-
-
 
 void Sawtooth::setFine(float fine) {
 	this->fine = fine;    

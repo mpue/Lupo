@@ -34,7 +34,7 @@ void LowPassFilter::coefficients(float sampleRate, float frequency, float resona
 
     this->frequency = frequency;
     this->resonance = resonance;
-    
+    this->sampleRate = sampleRate;
     
     if (frequency > sampleRate / 2) {
         frequency = sampleRate / 2;
@@ -63,7 +63,7 @@ void LowPassFilter::process(float* in, float* out, int numSamples) {
     f = clamp(f, 20.0f, 20000.0f);
 
     if (std::abs(f - lastFrequency) > 0.1f) {
-        IIRCoefficients ic = IIRCoefficients::makeLowPass(44100.0, f, std::max(resonance, 0.001f));
+        IIRCoefficients ic = IIRCoefficients::makeLowPass(sampleRate, f, std::max(resonance, 0.001f));
         filter1->setCoefficients(ic);
         filter2->setCoefficients(ic);
         lastFrequency = f;

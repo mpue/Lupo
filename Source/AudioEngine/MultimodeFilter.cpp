@@ -41,7 +41,7 @@ void MultimodeFilter::setMode(Mode mode) {
     this->mode = mode;
 }
 
-void MultimodeFilter::coefficients(float sampleRate, float frequency, float resonance) {
+void MultimodeFilter::coefficients(float sampleRate, float frequency, float resonance) {	
 	if (frequency <= 0) {
 		frequency = 0.1;
 	}
