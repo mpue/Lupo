@@ -1,80 +1,56 @@
-﻿//
-//  LowPassFilter.cpp
-//  Trio
-//
-//  Created by Matthias Pueski on 16.11.16.
-//
-//
+﻿#include "LowPassFilter.h"
 
-
-#include "LowPassFilter.h"
-#include "ADSR.h"
-
-template <typename T>
-T clamp(T value, T min, T max) {
-    return std::max(min, std::min(value, max));
+// ─────────────────────────────────────────────────────────────
+// Konstruktor
+// ─────────────────────────────────────────────────────────────
+LowPassFilter::LowPassFilter()
+{
+    smoothedCutoff.reset(spec.sampleRate, 0.02);            // 20 ms Glide
+    svf.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
+    svf.prepare(spec);
 }
 
-using juce::IIRFilter;
-using juce::IIRCoefficients;
+// Wird von außen einmal aufgerufen (z.B. prepareToPlay)
+void LowPassFilter::coefficients(float newSampleRate,
+    float newFrequency,
+    float newResonance)
+{
+    spec.sampleRate = newSampleRate;
+    svf.prepare(spec);
 
-LowPassFilter::LowPassFilter() {
-    this->filter1 = new IIRFilter();
-    this->filter2 = new IIRFilter();
-    this->modulator = 0;
+    frequency = newFrequency;
+    resonance = juce::jlimit(0.05f, 10.0f, newResonance);
+    svf.setResonance(resonance);
 }
 
-LowPassFilter::~LowPassFilter() {
-    delete this->filter1;
-    delete this->filter2;
-}
+// ─────────────────────────────────────────────────────────────
+// Echtzeit-Verarbeitung (in-place, Mono)
+// ─────────────────────────────────────────────────────────────
+void LowPassFilter::process(float* samples, int numSamples)
+{
+    // 1) neues Ziel berechnen
+    float targetCutoff = frequency * currentModulatedValue * modulationDepth;
+    targetCutoff = juce::jlimit(20.0f, 20'000.0f, targetCutoff);
+    smoothedCutoff.setTargetValue(targetCutoff);
 
+    for (int i = 0; i < numSamples; ++i)
+    {
+        // 2) nur alle updateInterval-Samples Filter neu parametrieren
+        if (++updateCounter >= updateInterval)
+        {
+            float smooth = smoothedCutoff.getNextValue();   // geglättet
 
-void LowPassFilter::coefficients(float sampleRate, float frequency, float resonance) {
+            if (std::abs(smooth - lastCutoff) > cutoffEpsilon)
+            {
+                svf.setCutoffFrequency(smooth);
+                lastCutoff = smooth;
+            }
+            updateCounter = 0;
+        }
 
-    this->frequency = frequency;
-    this->resonance = resonance;
-    this->sampleRate = sampleRate;
-    
-    if (frequency > sampleRate / 2) {
-        frequency = sampleRate / 2;
+        // 3) Sample durch den Filter schicken
+        samples[i] = svf.processSample(0, samples[i]);
     }
-    
-    if (frequency <= 0) {
-        frequency = 0.1;
-    }
-    
-    if (resonance == 0) {
-        resonance = 0.1;
-    }
-    
-    IIRCoefficients ic1  = IIRCoefficients::makeLowPass (sampleRate, frequency, resonance);
-    filter1->setCoefficients(ic1);
-    filter2->setCoefficients(ic1);
 }
 
-void LowPassFilter::process(float* in, float* out, int numSamples) {
-
-    float modValue = currentModulatedValue;
-
-    float f = frequency * modValue * modulationDepth; // modulationDepth = z. B. 5000.0f
-
-    // Clamp
-    f = clamp(f, 20.0f, 20000.0f);
-
-    if (std::abs(f - lastFrequency) > 0.1f) {
-        IIRCoefficients ic = IIRCoefficients::makeLowPass(sampleRate, f, std::max(resonance, 0.001f));
-        filter1->setCoefficients(ic);
-        filter2->setCoefficients(ic);
-        lastFrequency = f;
-    }
-
-    filter1->processSamples(in, numSamples);
-    // Optional zweite Stufe:
-    // filter2->processSamples(in, numSamples);
-}
-
-void LowPassFilter::setModulator(Modulator* mod) {
-    this->modulator = mod;
-}
-
+void LowPassFilter::setModulator(Modulator* /*mod*/) { /* optional */ }

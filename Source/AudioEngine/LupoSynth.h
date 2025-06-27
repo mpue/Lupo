@@ -42,7 +42,7 @@ public:
 	void prepareToPlay(double sampleRate, int bufferSize);	
 	void updateState(ValueTree state);
 	Arpeggiator* getArpeggiator();
-	Voice* LupoSynth::findFreeVoice();
+	Voice* LupoSynth::findFreeVoice(int noteNumber);
 	std::unique_ptr<MultimodeOscillator> createOscillator(Oszillator::OscMode mode);
 	void configureOscillators(Oszillator::OscMode mode1, Oszillator::OscMode mode2, Oszillator::OscMode mode3, Oszillator::OscMode mode4);
 	void changeListenerCallback(ChangeBroadcaster* source) override;
