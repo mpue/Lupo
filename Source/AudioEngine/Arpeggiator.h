@@ -1,42 +1,43 @@
-/*
-  ==============================================================================
-
-    Arpeggiator.h
-    Created: 28 Mar 2020 2:41:26pm
-    Author:  mpue
-
-  ==============================================================================
-*/
-#include "../JuceLibraryCode/JuceHeader.h"
-
 #pragma once
+#include <JuceHeader.h>
 
-
-class Arpeggiator {
-
+class Arpeggiator
+{
 public:
+    Arpeggiator();
+    ~Arpeggiator();
 
-	enum Mode {
-		UP,
-		DOWN
-	};
+    void prepareToPlay(double sampleRate, int samplesPerBlock);
+    void processBlock(juce::AudioBuffer<float>&, juce::MidiBuffer&);
 
-	Arpeggiator();
-	~Arpeggiator();
+    enum class Mode { Up, Down, Random };
+    enum class ClockMode { Internal, Midi };
 
-	void prepareToPlay(double sampleRate, int bufferSize);
-	void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midi);
-	int currentNote = 0;                        
-	int lastNoteValue = -1;                    
-	int time = 0;                             
-	float sampleRate;
+    void setEnabled(bool shouldRun)                     noexcept { enabled = shouldRun; }
+    void setOctaves(int num)                            noexcept { octaves = juce::jmax(1, num); }
+    void setMode(Mode m)                             noexcept { mode = m; }
+    void setClockMode(ClockMode m)                        noexcept { clockMode = m; }
+    void setDivisionIndex(int idx)                            noexcept;
+    void setDivisionTicks(int ticks)                          noexcept { ticksPerStep = juce::jmax(1, ticks); }
 
-	float speed = 0.1f;
-	int octaves = 1;
-	int currentOctave = 0;
-	Mode mode = Mode::UP;
-	bool enabled = false;
-	SortedSet<int> notes;
 private:
+    bool enabled = true;
+    int  octaves = 1;
 
+    Mode       mode = Mode::Up;
+    ClockMode  clockMode = ClockMode::Internal;
+
+    float sampleRate = 44100.f;
+    int   timeSamples = 0;
+    int   clockCounter = 0;
+    int   ticksPerStep = 6;  // default: 1/16 bei 24 PPQN
+    bool  isPlaying = false;
+
+    juce::Array<int> notes;
+    int currentNote = -1;
+    int lastNote = -1;
+    int direction = 1;
+    int octave = 0;
+
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(Arpeggiator)
 };

@@ -135,6 +135,8 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 
 	chorus->prepareToPlay(sampleRate, samplesPerBlock);			
 	arp->prepareToPlay(sampleRate, bufferSize);
+	arp->setEnabled(false);
+	arp->setClockMode(Arpeggiator::ClockMode::Internal);
 
 	for (auto& v : voices) {
 		v->getFilter1()->coefficients(sampleRate, 15000.0f, 1.0f);

@@ -4,6 +4,8 @@
 
 */
 
+#include <cstring>
+
 namespace BinaryData
 {
 

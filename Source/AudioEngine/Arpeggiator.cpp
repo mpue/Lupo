@@ -1,80 +1,104 @@
-/*
-  ==============================================================================
+﻿#include "Arpeggiator.h"
 
-    Arpeggiator.cpp
-    Created: 28 Mar 2020 2:41:26pm
-    Author:  mpue
+Arpeggiator::Arpeggiator() {}
+Arpeggiator::~Arpeggiator() {}
 
-  ==============================================================================
-*/
-
-#include "Arpeggiator.h"
-
-Arpeggiator::Arpeggiator()
- {
-	notes.clear();
+void Arpeggiator::prepareToPlay(double sr, int)
+{
+    sampleRate = static_cast<float> (sr);
+    timeSamples = 0;
+    clockCounter = 0;
+    isPlaying = false;
+    currentNote = -1;
+    lastNote = -1;
+    octave = 0;
+    notes.clear();
 }
 
-  Arpeggiator::~Arpeggiator()
-  {
-  }
-
-void Arpeggiator::prepareToPlay(double sampleRate, int samplesPerBlock) 
+void Arpeggiator::setDivisionIndex(int idx) noexcept
 {
-	ignoreUnused(samplesPerBlock);
-
-	octaves = 1;
-	notes.clear();                          
-	currentNote = 0;                        
-	lastNoteValue = -1;                     
-	time = 0.0;                             
-	this->sampleRate = static_cast<float> (sampleRate); 
- }
-
-void Arpeggiator::processBlock(AudioBuffer<float>& buffer, MidiBuffer & midi)
-{
-	if (!enabled) {
-		return;
-	}
-	// however we use the buffer to get timing information
-	auto numSamples = buffer.getNumSamples();                                                    
-
-	// get note duration
-	auto noteDuration = static_cast<int> (std::ceil(sampleRate * 0.25f * (0.1f + (1.0f - (speed))))); 
-
-	MidiMessage msg;
-	int ignore;
-
-	for (MidiBuffer::Iterator it(midi); it.getNextEvent(msg, ignore);)                        
-	{
-		if (msg.isNoteOn())  notes.add(msg.getNoteNumber());
-		else if (msg.isNoteOff()) notes.removeValue(msg.getNoteNumber());
-	}
-
-	midi.clear();
-
-	if ((time + numSamples) >= noteDuration)                                                      
-	{
-		auto offset = jmax(0, jmin((int)(noteDuration - time), numSamples - 1));               
-
-		if (lastNoteValue > 0)                                                                 
-		{
-			midi.addEvent(MidiMessage::noteOff(1, lastNoteValue + 12*currentOctave), offset);
-			lastNoteValue = -1;
-		}
-
-		if (notes.size() > 0)                                                                     
-		{
-			currentNote = (currentNote + 1) % notes.size();
-			lastNoteValue = notes[currentNote];
-			midi.addEvent(MidiMessage::noteOn(1, lastNoteValue + 12*currentOctave, (uint8)127), offset);
-		}
-
-	}
-
-	time = (time + numSamples) % noteDuration;
-	
-	if (octaves > 0)
-		currentOctave = (currentOctave + 1) % octaves;
+    static const int table[]{ 24, 12, 6, 3 }; // 1/4, 1/8, 1/16, 1/32
+    idx = juce::jlimit(0, 3, idx);
+    ticksPerStep = table[idx];
 }
 
+static int getNextNoteIndex(int current, int size, Arpeggiator::Mode mode, int& dir)
+{
+    if (size == 0) return -1;
+
+    switch (mode)
+    {
+    case Arpeggiator::Mode::Up:
+        return (current + 1) % size;
+
+    case Arpeggiator::Mode::Down:
+        if (current <= 0) dir = 1;
+        else if (current >= size - 1) dir = -1;
+        return juce::jlimit(0, size - 1, current + dir);
+
+    case Arpeggiator::Mode::Random:
+        return juce::Random::getSystemRandom().nextInt(size);
+    }
+
+    return 0;
+}
+
+void Arpeggiator::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midi)
+{
+    if (!enabled) return;
+
+    juce::MidiMessage msg;
+    int pos;
+    juce::MidiBuffer output;
+
+    for (juce::MidiBuffer::Iterator it(midi); it.getNextEvent(msg, pos); )
+    {
+        if (msg.isMidiClock())               ++clockCounter;
+        else if (msg.isMidiStart()) { clockCounter = 0; isPlaying = true; }
+        else if (msg.isMidiContinue()) { isPlaying = true; }
+        else if (msg.isMidiStop()) { isPlaying = false; }
+
+        else if (msg.isNoteOn())             notes.addIfNotAlreadyThere(msg.getNoteNumber());
+        else if (msg.isNoteOff())            notes.removeFirstMatchingValue(msg.getNoteNumber());
+        else                                 output.addEvent(msg, pos);
+    }
+
+    bool stepDue = false;
+
+    if (clockMode == ClockMode::Midi && isPlaying)
+    {
+        if (clockCounter >= ticksPerStep)
+        {
+            clockCounter = 0;
+            stepDue = true;
+        }
+    }
+    else if (clockMode == ClockMode::Internal)
+    {
+        int duration = static_cast<int> (sampleRate * 0.25f * (24.0f / ticksPerStep)); // skaliert zur Division
+        timeSamples += buffer.getNumSamples();
+        if (timeSamples >= duration)
+        {
+            timeSamples %= duration;
+            stepDue = true;
+        }
+    }
+
+    if (stepDue)
+    {
+        if (lastNote >= 0)
+            output.addEvent(juce::MidiMessage::noteOff(1, lastNote + 12 * octave), 0);
+
+        if (notes.size() > 0)
+        {
+            currentNote = getNextNoteIndex(currentNote, notes.size(), mode, direction);
+            lastNote = notes[currentNote];
+            output.addEvent(juce::MidiMessage::noteOn(1, lastNote + 12 * octave, (uint8)120), 0);
+        }
+
+        if (octaves > 0)
+            octave = (octave + 1) % octaves;
+    }
+
+    midi.swapWith(output);
+}

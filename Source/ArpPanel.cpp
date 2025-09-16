@@ -38,7 +38,7 @@ ArpPanel::ArpPanel (AttachmentFactory* factory, Arpeggiator* arp )
 
     speedSlider.reset (new Slider ("speedSlider"));
     addAndMakeVisible (speedSlider.get());
-    speedSlider->setRange (0.1, 1, 0.01);
+    speedSlider->setRange (0, 3, 1);
     speedSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     speedSlider->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     speedSlider->addListener (this);
@@ -89,6 +89,7 @@ ArpPanel::ArpPanel (AttachmentFactory* factory, Arpeggiator* arp )
     modeCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
     modeCombo->addItem (TRANS("Up"), 1);
     modeCombo->addItem (TRANS("Down"), 2);
+    modeCombo->addItem (TRANS("Random"), 3);
     modeCombo->addListener (this);
 
     modeCombo->setBounds (72, 80, 48, 24);
@@ -170,7 +171,7 @@ void ArpPanel::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == speedSlider.get())
     {
         //[UserSliderCode_speedSlider] -- add your slider handling code here..
-		arp->speed = sliderThatWasMoved->getValue();
+		arp->setDivisionIndex(static_cast<int>(speedSlider->getValue()));
         //[/UserSliderCode_speedSlider]
     }
 
@@ -186,7 +187,7 @@ void ArpPanel::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == octaveCombo.get())
     {
         //[UserComboBoxCode_octaveCombo] -- add your combo box handling code here..
-		arp->octaves = comboBoxThatHasChanged->getSelectedItemIndex();
+		  arp->setOctaves(comboBoxThatHasChanged->getSelectedItemIndex() + 1);
         //[/UserComboBoxCode_octaveCombo]
     }
     else if (comboBoxThatHasChanged == modeCombo.get())
@@ -194,12 +195,14 @@ void ArpPanel::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
         //[UserComboBoxCode_modeCombo] -- add your combo box handling code here..
 
 		if (comboBoxThatHasChanged->getSelectedItemIndex() == 0) {
-			arp->mode = Arpeggiator::Mode::UP;
+			arp->setMode(Arpeggiator::Mode::Up);
 		}
 		if (comboBoxThatHasChanged->getSelectedItemIndex() == 1) {
-			arp->mode = Arpeggiator::Mode::DOWN;
+			arp->setMode(Arpeggiator::Mode::Down);
 		}
-
+        if (comboBoxThatHasChanged->getSelectedItemIndex() == 2) {
+            arp->setMode(Arpeggiator::Mode::Random);
+        }
 
         //[/UserComboBoxCode_modeCombo]
     }
@@ -216,7 +219,7 @@ void ArpPanel::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == enabledButton.get())
     {
         //[UserButtonCode_enabledButton] -- add your button handler code here..
-		arp->enabled = buttonThatWasClicked->getToggleState();
+		arp->setEnabled(enabledButton->getToggleState());             
         //[/UserButtonCode_enabledButton]
     }
 
