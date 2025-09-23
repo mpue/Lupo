@@ -237,6 +237,11 @@ void EnvelopePanel::sliderValueChanged (Slider* sliderThatWasMoved)
     //[/UsersliderValueChanged_Post]
 }
 
+void EnvelopePanel::setDecayTime(float time)
+{
+	amp_decay->setRange(0, time, 0.01f);
+}
+
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...

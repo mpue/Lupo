@@ -388,10 +388,11 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 	EnvelopePanel* auxEnvelope1 = dynamic_cast<EnvelopePanel*> (modulationTab.get()->getTabContentComponent(3));
 	auxEnvelope1->setName("auxEnvelope1");
+    auxEnvelope1->setDecayTime(3.0f);
 
 	EnvelopePanel* auxEnvelope2 = dynamic_cast<EnvelopePanel*> (modulationTab.get()->getTabContentComponent(4));
 	auxEnvelope2->setName("auxEnvelope2");
-
+	auxEnvelope1->setDecayTime(3.0f);
 
 	auxEnvelope1->addChangeListener(this);
 	auxEnvelope2->addChangeListener(this);

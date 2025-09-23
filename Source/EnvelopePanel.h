@@ -53,7 +53,7 @@ public:
     void resized() override;
     void sliderValueChanged (Slider* sliderThatWasMoved) override;
 
-
+	void setDecayTime(float time);
 
 private:
     //[UserVariables]   -- You can add your own custom variables in this section.
