@@ -76,9 +76,10 @@ public:
 		else {
 			value = 0;
 			for (int i = 0; i < 8; i++) {
-				value += blitsaw[i]->tick();
+				value += blitsaw[i]->tick() * 1/(i+1);
 			}
-			//value /= 2;
+			// now average the volume by the number of voices
+
 			saw = value;
 			return value * volume;
 
