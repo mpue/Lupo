@@ -54303,6 +54303,7 @@ const char* getNamedResource (const char* resourceNameUTF8, int& numBytes)
         case 0xee901f78:  numBytes = 2713110; return Knob_128_png;
         case 0x87d8f31e:  numBytes = 3236; return knob_shadow_64_png;
         case 0x78ded995:  numBytes = 19035; return logo_png;
+        case 0xcdaaa4d5:  numBytes = 292447; return lupo_ui_png;
         case 0xa3253ff2:  numBytes = 17465; return oscillator_noise_48_png;
         case 0x8d64b803:  numBytes = 15735; return oscillator_saw_48_png;
         case 0xd40842c1:  numBytes = 18394; return oscillator_sine_48_png;
@@ -54323,6 +54324,7 @@ const char* namedResourceList[] =
     "Knob_128_png",
     "knob_shadow_64_png",
     "logo_png",
+    "lupo_ui_png",
     "oscillator_noise_48_png",
     "oscillator_saw_48_png",
     "oscillator_sine_48_png",
@@ -54338,6 +54340,7 @@ const char* originalFilenames[] =
     "Knob_128.png",
     "knob_shadow_64.png",
     "logo.png",
+    "lupo_ui.png",
     "oscillator_noise_48.png",
     "oscillator_saw_48.png",
     "oscillator_sine_48.png",

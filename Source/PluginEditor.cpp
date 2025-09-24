@@ -21,12 +21,13 @@ LupoAudioProcessorEditor::LupoAudioProcessorEditor (LupoAudioProcessor& p)
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
 	setLookAndFeel(&tlf);
-    setSize (1000, 900);	
-	setResizable(true, true);
+    setSize (1500, 600);	
+	setResizable(false,false);
 	mainUI = new MainUI(&p, p.getFactory());
 	addAndMakeVisible(mainUI);
 	mainUI->updatePresetList();
 	loadSettings();
+	resized();
 }
 
 LupoAudioProcessorEditor::~LupoAudioProcessorEditor()
@@ -43,7 +44,7 @@ void LupoAudioProcessorEditor::paint (Graphics& g)
 {
     // (Our component is opaque, so we must completely fill the background with a solid colour)
     // g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
-	g.fillAll(Colours::lightgrey);
+	// g.fillAll(Colours::darkgrey.darker().darker());
     g.setColour (Colours::white);
 
 }
@@ -52,8 +53,11 @@ void LupoAudioProcessorEditor::resized()
 {
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
-	float scaleFactor = (1000.0f / 900.0f) / (getWidth() / getHeight());
-	Desktop::getInstance().setGlobalScaleFactor(scaleFactor);
+	if (mainUI != nullptr) {
+		mainUI->setBounds(0, 0, getWidth(), getHeight());
+	}
+	//float scaleFactor = (1000.0f / 900.0f) / (getWidth() / getHeight());
+	//Desktop::getInstance().setGlobalScaleFactor(scaleFactor);
 }
 
 

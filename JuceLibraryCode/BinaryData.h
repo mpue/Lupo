@@ -29,6 +29,9 @@ namespace BinaryData
     extern const char*   logo_png;
     const int            logo_pngSize = 19035;
 
+    extern const char*   lupo_ui_png;
+    const int            lupo_ui_pngSize = 292447;
+
     extern const char*   oscillator_noise_48_png;
     const int            oscillator_noise_48_pngSize = 17465;
 
@@ -42,7 +45,7 @@ namespace BinaryData
     const int            oscillator_square_48_pngSize = 17545;
 
     // Number of elements in the namedResourceList and originalFileNames arrays.
-    const int namedResourceListSize = 11;
+    const int namedResourceListSize = 12;
 
     // Points to the start of a list of resource names.
     extern const char* namedResourceList[];

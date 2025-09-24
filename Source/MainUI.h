@@ -107,6 +107,7 @@ private:
 
 	ModMatrixModel* matrixModel;
 
+	Rectangle<int> originalBounds;
 
     //[/UserVariables]
 
@@ -119,15 +120,16 @@ private:
     std::unique_ptr<OscillatorPanel> osc1Panel;
     std::unique_ptr<OscillatorPanel> osc3Panel;
     std::unique_ptr<OscillatorPanel> osc2Panel;
+    std::unique_ptr<OscillatorPanel> osc4Panel;
     std::unique_ptr<EnvelopePanel> ampEnvelope;
+    std::unique_ptr<EnvelopePanel> filterEnvelope;
     std::unique_ptr<Slider> mainVolume;
     std::unique_ptr<Label> volumeLabel;
-    std::unique_ptr<GroupComponent> mixerGroiup;
+    std::unique_ptr<GroupComponent> mixerGriup;
     std::unique_ptr<MixerChannelPanel> ch1Panel;
     std::unique_ptr<MixerChannelPanel> ch2Panel;
     std::unique_ptr<MixerChannelPanel> ch3Panel;
     std::unique_ptr<MixerChannelPanel> ch4Panel;
-    std::unique_ptr<OscillatorPanel> osc4Panel;
     std::unique_ptr<GroupComponent> FXGroup;
     std::unique_ptr<ReverbPanel> reverbPanel;
     std::unique_ptr<DelayPanel> delayPanel;

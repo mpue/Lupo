@@ -15,6 +15,7 @@
 #include "MainUI.h"
 #include "TrioLookAndFeel.h"
 #include "RetroLookAndFeel.h"
+#include "SciFiLookAndFeel.h"
 
 class AttachmentFactory;
 
@@ -37,10 +38,10 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     LupoAudioProcessor& processor;
-	MainUI* mainUI;
+	MainUI* mainUI = nullptr;
 	TrioLookAndFeel tlf;
     RetroLookAndFeel rlf;
-	
+	SciFiLookAndFeel sflf;
     // ──────────────────────────────────────────────────────────────────────────────
 
 

@@ -113,7 +113,7 @@ float Voice::process(int channel)
         }
         
         filter1->processStereo(&outL, &outR, 1);
-        // filter2->processStereo(&outL, &outR, 1);
+        filter2->processStereo(&outL, &outR, 1);
     }
     else {
         ampEnvelope->reset();

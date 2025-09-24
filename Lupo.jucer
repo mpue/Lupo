@@ -15,6 +15,7 @@
       <FILE id="LQzskC" name="knob_shadow_64.png" compile="0" resource="1"
             file="Images/knob_shadow_64.png"/>
       <FILE id="wCxM6Q" name="logo.png" compile="0" resource="1" file="Images/logo.png"/>
+      <FILE id="Ce9Xow" name="lupo_ui.png" compile="0" resource="1" file="Images/lupo_ui.png"/>
       <FILE id="op0Ayv" name="oscillator_noise_48.png" compile="0" resource="1"
             file="Images/oscillator_noise_48.png"/>
       <FILE id="On0Q26" name="oscillator_saw_48.png" compile="0" resource="1"
@@ -113,6 +114,10 @@
         <FILE id="jUOTPO" name="SamplerPanel.cpp" compile="1" resource="0"
               file="Source/SamplerPanel.cpp"/>
         <FILE id="CjiGWH" name="SamplerPanel.h" compile="0" resource="0" file="Source/SamplerPanel.h"/>
+        <FILE id="BC2tYT" name="SciFiLookAndFeel.cpp" compile="1" resource="0"
+              file="Source/SciFiLookAndFeel.cpp"/>
+        <FILE id="EPrH52" name="SciFiLookAndFeel.h" compile="0" resource="0"
+              file="Source/SciFiLookAndFeel.h"/>
       </GROUP>
       <GROUP id="{E619D4C1-110E-416E-055B-B61301338B21}" name="AudioEngine">
         <FILE id="sGv9jB" name="ADSR.cpp" compile="1" resource="0" file="Source/AudioEngine/ADSR.cpp"/>

@@ -186,16 +186,6 @@ void SamplerPanel::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == browseButton.get())
     {
         //[UserButtonCode_browseButton] -- add your button handler code here..
-		FileChooser chooser("Select file to open", File(), "*");
-
-		if (chooser.browseForFileToOpen()) {
-
-			File file = chooser.getResult();
-			FileInputStream* is = new FileInputStream(file);
-
-
-		}
-
         //[/UserButtonCode_browseButton]
     }
 

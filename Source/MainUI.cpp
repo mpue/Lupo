@@ -1,23 +1,12 @@
-/*
-  ==============================================================================
-
-  This is an automatically generated GUI class created by the Projucer!
-
-  Be careful when adding custom code to these files, as only the code within
-  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
-  and re-saved.
-
-  Created with Projucer version: 5.4.7
-
-  ------------------------------------------------------------------------------
-
-  The Projucer is part of the JUCE library.
-  Copyright (c) 2017 - ROLI Ltd.
-
-  ==============================================================================
+/**
+* 
+* The main panel for th emodulatiom matrix
+* 
 */
 
-//[Headers] You can add your own extra header files here...
+
+
+
 #include "AudioEngine/LupoSynth.h"
 #include "OscillatorPanel.h"
 #include "LFOPanel.h"
@@ -29,18 +18,13 @@
 #include "Panel.h"
 #include "ModMatrixPanel.h"
 #include <math.h>
-//[/Headers]
-
 #include "MainUI.h"
 
 
-//[MiscUserDefs] You can add your own user definitions and misc code here...
-//[/MiscUserDefs]
-
 //==============================================================================
-MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
+MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 {
-    //[Constructor_pre] You can add your own custom stuff here..
+
 	this->processor = processor;
 	this->model = processor->getModel();
 	this->synth = processor->getSynth();
@@ -49,310 +33,299 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 	Logger::getCurrentLogger()->writeToLog("GUI instance created.");
 
 	for (int i = 0; i < factory->getSliderParams().size(); i++) {
-		processor->parameters->addParameterListener(factory->getSliderParams().getReference(i),this);
+		processor->parameters->addParameterListener(factory->getSliderParams().getReference(i), this);
+		Logger::getCurrentLogger()->writeToLog("Listening to parameter: " + factory->getSliderParams().getReference(i));
 	}
 	for (int i = 0; i < 6; i++) {
 		processor->parameters->addParameterListener("Source_" + String(i), this);
 		processor->parameters->addParameterListener("Target_" + String(i), this);
 		processor->parameters->addParameterListener("Amount_" + String(i), this);
 	}
-    //[/Constructor_pre]
+	//[/Constructor_pre]
 
-    GlassPanel.reset (new Panel());
-    addAndMakeVisible (GlassPanel.get());
-    GlassPanel->setName ("GlassPanel");
+	GlassPanel.reset(new Panel());
+	addAndMakeVisible(GlassPanel.get());
+	GlassPanel->setName("GlassPanel");
 
-    GlassPanel->setBounds (0, 0, 992, 840);
+	GlassPanel->setBounds(0, 0, 992, 840);
 
-    ModulationGroup.reset (new GroupComponent ("ModulationGroup",
-                                               TRANS("Modulation")));
-    addAndMakeVisible (ModulationGroup.get());
 
-    ModulationGroup->setBounds (8, 544, 792, 144);
+	groupComponent.reset(new GroupComponent("new group",TRANS("Amplifier")));
+	addAndMakeVisible(groupComponent.get());
+	groupComponent->setBounds(612, 48, 392, 104);
 
-    groupComponent.reset (new GroupComponent ("new group",
-                                              TRANS("Amplifier")));
-    addAndMakeVisible (groupComponent.get());
+	groupComponent3.reset(new GroupComponent("new group",TRANS("Oscilators")));
+	addAndMakeVisible(groupComponent3.get());
+	groupComponent3->setBounds(8, 48, 456, 496);
 
-    groupComponent->setBounds (592, 48, 392, 104);
+	filterGroup1.reset(new GroupComponent("filterGroup1",TRANS("Filter 1")));
+	addAndMakeVisible(filterGroup1.get());
 
-    groupComponent3.reset (new GroupComponent ("new group",
-                                               TRANS("Oscilators")));
-    addAndMakeVisible (groupComponent3.get());
+	filterGroup1->setBounds(612, 208, 392, 112);
 
-    groupComponent3->setBounds (8, 48, 456, 496);
+	osc1Panel.reset(new OscillatorPanel(model, factory));
+	addAndMakeVisible(osc1Panel.get());
+	osc1Panel->setName("osc1Panel");
 
-    filterGroup1.reset (new GroupComponent ("filterGroup1",
-                                            TRANS("Filter 1")));
-    addAndMakeVisible (filterGroup1.get());
+	osc1Panel->setBounds(16, 64, 216, 232);
 
-    filterGroup1->setBounds (592, 208, 392, 112);
+	osc3Panel.reset(new OscillatorPanel(model, factory));
+	addAndMakeVisible(osc3Panel.get());
+	osc3Panel->setName("osc3Panel");
 
-    osc1Panel.reset (new OscillatorPanel (model, factory));
-    addAndMakeVisible (osc1Panel.get());
-    osc1Panel->setName ("osc1Panel");
+	osc3Panel->setBounds(16, 304, 216, 232);
 
-    osc1Panel->setBounds (16, 64, 216, 232);
+	osc2Panel.reset(new OscillatorPanel(model, factory));
+	addAndMakeVisible(osc2Panel.get());
+	osc2Panel->setName("osc2Panel");
 
-    osc3Panel.reset (new OscillatorPanel (model, factory));
-    addAndMakeVisible (osc3Panel.get());
-    osc3Panel->setName ("osc3Panel");
+	osc2Panel->setBounds(240, 64, 216, 232);
 
-    osc3Panel->setBounds (16, 304, 216, 232);
+	ampEnvelope.reset(new EnvelopePanel(model, factory));
+	addAndMakeVisible(ampEnvelope.get());
+	ampEnvelope->setName("ampEnvelope");
+	ampEnvelope->setBounds(628, 64, 288, 80);
 
-    osc2Panel.reset (new OscillatorPanel (model, factory));
-    addAndMakeVisible (osc2Panel.get());
-    osc2Panel->setName ("osc2Panel");
+	filterEnvelope.reset(new EnvelopePanel(model, factory));
+	filterEnvelope->setName("auxEnvelope1");
+	filterEnvelope->setDecayTime(3.0f);
+	addAndMakeVisible(filterEnvelope.get());
+	filterEnvelope->setBounds(628, 450, 288, 80);
+	
+	mainVolume.reset(new Slider("mainVolume"));
+	addAndMakeVisible(mainVolume.get());
+	mainVolume->setRange(0, 2, 0.01);
+	mainVolume->setSliderStyle(Slider::RotaryVerticalDrag);
+	mainVolume->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
+	mainVolume->addListener(this);
 
-    osc2Panel->setBounds (240, 64, 216, 232);
+	mainVolume->setBounds(924, 72, 56, 56);
 
-    ampEnvelope.reset (new EnvelopePanel (model, factory));
-    addAndMakeVisible (ampEnvelope.get());
-    ampEnvelope->setName ("ampEnvelope");
+	volumeLabel.reset(new Label("volumeLabel",TRANS("Main volume")));
+	addAndMakeVisible(volumeLabel.get());
+	volumeLabel->setFont(Font(12.00f, Font::plain).withTypefaceStyle("Regular"));
+	volumeLabel->setJustificationType(Justification::centredLeft);
+	volumeLabel->setEditable(false, false, false);
+	volumeLabel->setColour(TextEditor::textColourId, Colours::black);
+	volumeLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-    ampEnvelope->setBounds (608, 64, 288, 80);
+	volumeLabel->setBounds(904, 120, 64, 24);
 
-    mainVolume.reset (new Slider ("mainVolume"));
-    addAndMakeVisible (mainVolume.get());
-    mainVolume->setRange (0, 2, 0.01);
-    mainVolume->setSliderStyle (Slider::RotaryVerticalDrag);
-    mainVolume->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    mainVolume->addListener (this);
+	mixerGriup.reset(new GroupComponent("mixerGroiup",TRANS("Mixer")));
+	addAndMakeVisible(mixerGriup.get());
 
-    mainVolume->setBounds (904, 72, 56, 56);
+	mixerGriup->setBounds(474, 48, 128, 496);
 
-    volumeLabel.reset (new Label ("volumeLabel",
-                                  TRANS("Main volume")));
-    addAndMakeVisible (volumeLabel.get());
-    volumeLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
-    volumeLabel->setJustificationType (Justification::centredLeft);
-    volumeLabel->setEditable (false, false, false);
-    volumeLabel->setColour (TextEditor::textColourId, Colours::black);
-    volumeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+	ch1Panel.reset(new MixerChannelPanel(model, factory));
+	addAndMakeVisible(ch1Panel.get());
+	ch1Panel->setName("channel1");
 
-    volumeLabel->setBounds (904, 120, 64, 24);
+	ch1Panel->setBounds(482, 64, 112, 96);
 
-    mixerGroiup.reset (new GroupComponent ("mixerGroiup",
-                                           TRANS("Mixer")));
-    addAndMakeVisible (mixerGroiup.get());
+	ch2Panel.reset(new MixerChannelPanel(model, factory));
+	addAndMakeVisible(ch2Panel.get());
+	ch2Panel->setName("channel2");
 
-    mixerGroiup->setBounds (464, 48, 128, 496);
+	ch2Panel->setBounds(482, 160, 112, 96);
 
-    ch1Panel.reset (new MixerChannelPanel (model, factory));
-    addAndMakeVisible (ch1Panel.get());
-    ch1Panel->setName ("channel1");
+	ch3Panel.reset(new MixerChannelPanel(model, factory));
+	addAndMakeVisible(ch3Panel.get());
+	ch3Panel->setName("channel3");
 
-    ch1Panel->setBounds (472, 64, 112, 96);
+	ch3Panel->setBounds(482, 256, 112, 96);
 
-    ch2Panel.reset (new MixerChannelPanel (model, factory));
-    addAndMakeVisible (ch2Panel.get());
-    ch2Panel->setName ("channel2");
-
-    ch2Panel->setBounds (472, 160, 112, 96);
-
-    ch3Panel.reset (new MixerChannelPanel (model, factory));
-    addAndMakeVisible (ch3Panel.get());
-    ch3Panel->setName ("channel3");
-
-    ch3Panel->setBounds (472, 256, 112, 96);
-
-    ch4Panel.reset (new MixerChannelPanel (model, factory));
-    addAndMakeVisible (ch4Panel.get());
-    ch4Panel->setName ("channel4");
-
-    ch4Panel->setBounds (472, 352, 112, 96);
-
-    osc4Panel.reset (new OscillatorPanel (model, factory));
-    addAndMakeVisible (osc4Panel.get());
-    osc4Panel->setName ("osc4Panel");
-
-    osc4Panel->setBounds (240, 304, 216, 232);
-
-    FXGroup.reset (new GroupComponent ("FXGroup",
-                                       TRANS("FX")));
-    addAndMakeVisible (FXGroup.get());
-
-    FXGroup->setBounds (8, 688, 976, 136);
-
-    reverbPanel.reset (new ReverbPanel (model, factory));
-    addAndMakeVisible (reverbPanel.get());
-    reverbPanel->setName ("reverbPanel");
-
-    reverbPanel->setBounds (16, 704, 352, 112);
-
-    delayPanel.reset (new DelayPanel (model, factory));
-    addAndMakeVisible (delayPanel.get());
-    delayPanel->setName ("delayPanel");
-
-    delayPanel->setBounds (376, 704, 264, 112);
-
-    chorusPanel.reset (new ChorusPanel (model, factory));
-    addAndMakeVisible (chorusPanel.get());
-    chorusPanel->setName ("new component");
-
-    chorusPanel->setBounds (648, 704, 320, 112);
-
-    presetButton.reset (new TextButton ("presetButton"));
-    addAndMakeVisible (presetButton.get());
-    presetButton->setButtonText (TRANS("Presets"));
-    presetButton->addListener (this);
-    presetButton->setColour (TextButton::buttonColourId, Colours::grey);
-
-    presetButton->setBounds (16, 16, 64, 24);
-
-    saveButton.reset (new TextButton ("saveButton"));
-    addAndMakeVisible (saveButton.get());
-    saveButton->setButtonText (TRANS("Save"));
-    saveButton->addListener (this);
-    saveButton->setColour (TextButton::buttonColourId, Colours::grey);
-
-    saveButton->setBounds (320, 16, 64, 24);
-
-    presetCombo.reset (new ComboBox ("presetCombo"));
-    addAndMakeVisible (presetCombo.get());
-    presetCombo->setEditableText (true);
-    presetCombo->setJustificationType (Justification::centredLeft);
-    presetCombo->setTextWhenNothingSelected (String());
-    presetCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    presetCombo->addListener (this);
-
-    presetCombo->setBounds (88, 16, 224, 24);
-
-    fmSlider.reset (new Slider ("fmSlider"));
-    addAndMakeVisible (fmSlider.get());
-    fmSlider->setRange (0, 1, 0);
-    fmSlider->setSliderStyle (Slider::RotaryVerticalDrag);
-    fmSlider->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
-    fmSlider->addListener (this);
-
-    fmSlider->setBounds (496, 464, 64, 56);
-
-    distGroup.reset (new GroupComponent ("distGroup",
-                                         TRANS("Distortion")));
-    addAndMakeVisible (distGroup.get());
-
-    distGroup->setBounds (592, 456, 392, 88);
-
-    distortionPanel.reset (new DistortionPanel (model, factory));
-    addAndMakeVisible (distortionPanel.get());
-    distortionPanel->setName ("distortionPanel");
-
-    distortionPanel->setBounds (608, 472, 288, 64);
-
-    arpGroup.reset (new GroupComponent ("arpGroup",
-                                        TRANS("Arpeggiator")));
-    addAndMakeVisible (arpGroup.get());
-
-    arpGroup->setBounds (800, 544, 184, 144);
-
-    arpPanel.reset (new ArpPanel (factory,arp));
-    addAndMakeVisible (arpPanel.get());
-    arpPanel->setName ("arpPanel");
-
-    arpPanel->setBounds (808, 560, 168, 120);
-
-    modulationTab.reset (new TabbedComponent (TabbedButtonBar::TabsAtBottom));
-    addAndMakeVisible (modulationTab.get());
-    modulationTab->setTabBarDepth (22);
-    modulationTab->addTab (TRANS("LFO 1"), Colour (0x00000000), new LFOPanel (model, factory), true);
-    modulationTab->addTab (TRANS("LFO 2"), Colour (0x00000000), new LFOPanel (model, factory), true);
-    modulationTab->addTab (TRANS("LFO 3"), Colour (0x00000000), new LFOPanel (model, factory), true);
-    modulationTab->addTab (TRANS("ENV 1"), Colour (0x00000000), new EnvelopePanel (model, factory), true);
-    modulationTab->addTab (TRANS("ENV 2"), Colour (0x00000000), new EnvelopePanel (model, factory), true);
-    modulationTab->setCurrentTabIndex (0);
-
-    modulationTab->setBounds (24, 568, 264, 120);
-
-    filterPanel1.reset (new FilterPanel (model, factory));
-    addAndMakeVisible (filterPanel1.get());
-    filterPanel1->setName ("filterPanel1");
-
-    filterPanel1->setBounds (608, 224, 360, 88);
-
-    filterGroup2.reset (new GroupComponent ("filterGroup2",
-                                            TRANS("Filter 2")));
-    addAndMakeVisible (filterGroup2.get());
-
-    filterGroup2->setBounds (592, 344, 392, 112);
-
-    filterPanel2.reset (new FilterPanel (model, factory));
-    addAndMakeVisible (filterPanel2.get());
-    filterPanel2->setName ("filterPanel2");
-
-    filterPanel2->setBounds (608, 360, 360, 80);
-
-    filterModeLabel.reset (new Label ("filterModeLabel",
-                                      TRANS("Filter mode")));
-    addAndMakeVisible (filterModeLabel.get());
-    filterModeLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
-    filterModeLabel->setJustificationType (Justification::centredLeft);
-    filterModeLabel->setEditable (false, false, false);
-    filterModeLabel->setColour (TextEditor::textColourId, Colours::black);
-    filterModeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    filterModeLabel->setBounds (824, 324, 64, 24);
-
-    filterModeCombo.reset (new ComboBox ("new combo box"));
-    addAndMakeVisible (filterModeCombo.get());
-    filterModeCombo->setEditableText (false);
-    filterModeCombo->setJustificationType (Justification::centredLeft);
-    filterModeCombo->setTextWhenNothingSelected (String());
-    filterModeCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    filterModeCombo->addItem (TRANS("Serial"), 1);
-    filterModeCombo->addItem (TRANS("Parallel"), 2);
-    filterModeCombo->addListener (this);
-
-    filterModeCombo->setBounds (896, 324, 88, 24);
-
-    cutoffLink.reset (new ToggleButton ("cutoffLink"));
-    addAndMakeVisible (cutoffLink.get());
-    cutoffLink->setButtonText (String());
-    cutoffLink->addListener (this);
-
-    cutoffLink->setBounds (688, 324, 32, 24);
-
-    label.reset (new Label ("new label",
-                            TRANS("Cutoff link")));
-    addAndMakeVisible (label.get());
-    label->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
-    label->setJustificationType (Justification::centredLeft);
-    label->setEditable (false, false, false);
-    label->setColour (TextEditor::textColourId, Colours::black);
-    label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-
-    label->setBounds (720, 324, 64, 24);
-
-    mainDisplay.reset (new TextEditor ("mainDisplay"));
-    addAndMakeVisible (mainDisplay.get());
-    mainDisplay->setMultiLine (false);
-    mainDisplay->setReturnKeyStartsNewLine (false);
-    mainDisplay->setReadOnly (true);
-    mainDisplay->setScrollbarsShown (false);
-    mainDisplay->setCaretVisible (false);
-    mainDisplay->setPopupMenuEnabled (false);
-    mainDisplay->setColour (TextEditor::textColourId, Colour (0xffff4400));
-    mainDisplay->setColour (TextEditor::backgroundColourId, Colours::black);
-    mainDisplay->setText (String());
-
-    mainDisplay->setBounds (592, 152, 392, 56);
-
-    Viewport* vp = new Viewport("ModMatrix");
-    vp->setBounds(296, 560, 496, 120);
-    modMatrix.reset (new ModPanel (this->synth->getModMatrix(), model, factory));
-
-    vp->setViewedComponent(modMatrix.get());
-    vp->setScrollBarsShown(true, false);
-    addAndMakeVisible (vp);
-    modMatrix->setName ("modMatrix");
-
-    modMatrix->setBounds (0, 0, 496, 240);
-
-    //[UserPreSize]
-    //[/UserPreSize]
-
-    setSize (1300, 900);
-
-    //[Constructor] You can add your own custom stuff here..
+	ch4Panel.reset(new MixerChannelPanel(model, factory));
+	addAndMakeVisible(ch4Panel.get());
+	ch4Panel->setName("channel4");
+
+	ch4Panel->setBounds(482, 352, 112, 96);
+
+	osc4Panel.reset(new OscillatorPanel(model, factory));
+	addAndMakeVisible(osc4Panel.get());
+	osc4Panel->setName("osc4Panel");
+
+	osc4Panel->setBounds(240, 304, 216, 232);
+
+	FXGroup.reset(new GroupComponent("FXGroup", TRANS("FX")));
+	addAndMakeVisible(FXGroup.get());
+
+	FXGroup->setBounds(1020, 58, 440, 378);
+	// FXGroup->setVisible(false);
+
+	reverbPanel.reset(new ReverbPanel(model, factory));
+	addAndMakeVisible(reverbPanel.get());
+	reverbPanel->setName("reverbPanel");
+	reverbPanel->setBounds(1030, 78, 460, 112);
+	// reverbPanel->setVisible(false);
+
+	delayPanel.reset(new DelayPanel(model, factory));
+	addAndMakeVisible(delayPanel.get());
+	delayPanel->setName("delayPanel");
+	delayPanel->setBounds(1020, 200, 460, 112);
+	// delayPanel->setVisible(false);
+
+	chorusPanel.reset(new ChorusPanel(model, factory));
+	addAndMakeVisible(chorusPanel.get());
+	chorusPanel->setName("new component");
+	chorusPanel->setBounds(1030, 322, 460, 112);
+	// chorusPanel->setVisible(false);
+
+	presetButton.reset(new TextButton("presetButton"));
+	addAndMakeVisible(presetButton.get());
+	presetButton->setButtonText(TRANS("Presets"));
+	presetButton->addListener(this);
+	presetButton->setColour(TextButton::buttonColourId, Colours::grey);
+
+	presetButton->setBounds(16, 16, 64, 24);
+
+	saveButton.reset(new TextButton("saveButton"));
+	addAndMakeVisible(saveButton.get());
+	saveButton->setButtonText(TRANS("Save"));
+	saveButton->addListener(this);
+	saveButton->setColour(TextButton::buttonColourId, Colours::grey);
+
+	saveButton->setBounds(320, 16, 64, 24);
+
+	presetCombo.reset(new ComboBox("presetCombo"));
+	addAndMakeVisible(presetCombo.get());
+	presetCombo->setEditableText(true);
+	presetCombo->setJustificationType(Justification::centredLeft);
+	presetCombo->setTextWhenNothingSelected(String());
+	presetCombo->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
+	presetCombo->addListener(this);
+
+	presetCombo->setBounds(88, 16, 224, 24);
+
+	fmSlider.reset(new Slider("fmSlider"));
+	addAndMakeVisible(fmSlider.get());
+	fmSlider->setRange(0, 1, 0);
+	fmSlider->setSliderStyle(Slider::RotaryVerticalDrag);
+	fmSlider->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
+	fmSlider->addListener(this);
+
+	fmSlider->setBounds(496, 464, 64, 56);
+
+	distGroup.reset(new GroupComponent("distGroup",TRANS("Distortion")));
+	addAndMakeVisible(distGroup.get());
+	distGroup->setVisible(false);
+	distGroup->setBounds(1030, 456, 392, 88);
+
+	distortionPanel.reset(new DistortionPanel(model, factory));
+	addAndMakeVisible(distortionPanel.get());
+	distortionPanel->setName("distortionPanel");
+	distortionPanel->setBounds(1040, 472, 288, 64);
+	distortionPanel->setVisible(false);
+
+	arpGroup.reset(new GroupComponent("arpGroup",TRANS("Arpeggiator")));
+	addAndMakeVisible(arpGroup.get());
+	arpGroup->setVisible(false);
+
+	arpGroup->setBounds(800, 544, 184, 144);
+	arpGroup->setVisible(false);
+	arpPanel.reset(new ArpPanel(factory, arp));
+	addAndMakeVisible(arpPanel.get());
+	arpPanel->setName("arpPanel");
+	arpPanel->setBounds(808, 560, 168, 120);
+	arpPanel->setVisible(false);
+
+	modulationTab.reset(new TabbedComponent(TabbedButtonBar::TabsAtBottom));
+	addAndMakeVisible(modulationTab.get());
+	modulationTab->setTabBarDepth(22);
+	modulationTab->addTab(TRANS("LFO 1"), Colour(0x00000000), new LFOPanel(model, factory), true);
+	modulationTab->addTab(TRANS("LFO 2"), Colour(0x00000000), new LFOPanel(model, factory), true);
+	modulationTab->addTab(TRANS("LFO 3"), Colour(0x00000000), new LFOPanel(model, factory), true);
+	// modulationTab->addTab(TRANS("ENV 1"), Colour(0x00000000), new EnvelopePanel(model, factory), true);
+	modulationTab->addTab(TRANS("ENV 2"), Colour(0x00000000), new EnvelopePanel(model, factory), true);
+	modulationTab->setCurrentTabIndex(0);
+	modulationTab->setBounds(24, 568, 264, 120);
+	modulationTab->setVisible(false);
+
+	ModulationGroup.reset(new GroupComponent("ModulationGroup", TRANS("Modulation")));
+	addAndMakeVisible(ModulationGroup.get());
+	ModulationGroup->setBounds(8, 544, 792, 144);
+	ModulationGroup->setVisible(false);
+
+	filterPanel1.reset(new FilterPanel(model, factory));
+	addAndMakeVisible(filterPanel1.get());
+	filterPanel1->setName("filterPanel1");
+
+	filterPanel1->setBounds(628, 224, 360, 88);
+
+	filterGroup2.reset(new GroupComponent("filterGroup2",TRANS("Filter 2")));
+	addAndMakeVisible(filterGroup2.get());
+
+	filterGroup2->setBounds(612, 344, 392, 112);
+
+	filterPanel2.reset(new FilterPanel(model, factory));
+	addAndMakeVisible(filterPanel2.get());
+	filterPanel2->setName("filterPanel2");
+
+	filterPanel2->setBounds(628, 360, 360, 80);
+
+	filterModeLabel.reset(new Label("filterModeLabel",TRANS("Filter mode")));
+	addAndMakeVisible(filterModeLabel.get());
+	filterModeLabel->setFont(Font(12.00f, Font::plain).withTypefaceStyle("Regular"));
+	filterModeLabel->setJustificationType(Justification::centredLeft);
+	filterModeLabel->setEditable(false, false, false);
+	filterModeLabel->setColour(TextEditor::textColourId, Colours::black);
+	filterModeLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+
+	filterModeLabel->setBounds(824, 324, 64, 24);
+
+	filterModeCombo.reset(new ComboBox("new combo box"));
+	addAndMakeVisible(filterModeCombo.get());
+	filterModeCombo->setEditableText(false);
+	filterModeCombo->setJustificationType(Justification::centredLeft);
+	filterModeCombo->setTextWhenNothingSelected(String());
+	filterModeCombo->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
+	filterModeCombo->addItem(TRANS("Serial"), 1);
+	filterModeCombo->addItem(TRANS("Parallel"), 2);
+	filterModeCombo->addListener(this);
+
+	filterModeCombo->setBounds(896, 324, 88, 24);
+
+	cutoffLink.reset(new ToggleButton("cutoffLink"));
+	addAndMakeVisible(cutoffLink.get());
+	cutoffLink->setButtonText(String());
+	cutoffLink->addListener(this);
+
+	cutoffLink->setBounds(688, 324, 32, 24);
+
+	label.reset(new Label("new label",
+		TRANS("Cutoff link")));
+	addAndMakeVisible(label.get());
+	label->setFont(Font(12.00f, Font::plain).withTypefaceStyle("Regular"));
+	label->setJustificationType(Justification::centredLeft);
+	label->setEditable(false, false, false);
+	label->setColour(TextEditor::textColourId, Colours::black);
+	label->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
+
+	label->setBounds(720, 324, 64, 24);
+
+	mainDisplay.reset(new TextEditor("mainDisplay"));
+	addAndMakeVisible(mainDisplay.get());
+	mainDisplay->setMultiLine(false);
+	mainDisplay->setReturnKeyStartsNewLine(false);
+	mainDisplay->setReadOnly(true);
+	mainDisplay->setScrollbarsShown(false);
+	mainDisplay->setCaretVisible(false);
+	mainDisplay->setPopupMenuEnabled(false);
+	mainDisplay->setColour(TextEditor::textColourId, Colour(0xffff4400));
+	mainDisplay->setColour(TextEditor::backgroundColourId, Colours::black);
+	mainDisplay->setText(String());
+
+	mainDisplay->setBounds(612, 152, 392, 56);
+
+	Viewport* vp = new Viewport("ModMatrix");
+	vp->setBounds(296, 560, 496, 120);
+	modMatrix.reset(new ModPanel(this->synth->getModMatrix(), model, factory));
+	vp->setViewedComponent(modMatrix.get());
+	vp->setScrollBarsShown(true, false);
+	addAndMakeVisible(vp);
+	modMatrix->setName("modMatrix");
+	modMatrix->setBounds(0, 0, 496, 240);
+
+	vp->setVisible(false);
 
 	int x = getScreenX();
 	int y = getScreenY();
@@ -386,16 +359,16 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 	LFOPanel* lfo2 = dynamic_cast<LFOPanel*> (modulationTab.get()->getTabContentComponent(1));
 	LFOPanel* lfo3 = dynamic_cast<LFOPanel*> (modulationTab.get()->getTabContentComponent(2));
 
-	EnvelopePanel* auxEnvelope1 = dynamic_cast<EnvelopePanel*> (modulationTab.get()->getTabContentComponent(3));
-	auxEnvelope1->setName("auxEnvelope1");
-    auxEnvelope1->setDecayTime(3.0f);
+	//EnvelopePanel* auxEnvelope1 = dynamic_cast<EnvelopePanel*> (modulationTab.get()->getTabContentComponent(3));
+	//auxEnvelope1->setName("auxEnvelope1");
+	//auxEnvelope1->setDecayTime(3.0f);
 
-	EnvelopePanel* auxEnvelope2 = dynamic_cast<EnvelopePanel*> (modulationTab.get()->getTabContentComponent(4));
-	auxEnvelope2->setName("auxEnvelope2");
-	auxEnvelope1->setDecayTime(3.0f);
+	//EnvelopePanel* auxEnvelope2 = dynamic_cast<EnvelopePanel*> (modulationTab.get()->getTabContentComponent(4));
+	//auxEnvelope2->setName("auxEnvelope2");
+	//auxEnvelope2->setDecayTime(3.0f);
 
-	auxEnvelope1->addChangeListener(this);
-	auxEnvelope2->addChangeListener(this);
+	//// auxEnvelope1->addChangeListener(this);
+	//auxEnvelope2->addChangeListener(this);
 	delayPanel.get()->addChangeListener(this);
 	reverbPanel.get()->addChangeListener(this);
 	chorusPanel.get()->addChangeListener(this);
@@ -425,8 +398,8 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 	ch4Panel.get()->initAttachments();
 
 	ampEnvelope.get()->initAttachments();
-	auxEnvelope1->initAttachments();
-	auxEnvelope2->initAttachments();
+	filterEnvelope->initAttachments();
+	// auxEnvelope2->initAttachments();
 
 	lfo1->setName("lfo1");
 	lfo2->setName("lfo2");
@@ -454,125 +427,127 @@ MainUI::MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 	resized();
 
-    //[/Constructor]
+	//[/Constructor]
 }
 
 MainUI::~MainUI()
 {
-    //[Destructor_pre]. You can add your own custom destruction code here..
+	//[Destructor_pre]. You can add your own custom destruction code here..
 	removeAllChangeListeners();
 	delete dlg;
 
-    //[/Destructor_pre]
+	//[/Destructor_pre]
 
-    GlassPanel = nullptr;
-    ModulationGroup = nullptr;
-    groupComponent = nullptr;
-    groupComponent3 = nullptr;
-    filterGroup1 = nullptr;
-    osc1Panel = nullptr;
-    osc3Panel = nullptr;
-    osc2Panel = nullptr;
-    ampEnvelope = nullptr;
-    mainVolume = nullptr;
-    volumeLabel = nullptr;
-    mixerGroiup = nullptr;
-    ch1Panel = nullptr;
-    ch2Panel = nullptr;
-    ch3Panel = nullptr;
-    ch4Panel = nullptr;
-    osc4Panel = nullptr;
-    FXGroup = nullptr;
-    reverbPanel = nullptr;
-    delayPanel = nullptr;
-    chorusPanel = nullptr;
-    presetButton = nullptr;
-    saveButton = nullptr;
-    presetCombo = nullptr;
-    fmSlider = nullptr;
-    distGroup = nullptr;
-    distortionPanel = nullptr;
-    arpGroup = nullptr;
-    arpPanel = nullptr;
-    modulationTab = nullptr;
-    filterPanel1 = nullptr;
-    filterGroup2 = nullptr;
-    filterPanel2 = nullptr;
-    filterModeLabel = nullptr;
-    filterModeCombo = nullptr;
-    cutoffLink = nullptr;
-    label = nullptr;
-    mainDisplay = nullptr;
-    modMatrix = nullptr;
+	GlassPanel = nullptr;
+	ModulationGroup = nullptr;
+	groupComponent = nullptr;
+	groupComponent3 = nullptr;
+	filterGroup1 = nullptr;
+	osc1Panel = nullptr;
+	osc3Panel = nullptr;
+	osc2Panel = nullptr;
+	osc4Panel = nullptr;
+	ampEnvelope = nullptr;
+	filterEnvelope = nullptr;
+	mainVolume = nullptr;
+	volumeLabel = nullptr;
+	mixerGriup = nullptr;
+	ch1Panel = nullptr;
+	ch2Panel = nullptr;
+	ch3Panel = nullptr;
+	ch4Panel = nullptr;
+	osc4Panel = nullptr;
+	FXGroup = nullptr;
+	reverbPanel = nullptr;
+	delayPanel = nullptr;
+	chorusPanel = nullptr;
+	presetButton = nullptr;
+	saveButton = nullptr;
+	presetCombo = nullptr;
+	fmSlider = nullptr;
+	distGroup = nullptr;
+	distortionPanel = nullptr;
+	arpGroup = nullptr;
+	arpPanel = nullptr;
+	modulationTab = nullptr;
+	filterPanel1 = nullptr;
+	filterGroup2 = nullptr;
+	filterPanel2 = nullptr;
+	filterModeLabel = nullptr;
+	filterModeCombo = nullptr;
+	cutoffLink = nullptr;
+	label = nullptr;
+	mainDisplay = nullptr;
+	modMatrix = nullptr;
 
 
-    //[Destructor]. You can add your own custom destruction code here..
-    //[/Destructor]
+	//[Destructor]. You can add your own custom destruction code here..
+	//[/Destructor]
 }
 
 //==============================================================================
-void MainUI::paint (Graphics& g)
+void MainUI::paint(Graphics& g)
 {
-    //[UserPrePaint] Add your own custom painting code here..
-    //[/UserPrePaint]
+	//[UserPrePaint] Add your own custom painting code here..
+	//[/UserPrePaint]
 
-    g.fillAll (Colour (0xff606060));
+	g.fillAll(Colour(0xff333333));
 
-    //[UserPaint] Add your own custom painting code here..
+	//[UserPaint] Add your own custom painting code here..
 
-	g.setColour(Colours::white);
+	// g.setColour(Colours::white);
+
+	// g.drawImageAt(juce::ImageCache::getFromMemory(BinaryData::lupo_ui_png, BinaryData::lupo_ui_pngSize), 0, 0);
 
 
 
-
-
-    //[/UserPaint]
+	//[/UserPaint]
 }
 
 void MainUI::resized()
 {
-    //[UserPreResize] Add your own custom resize code here..
-    //[/UserPreResize]
+	//[UserPreResize] Add your own custom resize code here..
+	//[/UserPreResize]
 
-    //[UserResized] Add your own custom resize handling here..
-    //[/UserResized]
+	//[UserResized] Add your own custom resize handling here..
+	//[/UserResized]
 }
 
-void MainUI::sliderValueChanged (Slider* sliderThatWasMoved)
+void MainUI::sliderValueChanged(Slider* sliderThatWasMoved)
 {
-    //[UsersliderValueChanged_Pre]
-    //[/UsersliderValueChanged_Pre]
+	//[UsersliderValueChanged_Pre]
+	//[/UsersliderValueChanged_Pre]
 
-    if (sliderThatWasMoved == mainVolume.get())
-    {
-        //[UserSliderCode_mainVolume] -- add your slider handling code here..
+	if (sliderThatWasMoved == mainVolume.get())
+	{
+		//[UserSliderCode_mainVolume] -- add your slider handling code here..
 		model->mainVolume = sliderThatWasMoved->getValue();
-        //[/UserSliderCode_mainVolume]
-    }
-    else if (sliderThatWasMoved == fmSlider.get())
-    {
-        //[UserSliderCode_fmSlider] -- add your slider handling code here..
-        //[/UserSliderCode_fmSlider]
-    }
+		//[/UserSliderCode_mainVolume]
+	}
+	else if (sliderThatWasMoved == fmSlider.get())
+	{
+		//[UserSliderCode_fmSlider] -- add your slider handling code here..
+		//[/UserSliderCode_fmSlider]
+	}
 
-    //[UsersliderValueChanged_Post]
+	//[UsersliderValueChanged_Post]
 	sendChangeMessage();
-    //[/UsersliderValueChanged_Post]
+	//[/UsersliderValueChanged_Post]
 }
 
-void MainUI::buttonClicked (Button* buttonThatWasClicked)
+void MainUI::buttonClicked(Button* buttonThatWasClicked)
 {
-    //[UserbuttonClicked_Pre]
-    //[/UserbuttonClicked_Pre]
+	//[UserbuttonClicked_Pre]
+	//[/UserbuttonClicked_Pre]
 
-    if (buttonThatWasClicked == presetButton.get())
-    {
-        //[UserButtonCode_presetButton] -- add your button handler code here..
-        //[/UserButtonCode_presetButton]
-    }
-    else if (buttonThatWasClicked == saveButton.get())
-    {
-        //[UserButtonCode_saveButton] -- add your button handler code here..
+	if (buttonThatWasClicked == presetButton.get())
+	{
+		//[UserButtonCode_presetButton] -- add your button handler code here..
+		//[/UserButtonCode_presetButton]
+	}
+	else if (buttonThatWasClicked == saveButton.get())
+	{
+		//[UserButtonCode_saveButton] -- add your button handler code here..
 
 		processor->getValueTreeState()->getParameter("osc1Shape")->setValue(model->osc1Shape);
 		processor->getValueTreeState()->getParameter("osc2Shape")->setValue(model->osc2Shape);
@@ -609,7 +584,7 @@ void MainUI::buttonClicked (Button* buttonThatWasClicked)
 		}
 
 		if (!proceed) {
-			proceed = AlertWindow::showOkCancelBox(AlertWindow::QuestionIcon, "Warning", "A preset with this name exists already, overwrite?", "Ok", "Fuck! No!",this);
+			proceed = AlertWindow::showOkCancelBox(AlertWindow::QuestionIcon, "Warning", "A preset with this name exists already, overwrite?", "Ok", "Fuck! No!", this, nullptr);
 		}
 
 
@@ -647,37 +622,37 @@ void MainUI::buttonClicked (Button* buttonThatWasClicked)
 		}
 
 		updatePresetList();
-        //[/UserButtonCode_saveButton]
-    }
-    else if (buttonThatWasClicked == cutoffLink.get())
-    {
-        //[UserButtonCode_cutoffLink] -- add your button handler code here..
-        //[/UserButtonCode_cutoffLink]
-    }
+		//[/UserButtonCode_saveButton]
+	}
+	else if (buttonThatWasClicked == cutoffLink.get())
+	{
+		//[UserButtonCode_cutoffLink] -- add your button handler code here..
+		//[/UserButtonCode_cutoffLink]
+	}
 
-    //[UserbuttonClicked_Post]
-    //[/UserbuttonClicked_Post]
+	//[UserbuttonClicked_Post]
+	//[/UserbuttonClicked_Post]
 }
 
-void MainUI::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
+void MainUI::comboBoxChanged(ComboBox* comboBoxThatHasChanged)
 {
-    //[UsercomboBoxChanged_Pre]
-    //[/UsercomboBoxChanged_Pre]
+	//[UsercomboBoxChanged_Pre]
+	//[/UsercomboBoxChanged_Pre]
 
-    if (comboBoxThatHasChanged == presetCombo.get())
-    {
-        //[UserComboBoxCode_presetCombo] -- add your combo box handling code here..
+	if (comboBoxThatHasChanged == presetCombo.get())
+	{
+		//[UserComboBoxCode_presetCombo] -- add your combo box handling code here..
 		processor->setSelectedProgram(comboBoxThatHasChanged->getText());
-        //[/UserComboBoxCode_presetCombo]
-    }
-    else if (comboBoxThatHasChanged == filterModeCombo.get())
-    {
-        //[UserComboBoxCode_filterModeCombo] -- add your combo box handling code here..
-        //[/UserComboBoxCode_filterModeCombo]
-    }
+		//[/UserComboBoxCode_presetCombo]
+	}
+	else if (comboBoxThatHasChanged == filterModeCombo.get())
+	{
+		//[UserComboBoxCode_filterModeCombo] -- add your combo box handling code here..
+		//[/UserComboBoxCode_filterModeCombo]
+	}
 
-    //[UsercomboBoxChanged_Post]
-    //[/UsercomboBoxChanged_Post]
+	//[UsercomboBoxChanged_Post]
+	//[/UsercomboBoxChanged_Post]
 }
 
 
@@ -694,14 +669,14 @@ void MainUI::updatePresetList() {
 	}
 	for (int i = 0; i < presetCombo.get()->getNumItems(); i++) {
 		if (presetCombo.get()->getItemText(i) == processor->selectedProgram) {
-			presetCombo->setSelectedItemIndex(i,juce::NotificationType::dontSendNotification);
+			presetCombo->setSelectedItemIndex(i, juce::NotificationType::dontSendNotification);
 			break;
 		}
 	}
 
 }
 
-Component * MainUI::findComponentAtMousePosition(Point<int> mousePos, Component* parent)
+Component* MainUI::findComponentAtMousePosition(Point<int> mousePos, Component* parent)
 {
 	for (int i = 0; i < parent->getNumChildComponents(); i++) {
 		Component* child = parent->getChildComponent(i);
@@ -716,20 +691,21 @@ Component * MainUI::findComponentAtMousePosition(Point<int> mousePos, Component*
 	return nullptr;
 }
 
-void MainUI::parameterChanged(const String & parameterID, float newValue)
+void MainUI::parameterChanged(const String& parameterID, float newValue)
 {
 	for (int i = 0; i < processor->getNumParameters(); i++) {
 		if (processor->getParameterID(i) == parameterID) {
-			mainDisplay->setText(processor->getParameters().getUnchecked(i)->getLabel() + " - " + String(newValue,2));
+			juce::MessageManager::callAsync([this, newValue, i]()
+			{					
+				mainDisplay->setText(processor->getParameters().getUnchecked(i)->getLabel() + " - " + String(newValue, 2));					
+			});
+
 			break;
 		}
 	}
-
 }
 
-
-
-void MainUI::mouseDown(const MouseEvent & event)
+void MainUI::mouseDown(const MouseEvent& event)
 {
 	/*
 	GlassPanel.get()->setVisible(true);
@@ -741,7 +717,7 @@ void MainUI::mouseDown(const MouseEvent & event)
 	*/
 }
 
-void MainUI::mouseUp(const MouseEvent & event)
+void MainUI::mouseUp(const MouseEvent& event)
 {
 	/*
 	GlassPanel.get()->setVisible(false);
@@ -755,7 +731,7 @@ void MainUI::mouseUp(const MouseEvent & event)
 	*/
 }
 
-void MainUI::mouseDrag(const MouseEvent & event)
+void MainUI::mouseDrag(const MouseEvent& event)
 {
 	/*
 	if (GlassPanel.get()->isVisible()) {
@@ -766,7 +742,7 @@ void MainUI::mouseDrag(const MouseEvent & event)
 	*/
 }
 
-void MainUI::mouseMove(const MouseEvent & event)
+void MainUI::mouseMove(const MouseEvent& event)
 {
 	/*
 	 mousePos = event.getPosition();
@@ -784,147 +760,147 @@ void MainUI::mouseMove(const MouseEvent & event)
 #if 0
 /*  -- Projucer information section --
 
-    This is where the Projucer stores the metadata that describe this GUI layout, so
-    make changes in here at your peril!
+	This is where the Projucer stores the metadata that describe this GUI layout, so
+	make changes in here at your peril!
 
 BEGIN_JUCER_METADATA
 
 <JUCER_COMPONENT documentType="Component" className="MainUI" componentName=""
-                 parentClasses="public Component, public ChangeBroadcaster, public ChangeListener, public AudioProcessorValueTreeState::Listener"
-                 constructorParams="LupoAudioProcessor* processor, AttachmentFactory* factory"
-                 variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
-                 overlayOpacity="0.330" fixedSize="0" initialWidth="1300" initialHeight="900">
+				 parentClasses="public Component, public ChangeBroadcaster, public ChangeListener, public AudioProcessorValueTreeState::Listener"
+				 constructorParams="LupoAudioProcessor* processor, AttachmentFactory* factory"
+				 variableInitialisers="" snapPixels="8" snapActive="1" snapShown="1"
+				 overlayOpacity="0.330" fixedSize="0" initialWidth="1300" initialHeight="900">
   <BACKGROUND backgroundColour="ff606060"/>
   <GENERICCOMPONENT name="GlassPanel" id="341b1345fa2fc01f" memberName="GlassPanel"
-                    virtualName="" explicitFocusOrder="0" pos="0 0 992 840" class="Panel"
-                    params=""/>
+					virtualName="" explicitFocusOrder="0" pos="0 0 992 840" class="Panel"
+					params=""/>
   <GROUPCOMPONENT name="ModulationGroup" id="bbbc621090753013" memberName="ModulationGroup"
-                  virtualName="" explicitFocusOrder="0" pos="8 544 792 144" title="Modulation"/>
+				  virtualName="" explicitFocusOrder="0" pos="8 544 792 144" title="Modulation"/>
   <GROUPCOMPONENT name="new group" id="fddf59086c1c83a4" memberName="groupComponent"
-                  virtualName="" explicitFocusOrder="0" pos="592 48 392 104" title="Amplifier"/>
+				  virtualName="" explicitFocusOrder="0" pos="592 48 392 104" title="Amplifier"/>
   <GROUPCOMPONENT name="new group" id="be488b129ef124bc" memberName="groupComponent3"
-                  virtualName="" explicitFocusOrder="0" pos="8 48 456 496" title="Oscilators"/>
+				  virtualName="" explicitFocusOrder="0" pos="8 48 456 496" title="Oscilators"/>
   <GROUPCOMPONENT name="filterGroup1" id="d21f32d49ecf1836" memberName="filterGroup1"
-                  virtualName="" explicitFocusOrder="0" pos="592 208 392 112" title="Filter 1"/>
+				  virtualName="" explicitFocusOrder="0" pos="592 208 392 112" title="Filter 1"/>
   <GENERICCOMPONENT name="osc1Panel" id="de6e8c64c8286c8d" memberName="osc1Panel"
-                    virtualName="" explicitFocusOrder="0" pos="16 64 216 232" class="OscillatorPanel"
-                    params="model, factory"/>
+					virtualName="" explicitFocusOrder="0" pos="16 64 216 232" class="OscillatorPanel"
+					params="model, factory"/>
   <GENERICCOMPONENT name="osc3Panel" id="6bf55931fc2de34d" memberName="osc3Panel"
-                    virtualName="" explicitFocusOrder="0" pos="16 304 216 232" class="OscillatorPanel"
-                    params="model, factory"/>
+					virtualName="" explicitFocusOrder="0" pos="16 304 216 232" class="OscillatorPanel"
+					params="model, factory"/>
   <GENERICCOMPONENT name="osc2Panel" id="ffc4e13aca23b88e" memberName="osc2Panel"
-                    virtualName="" explicitFocusOrder="0" pos="240 64 216 232" class="OscillatorPanel"
-                    params="model, factory"/>
+					virtualName="" explicitFocusOrder="0" pos="240 64 216 232" class="OscillatorPanel"
+					params="model, factory"/>
   <GENERICCOMPONENT name="ampEnvelope" id="2e9f4701bbd4595c" memberName="ampEnvelope"
-                    virtualName="" explicitFocusOrder="0" pos="608 64 288 80" class="EnvelopePanel"
-                    params="model, factory"/>
+					virtualName="" explicitFocusOrder="0" pos="608 64 288 80" class="EnvelopePanel"
+					params="model, factory"/>
   <SLIDER name="mainVolume" id="8750195bcc6f4ab5" memberName="mainVolume"
-          virtualName="" explicitFocusOrder="0" pos="904 72 56 56" min="0.0"
-          max="2.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
-          textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
-          needsCallback="1"/>
+		  virtualName="" explicitFocusOrder="0" pos="904 72 56 56" min="0.0"
+		  max="2.0" int="0.01" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
+		  textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
+		  needsCallback="1"/>
   <LABEL name="volumeLabel" id="594cc943c91cef9d" memberName="volumeLabel"
-         virtualName="" explicitFocusOrder="0" pos="904 120 64 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Main volume" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+		 virtualName="" explicitFocusOrder="0" pos="904 120 64 24" edTextCol="ff000000"
+		 edBkgCol="0" labelText="Main volume" editableSingleClick="0"
+		 editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+		 fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <GROUPCOMPONENT name="mixerGroiup" id="3a76ea384b35b47d" memberName="mixerGroiup"
-                  virtualName="" explicitFocusOrder="0" pos="464 48 128 496" title="Mixer"/>
+				  virtualName="" explicitFocusOrder="0" pos="464 48 128 496" title="Mixer"/>
   <GENERICCOMPONENT name="channel1" id="a653fea415c89991" memberName="ch1Panel" virtualName=""
-                    explicitFocusOrder="0" pos="472 64 112 96" class="MixerChannelPanel"
-                    params="model, factory"/>
+					explicitFocusOrder="0" pos="472 64 112 96" class="MixerChannelPanel"
+					params="model, factory"/>
   <GENERICCOMPONENT name="channel2" id="f3b06b13d2a0d971" memberName="ch2Panel" virtualName=""
-                    explicitFocusOrder="0" pos="472 160 112 96" class="MixerChannelPanel"
-                    params="model, factory"/>
+					explicitFocusOrder="0" pos="472 160 112 96" class="MixerChannelPanel"
+					params="model, factory"/>
   <GENERICCOMPONENT name="channel3" id="6786cb4ee8a2b52d" memberName="ch3Panel" virtualName=""
-                    explicitFocusOrder="0" pos="472 256 112 96" class="MixerChannelPanel"
-                    params="model, factory"/>
+					explicitFocusOrder="0" pos="472 256 112 96" class="MixerChannelPanel"
+					params="model, factory"/>
   <GENERICCOMPONENT name="channel4" id="fff0d24cb459d4de" memberName="ch4Panel" virtualName=""
-                    explicitFocusOrder="0" pos="472 352 112 96" class="MixerChannelPanel"
-                    params="model, factory"/>
+					explicitFocusOrder="0" pos="472 352 112 96" class="MixerChannelPanel"
+					params="model, factory"/>
   <GENERICCOMPONENT name="osc4Panel" id="e90f31bb4430d4b4" memberName="osc4Panel"
-                    virtualName="" explicitFocusOrder="0" pos="240 304 216 232" class="OscillatorPanel"
-                    params="model, factory"/>
+					virtualName="" explicitFocusOrder="0" pos="240 304 216 232" class="OscillatorPanel"
+					params="model, factory"/>
   <GROUPCOMPONENT name="FXGroup" id="85cf2fc9be4f7bcf" memberName="FXGroup" virtualName=""
-                  explicitFocusOrder="0" pos="8 688 976 136" title="FX"/>
+				  explicitFocusOrder="0" pos="8 688 976 136" title="FX"/>
   <GENERICCOMPONENT name="reverbPanel" id="c574c98e1dd9ac8a" memberName="reverbPanel"
-                    virtualName="" explicitFocusOrder="0" pos="16 704 352 112" class="ReverbPanel"
-                    params="model, factory"/>
+					virtualName="" explicitFocusOrder="0" pos="16 704 352 112" class="ReverbPanel"
+					params="model, factory"/>
   <GENERICCOMPONENT name="delayPanel" id="f7f617a6d8249b19" memberName="delayPanel"
-                    virtualName="" explicitFocusOrder="0" pos="376 704 264 112" class="DelayPanel"
-                    params="model, factory"/>
+					virtualName="" explicitFocusOrder="0" pos="376 704 264 112" class="DelayPanel"
+					params="model, factory"/>
   <GENERICCOMPONENT name="new component" id="958d847dca958b2b" memberName="chorusPanel"
-                    virtualName="" explicitFocusOrder="0" pos="648 704 320 112" class="ChorusPanel"
-                    params="model, factory"/>
+					virtualName="" explicitFocusOrder="0" pos="648 704 320 112" class="ChorusPanel"
+					params="model, factory"/>
   <TEXTBUTTON name="presetButton" id="eace43cbe17dcd89" memberName="presetButton"
-              virtualName="" explicitFocusOrder="0" pos="16 16 64 24" bgColOff="ff808080"
-              buttonText="Presets" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+			  virtualName="" explicitFocusOrder="0" pos="16 16 64 24" bgColOff="ff808080"
+			  buttonText="Presets" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <TEXTBUTTON name="saveButton" id="18cedefaea6c1f80" memberName="saveButton"
-              virtualName="" explicitFocusOrder="0" pos="320 16 64 24" bgColOff="ff808080"
-              buttonText="Save" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
+			  virtualName="" explicitFocusOrder="0" pos="320 16 64 24" bgColOff="ff808080"
+			  buttonText="Save" connectedEdges="0" needsCallback="1" radioGroupId="0"/>
   <COMBOBOX name="presetCombo" id="d63a422738bbc6a6" memberName="presetCombo"
-            virtualName="" explicitFocusOrder="0" pos="88 16 224 24" editable="1"
-            layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
+			virtualName="" explicitFocusOrder="0" pos="88 16 224 24" editable="1"
+			layout="33" items="" textWhenNonSelected="" textWhenNoItems="(no choices)"/>
   <SLIDER name="fmSlider" id="69f0d2ae761ae29c" memberName="fmSlider" virtualName=""
-          explicitFocusOrder="0" pos="496 464 64 56" min="0.0" max="1.0"
-          int="0.0" style="RotaryVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
-          textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
+		  explicitFocusOrder="0" pos="496 464 64 56" min="0.0" max="1.0"
+		  int="0.0" style="RotaryVerticalDrag" textBoxPos="NoTextBox" textBoxEditable="1"
+		  textBoxWidth="80" textBoxHeight="20" skewFactor="1.0" needsCallback="1"/>
   <GROUPCOMPONENT name="distGroup" id="7ba7ed3f872d0a19" memberName="distGroup"
-                  virtualName="" explicitFocusOrder="0" pos="592 456 392 88" title="Distortion"/>
+				  virtualName="" explicitFocusOrder="0" pos="592 456 392 88" title="Distortion"/>
   <GENERICCOMPONENT name="distortionPanel" id="aca878e23294d78d" memberName="distortionPanel"
-                    virtualName="" explicitFocusOrder="0" pos="608 472 288 64" class="DistortionPanel"
-                    params="model, factory"/>
+					virtualName="" explicitFocusOrder="0" pos="608 472 288 64" class="DistortionPanel"
+					params="model, factory"/>
   <GROUPCOMPONENT name="arpGroup" id="9465491d90d794f8" memberName="arpGroup" virtualName=""
-                  explicitFocusOrder="0" pos="800 544 184 144" title="Arpeggiator"/>
+				  explicitFocusOrder="0" pos="800 544 184 144" title="Arpeggiator"/>
   <GENERICCOMPONENT name="arpPanel" id="28f6a1e250ee9be9" memberName="arpPanel" virtualName=""
-                    explicitFocusOrder="0" pos="808 560 168 120" class="ArpPanel"
-                    params="factory,arp"/>
+					explicitFocusOrder="0" pos="808 560 168 120" class="ArpPanel"
+					params="factory,arp"/>
   <TABBEDCOMPONENT name="modulationTab" id="272892ff46aad47f" memberName="modulationTab"
-                   virtualName="" explicitFocusOrder="0" pos="24 568 264 120" orientation="bottom"
-                   tabBarDepth="22" initialTab="0">
-    <TAB name="LFO 1" colour="0" useJucerComp="0" contentClassName="LFOPanel"
-         constructorParams="model, factory" jucerComponentFile=""/>
-    <TAB name="LFO 2" colour="0" useJucerComp="0" contentClassName="LFOPanel"
-         constructorParams="model, factory" jucerComponentFile=""/>
-    <TAB name="LFO 3" colour="0" useJucerComp="0" contentClassName="LFOPanel"
-         constructorParams="model, factory" jucerComponentFile=""/>
-    <TAB name="ENV 1" colour="0" useJucerComp="0" contentClassName="EnvelopePanel"
-         constructorParams="model, factory" jucerComponentFile=""/>
-    <TAB name="ENV 2" colour="0" useJucerComp="0" contentClassName="EnvelopePanel"
-         constructorParams="model, factory" jucerComponentFile=""/>
+				   virtualName="" explicitFocusOrder="0" pos="24 568 264 120" orientation="bottom"
+				   tabBarDepth="22" initialTab="0">
+	<TAB name="LFO 1" colour="0" useJucerComp="0" contentClassName="LFOPanel"
+		 constructorParams="model, factory" jucerComponentFile=""/>
+	<TAB name="LFO 2" colour="0" useJucerComp="0" contentClassName="LFOPanel"
+		 constructorParams="model, factory" jucerComponentFile=""/>
+	<TAB name="LFO 3" colour="0" useJucerComp="0" contentClassName="LFOPanel"
+		 constructorParams="model, factory" jucerComponentFile=""/>
+	<TAB name="ENV 1" colour="0" useJucerComp="0" contentClassName="EnvelopePanel"
+		 constructorParams="model, factory" jucerComponentFile=""/>
+	<TAB name="ENV 2" colour="0" useJucerComp="0" contentClassName="EnvelopePanel"
+		 constructorParams="model, factory" jucerComponentFile=""/>
   </TABBEDCOMPONENT>
   <GENERICCOMPONENT name="filterPanel1" id="ab18dcaf405ed80c" memberName="filterPanel1"
-                    virtualName="" explicitFocusOrder="0" pos="608 224 360 88" class="FilterPanel"
-                    params="model, factory"/>
+					virtualName="" explicitFocusOrder="0" pos="608 224 360 88" class="FilterPanel"
+					params="model, factory"/>
   <GROUPCOMPONENT name="filterGroup2" id="9faaaa60818a688b" memberName="filterGroup2"
-                  virtualName="" explicitFocusOrder="0" pos="592 344 392 112" title="Filter 2"/>
+				  virtualName="" explicitFocusOrder="0" pos="592 344 392 112" title="Filter 2"/>
   <GENERICCOMPONENT name="filterPanel2" id="a87879f1db2ff94f" memberName="filterPanel2"
-                    virtualName="" explicitFocusOrder="0" pos="608 360 360 80" class="FilterPanel"
-                    params="model, factory"/>
+					virtualName="" explicitFocusOrder="0" pos="608 360 360 80" class="FilterPanel"
+					params="model, factory"/>
   <LABEL name="filterModeLabel" id="fbc4b7abb7ac3ff4" memberName="filterModeLabel"
-         virtualName="" explicitFocusOrder="0" pos="824 324 64 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Filter mode" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+		 virtualName="" explicitFocusOrder="0" pos="824 324 64 24" edTextCol="ff000000"
+		 edBkgCol="0" labelText="Filter mode" editableSingleClick="0"
+		 editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+		 fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <COMBOBOX name="new combo box" id="626a4dd7c895070d" memberName="filterModeCombo"
-            virtualName="" explicitFocusOrder="0" pos="896 324 88 24" editable="0"
-            layout="33" items="Serial&#10;Parallel" textWhenNonSelected=""
-            textWhenNoItems="(no choices)"/>
+			virtualName="" explicitFocusOrder="0" pos="896 324 88 24" editable="0"
+			layout="33" items="Serial&#10;Parallel" textWhenNonSelected=""
+			textWhenNoItems="(no choices)"/>
   <TOGGLEBUTTON name="cutoffLink" id="9912bdda16f7b389" memberName="cutoffLink"
-                virtualName="" explicitFocusOrder="0" pos="688 324 32 24" buttonText=""
-                connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
+				virtualName="" explicitFocusOrder="0" pos="688 324 32 24" buttonText=""
+				connectedEdges="0" needsCallback="1" radioGroupId="0" state="0"/>
   <LABEL name="new label" id="266b573f0945ea7c" memberName="label" virtualName=""
-         explicitFocusOrder="0" pos="720 324 64 24" edTextCol="ff000000"
-         edBkgCol="0" labelText="Cutoff link" editableSingleClick="0"
-         editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
-         fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
+		 explicitFocusOrder="0" pos="720 324 64 24" edTextCol="ff000000"
+		 edBkgCol="0" labelText="Cutoff link" editableSingleClick="0"
+		 editableDoubleClick="0" focusDiscardsChanges="0" fontname="Default font"
+		 fontsize="12.0" kerning="0.0" bold="0" italic="0" justification="33"/>
   <TEXTEDITOR name="mainDisplay" id="f9a1e2075d65330a" memberName="mainDisplay"
-              virtualName="" explicitFocusOrder="0" pos="592 152 392 56" textcol="ffff4400"
-              bkgcol="ff000000" initialText="" multiline="0" retKeyStartsLine="0"
-              readonly="1" scrollbars="0" caret="0" popupmenu="0"/>
+			  virtualName="" explicitFocusOrder="0" pos="592 152 392 56" textcol="ffff4400"
+			  bkgcol="ff000000" initialText="" multiline="0" retKeyStartsLine="0"
+			  readonly="1" scrollbars="0" caret="0" popupmenu="0"/>
   <GENERICCOMPONENT name="modMatrix" id="19567bfe8c90898e" memberName="modMatrix"
-                    virtualName="" explicitFocusOrder="0" pos="296 560 496 120" class="ModPanel"
-                    params="this-&gt;synth-&gt;getModMatrix(), model, factory"/>
+					virtualName="" explicitFocusOrder="0" pos="296 560 496 120" class="ModPanel"
+					params="this-&gt;synth-&gt;getModMatrix(), model, factory"/>
 </JUCER_COMPONENT>
 
 END_JUCER_METADATA
@@ -1271,9 +1247,9 @@ static const unsigned char resource_MainUI_logo_png[] = { 137,80,78,71,13,10,26,
 92,159,105,203,67,179,10,78,45,77,80,230,250,185,150,19,75,171,27,199,69,117,24,227,158,10,140,113,81,137,171,173,210,117,190,12,99,220,84,134,49,190,58,198,137,228,76,49,26,23,181,43,74,214,136,136,136,
 153,182,252,242,213,64,65,68,68,68,218,19,141,139,196,118,62,159,172,17,17,17,17,17,17,17,17,145,182,211,218,65,17,17,17,17,17,17,17,17,31,162,100,141,136,136,136,136,136,136,136,136,15,81,178,70,68,68,
 68,68,68,68,68,196,135,40,89,35,34,34,34,34,34,34,34,226,67,148,172,17,17,17,17,17,17,17,17,241,33,74,214,136,136,136,136,136,136,136,136,248,16,37,107,68,68,68,68,68,68,68,68,124,136,146,53,34,34,34,
-34,34,34,34,34,62,68,201,26,17,17,17,17,17,17,17,17,31,242,255,1,156,218,214,33,190,190,113,253,0,0,0,0,73,69,78,68,174,66,96,130,0,0};
+34,34,34,34,34,62,68,201,26,17,17,17,17,17,17,17,17,31,242,255,1,156,218,214,33,190,190,113,253,0,0,0,0,73,69,78,68,174,66,96,130,0,0 };
 
-const char* MainUI::logo_png = (const char*) resource_MainUI_logo_png;
+const char* MainUI::logo_png = (const char*)resource_MainUI_logo_png;
 const int MainUI::logo_pngSize = 19035;
 
 
