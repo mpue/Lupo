@@ -148,8 +148,10 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 		v->getFilter1()->coefficients(sampleRate, 15000.0f, 1.0f);
 		v->getFilter2()->coefficients(sampleRate, 15000.0f, 1.0f);
 		v->setSampleRate(sampleRate);
-		// v->getFilter1()->addModulator(lfo1.get());
+		
+		// CRITICAL FIX: Add filter envelope to BOTH filters!
 		v->getFilter1()->addModulator(v->getFilterEnvelope());
+		v->getFilter2()->addModulator(v->getFilterEnvelope());
 	}
 
 	lfo1->setSampleRate(sampleRate);
@@ -281,6 +283,12 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 			env->process();
 		}
 	}
+
+	// REMOVED: This was causing the filter envelope to be processed twice!
+	// Filter envelopes are now processed in Voice::processBlock
+	// for (auto& voice : voices) {
+	//     voice->getFilterEnvelope()->process();
+	// }
 
 	// Process LFOs for the entire block
 	for (int sample = 0; sample < numSamples; ++sample) {
@@ -451,10 +459,10 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 
 	if (parameterID == "cutoff2") {
 		model->cutoff2 = newValue;
+		// CRITICAL FIX: This should set FREQUENCY not RESONANCE!
 		for (auto& voice : voices) {
-			voice->getFilter2()->setResonance(newValue);
+			voice->getFilter2()->setFrequency(newValue);
 		}
-	
 	}
 	else if (parameterID == "resonance2") {
 		model->resonance2 = newValue;
