@@ -39,6 +39,7 @@ public:
     Oszillator* getOscillator(int num);
     
     float process(int channel);
+    void processBlock(AudioBuffer<float>& buffer);  // Neue optimierte Block-Verarbeitung
     
     void setNoteNumber(int number);
     int getNoteNumber() const;

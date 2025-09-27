@@ -122,6 +122,54 @@ float Voice::process(int channel)
     return (channel == 0) ? outL : outR;
 }
 
+// NEUE OPTIMIERTE BLOCK-VERARBEITUNG
+void Voice::processBlock(AudioBuffer<float>& buffer) {
+    const int numSamples = buffer.getNumSamples();
+    auto* leftChannel = buffer.getWritePointer(0);
+    auto* rightChannel = buffer.getWritePointer(1);
+
+    if (ampEnvelope->getState() == SynthLab::ADSR::env_idle) {
+        ampEnvelope->reset();
+        return; // Voice ist stumm
+    }
+
+    // Block-basierte Envelope-Verarbeitung
+    for (int sample = 0; sample < numSamples; ++sample) {
+        float amplitude = (velocity / 127.0f) * ampEnvelope->process();
+        float outL = 0.0f;
+        float outR = 0.0f;
+
+        for (int i = 0; i < 4; i++) {
+            if (!oscillators[i]->enabled)
+                continue;
+
+            if (i == 1 && oscillators[i - 1]->enabled && oscillators[i - 1]->isSync()) {
+                oscillators[i - 1]->reset();
+            }
+
+            float oscSample = oscillators[i]->process();
+            
+            if (modulator != nullptr) {
+                oscillators[i]->setPitchMod(modulator->getOutput() * this->modAmount);
+            }
+
+            // Stereo-Panning berechnen
+            float pan = oscillators[i]->getPan();
+            float leftGain = fast_trig::sin_fast(((float)M_PI * (pan + 1.0f) / 4.0f));
+            float rightGain = fast_trig::cos_fast(((float)M_PI * (pan + 1.0f) / 4.0f));
+
+            outL += oscSample * leftGain * amplitude;
+            outR += oscSample * rightGain * amplitude;
+        }
+
+        leftChannel[sample] = outL;
+        rightChannel[sample] = outR;
+    }
+
+    // Filter auf gesamten Block anwenden (effizienter)
+    filter1->processStereo(leftChannel, rightChannel, numSamples);
+    filter2->processStereo(leftChannel, rightChannel, numSamples);
+}
 
 void Voice::setNoteNumber(int number) {
     this->noteNumber = number;

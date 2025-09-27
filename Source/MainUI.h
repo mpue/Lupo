@@ -123,6 +123,7 @@ private:
     std::unique_ptr<OscillatorPanel> osc4Panel;
     std::unique_ptr<EnvelopePanel> ampEnvelope;
     std::unique_ptr<EnvelopePanel> filterEnvelope;
+    std::unique_ptr<GroupComponent> filterEnvelopeGroup;
     std::unique_ptr<Slider> mainVolume;
     std::unique_ptr<Label> volumeLabel;
     std::unique_ptr<GroupComponent> mixerGriup;

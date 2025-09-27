@@ -28,8 +28,8 @@ SynthLab::ADSR::ADSR(void) {
     setDecayRate(1 * 48000);
     setReleaseRate(0);
     setSustainLevel(1.0);
-    setTargetRatioA(0.001);
-    setTargetRatioDR(0.001);
+    setTargetRatioA(0.01);
+    setTargetRatioDR(0.01);
     setModAmount(1.0);
 }
 
@@ -47,6 +47,7 @@ float SynthLab::ADSR::getAttackRate() {
 }
 
 void SynthLab::ADSR::setDecayRate(float rate) {
+    rate /= 32;
     decayRate = rate;
     decayCoef = calcCoef(rate, targetRatioDR);
     decayBase = (sustainLevel - targetRatioDR) * (1.0 - decayCoef);

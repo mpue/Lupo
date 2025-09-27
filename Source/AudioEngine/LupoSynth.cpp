@@ -32,6 +32,12 @@ LupoSynth::LupoSynth(Model* model, ModMatrix* modMatrix) {
 	delay = std::make_unique <StereoDelay>();
 	reverb = std::make_unique <StereoReverb>();
 	distortion = std::make_unique <Distortion>();
+	
+	// Initialize distortion with model values
+	distortion->controls.mode = static_cast<int>(model->distMode);
+	distortion->controls.drive = model->distDrive;
+	distortion->controls.mix = model->distMix;
+	
 	arp = std::make_unique<Arpeggiator>();
 	chorus = std::make_unique<StereoChorus>(sampleRate, bufferSize);
 
@@ -167,10 +173,11 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 				highestNote = noteNumber;
 			}
 
+			// Fix: Properly gate modulation envelopes when a note is played
 			for (auto& env : modEnvelopes) {
-				// if (numVoices == 0) {
-				// env->gate(true);
-				// }
+				if (numVoices == 0) {
+					env->gate(true);
+				}
 			}
 
 			if (voice) {
@@ -178,6 +185,7 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 					numVoices++;
 				}
 				voice->setPlaying(true);
+				// Fix: Make sure envelopes are properly gated
 				voice->getAmpEnvelope()->gate(true);
 				voice->getFilterEnvelope()->gate(true);
 				voice->setNoteAndVelocity(noteNumber, m.getVelocity());
@@ -192,6 +200,7 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 
 			for (auto& voice : voices) {
 				if (voice->isPlaying() && voice->getNoteNumber() == noteNumber) {
+					// Fix: Properly release envelopes
 					voice->getAmpEnvelope()->gate(false);
 					voice->getFilterEnvelope()->gate(false);
 					numVoices--;
@@ -202,7 +211,7 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 
 			if (numVoices <= 0) {
 				for (auto& env : modEnvelopes) {
-					// env->gate(false);
+					env->gate(false);
 				}
 				highestNote = 0;
 				numVoices = 0; // Schutz
@@ -255,24 +264,59 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 	this->arp->processBlock(buffer, midiMessages);
 	this->processMidi(midiMessages);
 
-	for (int sample = 0; sample < buffer.getNumSamples(); ++sample) {
+	// OPTIMIERT: Block-basierte Verarbeitung statt Sample-für-Sample
+	const int numSamples = buffer.getNumSamples();
+	auto* leftChannel = buffer.getWritePointer(0);
+	auto* rightChannel = buffer.getWritePointer(1);
 
-		float valueL = 0;
-		float valueR = 0;
+	// Fix: Process modulation envelopes
+	for (auto& env : modEnvelopes) {
+		// Process each modulation envelope for the entire block
+		for (int sample = 0; sample < numSamples; ++sample) {
+			env->process();
+		}
+	}
 
-		for (auto& voice : voices) {
-			if (voice->getAmpEnvelope()->getState() != SynthLab::ADSR::env_idle) {
-				valueL += voice->process(0) * mainVolume * 4;
-				valueR += voice->process(1) * mainVolume * 4;
+	// Process LFOs for the entire block
+	for (int sample = 0; sample < numSamples; ++sample) {
+		lfo1->process();
+		lfo2->process();
+		lfo3->process();
+	}
+
+	// Temp-Buffer für Stereo-Voice-Verarbeitung
+	AudioBuffer<float> voiceBuffer(2, numSamples);
+
+	for (auto& voice : voices) {
+		if (voice->getAmpEnvelope()->getState() != SynthLab::ADSR::env_idle) {
+			voiceBuffer.clear();
+			
+			// Voice verarbeitet den ganzen Block in einem Durchgang
+			voice->processBlock(voiceBuffer);
+			
+			// Stereo-Mix mit Skalierung
+			const float gain = mainVolume * 4.0f;
+			for (int sample = 0; sample < numSamples; ++sample) {
+				leftChannel[sample] += voiceBuffer.getSample(0, sample) * gain;
+				rightChannel[sample] += voiceBuffer.getSample(1, sample) * gain;
 			}
 		}
+	}
 
-		buffer.addSample(0, sample, distortion->processSample(valueL));
-		buffer.addSample(1, sample, distortion->processSample(valueR));
+	// Matrix nur einmal pro Block verarbeiten (nicht pro Sample!)
+	matrix->process();
 
-		matrix->process();
-		// modEnvelopes->at(0)->process();
-		// lfo1->process();
+	// Fix: Sync distortion parameters from model before processing
+	distortion->controls.mode = static_cast<int>(model->distMode);
+	distortion->controls.drive = model->distDrive;
+	distortion->controls.mix = model->distMix;
+
+	// Distortion processing - only apply if enabled (mix > 0 or drive > 1)
+	if (model->distMix > 0.0f || model->distDrive > 1.0f) {
+		for (int sample = 0; sample < numSamples; ++sample) {
+			leftChannel[sample] = distortion->processSample(leftChannel[sample]);
+			rightChannel[sample] = distortion->processSample(rightChannel[sample]);
+		}
 	}
 
 	leftOut = buffer.getWritePointer(0);
@@ -289,7 +333,7 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 		reverb->processStereo(leftOut, rightOut, buffer.getNumSamples());
 	}
 
-	float masterGain = Decibels::decibelsToGain(model->outputGaindB); // z. B. 6 dB
+	float masterGain = Decibels::decibelsToGain(model->outputGaindB);
 	buffer.applyGain(masterGain);
 
 }
@@ -716,14 +760,19 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 	else if (parameterID == "lfo3Shape") {
 		lfo3->setMode(newValue);
 	}
+	
+	// Fix: Properly update distortion parameters in model AND distortion object
 	else if (parameterID == "distDrive") {
+		model->distDrive = newValue;
 		distortion->controls.drive = newValue;
 	}
 	else if (parameterID == "distMix") {
+		model->distMix = newValue;
 		distortion->controls.mix = newValue;
 	}
 	else if (parameterID == "distMode") {
-		distortion->controls.mode = newValue;
+		model->distMode = newValue;
+		distortion->controls.mode = static_cast<int>(newValue);
 	}
 	else if (parameterID == "filterMode") {
 		filterMode = newValue;

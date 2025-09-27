@@ -86,11 +86,15 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	ampEnvelope->setName("ampEnvelope");
 	ampEnvelope->setBounds(628, 64, 288, 80);
 
+	filterEnvelopeGroup.reset(new GroupComponent("filterEnvelopeGroup", "Filter Env."));
+	addAndMakeVisible(filterEnvelopeGroup.get());
+	filterEnvelopeGroup->setBounds(612, 450, 392, 112);
+
 	filterEnvelope.reset(new EnvelopePanel(model, factory));
 	filterEnvelope->setName("auxEnvelope1");
 	filterEnvelope->setDecayTime(3.0f);
 	addAndMakeVisible(filterEnvelope.get());
-	filterEnvelope->setBounds(628, 450, 288, 80);
+	filterEnvelope->setBounds(628, 458, 288, 80);
 	
 	mainVolume.reset(new Slider("mainVolume"));
 	addAndMakeVisible(mainVolume.get());
@@ -235,10 +239,10 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	modulationTab->addTab(TRANS("LFO 2"), Colour(0x00000000), new LFOPanel(model, factory), true);
 	modulationTab->addTab(TRANS("LFO 3"), Colour(0x00000000), new LFOPanel(model, factory), true);
 	// modulationTab->addTab(TRANS("ENV 1"), Colour(0x00000000), new EnvelopePanel(model, factory), true);
-	modulationTab->addTab(TRANS("ENV 2"), Colour(0x00000000), new EnvelopePanel(model, factory), true);
+	modulationTab->addTab(TRANS("AUX ENV"), Colour(0x00000000), new EnvelopePanel(model, factory), true);
 	modulationTab->setCurrentTabIndex(0);
 	modulationTab->setBounds(24, 568, 264, 120);
-	modulationTab->setVisible(false);
+	// modulationTab->setVisible(false);
 
 	ModulationGroup.reset(new GroupComponent("ModulationGroup", TRANS("Modulation")));
 	addAndMakeVisible(ModulationGroup.get());
