@@ -438,34 +438,34 @@ void ModPanel::initAttachments()
 
 void ModPanel::setTargetForSlot (int slot, int targetIndex)
 {
-    if (targetIndex < 0 || targetIndex >= matrix->getModTargets().size()) {
-        return;
-    }
+    //if (targetIndex < 0 || targetIndex >= matrix->getModTargets().size()) {
+    //    return;
+    //}
 
-    // --- Modulation holen ---------------------------------------------------
-    const auto& mods = matrix->getModulations();
-    // jassert (isPositiveAndBelow (slot, mods.size()));        // Bounds-Check
+    //// --- Modulation holen ---------------------------------------------------
+    //const auto& mods = matrix->getModulations();
+    //// jassert (isPositiveAndBelow (slot, mods.size()));        // Bounds-Check
 
-    Modulation* modulation = mods[slot];
-    jassert (modulation != nullptr);
+    //Modulation* modulation = mods[slot];
+    //jassert (modulation != nullptr);
 
-    // --- bisheriges Target abmelden ----------------------------------------
-    if (auto* oldTarget = modulation->getTarget())
-        oldTarget->setModulator (nullptr);
+    //// --- bisheriges Target abmelden ----------------------------------------
+    //if (auto* oldTarget = modulation->getTarget())
+    //    oldTarget->setModulator (nullptr);
 
-    // --- neues Target holen -------------------------------------------------
-    auto& targets = matrix->getModTargets();
-    jassert (isPositiveAndBelow (targetIndex, targets.size()));
+    //// --- neues Target holen -------------------------------------------------
+    //auto& targets = matrix->getModTargets();
+    //jassert (isPositiveAndBelow (targetIndex, targets.size()));
 
-    ModTarget* newTarget = targets[targetIndex];
-    jassert (newTarget != nullptr);
+    //ModTarget* newTarget = targets[targetIndex];
+    //jassert (newTarget != nullptr);
 
-    // --- neues Target setzen -----------------------------------------------
-    modulation->setTarget (newTarget);
+    //// --- neues Target setzen -----------------------------------------------
+    //modulation->setTarget (newTarget);
 
-    // --- Modulator mit neuem Target verbinden ------------------------------
-    if (auto* mod = modulation->getModulator())              // nach setTarget erneut holen!
-        newTarget->setModulator (mod);
+    //// --- Modulator mit neuem Target verbinden ------------------------------
+    //if (auto* mod = modulation->getModulator())              // nach setTarget erneut holen!
+    //    newTarget->setModulator (mod);
 }
 
 

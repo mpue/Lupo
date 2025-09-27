@@ -30,7 +30,7 @@ using namespace std;
 namespace SynthLab {
 
 
-	class ADSR : public Modulator , public ModTarget {
+	class ADSR : public Modulator {
 	public:
 		ADSR(void);
 		~ADSR(void);
@@ -51,13 +51,6 @@ namespace SynthLab {
 		void setTargetRatioA(float targetRatio);
 		void setTargetRatioDR(float targetRatio);
 		void reset(void);
-		void setModulator(Modulator* mod) override {
-			this->modulator = mod;
-		}	
-
-		void applyModulation(float value) override {
-			this->modAmount = value;
-		}
 
 		enum envState {
 			env_idle = 0,

@@ -21,11 +21,8 @@ class HighPassFilter : public Filter, public ModTarget {
 public:
     virtual void coefficients(float sampleRate, float frequency, float resonance) override;
     virtual void process(float *in, float *out,int numSamples);
-    virtual void setModulator(Modulator* mod) override;
-    virtual void applyModulation(float value) override {
-		this->currentModulatedValue = value;
-	}
-    
+	virtual void processModulation() override;
+
     HighPassFilter();
     virtual ~HighPassFilter();
     

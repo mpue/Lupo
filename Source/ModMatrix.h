@@ -56,7 +56,7 @@ public:
         for (auto& pair : accumulated) {
             ModTarget* target = pair.first;
             float value = pair.second;
-            target->applyModulation(value);
+            // target->applyModulation(value);
         }
 
         return 0.0f; // aktuell wird nichts direkt zurückgegeben

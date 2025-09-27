@@ -43,15 +43,6 @@ Voice::Voice(float sampleRate) {
   
 }
 
-void Voice::applyModulation(float value) 
-{    		
-	for (int i = 0; i < 4; i++) {
-		oscillators[i]->applyModulation(value);
-	}
-    filter1->applyModulation(value);
-    filter2->applyModulation(value);
-}
-
 void Voice::setNoteAndVelocity(int note, int velocity) {
 
 	this->noteNumber = note;
@@ -167,6 +158,8 @@ void Voice::processBlock(AudioBuffer<float>& buffer) {
     }
 
     // Filter auf gesamten Block anwenden (effizienter)
+	filter1->processModulation();
+	filter2->processModulation();
     filter1->processStereo(leftChannel, rightChannel, numSamples);
     filter2->processStereo(leftChannel, rightChannel, numSamples);
 }
@@ -241,6 +234,15 @@ bool Voice::isPlaying() const {
     return this->playing;
 }
 
+void Voice::processModulation()
+{
+    for (int i = 0; i < 4; i++) {
+		oscillators[i]->processModulation();
+    }
+	filter1->processModulation();
+	filter2->processModulation();
+}
+
 void Voice::setSampleRate(double rate) {
     this->sampleRate = rate;
     ampEnvelope->setAttackRate(0 * sampleRate);  // 1 second
@@ -269,22 +271,6 @@ SynthLab::ADSR* Voice::getAmpEnvelope() {
 
 SynthLab::ADSR* Voice::getFilterEnvelope() {
     return filterEnvelope.get();
-}
-
-
-void Voice::setModulator(Modulator* modulator) {
-	
-	if (modulator) {
-		this->modulator = modulator;
-		for (int i = 0; i < 4; i++) {
-			MultimodeOscillator* mmo = oscillators.at(i).get();                
-			if (mmo != nullptr) {
-				mmo->setModulator(modulator);
-			}
-		}
-	}
-    this->modulator = modulator;
-	
 }
 
 float Voice::getTime() {

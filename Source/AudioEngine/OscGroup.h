@@ -20,16 +20,10 @@ public:
 	OscGroup();
 	~OscGroup();
 	
-	virtual void setModulator(Modulator* mod);
 	void addTarget(ModTarget* target);
 	std::vector<ModTarget*> getTargets();
-	virtual void applyModulation(float value) override {
-		for (auto& target : targets) {
-			if (target != nullptr) {
-				target->applyModulation(value);
-			}
-		}
-	}
+	
+	void processModulation() override;
 
 private:
 

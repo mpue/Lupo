@@ -207,6 +207,10 @@
             file="Source/PluginEditor.cpp"/>
       <FILE id="qVggQy" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
+    <FILE id="bbFUdh" name="CyberpunkLookAndFeel.cpp" compile="1" resource="0"
+          file="Source/CyberpunkLookAndFeel.cpp"/>
+    <FILE id="E63cOv" name="CyberpunkLookAndFeel.h" compile="0" resource="0"
+          file="Source/CyberpunkLookAndFeel.h"/>
   </MAINGROUP>
   <EXPORTFORMATS>
     <VS2017 targetFolder="Builds/VisualStudio2017">

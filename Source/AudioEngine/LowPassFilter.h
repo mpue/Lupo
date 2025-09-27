@@ -16,8 +16,6 @@ public:
     // wie bisher
     void coefficients(float sampleRate, float frequency, float resonance) override;
     void process(float* in, int numSamples);
-    void setModulator(Modulator* mod) override;
-    void applyModulation(float value) override { currentModulatedValue = value; }
     void setFrequency(float frequency) {
         this->frequency = frequency;
         svf1.setCutoffFrequency(juce::jlimit(0.1f,22000.0f,frequency * currentModulatedValue * modulationDepth));
@@ -29,6 +27,8 @@ public:
         svf1.setResonance(juce::jlimit(0.05f, 5.0f, resonance));
         svf2.setResonance(juce::jlimit(0.05f, 5.0f, resonance));
     }
+
+	virtual void processModulation() override;
 
 private:
     //

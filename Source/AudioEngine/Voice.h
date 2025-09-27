@@ -33,7 +33,6 @@ public:
     ~Voice() {
         oscillators.clear();
     };
-    void applyModulation(float value) override;
 
     void addOszillator(std::unique_ptr<MultimodeOscillator> o, int index);
     Oszillator* getOscillator(int num);
@@ -55,7 +54,7 @@ public:
     void setPlaying(bool playing);
     bool isPlaying() const;
 
-    virtual void setModulator(Modulator* mod) override;
+	virtual void processModulation() override;
     
 	SynthLab::ADSR* getAmpEnvelope();
     SynthLab::ADSR* getFilterEnvelope();

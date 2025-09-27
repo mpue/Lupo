@@ -16,6 +16,7 @@
 #include "TrioLookAndFeel.h"
 #include "RetroLookAndFeel.h"
 #include "SciFiLookAndFeel.h"
+#include "CyberpunkLookAndFeel.h"
 
 class AttachmentFactory;
 
@@ -42,6 +43,7 @@ private:
 	TrioLookAndFeel tlf;
     RetroLookAndFeel rlf;
 	SciFiLookAndFeel sflf;
+    CyberpunkLookAndFeel cyberpunkLaf;  // Our epic cyberpunk look and feel!
     // ──────────────────────────────────────────────────────────────────────────────
 
 

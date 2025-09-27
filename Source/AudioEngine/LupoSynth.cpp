@@ -148,11 +148,14 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 		v->getFilter1()->coefficients(sampleRate, 15000.0f, 1.0f);
 		v->getFilter2()->coefficients(sampleRate, 15000.0f, 1.0f);
 		v->setSampleRate(sampleRate);
+		v->getFilter1()->addModulator(lfo1.get());
 	}
 
 	lfo1->setSampleRate(sampleRate);
 	lfo2->setSampleRate(sampleRate);
 	lfo3->setSampleRate(sampleRate);
+
+
 }
 
 void LupoSynth::processMidi(MidiBuffer& midiMessages) {
@@ -269,6 +272,8 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 	auto* leftChannel = buffer.getWritePointer(0);
 	auto* rightChannel = buffer.getWritePointer(1);
 
+	
+
 	// Fix: Process modulation envelopes
 	for (auto& env : modEnvelopes) {
 		// Process each modulation envelope for the entire block
@@ -290,7 +295,7 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 	for (auto& voice : voices) {
 		if (voice->getAmpEnvelope()->getState() != SynthLab::ADSR::env_idle) {
 			voiceBuffer.clear();
-			
+						
 			// Voice verarbeitet den ganzen Block in einem Durchgang
 			voice->processBlock(voiceBuffer);
 			
@@ -304,7 +309,7 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 	}
 
 	// Matrix nur einmal pro Block verarbeiten (nicht pro Sample!)
-	matrix->process();
+	// matrix->process();
 
 	// Fix: Sync distortion parameters from model before processing
 	distortion->controls.mode = static_cast<int>(model->distMode);
@@ -827,22 +832,6 @@ ModMatrix* LupoSynth::getModMatrix()
 void LupoSynth::updateMatrix() {
 
 
-	for (int i = 0; i < 6; i++) {
-
-		Modulation* modulation = matrix->getModulations()[i];
-
-		ModTarget* target = matrix->getModTargets().at(model->getModTarget(i));
-		Modulator* mod = matrix->getModulators().at(model->getModSource(i));
-
-		if (mod != nullptr) {
-			modulation->setModulator(mod);
-			modulation->setTarget(target);
-			target->setModulator(mod);
-			mod->setModAmount(model->modAmount[i]);
-		}
-
-	}
-
 }
 
 void LupoSynth::configureModulation()
@@ -893,8 +882,8 @@ void LupoSynth::configureModulation()
 		matrix->addModulator(voice->getFilterEnvelope());
 		matrix->addModTarget(voice->getFilter1());
 		matrix->addModTarget(voice->getFilter2());
-		voice->getFilter1()->setModulator(voice->getFilterEnvelope());
-		voice->getFilter2()->setModulator(voice->getFilterEnvelope());
+		voice->getFilter1()->addModulator(voice->getFilterEnvelope());
+		voice->getFilter2()->addModulator(voice->getFilterEnvelope());
 		matrix->getModulations()[i + 6]->setModulator(voice->getFilterEnvelope());
 		matrix->getModulations()[i + 6]->setTarget(voice->getFilter1());
 		i++;

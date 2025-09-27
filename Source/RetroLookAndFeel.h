@@ -14,7 +14,7 @@ public:
 
         // Panel background & text colour (warm beige + dark text)
         setColour(ResizableWindow::backgroundColourId, Colour(0xffe3dec7)); // warm light panel
-        setColour(Label::textColourId, Colour(0xff2a261e));                // dark brown text
+        setColour(Label::textColourId, Colour(0xffffffff));                // dark brown text
 
         // Slider & knob colours
         setColour(Slider::rotarySliderFillColourId, Colour(0xffd4caa9));   // warm gold knob
@@ -23,7 +23,7 @@ public:
 
         // Buttons
         setColour(TextButton::buttonColourId, Colour(0xffa79e88));         // button face
-        setColour(TextButton::textColourOffId, Colour(0xff2a261e));        // button text
+        setColour(TextButton::textColourOffId, Colour(0xffffffff));        // button text
     }
 
     void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height,

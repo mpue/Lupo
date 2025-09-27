@@ -32,7 +32,8 @@ public:
     virtual void coefficients(float sampleRate,float frequency, float resonance) override;
     virtual void processStereo(float *const left, float *const right, const int numSamples) override;
 	virtual void processMono(int channel, float *const samples, const int numSamples);
-    virtual void setModulator(Modulator* mod) override;
+    virtual void addModulator(Modulator* mod) override;
+
     void setFrequency(float frequency) {
     	this->frequency = frequency;		
         this->lowPassLeftStage1->setFrequency(frequency);
@@ -45,15 +46,8 @@ public:
     }
     void setMode(Mode mode);
 	void setKeyTrack(int track);
-    virtual void applyModulation(float value) override {
-        lowPassRightStage1->applyModulation(value);
-        lowPassLeftStage1->applyModulation(value);
-        lowPassRightStage2->applyModulation(value);
-        lowPassLeftStage2->applyModulation(value);
-        highPassLeft->applyModulation(value);
-        highPassRight->applyModulation(value);
-    }
-        
+
+	virtual void processModulation() override;
 
 private:
     

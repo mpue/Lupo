@@ -153,7 +153,11 @@ private:
     std::unique_ptr<Label> label;
     std::unique_ptr<TextEditor> mainDisplay;
     std::unique_ptr<ModPanel> modMatrix;
-
+    
+    // New components for the tabbed right side layout
+    std::unique_ptr<TabbedComponent> rightSideTabs;
+    std::unique_ptr<Component> fxContainerPanel;
+    std::unique_ptr<Viewport> modMatrixViewport;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainUI)

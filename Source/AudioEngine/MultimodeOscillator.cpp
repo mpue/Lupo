@@ -25,7 +25,6 @@ MultimodeOscillator::MultimodeOscillator(float sampleRate,int buffersize) : Oszi
     this->noise = new WhiteNoise(sampleRate, buffersize);
 	this->sah = new SampleAndHold(sampleRate, buffersize);
 	this->mode = OscMode::SAW;
-    this->modulator = nullptr;
 	this->pan = 0.0f;
 }
 
@@ -51,10 +50,6 @@ void MultimodeOscillator::setVolume(float volume) {
     this->pulse->setVolume(volume);
     this->noise->setVolume(volume);
 	this->sah->setVolume(volume);
-}
-
-void MultimodeOscillator::setModulator(Modulator* mod) {
-    this->modulator = mod;
 }
 
 float MultimodeOscillator::getOutput() {
@@ -83,7 +78,7 @@ float MultimodeOscillator::process() {
     if (!enabled) {
         return 0;
     }
-
+	processModulation();
     float mod = currentModulatedValue;
 
     //&Logger::getCurrentLogger()->writeToLog ("LFO Out: " + juce::String(mod));
@@ -141,4 +136,18 @@ void MultimodeOscillator::setSync(bool sync) {
 void MultimodeOscillator::setSpread(float spread)
 {
 	this->saw->setSpread(spread);
+}
+
+void MultimodeOscillator::processModulation()
+{
+    // now iterate through all modulators and accmulate their values,
+	// then apply to frequency
+
+    float modulatedValue = 1.0f;
+    for (auto mod : modulators) {
+        modulatedValue += mod->getOutput() * mod->getModAmount();
+    }
+
+    currentModulatedValue = juce::jmax(0.0f, modulatedValue);
+
 }

@@ -18,17 +18,19 @@ public:
     
     virtual ~ModTarget() {};
     
-    virtual void setModulator(Modulator* mod) = 0;
-
-    virtual Modulator* getModulator() {
-        return modulator;
+    virtual void addModulator(Modulator* mod) {
+		modulators.push_back(mod);
     }
 
-    virtual void applyModulation(float value) = 0;
+    virtual void removeModulator(Modulator* mod) {
+		modulators.erase(std::remove(modulators.begin(), modulators.end(), mod), modulators.end());
+    }
+
+    virtual void processModulation() = 0;
 
 protected:
 	
-    Modulator* modulator = nullptr;
+	std::vector<Modulator*> modulators;
 
 };
 

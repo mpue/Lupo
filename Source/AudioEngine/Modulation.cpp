@@ -32,7 +32,7 @@ Modulation::Modulation(Modulator* modulator, ModTarget* target) {
 	this->modulator = modulator;
 	
 	if (target != nullptr) {
-		target->setModulator(modulator);
+		
 	}
 }
 
@@ -63,7 +63,7 @@ ModTarget* Modulation::getTarget()
 void Modulation::clearTarget()
 {	
 	if (this->target != nullptr) {
-		this->target->setModulator(nullptr);
+		
 	}
 
 }

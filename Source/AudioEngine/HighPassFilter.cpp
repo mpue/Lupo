@@ -16,7 +16,7 @@ using juce::IIRCoefficients;
 HighPassFilter::HighPassFilter() {
     this->filter1 = new IIRFilter();
     this->filter2 = new IIRFilter();
-    this->modulator = 0;
+    
 }
 
 HighPassFilter::~HighPassFilter() {
@@ -44,20 +44,8 @@ void HighPassFilter::process(float *in, float *out, int numSamples) {
     float f = frequency;
     
         
-    if (SynthLab::ADSR* env = dynamic_cast<SynthLab::ADSR*>(this->modulator)) {
-            
-        if(env->getState() != SynthLab::ADSR::env_idle) {
-            f =  this->frequency + (currentModulatedValue * modulator->getModAmount() * (22000 - this->frequency));
-        }
-        else {
-            env->reset();
-        }
-            
-    }
-    else {
-        f =  this->frequency + (currentModulatedValue * modulator->getModAmount() * 1000);
-        // modulator->process();
-    }
+    processModulation();
+    f =  this->frequency + (currentModulatedValue * 1000);
         
     if (f <= 0) {
         f = 0.1;
@@ -76,7 +64,17 @@ void HighPassFilter::process(float *in, float *out, int numSamples) {
     // this->filter2->processSamples(in,numSamples);
 }
 
-void HighPassFilter::setModulator(Modulator* mod) {
-    this->modulator = mod;
+void HighPassFilter::processModulation()
+{
+    // now iterate through all modulators and accmulate their values,
+    // then apply to cutoff frequency
+
+    float modulatedValue = 1.0f;
+    for (auto mod : modulators) {
+        modulatedValue += mod->getOutput() * mod->getModAmount();
+    }
+
+    currentModulatedValue = juce::jmax(0.0f, modulatedValue);
 }
+
 

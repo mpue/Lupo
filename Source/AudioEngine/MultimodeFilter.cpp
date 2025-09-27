@@ -43,7 +43,7 @@ void MultimodeFilter::setMode(Mode mode) {
 
 void MultimodeFilter::coefficients(float sampleRate, float frequency, float resonance) {	
 
-	if (out = nullptr) {
+	if (out == nullptr) {
 		out = new float[1024];
 	}
 
@@ -96,19 +96,27 @@ void MultimodeFilter::processMono(int channel, float * const samples, const int 
 
 }
 
-void MultimodeFilter::setModulator(Modulator* mod) {
-    this->lowPassLeftStage1->setModulator(mod);
-    this->lowPassRightStage1->setModulator(mod);
+void MultimodeFilter::addModulator(Modulator* mod)
+{
+	lowPassLeftStage1->addModulator(mod);
+	lowPassRightStage1->addModulator(mod);
+	lowPassLeftStage2->addModulator(mod);
+	lowPassRightStage2->addModulator(mod);
+	highPassLeft->addModulator(mod);
+	highPassRight->addModulator(mod);
 
-	this->lowPassLeftStage2->setModulator(mod);
-	this->lowPassRightStage2->setModulator(mod);
-
-    this->highPassLeft->setModulator(mod);
-    this->highPassRight->setModulator(mod);
-	this->modulator = mod;
 }
-
 
 void MultimodeFilter::setKeyTrack(int track) {
 	this->keyTrack = track;
+}
+
+void MultimodeFilter::processModulation()
+{
+	lowPassLeftStage1->processModulation();
+	lowPassRightStage1->processModulation();
+	lowPassLeftStage2->processModulation();
+	lowPassRightStage2->processModulation();
+	highPassLeft->processModulation();
+	highPassRight->processModulation();
 }

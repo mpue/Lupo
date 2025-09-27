@@ -33,8 +33,9 @@ void LowPassFilter::coefficients(float newSampleRate,
 // ─────────────────────────────────────────────────────────────
 void LowPassFilter::process(float* samples, int numSamples)
 {
+	processModulation();
     // 1) neues Ziel berechnen
-    float targetCutoff = frequency * currentModulatedValue * modulationDepth;
+    float targetCutoff = frequency * currentModulatedValue;
     targetCutoff = juce::jlimit(20.0f, 20'000.0f, targetCutoff);
     smoothedCutoff.setTargetValue(targetCutoff);
 
@@ -60,4 +61,16 @@ void LowPassFilter::process(float* samples, int numSamples)
     }
 }
 
-void LowPassFilter::setModulator(Modulator* /*mod*/) { /* optional */ }
+void LowPassFilter::processModulation()
+{
+	// now iterate through all modulators and accmulate their values,
+	// then apply to cutoff frequency
+
+	float modulatedValue = 1.0f;
+    for (auto mod : modulators) {
+        modulatedValue += mod->getOutput() * mod->getModAmount();
+	}
+
+	currentModulatedValue = juce::jmax(0.0f, modulatedValue);
+}
+

@@ -150,30 +150,64 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 	osc4Panel->setBounds(240, 304, 216, 232);
 
-	FXGroup.reset(new GroupComponent("FXGroup", TRANS("FX")));
-	addAndMakeVisible(FXGroup.get());
 
-	FXGroup->setBounds(1020, 58, 440, 378);
-	// FXGroup->setVisible(false);
+	// Create the main tabbed component to consolidate all modulation and FX components
+	rightSideTabs.reset(new TabbedComponent(TabbedButtonBar::TabsAtTop));
+	addAndMakeVisible(rightSideTabs.get());
+	rightSideTabs->setTabBarDepth(30);
 
+	// Create FX container panel
+	fxContainerPanel.reset(new Component());
+
+	// Create and add FX components to container
 	reverbPanel.reset(new ReverbPanel(model, factory));
-	addAndMakeVisible(reverbPanel.get());
 	reverbPanel->setName("reverbPanel");
-	reverbPanel->setBounds(1030, 78, 460, 112);
-	// reverbPanel->setVisible(false);
+	fxContainerPanel->addAndMakeVisible(reverbPanel.get());
+	reverbPanel->setBounds(8, 8, 460, 112);
 
 	delayPanel.reset(new DelayPanel(model, factory));
-	addAndMakeVisible(delayPanel.get());
 	delayPanel->setName("delayPanel");
-	delayPanel->setBounds(1020, 200, 460, 112);
-	// delayPanel->setVisible(false);
+	fxContainerPanel->addAndMakeVisible(delayPanel.get());
+	delayPanel->setBounds(8, 128, 460, 112);
 
 	chorusPanel.reset(new ChorusPanel(model, factory));
-	addAndMakeVisible(chorusPanel.get());
-	chorusPanel->setName("new component");
-	chorusPanel->setBounds(1030, 322, 460, 112);
-	// chorusPanel->setVisible(false);
+	chorusPanel->setName("chorusPanel");
+	fxContainerPanel->addAndMakeVisible(chorusPanel.get());
+	chorusPanel->setBounds(8, 248, 460, 112);
 
+	distortionPanel.reset(new DistortionPanel(model, factory));
+	distortionPanel->setName("distortionPanel");
+	fxContainerPanel->addAndMakeVisible(distortionPanel.get());
+	distortionPanel->setBounds(8, 368, 460, 88);
+
+	// Create Arpeggiator panel
+	arpPanel.reset(new ArpPanel(factory, arp));
+	arpPanel->setName("arpPanel");
+
+	// Create modulation matrix viewport and panel
+	modMatrixViewport.reset(new Viewport("ModMatrix"));
+	modMatrix.reset(new ModPanel(this->synth->getModMatrix(), model, factory));
+	modMatrixViewport->setViewedComponent(modMatrix.get());
+	modMatrixViewport->setScrollBarsShown(true, false);
+	modMatrix->setName("modMatrix");
+	modMatrix->setBounds(0, 0, 460, 240);
+
+	// Create LFO/Modulation container
+	modulationTab.reset(new TabbedComponent(TabbedButtonBar::TabsAtBottom));
+	modulationTab->setTabBarDepth(22);
+	modulationTab->addTab(TRANS("LFO 1"), Colour(0x00000000), new LFOPanel(model, factory), true);
+	modulationTab->addTab(TRANS("LFO 2"), Colour(0x00000000), new LFOPanel(model, factory), true);
+	modulationTab->addTab(TRANS("LFO 3"), Colour(0x00000000), new LFOPanel(model, factory), true);
+	modulationTab->addTab(TRANS("AUX ENV"), Colour(0x00000000), new EnvelopePanel(model, factory), true);
+	modulationTab->setCurrentTabIndex(0);
+
+	// Add all tabs to the main tabbed component
+	rightSideTabs->addTab(TRANS("FX"), Colour(0xff404040), fxContainerPanel.get(), false);
+	rightSideTabs->addTab(TRANS("Arpeggiator"), Colour(0xff404040), arpPanel.get(), false);
+	rightSideTabs->addTab(TRANS("Mod Matrix"), Colour(0xff404040), modMatrixViewport.get(), false);
+	rightSideTabs->addTab(TRANS("Modulation"), Colour(0xff404040), modulationTab.get(), false);
+	rightSideTabs->setCurrentTabIndex(0);
+	rightSideTabs->setBounds(1020, 48, 480, 520);
 	presetButton.reset(new TextButton("presetButton"));
 	addAndMakeVisible(presetButton.get());
 	presetButton->setButtonText(TRANS("Presets"));
@@ -219,35 +253,6 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	distortionPanel->setName("distortionPanel");
 	distortionPanel->setBounds(1040, 472, 288, 64);
 	distortionPanel->setVisible(false);
-
-	arpGroup.reset(new GroupComponent("arpGroup",TRANS("Arpeggiator")));
-	addAndMakeVisible(arpGroup.get());
-	arpGroup->setVisible(false);
-
-	arpGroup->setBounds(800, 544, 184, 144);
-	arpGroup->setVisible(false);
-	arpPanel.reset(new ArpPanel(factory, arp));
-	addAndMakeVisible(arpPanel.get());
-	arpPanel->setName("arpPanel");
-	arpPanel->setBounds(808, 560, 168, 120);
-	arpPanel->setVisible(false);
-
-	modulationTab.reset(new TabbedComponent(TabbedButtonBar::TabsAtBottom));
-	addAndMakeVisible(modulationTab.get());
-	modulationTab->setTabBarDepth(22);
-	modulationTab->addTab(TRANS("LFO 1"), Colour(0x00000000), new LFOPanel(model, factory), true);
-	modulationTab->addTab(TRANS("LFO 2"), Colour(0x00000000), new LFOPanel(model, factory), true);
-	modulationTab->addTab(TRANS("LFO 3"), Colour(0x00000000), new LFOPanel(model, factory), true);
-	// modulationTab->addTab(TRANS("ENV 1"), Colour(0x00000000), new EnvelopePanel(model, factory), true);
-	modulationTab->addTab(TRANS("AUX ENV"), Colour(0x00000000), new EnvelopePanel(model, factory), true);
-	modulationTab->setCurrentTabIndex(0);
-	modulationTab->setBounds(24, 568, 264, 120);
-	// modulationTab->setVisible(false);
-
-	ModulationGroup.reset(new GroupComponent("ModulationGroup", TRANS("Modulation")));
-	addAndMakeVisible(ModulationGroup.get());
-	ModulationGroup->setBounds(8, 544, 792, 144);
-	ModulationGroup->setVisible(false);
 
 	filterPanel1.reset(new FilterPanel(model, factory));
 	addAndMakeVisible(filterPanel1.get());
@@ -320,17 +325,6 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 	mainDisplay->setBounds(612, 152, 392, 56);
 
-	Viewport* vp = new Viewport("ModMatrix");
-	vp->setBounds(296, 560, 496, 120);
-	modMatrix.reset(new ModPanel(this->synth->getModMatrix(), model, factory));
-	vp->setViewedComponent(modMatrix.get());
-	vp->setScrollBarsShown(true, false);
-	addAndMakeVisible(vp);
-	modMatrix->setName("modMatrix");
-	modMatrix->setBounds(0, 0, 496, 240);
-
-	vp->setVisible(false);
-
 	int x = getScreenX();
 	int y = getScreenY();
 	dlg = new PresetDialog(presetCombo.get(), model);
@@ -363,16 +357,6 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	LFOPanel* lfo2 = dynamic_cast<LFOPanel*> (modulationTab.get()->getTabContentComponent(1));
 	LFOPanel* lfo3 = dynamic_cast<LFOPanel*> (modulationTab.get()->getTabContentComponent(2));
 
-	//EnvelopePanel* auxEnvelope1 = dynamic_cast<EnvelopePanel*> (modulationTab.get()->getTabContentComponent(3));
-	//auxEnvelope1->setName("auxEnvelope1");
-	//auxEnvelope1->setDecayTime(3.0f);
-
-	//EnvelopePanel* auxEnvelope2 = dynamic_cast<EnvelopePanel*> (modulationTab.get()->getTabContentComponent(4));
-	//auxEnvelope2->setName("auxEnvelope2");
-	//auxEnvelope2->setDecayTime(3.0f);
-
-	//// auxEnvelope1->addChangeListener(this);
-	//auxEnvelope2->addChangeListener(this);
 	delayPanel.get()->addChangeListener(this);
 	reverbPanel.get()->addChangeListener(this);
 	chorusPanel.get()->addChangeListener(this);
@@ -411,6 +395,8 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	lfo1->initAttachments();
 	lfo2->initAttachments();
 	lfo3->initAttachments();
+
+
 
 	reverbPanel.get()->initAttachments();
 	chorusPanel.get()->initAttachments();

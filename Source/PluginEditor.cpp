@@ -11,7 +11,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "MainUI.h"
-#include "TrioLookAndFeel.h"
+#include "CyberpunkLookAndFeel.h"
 #include "AttachmentFactory.h"
 
 //==============================================================================
@@ -20,8 +20,8 @@ LupoAudioProcessorEditor::LupoAudioProcessorEditor (LupoAudioProcessor& p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-	setLookAndFeel(&tlf);
-    setSize (1500, 900);	
+	setLookAndFeel(&rlf);
+    setSize (1570, 580);	
 	setResizable(false,false);
 	mainUI = new MainUI(&p, p.getFactory());
 	addAndMakeVisible(mainUI);
@@ -42,11 +42,27 @@ LupoAudioProcessorEditor::~LupoAudioProcessorEditor()
 //==============================================================================
 void LupoAudioProcessorEditor::paint (Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    // g.fillAll (getLookAndFeel().findColour (ResizableWindow::backgroundColourId));
-	// g.fillAll(Colours::darkgrey.darker().darker());
-    g.setColour (Colours::white);
-
+    // Fill with cyberpunk black background
+    g.fillAll(CyberpunkLookAndFeel::CYBER_BLACK);
+    
+    // Add some cyberpunk atmosphere effects
+    cyberpunkLaf.drawCyberGrid(g, getLocalBounds(), 25.0f);
+    cyberpunkLaf.drawHexagonalPattern(g, getLocalBounds(), 12.0f);
+    
+    // Add subtle corner glows
+    Rectangle<float> topLeft(0, 0, 100, 100);
+    Rectangle<float> topRight(getWidth() - 100, 0, 100, 100);
+    Rectangle<float> bottomLeft(0, getHeight() - 100, 100, 100);
+    Rectangle<float> bottomRight(getWidth() - 100, getHeight() - 100, 100, 100);
+    
+    cyberpunkLaf.drawGlowEffect(g, topLeft, CyberpunkLookAndFeel::CYBER_GLOW, 0.2f);
+    cyberpunkLaf.drawGlowEffect(g, topRight, CyberpunkLookAndFeel::CYBER_GLOW, 0.2f);
+    cyberpunkLaf.drawGlowEffect(g, bottomLeft, CyberpunkLookAndFeel::CYBER_GLOW, 0.2f);
+    cyberpunkLaf.drawGlowEffect(g, bottomRight, CyberpunkLookAndFeel::CYBER_GLOW, 0.2f);
+    
+    // Add neon border around the entire interface
+    cyberpunkLaf.drawNeonBorder(g, getLocalBounds().toFloat().reduced(2), 
+                                CyberpunkLookAndFeel::CYBER_YELLOW, 1.5f);
 }
 
 void LupoAudioProcessorEditor::resized()
@@ -56,8 +72,6 @@ void LupoAudioProcessorEditor::resized()
 	if (mainUI != nullptr) {
 		mainUI->setBounds(0, 0, getWidth(), getHeight());
 	}
-	//float scaleFactor = (1000.0f / 900.0f) / (getWidth() / getHeight());
-	//Desktop::getInstance().setGlobalScaleFactor(scaleFactor);
 }
 
 

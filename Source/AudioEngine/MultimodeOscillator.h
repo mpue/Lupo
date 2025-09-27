@@ -31,16 +31,12 @@ public:
     virtual float getFine() const override;
     virtual void setFrequency(double frequency) override;
     virtual void setVolume(float volume) override;
-    virtual float getOutput() override;
-    virtual void setModulator(Modulator* mod) override;    
+    virtual float getOutput() override;    
     virtual void reset() override;
     virtual void setSlave(Oszillator* slave) override;
     virtual void setSync(bool sync) override;
 	void setSpread(float spread);
-
-    virtual void applyModulation(float value) override {
-        this->currentModulatedValue = value;
-    }
+	virtual void processModulation() override;
 
     void setSampleRate(double sampleRate) override {
         this->sine->setSampleRate(sampleRate);
