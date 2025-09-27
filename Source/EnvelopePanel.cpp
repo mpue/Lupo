@@ -20,6 +20,7 @@
 //[Headers] You can add your own extra header files here...
 #include "MessageBus/MessageBus.h"
 #include "AttachmentFactory.h"
+#include "GraphicalEnvelope.h"
 //[/Headers]
 
 #include "EnvelopePanel.h"
@@ -124,6 +125,17 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
 
 
     //[Constructor] You can add your own custom stuff here..
+    // Create and add the GraphicalEnvelope component
+    graphicalEnvelope = std::make_unique<GraphicalEnvelope>(model);
+    addAndMakeVisible(graphicalEnvelope.get());
+    graphicalEnvelope->setBounds(8, 100, 248, 80);
+    graphicalEnvelope->setName(getName()); // Pass the envelope type name
+    
+    // Get synthesizer reference from factory
+    synth = factory->getSynth();
+    
+    // Start a timer for real-time updates
+    startTimerHz(30); // 30 FPS update rate
     //[/Constructor]
 }
 
@@ -143,6 +155,7 @@ EnvelopePanel::~EnvelopePanel()
 
 
     //[Destructor]. You can add your own custom destruction code here..
+    graphicalEnvelope = nullptr;
     //[/Destructor]
 }
 
@@ -153,6 +166,7 @@ void EnvelopePanel::paint (Graphics& g)
     //[/UserPrePaint]
 
     //[UserPaint] Add your own custom painting code here..
+    // The GraphicalEnvelope component will handle the visualization now
     //[/UserPaint]
 }
 
@@ -162,6 +176,10 @@ void EnvelopePanel::resized()
     //[/UserPreResize]
 
     //[UserResized] Add your own custom resize handling here..
+    // Ensure minimum height for the envelope graph
+    if (getHeight() < 200) {
+        setSize(getWidth(), 200);
+    }
     //[/UserResized]
 }
 
@@ -234,6 +252,19 @@ void EnvelopePanel::sliderValueChanged (Slider* sliderThatWasMoved)
 
     //[UsersliderValueChanged_Post]
 	sendChangeMessage();
+	
+	// Update the GraphicalEnvelope with new slider values
+	if (graphicalEnvelope != nullptr)
+	{
+		graphicalEnvelope->setAttack(amp_attack->getValue());
+		graphicalEnvelope->setDecay(amp_decay->getValue());
+		graphicalEnvelope->setSustain(amp_sustain->getValue());
+		graphicalEnvelope->setRelease(amp_release->getValue());
+		graphicalEnvelope->updateHandlerPositions();
+		graphicalEnvelope->repaint();
+	}
+	
+	repaint(); // Repaint to update the envelope graph
     //[/UsersliderValueChanged_Post]
 }
 
@@ -266,8 +297,148 @@ void EnvelopePanel::initAttachments()
 		factory->createSliderAttachment("auxSustain2", amp_sustain.get());
 		factory->createSliderAttachment("auxRelease2", amp_release.get());
 	}
+}
 
+void EnvelopePanel::drawEnvelopeGraph(Graphics& g)
+{
+    // This method is no longer needed as GraphicalEnvelope handles the drawing
+    // Keep for backward compatibility but it's empty
+}
 
+void EnvelopePanel::timerCallback()
+{
+    // Update the GraphicalEnvelope with current slider values
+    if (graphicalEnvelope != nullptr)
+    {
+        graphicalEnvelope->setAttack(amp_attack->getValue());
+        graphicalEnvelope->setDecay(amp_decay->getValue());
+        graphicalEnvelope->setSustain(amp_sustain->getValue());
+        graphicalEnvelope->setRelease(amp_release->getValue());
+        
+        // Get real-time envelope state from synthesizer
+        if (synth != nullptr) {
+            int currentPhase = 0;
+            float currentValue = 0.0f;
+            
+            if (getName() == "ampEnvelope") {
+                currentPhase = synth->getAmpEnvelopeState();
+                currentValue = synth->getAmpEnvelopeValue();
+            }
+            else if (getName() == "auxEnvelope1") {
+                currentPhase = synth->getFilterEnvelopeState();
+                currentValue = synth->getFilterEnvelopeValue();
+            }
+            else if (getName() == "auxEnvelope2") {
+                currentPhase = synth->getModEnvelopeState(1); // Use second modulation envelope
+                currentValue = synth->getModEnvelopeValue(1);
+            }
+            
+            // Calculate phase position (0.0-1.0) based on envelope state and time
+            float phasePosition = 0.0f;
+            
+            if (currentPhase > 0) {
+                // Track the time within the current phase for more accurate positioning
+                if (lastPhase != currentPhase) {
+                    lastPhaseChangeTime = Time::getMillisecondCounterHiRes();
+                    lastPhase = currentPhase;
+                }
+                
+                double currentTime = Time::getMillisecondCounterHiRes();
+                double elapsedTime = (currentTime - lastPhaseChangeTime) * 0.001; // Convert to seconds
+                
+                switch (currentPhase) {
+                    case 1: // Attack phase
+                        {
+                            float attackTime = amp_attack->getValue();
+                            if (attackTime > 0.0f) {
+                                phasePosition = jlimit(0.0f, 1.0f, static_cast<float>(elapsedTime / attackTime));
+                            } else {
+                                phasePosition = 1.0f; // Immediate attack
+                            }
+                        }
+                        break;
+                        
+                    case 2: // Decay phase
+                        {
+                            float decayTime = amp_decay->getValue();
+                            if (decayTime > 0.0f) {
+                                phasePosition = jlimit(0.0f, 1.0f, static_cast<float>(elapsedTime / decayTime));
+                            } else {
+                                phasePosition = 1.0f; // Immediate decay
+                            }
+                        }
+                        break;
+                        
+                    case 3: // Sustain phase
+                        {
+                            // For sustain, create a slow oscillating position to show activity
+                            phasePosition = 0.5f + 0.3f * sin(currentTime * 0.002f);
+                        }
+                        break;
+                        
+                    case 4: // Release phase
+                        {
+                            float releaseTime = amp_release->getValue();
+                            if (releaseTime > 0.0f) {
+                                phasePosition = jlimit(0.0f, 1.0f, static_cast<float>(elapsedTime / releaseTime));
+                            } else {
+                                phasePosition = 1.0f; // Immediate release
+                            }
+                        }
+                        break;
+                        
+                    default:
+                        phasePosition = 0.0f;
+                        break;
+                }
+            } else {
+                // Reset phase tracking when idle
+                lastPhase = 0;
+                lastPhaseChangeTime = 0.0;
+            }
+            
+            // Update the graphical envelope with real-time data
+            graphicalEnvelope->setCurrentPhase(currentPhase);
+            graphicalEnvelope->setCurrentPhasePosition(phasePosition);
+            graphicalEnvelope->setCurrentPhaseValue(currentValue);
+        }
+        
+        graphicalEnvelope->repaint();
+    }
+}
+
+void EnvelopePanel::updateEnvelopeFromModel()
+{
+    // Update sliders from model values based on envelope type
+    if (getName() == "ampEnvelope") {
+        amp_attack->setValue(model->ampAttack, dontSendNotification);
+        amp_decay->setValue(model->ampDecay, dontSendNotification);
+        amp_sustain->setValue(model->ampSustain, dontSendNotification);
+        amp_release->setValue(model->ampRelease, dontSendNotification);
+    }
+    else if (getName() == "auxEnvelope1") {
+        amp_attack->setValue(model->fltAttack, dontSendNotification);
+        amp_decay->setValue(model->fltDecay, dontSendNotification);
+        amp_sustain->setValue(model->fltSustain, dontSendNotification);
+        amp_release->setValue(model->fltRelease, dontSendNotification);
+    }
+    else if (getName() == "auxEnvelope2") {
+        amp_attack->setValue(model->auxAttack, dontSendNotification);
+        amp_decay->setValue(model->auxDecay, dontSendNotification);
+        amp_sustain->setValue(model->auxSustain, dontSendNotification);
+        amp_release->setValue(model->auxRelease, dontSendNotification);
+    }
+    
+    // Update the graphical envelope
+    if (graphicalEnvelope != nullptr)
+    {
+        graphicalEnvelope->setAttack(amp_attack->getValue());
+        graphicalEnvelope->setDecay(amp_decay->getValue());
+        graphicalEnvelope->setSustain(amp_sustain->getValue());
+        graphicalEnvelope->setRelease(amp_release->getValue());
+        graphicalEnvelope->updateHandlerPositions();
+        graphicalEnvelope->repaint();
+    }
 }
 //[/MiscUserCode]
 

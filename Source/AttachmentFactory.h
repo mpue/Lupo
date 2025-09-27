@@ -41,6 +41,10 @@ public:
 		buttonAttachments->push_back(att);
 	}
 
+	LupoSynth* getSynth() {
+		return lupo;
+	}
+
 	~AttachmentFactory() {
 		for (int i = 0; i < attachments->size(); i++) {
 			delete attachments->at(i);

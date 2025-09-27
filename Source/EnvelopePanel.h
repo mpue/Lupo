@@ -23,6 +23,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Model.h"
 class AttachmentFactory;
+class GraphicalEnvelope;
+class LupoSynth;
 //[/Headers]
 
 
@@ -37,7 +39,8 @@ class AttachmentFactory;
 */
 class EnvelopePanel  : public Component,
                        public ChangeBroadcaster,
-                       public Slider::Listener
+                       public Slider::Listener,
+                       public Timer
 {
 public:
     //==============================================================================
@@ -47,6 +50,9 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 	void initAttachments();
+	void drawEnvelopeGraph(Graphics& g);
+	void timerCallback() override;
+	void updateEnvelopeFromModel();
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -59,6 +65,12 @@ private:
     //[UserVariables]   -- You can add your own custom variables in this section.
 	Model* model;
 	AttachmentFactory* factory;
+	std::unique_ptr<GraphicalEnvelope> graphicalEnvelope;
+	LupoSynth* synth = nullptr; // Reference to synthesizer for real-time data
+	
+	// Phase tracking variables for accurate timing visualization
+	double lastPhaseChangeTime = 0.0;
+	int lastPhase = 0;
     //[/UserVariables]
 
     //==============================================================================

@@ -148,7 +148,8 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 		v->getFilter1()->coefficients(sampleRate, 15000.0f, 1.0f);
 		v->getFilter2()->coefficients(sampleRate, 15000.0f, 1.0f);
 		v->setSampleRate(sampleRate);
-		v->getFilter1()->addModulator(lfo1.get());
+		// v->getFilter1()->addModulator(lfo1.get());
+		v->getFilter1()->addModulator(v->getFilterEnvelope());
 	}
 
 	lfo1->setSampleRate(sampleRate);
@@ -271,7 +272,6 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 	const int numSamples = buffer.getNumSamples();
 	auto* leftChannel = buffer.getWritePointer(0);
 	auto* rightChannel = buffer.getWritePointer(1);
-
 	
 
 	// Fix: Process modulation envelopes
@@ -280,6 +280,10 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 		for (int sample = 0; sample < numSamples; ++sample) {
 			env->process();
 		}
+	}
+
+	for (auto& voice : voices) {
+		voice->getFilterEnvelope()->process();
 	}
 
 	// Process LFOs for the entire block
@@ -882,8 +886,6 @@ void LupoSynth::configureModulation()
 		matrix->addModulator(voice->getFilterEnvelope());
 		matrix->addModTarget(voice->getFilter1());
 		matrix->addModTarget(voice->getFilter2());
-		voice->getFilter1()->addModulator(voice->getFilterEnvelope());
-		voice->getFilter2()->addModulator(voice->getFilterEnvelope());
 		matrix->getModulations()[i + 6]->setModulator(voice->getFilterEnvelope());
 		matrix->getModulations()[i + 6]->setTarget(voice->getFilter1());
 		i++;
@@ -892,4 +894,61 @@ void LupoSynth::configureModulation()
 	lfo1->enabled = true;
 	lfo2->enabled = true;
 	lfo3->enabled = true;
+}
+
+// Implementation of real-time envelope visualization methods
+Voice* LupoSynth::getActiveVoice() {
+	// Return the first active voice (playing a note)
+	for (auto& voice : voices) {
+		if (voice->isPlaying() && voice->getAmpEnvelope()->getState() != SynthLab::ADSR::env_idle) {
+			return voice.get();
+		}
+	}
+	return nullptr;
+}
+
+int LupoSynth::getAmpEnvelopeState() {
+	Voice* activeVoice = getActiveVoice();
+	if (activeVoice != nullptr) {
+		return activeVoice->getAmpEnvelope()->getState();
+	}
+	return 0; // idle
+}
+
+int LupoSynth::getFilterEnvelopeState() {
+	Voice* activeVoice = getActiveVoice();
+	if (activeVoice != nullptr) {
+		return activeVoice->getFilterEnvelope()->getState();
+	}
+	return 0; // idle
+}
+
+int LupoSynth::getModEnvelopeState(int index) {
+	if (index >= 0 && index < modEnvelopes.size()) {
+		return modEnvelopes[index]->getState();
+	}
+	return 0; // idle
+}
+
+float LupoSynth::getAmpEnvelopeValue() {
+	Voice* activeVoice = getActiveVoice();
+	if (activeVoice != nullptr) {
+		return activeVoice->getAmpEnvelope()->getOutput();
+	}
+	return 0.0f;
+}
+
+float LupoSynth::getFilterEnvelopeValue() {
+	Voice* activeVoice = getActiveVoice();
+	if (activeVoice != nullptr) {
+		return activeVoice->getFilterEnvelope()->getOutput();
+	}
+	return 0.0f;
+}
+
+float LupoSynth::getModEnvelopeValue(int index) {
+	if (index >= 0 && index < modEnvelopes.size()) {
+		return modEnvelopes[index]->getOutput();
+	}
+	return 0.0f;
 }

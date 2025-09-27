@@ -47,7 +47,7 @@ float SynthLab::ADSR::getAttackRate() {
 }
 
 void SynthLab::ADSR::setDecayRate(float rate) {
-    rate /= 32;
+    // rate /= 32;
     decayRate = rate;
     decayCoef = calcCoef(rate, targetRatioDR);
     decayBase = (sustainLevel - targetRatioDR) * (1.0 - decayCoef);

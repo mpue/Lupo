@@ -54,6 +54,15 @@ public:
 	bool running = true;
 	void updateMatrix();
 	void configureModulation();
+	
+	// Methods for real-time envelope visualization
+	Voice* getActiveVoice();
+	int getAmpEnvelopeState();
+	int getFilterEnvelopeState();
+	int getModEnvelopeState(int index);
+	float getAmpEnvelopeValue();
+	float getFilterEnvelopeValue();
+	float getModEnvelopeValue(int index);
 private:
 	Model* model;	
 	using ADSRPtr = std::unique_ptr<SynthLab::ADSR>;

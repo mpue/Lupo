@@ -21,6 +21,7 @@
 
 //[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
+class Model;
 //[/Headers]
 
 
@@ -59,7 +60,12 @@ public:
 	float getRelease();
 
 	void updateModel();
-
+	
+	// Real-time phase visualization methods
+	void setCurrentPhase(int phase);
+	void setCurrentPhasePosition(float position);
+	void setCurrentPhaseValue(float value);
+	void updateHandlerPositions();
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -87,6 +93,22 @@ private:
 	bool isInsideReleaseHandler = false;
 
 	float* dashes;
+	
+	// Real-time phase visualization variables
+	int currentPhase = 0;        // 0=idle, 1=attack, 2=decay, 3=sustain, 4=release
+	float currentPhasePosition = 0.0f;  // Position within current phase (0.0-1.0)
+	float currentPhaseValue = 0.0f;     // Current envelope value (0.0-1.0)
+	
+	// Trail effect for the indicator
+	static const int maxTrailPoints = 10;
+	struct TrailPoint {
+		float x, y;
+		float alpha;
+		TrailPoint() : x(0), y(0), alpha(0) {}
+		TrailPoint(float x_, float y_, float alpha_) : x(x_), y(y_), alpha(alpha_) {}
+	};
+	TrailPoint trailPoints[maxTrailPoints];
+	int trailIndex = 0;
     //[/UserVariables]
 
     //==============================================================================

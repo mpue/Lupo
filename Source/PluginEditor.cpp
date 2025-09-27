@@ -22,7 +22,7 @@ LupoAudioProcessorEditor::LupoAudioProcessorEditor (LupoAudioProcessor& p)
     // editor's size to whatever you need it to be.
 	setLookAndFeel(&rlf);
     setSize (1570, 580);	
-	setResizable(false,false);
+	setResizable(true,true);
 	mainUI = new MainUI(&p, p.getFactory());
 	addAndMakeVisible(mainUI);
 	mainUI->updatePresetList();

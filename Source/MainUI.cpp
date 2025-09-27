@@ -94,7 +94,7 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	filterEnvelope->setName("auxEnvelope1");
 	filterEnvelope->setDecayTime(3.0f);
 	addAndMakeVisible(filterEnvelope.get());
-	filterEnvelope->setBounds(628, 458, 288, 80);
+	filterEnvelope->setBounds(628, 458, 288, 150);
 	
 	mainVolume.reset(new Slider("mainVolume"));
 	addAndMakeVisible(mainVolume.get());

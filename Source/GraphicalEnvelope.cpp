@@ -77,7 +77,6 @@ void GraphicalEnvelope::paint (Graphics& g)
 
     //[UserPaint] Add your own custom painting code here..
 
-
 	g.setColour(Colours::grey);
 	Line<float> a = Line<float>(attackHandler->getPosition().x + 5, 0, attackHandler->getPosition().x + 5, getHeight());
 	Line<float> d = Line<float>(decayHandler->getPosition().x + 5, 0, decayHandler->getPosition().x + 5, getHeight());
@@ -91,11 +90,183 @@ void GraphicalEnvelope::paint (Graphics& g)
 	g.drawDashedLine(s, dashes, 2, 1.0f);
 	g.drawDashedLine(r, dashes, 2, 1.0f);
 	g.drawDashedLine(level, dashes, 2, 1.0f);
+	
+	// Draw the envelope curve with more realistic curves
 	g.setColour(Colours::darkgrey.darker());
-	g.drawLine(15,getHeight(), attackHandler->getPosition().x + 5,attackHandler->getPosition().y + 5, 2.0f);
-	g.drawLine(attackHandler->getPosition().x + 5, attackHandler->getPosition().y + 5, decayHandler->getPosition().x + 5, decayHandler->getPosition().y + 5, 2.0f);
-	g.drawLine(decayHandler->getPosition().x + 5, decayHandler->getPosition().y + 5, sustainHandler->getPosition().x + 5, sustainHandler->getPosition().y + 5, 2.0f);
-	g.drawLine(sustainHandler->getPosition().x + 5, sustainHandler->getPosition().y + 5, releaseHandler->getPosition().x + 5, releaseHandler->getPosition().y + 5, 2.0f);
+	
+	// Create a path for the envelope curve
+	Path envelopePath;
+	
+	float startX = 15;
+	float startY = getHeight();
+	float attackX = attackHandler->getPosition().x + 5;
+	float attackY = attackHandler->getPosition().y + 5;
+	float decayX = decayHandler->getPosition().x + 5;
+	float decayY = decayHandler->getPosition().y + 5;
+	float sustainX = sustainHandler->getPosition().x + 5;
+	float sustainY = sustainHandler->getPosition().y + 5;
+	float releaseX = releaseHandler->getPosition().x + 5;
+	float releaseY = getHeight();
+	
+	// Start the path
+	envelopePath.startNewSubPath(startX, startY);
+	
+	// Attack phase - exponential curve
+	envelopePath.quadraticTo(startX + (attackX - startX) * 0.3f, startY, attackX, attackY);
+	
+	// Decay phase - exponential decay curve
+	envelopePath.quadraticTo(attackX + (decayX - attackX) * 0.7f, attackY, decayX, decayY);
+	
+	// Sustain phase - straight line
+	envelopePath.lineTo(sustainX, sustainY);
+	
+	// Release phase - exponential decay curve
+	envelopePath.quadraticTo(sustainX + (releaseX - sustainX) * 0.3f, sustainY, releaseX, releaseY);
+	
+	// Draw the smooth envelope curve
+	g.strokePath(envelopePath, PathStrokeType(2.0f));
+	
+	// Also draw the original straight lines in a lighter color for reference
+	g.setColour(Colours::darkgrey.darker().withAlpha(0.3f));
+	g.drawLine(startX, startY, attackX, attackY, 1.0f);
+	g.drawLine(attackX, attackY, decayX, decayY, 1.0f);
+	g.drawLine(decayX, decayY, sustainX, sustainY, 1.0f);
+	g.drawLine(sustainX, sustainY, releaseX, releaseY, 1.0f);
+
+	// Draw real-time phase indicator
+	if (currentPhase > 0) {
+		float indicatorX = 15; // Start position
+		float indicatorY = getHeight();
+		
+		// Get curve points
+		float startX = 15;
+		float startY = getHeight();
+		float attackX = attackHandler->getPosition().x + 5;
+		float attackY = attackHandler->getPosition().y + 5;
+		float decayX = decayHandler->getPosition().x + 5;
+		float decayY = decayHandler->getPosition().y + 5;
+		float sustainX = sustainHandler->getPosition().x + 5;
+		float sustainY = sustainHandler->getPosition().y + 5;
+		float releaseX = releaseHandler->getPosition().x + 5;
+		float releaseY = getHeight();
+		
+		// Calculate position based on current phase and envelope value
+		switch (currentPhase) {
+			case 1: // Attack phase (env_attack)
+				{
+					// Use quadratic curve for attack
+					float t = currentPhaseValue; // Use envelope value as progress
+					float controlX = startX + (attackX - startX) * 0.3f;
+					float controlY = startY;
+					
+					// Quadratic Bezier curve calculation
+					float u = 1.0f - t;
+					indicatorX = u * u * startX + 2 * u * t * controlX + t * t * attackX;
+					indicatorY = u * u * startY + 2 * u * t * controlY + t * t * attackY;
+				}
+				break;
+				
+			case 2: // Decay phase (env_decay)
+				{
+					// Calculate progress based on current value relative to sustain level
+					float sustainLevel = (getHeight() - sustainHandler->getPosition().y - 5) / getHeight();
+					float progress = 0.0f;
+					if (sustainLevel < 1.0f) {
+						progress = (1.0f - currentPhaseValue) / (1.0f - sustainLevel);
+						progress = jlimit(0.0f, 1.0f, progress);
+					}
+					
+					// Use quadratic curve for decay
+					float controlX = attackX + (decayX - attackX) * 0.7f;
+					float controlY = attackY;
+					
+					// Quadratic Bezier curve calculation
+					float u = 1.0f - progress;
+					indicatorX = u * u * attackX + 2 * u * progress * controlX + progress * progress * decayX;
+					indicatorY = u * u * attackY + 2 * u * progress * controlY + progress * progress * decayY;
+				}
+				break;
+				
+			case 3: // Sustain phase (env_sustain)
+				{
+					// Linear interpolation for sustain phase
+					indicatorX = decayX + (sustainX - decayX) * currentPhasePosition;
+					indicatorY = sustainY;
+				}
+				break;
+				
+			case 4: // Release phase (env_release)
+				{
+					// Use current envelope value to position the indicator
+					float sustainLevel = (getHeight() - sustainHandler->getPosition().y - 5) / getHeight();
+					float progress = 0.0f;
+					if (sustainLevel > 0.0f) {
+						progress = 1.0f - (currentPhaseValue / sustainLevel);
+						progress = jlimit(0.0f, 1.0f, progress);
+					}
+					
+					// Use quadratic curve for release
+					float controlX = sustainX + (releaseX - sustainX) * 0.3f;
+					float controlY = sustainY;
+					
+					// Quadratic Bezier curve calculation
+					float u = 1.0f - progress;
+					indicatorX = u * u * sustainX + 2 * u * progress * controlX + progress * progress * releaseX;
+					indicatorY = u * u * sustainY + 2 * u * progress * controlY + progress * progress * releaseY;
+				}
+				break;
+		}
+		
+			// Update trail points
+		trailPoints[trailIndex] = TrailPoint(indicatorX, indicatorY, 1.0f);
+		trailIndex = (trailIndex + 1) % maxTrailPoints;
+		
+		// Update trail point alphas (fade out over time)
+		for (int i = 0; i < maxTrailPoints; ++i) {
+			trailPoints[i].alpha *= 0.85f; // Fade factor
+		}
+		
+		// Draw trail points
+		for (int i = 0; i < maxTrailPoints; ++i) {
+			if (trailPoints[i].alpha > 0.1f) {
+				float size = 2.0f + 3.0f * trailPoints[i].alpha;
+				g.setColour(Colours::cyan.withAlpha(trailPoints[i].alpha * 0.6f));
+				g.fillEllipse(trailPoints[i].x - size/2, trailPoints[i].y - size/2, size, size);
+			}
+		}
+		
+		// Draw the phase indicator as a bright, animated circle
+		float time = Time::getMillisecondCounterHiRes() * 0.003f;
+		float pulseSize = 3.0f + 2.0f * sin(time * 2.0f); // Faster pulsing
+		
+		// Outer glow with gradient
+		ColourGradient glow(Colours::cyan.withAlpha(0.4f), indicatorX, indicatorY,
+			Colours::cyan.withAlpha(0.0f), indicatorX, indicatorY, false);
+		glow.addColour(0.0, Colours::cyan.withAlpha(0.4f));
+		glow.addColour(1.0, Colours::cyan.withAlpha(0.0f));
+		g.setGradientFill(glow);
+		g.fillEllipse(indicatorX - pulseSize - 4, indicatorY - pulseSize - 4, 
+			(pulseSize + 4) * 2, (pulseSize + 4) * 2);
+		
+		// Main indicator circle
+		g.setColour(Colours::cyan.withAlpha(0.9f));
+		g.fillEllipse(indicatorX - pulseSize, indicatorY - pulseSize, 
+			pulseSize * 2, pulseSize * 2);
+		
+		// Bright center
+		g.setColour(Colours::white);
+		g.fillEllipse(indicatorX - 2, indicatorY - 2, 4, 4);
+		
+		// Outline with slight transparency
+		g.setColour(Colours::white.withAlpha(0.8f));
+		g.drawEllipse(indicatorX - pulseSize, indicatorY - pulseSize, 
+			pulseSize * 2, pulseSize * 2, 1.5f);
+	} else {
+		// Clear trail when envelope is idle
+		for (int i = 0; i < maxTrailPoints; ++i) {
+			trailPoints[i].alpha = 0.0f;
+		}
+	}
 
 	if (isInsideAttackHandler) {
 		g.setColour(Colours::yellow);
@@ -135,7 +306,6 @@ void GraphicalEnvelope::paint (Graphics& g)
 
 	g.setColour(Colours::darkgrey.darker());
 	g.drawRoundedRectangle(0, 0, getWidth(), getHeight(), 5, 2.0f);
-
 
     //[/UserPaint]
 }
@@ -266,17 +436,31 @@ void GraphicalEnvelope::updateModel() {
 
 void GraphicalEnvelope::setAttack(float attack) {
 	this->attack = attack;
+	// Update attack handler position based on attack value
+	float attackX = 10 + (attack / 2.5f) * (getWidth() - 20) * 0.25f;
+	attackHandler->setPosition(attackX, 10);
 }
+
 void GraphicalEnvelope::setDecay(float decay) {
 	this->decay = decay;
+	// Update decay handler position based on decay value
+	float decayX = attackHandler->getPosition().x + 10 + (decay / 5.0f) * (getWidth() - 20) * 0.25f;
+	decayHandler->setPosition(decayX, sustainHandler->getPosition().y);
 }
 
 void GraphicalEnvelope::setSustain(float sustain) {
 	this->sustain = sustain;
+	// Update sustain level (Y position)
+	float sustainY = 10 + (1.0f - sustain) * (getHeight() - 20);
+	sustainHandler->setPosition(sustainHandler->getPosition().x, sustainY);
+	decayHandler->setPosition(decayHandler->getPosition().x, sustainY);
 }
 
 void GraphicalEnvelope::setRelease(float release) {
 	this->release = release;
+	// Update release handler position based on release value
+	float releaseX = sustainHandler->getPosition().x + 10 + (release / 2.5f) * (getWidth() - 20) * 0.25f;
+	releaseHandler->setPosition(releaseX, getHeight() - 10);
 }
 
 float GraphicalEnvelope::getAttack() {
@@ -293,6 +477,26 @@ float GraphicalEnvelope::getSustain() {
 
 float GraphicalEnvelope::getRelease() {
 	return release;
+}
+
+void GraphicalEnvelope::setCurrentPhase(int phase) {
+	currentPhase = phase;
+}
+
+void GraphicalEnvelope::setCurrentPhasePosition(float position) {
+	currentPhasePosition = jlimit(0.0f, 1.0f, position);
+}
+
+void GraphicalEnvelope::setCurrentPhaseValue(float value) {
+	currentPhaseValue = jlimit(0.0f, 1.0f, value);
+}
+
+void GraphicalEnvelope::updateHandlerPositions() {
+	// Update all handler positions based on current envelope values
+	setAttack(attack);
+	setDecay(decay);
+	setSustain(sustain);
+	setRelease(release);
 }
 
 //[/MiscUserCode]
