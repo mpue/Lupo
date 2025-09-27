@@ -282,10 +282,6 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 		}
 	}
 
-	for (auto& voice : voices) {
-		voice->getFilterEnvelope()->process();
-	}
-
 	// Process LFOs for the entire block
 	for (int sample = 0; sample < numSamples; ++sample) {
 		lfo1->process();

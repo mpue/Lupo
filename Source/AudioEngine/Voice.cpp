@@ -77,6 +77,7 @@ float Voice::process(int channel)
     if (ampEnvelope->getState() != SynthLab::ADSR::env_idle) {
 
         float amplitude = (velocity / 127.0f) * ampEnvelope->process();
+        float filterEnvValue = filterEnvelope->process(); // Process filter envelope!
 
         for (int i = 0; i < 4; i++) {
             if (!oscillators[i]->enabled)
@@ -108,6 +109,10 @@ float Voice::process(int channel)
     }
     else {
         ampEnvelope->reset();
+        // Also reset filter envelope when amp envelope is idle
+        if (filterEnvelope->getState() != SynthLab::ADSR::env_idle) {
+            filterEnvelope->reset();
+        }
     }
 
     return (channel == 0) ? outL : outR;
@@ -121,12 +126,19 @@ void Voice::processBlock(AudioBuffer<float>& buffer) {
 
     if (ampEnvelope->getState() == SynthLab::ADSR::env_idle) {
         ampEnvelope->reset();
+        // Also reset filter envelope when amp envelope is idle
+        if (filterEnvelope->getState() != SynthLab::ADSR::env_idle) {
+            filterEnvelope->reset();
+        }
         return; // Voice ist stumm
     }
 
     // Block-basierte Envelope-Verarbeitung
     for (int sample = 0; sample < numSamples; ++sample) {
+        // Process both envelopes for each sample
         float amplitude = (velocity / 127.0f) * ampEnvelope->process();
+        float filterEnvValue = filterEnvelope->process(); // Process filter envelope!
+        
         float outL = 0.0f;
         float outR = 0.0f;
 
@@ -158,6 +170,7 @@ void Voice::processBlock(AudioBuffer<float>& buffer) {
     }
 
     // Filter auf gesamten Block anwenden (effizienter)
+    // Process modulation first to update filter envelope values
 	filter1->processModulation();
 	filter2->processModulation();
     filter1->processStereo(leftChannel, rightChannel, numSamples);
