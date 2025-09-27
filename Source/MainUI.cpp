@@ -319,8 +319,8 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	mainDisplay->setScrollbarsShown(false);
 	mainDisplay->setCaretVisible(false);
 	mainDisplay->setPopupMenuEnabled(false);
-	mainDisplay->setColour(TextEditor::textColourId, Colour(0xffff4400));
-	mainDisplay->setColour(TextEditor::backgroundColourId, Colours::black);
+	mainDisplay->setColour(TextEditor::textColourId, Colour(0xff4d9eff));
+	mainDisplay->setColour(TextEditor::backgroundColourId, Colour(0xff1a1a1a));
 	mainDisplay->setText(String());
 
 	mainDisplay->setBounds(20, 550, 560, 200);

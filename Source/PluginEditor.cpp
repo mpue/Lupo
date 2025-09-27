@@ -20,7 +20,7 @@ LupoAudioProcessorEditor::LupoAudioProcessorEditor (LupoAudioProcessor& p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-	setLookAndFeel(&cyberpunkLaf);
+	setLookAndFeel(&edlf);
     setSize (1550, 780);	
 	setResizable(true,true);
 	mainUI = new MainUI(&p, p.getFactory());

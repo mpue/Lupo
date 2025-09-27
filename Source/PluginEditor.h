@@ -17,6 +17,8 @@
 #include "RetroLookAndFeel.h"
 #include "SciFiLookAndFeel.h"
 #include "CyberpunkLookAndFeel.h"
+#include "ElegantDarkLookAndFeel.h"
+
 
 class AttachmentFactory;
 
@@ -40,6 +42,7 @@ private:
     // access the processor object that created it.
     LupoAudioProcessor& processor;
 	MainUI* mainUI = nullptr;
+	ElegantDarkLookAndFeel edlf;
 	TrioLookAndFeel tlf;
     RetroLookAndFeel rlf;
 	SciFiLookAndFeel sflf;

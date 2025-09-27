@@ -72,6 +72,8 @@
               file="Source/DistortionPanel.cpp"/>
         <FILE id="SUc1HO" name="DistortionPanel.h" compile="0" resource="0"
               file="Source/DistortionPanel.h"/>
+        <FILE id="axD0l8" name="ElegantDarkLookAndFeel.h" compile="0" resource="0"
+              file="Source/ElegantDarkLookAndFeel.h"/>
         <FILE id="ftY232" name="EnvelopePanel.cpp" compile="1" resource="0"
               file="Source/EnvelopePanel.cpp"/>
         <FILE id="bOOBt5" name="EnvelopePanel.h" compile="0" resource="0" file="Source/EnvelopePanel.h"/>

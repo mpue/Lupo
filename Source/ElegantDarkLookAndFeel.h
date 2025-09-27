@@ -149,6 +149,9 @@ public:
         setColour(juce::MidiKeyboardComponent::upDownButtonBackgroundColourId, juce::Colour(0xff2a2a2a));
         setColour(juce::MidiKeyboardComponent::upDownButtonArrowColourId, juce::Colour(0xffe8e8e8));
 
+		setColour(juce::TabbedComponent::backgroundColourId, juce::Colour(0xff1a1a1a));
+
+
         // Schriftart setzen
         setDefaultSansSerifTypefaceName("Arial");
     }
@@ -346,7 +349,7 @@ public:
         g.drawRect(0, 0, width, height);
     }
 
-    void drawPopupMenuItem(juce::Graphics& g, const juce::Rectangle<int>& area,
+    /*void drawPopupMenuItem(juce::Graphics& g, const juce::Rectangle<int>& area,
         bool isSeparator, bool isActive, bool isHighlighted, bool isTicked, bool hasSubMenu,
         const juce::String& text, const juce::String& shortcutKeyText,
         const juce::Drawable* icon, const juce::Colour* textColour) override
@@ -384,7 +387,7 @@ public:
 
             g.setFont(font);
 
-            auto iconArea = area.removeFromLeft(static_cast<int>(area.getHeight())).reduced(3).toFloat();
+            auto& iconArea = area.removeFromLeft(static_cast<int>(area.getHeight())).reduced(3).toFloat();
 
             if (icon != nullptr)
             {
@@ -425,5 +428,5 @@ public:
             g.setFont(font);
             g.drawFittedText(text, r.reduced(2, 0), juce::Justification::centredLeft, 1);
         }
-    }
+    }*/
 };
