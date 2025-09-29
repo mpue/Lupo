@@ -33,7 +33,6 @@ void LowPassFilter::coefficients(float newSampleRate,
 // ─────────────────────────────────────────────────────────────
 void LowPassFilter::process(float* samples, int numSamples)
 {
-	processModulation();
     // 1) neues Ziel berechnen
     float targetCutoff = frequency * currentModulatedValue;
     targetCutoff = juce::jlimit(20.0f, 20'000.0f, targetCutoff);
@@ -63,14 +62,22 @@ void LowPassFilter::process(float* samples, int numSamples)
 
 void LowPassFilter::processModulation()
 {
-	// now iterate through all modulators and accmulate their values,
+	// now iterate through all modulators and accumulate their values,
 	// then apply to cutoff frequency
 
 	float modulatedValue = 1.0f;
     for (auto mod : modulators) {
-        modulatedValue += mod->getOutput() * mod->getModAmount();
+        // Scale the envelope output by its modulation amount
+        float envelopeValue = mod->getOutput();
+        float modAmount = mod->getModAmount();
+        
+        // Apply modulation with proper scaling for musical filter sweep:
+        // - The envelope output ranges from 0 to 1
+        // - The modAmount is the user-controlled envelope amount (typically 0-100 or similar)
+        // - Scale to provide musical filter sweeps (multiply by base frequency works well)
+        modulatedValue += (envelopeValue * modAmount * 20.0f); // 10.0f provides good musical scaling
 	}
 
-	currentModulatedValue = juce::jmax(0.0f, modulatedValue);
+	currentModulatedValue = juce::jmax(0.01f, modulatedValue); // Prevent cutoff from going to zero
 }
 

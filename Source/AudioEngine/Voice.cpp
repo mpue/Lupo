@@ -69,59 +69,6 @@ Oszillator* Voice::getOscillator(int num) {
 	return oscillators.at(num).get();
 }
 
-float Voice::process(int channel)
-{
-    float outL = 0.0f;
-    float outR = 0.0f;
-
-    if (ampEnvelope->getState() != SynthLab::ADSR::env_idle) {
-
-        float amplitude = (velocity / 127.0f) * ampEnvelope->process();
-        filterEnvelope->process(); // Process filter envelope!
-
-        for (int i = 0; i < 4; i++) {
-            if (!oscillators[i]->enabled)
-                continue;
-
-            if (i == 1 && oscillators[i - 1]->enabled && oscillators[i - 1]->isSync()) {
-                oscillators[i - 1]->reset();
-            }
-
-            float pan = oscillators[i]->getPan();
-            float gain = (channel == 0)
-                ? fast_trig::sin_fast(((float)M_PI * (pan + 1.0f) / 4.0f))
-                : fast_trig::cos_fast(((float)M_PI * (pan + 1.0f) / 4.0f));
-
-            float sample = oscillators[i]->process();
-
-            if (modulator != nullptr) {
-                oscillators[i]->setPitchMod(modulator->getOutput() * this->modAmount);
-            }
-
-            if (channel == 0)
-                outL += sample * gain * amplitude;
-            else
-                outR += sample * gain * amplitude;
-        }
-        
-        // Process filter modulation before applying filters
-        filter1->processModulation();
-        filter2->processModulation();
-        
-        filter1->processStereo(&outL, &outR, 1);
-        filter2->processStereo(&outL, &outR, 1);
-    }
-    else {
-        ampEnvelope->reset();
-        // Also reset filter envelope when amp envelope is idle
-        if (filterEnvelope->getState() != SynthLab::ADSR::env_idle) {
-            filterEnvelope->reset();
-        }
-    }
-
-    return (channel == 0) ? outL : outR;
-}
-
 void Voice::processBlock(AudioBuffer<float>& buffer) {
     const int numSamples = buffer.getNumSamples();
     auto* leftChannel = buffer.getWritePointer(0);
@@ -176,7 +123,6 @@ void Voice::processBlock(AudioBuffer<float>& buffer) {
     // This will use the filter envelope values that were processed above
     filter1->processModulation();
     filter2->processModulation();
-    
     // Apply filters to the entire block
     filter1->processStereo(leftChannel, rightChannel, numSamples);
     filter2->processStereo(leftChannel, rightChannel, numSamples);
@@ -262,10 +208,10 @@ bool Voice::isPlaying() const {
 void Voice::processModulation()
 {
     for (int i = 0; i < 4; i++) {
-		oscillators[i]->processModulation();
+		// oscillators[i]->processModulation();
     }
-	filter1->processModulation();
-	filter2->processModulation();
+	//filter1->processModulation();
+	//filter2->processModulation();
 }
 
 void Voice::setSampleRate(double rate) {

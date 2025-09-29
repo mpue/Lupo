@@ -149,6 +149,7 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 		v->setSampleRate(sampleRate);	
 		v->getFilter1()->addModulator(v->getFilterEnvelope());
 		v->getFilter2()->addModulator(v->getFilterEnvelope());
+		v->getFilterEnvelope()->setAttackRate(0);
 		// v->getFilter1()->addModulator(lfo1.get());
 		// v->addModulator(lfo2.get());	
 	}
@@ -306,10 +307,6 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 		}
 	}
 
-	// Matrix nur einmal pro Block verarbeiten (nicht pro Sample!)
-	// matrix->process();
-
-	// Fix: Sync distortion parameters from model before processing
 	distortion->controls.mode = static_cast<int>(model->distMode);
 	distortion->controls.drive = model->distDrive;
 	distortion->controls.mix = model->distMix;

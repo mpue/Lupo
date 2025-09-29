@@ -43,9 +43,7 @@ void HighPassFilter::process(float *in, float *out, int numSamples) {
     
     float f = frequency;
     
-        
-    processModulation();
-    f =  this->frequency + (currentModulatedValue * 1000);
+    f = this->frequency + (currentModulatedValue * 1000);
         
     if (f <= 0) {
         f = 0.1;
@@ -66,15 +64,23 @@ void HighPassFilter::process(float *in, float *out, int numSamples) {
 
 void HighPassFilter::processModulation()
 {
-    // now iterate through all modulators and accmulate their values,
+    // now iterate through all modulators and accumulate their values,
     // then apply to cutoff frequency
 
     float modulatedValue = 1.0f;
     for (auto mod : modulators) {
-        modulatedValue += mod->getOutput() * mod->getModAmount();
+        // Scale the envelope output by its modulation amount
+        float envelopeValue = mod->getOutput();
+        float modAmount = mod->getModAmount();
+        
+        // Apply modulation with proper scaling for musical filter sweep:
+        // - The envelope output ranges from 0 to 1
+        // - The modAmount is the user-controlled envelope amount (typically 0-100 or similar)  
+        // - Scale to provide musical filter sweeps (multiply by base frequency works well)
+        modulatedValue += (envelopeValue * modAmount * 10.0f); // 10.0f provides good musical scaling
     }
 
-    currentModulatedValue = juce::jmax(0.0f, modulatedValue);
+    currentModulatedValue = juce::jmax(0.01f, modulatedValue); // Prevent cutoff from going to zero
 }
 
 

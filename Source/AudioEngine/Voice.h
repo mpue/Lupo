@@ -37,7 +37,7 @@ public:
     void addOszillator(std::unique_ptr<MultimodeOscillator> o, int index);
     Oszillator* getOscillator(int num);
     
-    float process(int channel);
+ 
     void processBlock(AudioBuffer<float>& buffer);  // Neue optimierte Block-Verarbeitung
     
     void setNoteNumber(int number);
