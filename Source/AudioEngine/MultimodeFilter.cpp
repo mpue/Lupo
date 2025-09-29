@@ -36,7 +36,6 @@ MultimodeFilter::~MultimodeFilter() {
     this->highPassRight = nullptr;
 }
 
-
 void MultimodeFilter::setMode(Mode mode) {
     this->mode = mode;
 }

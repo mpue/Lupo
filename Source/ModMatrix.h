@@ -78,8 +78,8 @@ public:
 	}
 
     
-    map<int,String>* getSources();
-    map<int,String>* getTargets();
+    map<int,String>* getSourceNames();
+    map<int,String>* getTargetNames();
     
     double getSampleRate();
     void setSampleRate(double rate);

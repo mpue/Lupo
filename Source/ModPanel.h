@@ -1,99 +1,72 @@
 /*
   ==============================================================================
 
-  This is an automatically generated GUI class created by the Projucer!
-
-  Be careful when adding custom code to these files, as only the code within
-  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
-  and re-saved.
-
-  Created with Projucer version: 5.4.7
-
-  ------------------------------------------------------------------------------
-
-  The Projucer is part of the JUCE library.
-  Copyright (c) 2017 - ROLI Ltd.
+    ModPanel.h
+    Matrix-based modulation panel with GridButton elements
 
   ==============================================================================
 */
 
 #pragma once
 
-//[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "GridButton.h"
+#include <memory>
+#include <vector>
+
 class Model;
 class AttachmentFactory;
 class ModMatrix;
-//[/Headers]
-
-
 
 //==============================================================================
 /**
-                                                                    //[Comments]
-    An auto-generated component, created by the Projucer.
-
-    Describe your class and how it works here!
-                                                                    //[/Comments]
+    Matrix-based modulation panel using GridButton elements.
+    Sources are listed vertically on the left, targets horizontally on top.
+    GridButtons in the matrix allow routing modulators to targets.
 */
-class ModPanel  : public Component,
-                  public ComboBox::Listener,
-                  public Slider::Listener
+class ModPanel : public juce::Component,
+                 public juce::Button::Listener
 {
 public:
     //==============================================================================
-    ModPanel (ModMatrix* matrix,Model* model, AttachmentFactory* factory);
+    ModPanel(ModMatrix* matrix, Model* model, AttachmentFactory* factory);
     ~ModPanel() override;
 
     //==============================================================================
-    //[UserMethods]     -- You can add your own custom methods in this section.
-	void initAttachments();
-	void populateSources(ComboBox* combo);
-	void populateTargets(ComboBox* combo);
-
-    //[/UserMethods]
-
-    void paint (Graphics& g) override;
+    void paint(juce::Graphics& g) override;
     void resized() override;
-    void comboBoxChanged (ComboBox* comboBoxThatHasChanged) override;
-    void sliderValueChanged (Slider* sliderThatWasMoved) override;
+    void buttonClicked(juce::Button* button) override;
 
-    void setTargetForSlot(int slot, int targetIndex);
-
-
+    void initAttachments();
+    void updateMatrix();
 
 private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
-	AttachmentFactory* factory;
-	Model* model;
-	ModMatrix* matrix;
-    //[/UserVariables]
-
-    //==============================================================================
-    std::unique_ptr<ComboBox> Source_1;
-    std::unique_ptr<ComboBox> Source_2;
-    std::unique_ptr<ComboBox> Source_3;
-    std::unique_ptr<ComboBox> Source_4;
-    std::unique_ptr<ComboBox> Source_5;
-    std::unique_ptr<ComboBox> Source_0;
-    std::unique_ptr<ComboBox> Target_0;
-    std::unique_ptr<ComboBox> Target_1;
-    std::unique_ptr<ComboBox> Target_2;
-    std::unique_ptr<ComboBox> Target_3;
-    std::unique_ptr<ComboBox> Target_4;
-    std::unique_ptr<ComboBox> Target_5;
-    std::unique_ptr<Slider> Amount_0;
-    std::unique_ptr<Slider> Amount_1;
-    std::unique_ptr<Slider> Amount_2;
-    std::unique_ptr<Slider> Amount_3;
-    std::unique_ptr<Slider> Amount_4;
-    std::unique_ptr<Slider> Amount_5;
-
-
-    //==============================================================================
-    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (ModPanel)
+    AttachmentFactory* factory;
+    Model* model;
+    ModMatrix* matrix;
+    
+    static constexpr int GRID_SIZE = 44;
+    static constexpr int LABEL_HEIGHT = 20;
+    static constexpr int LABEL_WIDTH = 120;
+    static constexpr int MARGIN_LEFT = 10;
+    static constexpr int MARGIN_TOP = 50;
+    
+    // Grid of modulation routing buttons
+    std::vector<std::vector<std::unique_ptr<GridButton>>> gridButtons;
+    
+    // Labels for sources (left side)
+    std::vector<std::unique_ptr<juce::Label>> sourceLabels;
+    
+    // Labels for targets (top side)  
+    std::vector<std::unique_ptr<juce::Label>> targetLabels;
+    
+    int numSources = 0;
+    int numTargets = 0;
+    
+    void createMatrix();
+    void setupLabels();
+    bool isValidConnection(int sourceIndex, int targetIndex);
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ModPanel)
 };
-
-//[EndFile] You can add extra defines here...
-//[/EndFile]
 

@@ -83,6 +83,8 @@
               file="Source/GraphicalEnvelope.cpp"/>
         <FILE id="VRvyh7" name="GraphicalEnvelope.h" compile="0" resource="0"
               file="Source/GraphicalEnvelope.h"/>
+        <FILE id="E5sBy6" name="GridButton.cpp" compile="1" resource="0" file="Source/GridButton.cpp"/>
+        <FILE id="J4bwpC" name="GridButton.h" compile="0" resource="0" file="Source/GridButton.h"/>
         <FILE id="y1fTKh" name="LFOPanel.cpp" compile="1" resource="0" file="Source/LFOPanel.cpp"/>
         <FILE id="YFPMBu" name="LFOPanel.h" compile="0" resource="0" file="Source/LFOPanel.h"/>
         <FILE id="EqhpA2" name="MainUI.cpp" compile="1" resource="0" file="Source/MainUI.cpp"/>

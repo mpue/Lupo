@@ -190,7 +190,8 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	modMatrixViewport->setViewedComponent(modMatrix.get());
 	modMatrixViewport->setScrollBarsShown(true, false);
 	modMatrix->setName("modMatrix");
-	modMatrix->setBounds(0, 0, 460, 240);
+	modMatrix->setBounds(0, 0, 460, 440);
+	
 
 	// Create LFO/Modulation container
 	modulationTab.reset(new TabbedComponent(TabbedButtonBar::TabsAtBottom));
@@ -202,10 +203,10 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	modulationTab->setCurrentTabIndex(0);
 
 	// Add all tabs to the main tabbed component
-	rightSideTabs->addTab(TRANS("FX"), Colour(0xff404040), fxContainerPanel.get(), false);
-	rightSideTabs->addTab(TRANS("Arpeggiator"), Colour(0xff404040), arpPanel.get(), false);
-	rightSideTabs->addTab(TRANS("Mod Matrix"), Colour(0xff404040), modMatrixViewport.get(), false);
-	rightSideTabs->addTab(TRANS("Modulation"), Colour(0xff404040), modulationTab.get(), false);
+	rightSideTabs->addTab(TRANS("FX"), Colour(0xff1a1a1a), fxContainerPanel.get(), false);
+	rightSideTabs->addTab(TRANS("Arpeggiator"), Colour(0xff1a1a1a), arpPanel.get(), false);
+	rightSideTabs->addTab(TRANS("Mod Matrix"), Colour(0xff1a1a1a), modMatrixViewport.get(), false);
+	rightSideTabs->addTab(TRANS("Modulation"), Colour(0xff1a1a1a), modulationTab.get(), false);
 	rightSideTabs->setCurrentTabIndex(0);
 	rightSideTabs->setBounds(1020, 48, 480, 520);
 	presetButton.reset(new TextButton("presetButton"));
@@ -487,7 +488,7 @@ void MainUI::paint(Graphics& g)
 
 	// g.setColour(Colours::white);
 
-	// g.drawImageAt(juce::ImageCache::getFromMemory(BinaryData::lupo_ui_png, BinaryData::lupo_ui_pngSize), 0, 0);
+	g.drawImageAt(juce::ImageCache::getFromMemory(BinaryData::lupo_ui_png, BinaryData::lupo_ui_pngSize), 0, 0);
 
 
 

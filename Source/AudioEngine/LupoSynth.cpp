@@ -5,6 +5,11 @@
 	Created: 14 Mar 2020 12:33:42pm
 	Author:  mpue
 
+	This file is part of Lupo, a software synthesizer.
+
+	It is the main synthesizer class that manages voices, oscillators, filters,
+	envelopes, LFOs, effects, and the modulation matrix.
+
   ==============================================================================
 */
 
@@ -15,11 +20,9 @@
 #include "../ModMatrix.h"
 #include "Modulation.h"
 
-
 #ifndef M_PI
 #define M_PI       3.14159265358979323846 
 #endif
-
 
 LupoSynth::LupoSynth(Model* model, ModMatrix* modMatrix) {
 	this->model = model;
@@ -87,7 +90,6 @@ std::unique_ptr<MultimodeOscillator> LupoSynth::createOscillator(Oszillator::Osc
 	}
 
 	return osc;
-
 }
 
 void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscMode mode2, Oszillator::OscMode mode3, Oszillator::OscMode mode4) {
@@ -95,6 +97,7 @@ void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscM
 	const int maxVoices = model->maxVoices; // z. B. 16
 
 	voices.clear();
+
 	for (int i = 0; i < maxVoices; i++) {
 		auto v = std::make_unique<Voice>(sampleRate);
 
@@ -121,18 +124,14 @@ void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscM
 	}
 }
 
-
 Voice* LupoSynth::findFreeVoice(int noteNumber) {
 	for (auto& v : voices) {
-		if (!v->isPlaying() && v->getAmpEnvelope()->getState() == SynthLab::ADSR::env_idle) {
-			Logger::getCurrentLogger()->writeToLog("Found free voice: " + String(v->getNoteNumber()));
+		if (!v->isPlaying() && v->getAmpEnvelope()->getState() == SynthLab::ADSR::env_idle) {			
 			return v.get();
 		}
 	}
-	Logger::getCurrentLogger()->writeToLog("No free voice found");
 	return nullptr;
 }
-
 
 void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 {
@@ -147,18 +146,16 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	for (auto& v : voices) {
 		v->getFilter1()->coefficients(sampleRate, 15000.0f, 1.0f);
 		v->getFilter2()->coefficients(sampleRate, 15000.0f, 1.0f);
-		v->setSampleRate(sampleRate);
-		
-		// CRITICAL FIX: Add filter envelope to BOTH filters!
+		v->setSampleRate(sampleRate);	
 		v->getFilter1()->addModulator(v->getFilterEnvelope());
 		v->getFilter2()->addModulator(v->getFilterEnvelope());
+		// v->getFilter1()->addModulator(lfo1.get());
+		// v->addModulator(lfo2.get());	
 	}
 
 	lfo1->setSampleRate(sampleRate);
 	lfo2->setSampleRate(sampleRate);
 	lfo3->setSampleRate(sampleRate);
-
-
 }
 
 void LupoSynth::processMidi(MidiBuffer& midiMessages) {
@@ -197,6 +194,9 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 				voice->setNoteAndVelocity(noteNumber, m.getVelocity());
 				voice->setDuration(250);
 				voice->setTime(elapsed);
+				lfo1->reset();
+				lfo2->reset();
+				lfo3->reset();
 			}
 
 		}
@@ -223,8 +223,6 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 				numVoices = 0; // Schutz
 			}
 		}
-
-
 	}
 	if (m.isAftertouch())
 	{
@@ -244,6 +242,7 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 				voice->setPitchBend(nPitch);		
 
 	}
+	// TODO : Implement aftertouch and modulation wheel handling
 	if (m.isController()) {
 
 		// Modulation wheel
@@ -270,26 +269,17 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 	this->arp->processBlock(buffer, midiMessages);
 	this->processMidi(midiMessages);
 
-	// OPTIMIERT: Block-basierte Verarbeitung statt Sample-für-Sample
 	const int numSamples = buffer.getNumSamples();
 	auto* leftChannel = buffer.getWritePointer(0);
 	auto* rightChannel = buffer.getWritePointer(1);
-	
 
-	// Fix: Process modulation envelopes
 	for (auto& env : modEnvelopes) {
 		// Process each modulation envelope for the entire block
 		for (int sample = 0; sample < numSamples; ++sample) {
 			env->process();
 		}
 	}
-
-	// REMOVED: This was causing the filter envelope to be processed twice!
-	// Filter envelopes are now processed in Voice::processBlock
-	// for (auto& voice : voices) {
-	//     voice->getFilterEnvelope()->process();
-	// }
-
+	
 	// Process LFOs for the entire block
 	for (int sample = 0; sample < numSamples; ++sample) {
 		lfo1->process();
@@ -348,7 +338,6 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 
 	float masterGain = Decibels::decibelsToGain(model->outputGaindB);
 	buffer.applyGain(masterGain);
-
 }
 
 void LupoSynth::updateState(ValueTree state) {
@@ -374,7 +363,6 @@ void LupoSynth::updateState(ValueTree state) {
 		else {
 			parameterChanged(parameterID, newValue);
 		}
-
 	}
 
 	if (model->osc1Sync) {
@@ -385,7 +373,6 @@ void LupoSynth::updateState(ValueTree state) {
 	}
 
 	updateMatrix();
-
 }
 
 Arpeggiator* LupoSynth::getArpeggiator()
@@ -406,7 +393,6 @@ void LupoSynth::changeListenerCallback(ChangeBroadcaster* source) {
 void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 {
 	bool matrixChanged = false;
-
 
 	if (parameterID == "cutoff1")
 	{
@@ -442,13 +428,11 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 			for (auto& voice : voices) {
 				voice->getFilter1()->setMode(MultimodeFilter::LOWPASS);
 			}
-			// filter1->setMode(MultimodeFilter::LOWPASS);
 		}
 		else if (newValue == 1.0f) {
 			for (auto& voice : voices) {
 				voice->getFilter1()->setMode(MultimodeFilter::HIGHPASS);
 			}
-			//filter1->setMode(MultimodeFilter::HIGHPASS);
 		}
 	}
 	else if (parameterID == "envAmt1") {
@@ -459,38 +443,36 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 
 	if (parameterID == "cutoff2") {
 		model->cutoff2 = newValue;
-		// CRITICAL FIX: This should set FREQUENCY not RESONANCE!
+
 		for (auto& voice : voices) {
 			voice->getFilter2()->setFrequency(newValue);
 		}
 	}
 	else if (parameterID == "resonance2") {
+
 		model->resonance2 = newValue;
+		
 		if (cutoffLink) {
 			for (auto& voice : voices) {
 				voice->getFilter2()->coefficients(sampleRate, model->cutoff1, model->resonance2);
 			}
-			// filter2->coefficients(sampleRate, model->cutoff1, model->resonance2);
 		}
 		else {
 			for (auto& voice : voices) {
 				voice->getFilter2()->coefficients(sampleRate, model->cutoff2, model->resonance2);
 			}
 		}
-		//	filter2->coefficients(sampleRate, model->cutoff2, model->resonance2);
 	}
 	else if (parameterID == "filterMode2") {
 		if (newValue == 0.0f) {
 			for (auto& voice : voices) {
 				voice->getFilter2()->setMode(MultimodeFilter::LOWPASS);
 			}
-			// filter2->setMode(MultimodeFilter::LOWPASS);
 		}
 		else if (newValue == 1.0f) {
 			for (auto& voice : voices) {
 				voice->getFilter2()->setMode(MultimodeFilter::HIGHPASS);
 			}
-			// filter2->setMode(MultimodeFilter::HIGHPASS);
 		}
 	}
 	else if (parameterID == "envAmt2") {
@@ -538,7 +520,6 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		for (auto& voice : voices) {
 			voice->getFilterEnvelope()->setReleaseRate(newValue * sampleRate);
 		}
-
 	}
 	else if (parameterID == "auxAttack2") {
 		modEnvelopes.at(1)->setAttackRate(newValue * sampleRate);
@@ -552,7 +533,6 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 	else if (parameterID == "auxRelease2") {
 		modEnvelopes.at(1)->setReleaseRate(newValue * sampleRate);
 	}
-
 	else if (parameterID == "osc1Shape") {
 		for (auto& voice : voices) {
 			voice->getOscillator(0)->setMode(newValue);
@@ -773,8 +753,6 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 	else if (parameterID == "lfo3Shape") {
 		lfo3->setMode(newValue);
 	}
-	
-	// Fix: Properly update distortion parameters in model AND distortion object
 	else if (parameterID == "distDrive") {
 		model->distDrive = newValue;
 		distortion->controls.drive = newValue;
@@ -838,8 +816,6 @@ ModMatrix* LupoSynth::getModMatrix()
 }
 
 void LupoSynth::updateMatrix() {
-
-
 }
 
 void LupoSynth::configureModulation()
@@ -885,14 +861,10 @@ void LupoSynth::configureModulation()
 	matrix->addModulator(modEnvelopes.at(0).get());
 	matrix->addModulator(modEnvelopes.at(1).get());
 
-	int i = 0;
 	for (auto& voice : voices) {
 		matrix->addModulator(voice->getFilterEnvelope());
 		matrix->addModTarget(voice->getFilter1());
 		matrix->addModTarget(voice->getFilter2());
-		matrix->getModulations()[i + 6]->setModulator(voice->getFilterEnvelope());
-		matrix->getModulations()[i + 6]->setTarget(voice->getFilter1());
-		i++;
 	}
 
 	lfo1->enabled = true;

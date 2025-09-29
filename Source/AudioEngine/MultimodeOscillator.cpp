@@ -81,8 +81,6 @@ float MultimodeOscillator::process() {
 	processModulation();
     float mod = currentModulatedValue;
 
-    //&Logger::getCurrentLogger()->writeToLog ("LFO Out: " + juce::String(mod));
-
     if (this->mode == SAW) {
 		saw->setFrequency(mod + this->frequency + this->fine);
         return this->saw->process();

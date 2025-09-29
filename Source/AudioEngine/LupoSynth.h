@@ -54,7 +54,7 @@ public:
 	bool running = true;
 	void updateMatrix();
 	void configureModulation();
-	
+
 	// Methods for real-time envelope visualization
 	Voice* getActiveVoice();
 	int getAmpEnvelopeState();

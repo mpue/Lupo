@@ -210,7 +210,7 @@ Component * ModMatrixModel::refreshComponentForCell(int rowNumber, int columnId,
 		if (sourceCombo == nullptr) {
 			sourceCombo = new ComboBox("Source_"+String(rowNumber));
 
-			for (std::map<int, String>::iterator it = matrix->getSources()->begin(); it != matrix->getSources()->end();) {			
+			for (std::map<int, String>::iterator it = matrix->getSourceNames()->begin(); it != matrix->getSourceNames()->end();) {			
 				sourceCombo->addItem(it->second, it->first);
 				it++;
 			}
@@ -226,7 +226,7 @@ Component * ModMatrixModel::refreshComponentForCell(int rowNumber, int columnId,
 		
 		if (targetCombo == nullptr) {
 			targetCombo = new ComboBox("Target_"+String(rowNumber));
-			for (std::map<int, String>::iterator it = matrix->getTargets()->begin(); it != matrix->getTargets()->end();) {
+			for (std::map<int, String>::iterator it = matrix->getTargetNames()->begin(); it != matrix->getTargetNames()->end();) {
 				targetCombo->addItem(it->second, it->first);
 				it++;
 			}

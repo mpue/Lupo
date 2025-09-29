@@ -46,7 +46,7 @@ public:
     float getPitchBend() const;
     virtual void setSampleRate(double sampleRate) {
         this->sampleRate = sampleRate;
-    };
+    }
     virtual void setFine(float fine) {};
     virtual float getFine() const { return 0; };
     

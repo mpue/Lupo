@@ -26,6 +26,10 @@ public:
 		modulators.erase(std::remove(modulators.begin(), modulators.end(), mod), modulators.end());
     }
 
+    virtual void clearModulators() {
+        modulators.clear();        
+    }
+
     virtual void processModulation() = 0;
 
 protected:

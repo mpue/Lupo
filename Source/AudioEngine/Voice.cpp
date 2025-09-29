@@ -122,7 +122,6 @@ float Voice::process(int channel)
     return (channel == 0) ? outL : outR;
 }
 
-// NEUE OPTIMIERTE BLOCK-VERARBEITUNG
 void Voice::processBlock(AudioBuffer<float>& buffer) {
     const int numSamples = buffer.getNumSamples();
     auto* leftChannel = buffer.getWritePointer(0);
@@ -211,6 +210,13 @@ void Voice::setOscSpread(int osc, float spread)
 {
 	MultimodeOscillator* mmo = oscillators.at(osc).get();
 	mmo->setSpread(spread);
+}
+
+void Voice::addModulator(Modulator* mod)
+{
+    for (int i = 0; i < 4; i++) {
+        oscillators[i]->addModulator(mod);
+    }
 }
 
 void Voice::setOctave(int number) {

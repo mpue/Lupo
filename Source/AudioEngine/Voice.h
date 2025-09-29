@@ -84,6 +84,7 @@ public:
         return filter2.get();       
     }
 
+    void addModulator(Modulator* mod) override;
     
 private:
     std::unique_ptr<MultimodeFilter> filter1;

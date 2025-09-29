@@ -25,6 +25,20 @@ public:
 	
 	void processModulation() override;
 
+	virtual void addModulator(Modulator* mod) override {
+		this->modulator = mod;
+		for (auto target : targets) {
+			target->addModulator(mod);
+		}
+	}
+
+	virtual void removeModulator(Modulator* mod) override {
+		this->modulator = nullptr;
+		for (auto target : targets) {
+			target->removeModulator(mod);
+		}
+	}
+
 private:
 
 	std::vector<ModTarget*> targets;
