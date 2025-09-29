@@ -1,12 +1,3 @@
-/**
-* 
-* The main panel for th emodulatiom matrix
-* 
-*/
-
-
-
-
 #include "AudioEngine/LupoSynth.h"
 #include "OscillatorPanel.h"
 #include "LFOPanel.h"
@@ -19,7 +10,6 @@
 #include "ModMatrixPanel.h"
 #include <math.h>
 #include "MainUI.h"
-
 
 //==============================================================================
 MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
@@ -253,7 +243,7 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	addAndMakeVisible(distortionPanel.get());
 	distortionPanel->setName("distortionPanel");
 	distortionPanel->setBounds(1040, 472, 288, 110);
-	distortionPanel->setVisible(false);
+	distortionPanel->setVisible(true);
 
 	filterPanel1.reset(new FilterPanel(model, factory));
 	addAndMakeVisible(filterPanel1.get());

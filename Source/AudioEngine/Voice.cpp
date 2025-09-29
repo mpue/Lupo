@@ -121,10 +121,10 @@ void Voice::processBlock(AudioBuffer<float>& buffer) {
 
     // Process filter modulation before applying filters
     // This will use the filter envelope values that were processed above
-    filter1->processModulation();
-    filter2->processModulation();
     // Apply filters to the entire block
+    filter1->processModulation();
     filter1->processStereo(leftChannel, rightChannel, numSamples);
+    filter2->processModulation();
     filter2->processStereo(leftChannel, rightChannel, numSamples);
 }
 

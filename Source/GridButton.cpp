@@ -38,7 +38,7 @@ void GridButton::paint(juce::Graphics& g)
     if (getToggleState())
     {
         // Active connection - bright color
-        g.setColour(juce::Colours::orange);
+        g.setColour(juce::Colour(0xff4d9eff));
         g.fillRect(bounds);
         
         g.setColour(juce::Colours::white);
