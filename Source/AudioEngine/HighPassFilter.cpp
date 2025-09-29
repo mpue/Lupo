@@ -16,7 +16,10 @@ using juce::IIRCoefficients;
 HighPassFilter::HighPassFilter() {
     this->filter1 = new IIRFilter();
     this->filter2 = new IIRFilter();
-    
+    this->frequency = 1000.0f;
+    this->resonance = 0.7f;
+    this->sampleRate = 44100.0f;
+    this->currentModulatedValue = 1.0f;
 }
 
 HighPassFilter::~HighPassFilter() {
@@ -24,42 +27,57 @@ HighPassFilter::~HighPassFilter() {
     this->filter2 = nullptr;
 }
 
-
 void HighPassFilter::coefficients(float sampleRate, float frequency, float resonance) {
-    
-    this->frequency = frequency / 10;
+    this->sampleRate = sampleRate;
+    this->frequency = frequency;
     this->resonance = resonance;
     
     if (frequency >= sampleRate / 2) {
-        frequency = sampleRate / 2;
+        frequency = sampleRate / 2 - 1;
+    }
+    if (frequency <= 0) {
+        frequency = 1.0f;
     }
     
-    IIRCoefficients ic1  = IIRCoefficients::makeHighPass (sampleRate, frequency / 10, resonance);
+    IIRCoefficients ic1 = IIRCoefficients::makeHighPass(sampleRate, frequency, resonance);
     filter1->setCoefficients(ic1);
     filter2->setCoefficients(ic1);
 }
 
+void HighPassFilter::setFrequency(float newFrequency) {
+    this->frequency = newFrequency;
+    // Update coefficients with new frequency
+    coefficients(sampleRate, frequency, resonance);
+}
+
+void HighPassFilter::setResonance(float newResonance) {
+    this->resonance = newResonance;
+    // Update coefficients with new resonance
+    coefficients(sampleRate, frequency, resonance);
+}
+
 void HighPassFilter::process(float *in, float *out, int numSamples) {
-    
-    float f = frequency;
-    
-    f = this->frequency + (currentModulatedValue * 1000);
+    float f = this->frequency * currentModulatedValue;
         
-    if (f <= 0) {
-        f = 0.1;
+    if (f <= 1.0f) {
+        f = 1.0f;
     }
-    if (f > 22000) {
-        f = 22000;
+    if (f >= sampleRate / 2) {
+        f = sampleRate / 2 - 1;
     }
         
-    IIRCoefficients ic1  = IIRCoefficients::makeHighPass (44100, f, this->resonance);
+    IIRCoefficients ic1 = IIRCoefficients::makeHighPass(sampleRate, f, this->resonance);
         
     filter1->setCoefficients(ic1);
     filter2->setCoefficients(ic1);
     
-    this->filter1->processSamples(in,numSamples);
-    // in -= numSamples;
-    // this->filter2->processSamples(in,numSamples);
+    this->filter1->processSamples(in, numSamples);
+    // Copy processed samples to output if different from input
+    if (out != in) {
+        for (int i = 0; i < numSamples; ++i) {
+            out[i] = in[i];
+        }
+    }
 }
 
 void HighPassFilter::processModulation()

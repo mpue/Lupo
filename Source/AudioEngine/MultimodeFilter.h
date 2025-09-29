@@ -38,11 +38,19 @@ public:
     	this->frequency = frequency;		
         this->lowPassLeftStage1->setFrequency(frequency);
         this->lowPassRightStage1->setFrequency(frequency);
+        this->lowPassLeftStage2->setFrequency(frequency);
+        this->lowPassRightStage2->setFrequency(frequency);
+        this->highPassLeft->setFrequency(frequency);
+        this->highPassRight->setFrequency(frequency);
 	}
-    void setResonance(float resooance) {
-        this->resonance = resooance;
-        lowPassLeftStage1->setResonance(resooance);
-        lowPassRightStage1->setResonance(resooance);
+    void setResonance(float resonance) {
+        this->resonance = resonance;
+        lowPassLeftStage1->setResonance(resonance);
+        lowPassRightStage1->setResonance(resonance);
+        lowPassLeftStage2->setResonance(resonance);
+        lowPassRightStage2->setResonance(resonance);
+        highPassLeft->setResonance(resonance);
+        highPassRight->setResonance(resonance);
     }
     void setMode(Mode mode);
 	void setKeyTrack(int track);

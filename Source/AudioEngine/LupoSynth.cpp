@@ -144,8 +144,9 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	arp->setClockMode(Arpeggiator::ClockMode::Internal);
 
 	for (auto& v : voices) {
-		v->getFilter1()->coefficients(sampleRate, 15000.0f, 1.0f);
-		v->getFilter2()->coefficients(sampleRate, 15000.0f, 1.0f);
+		// Initialize filters with proper sample rate and initial values
+		v->getFilter1()->coefficients(sampleRate, model->cutoff1, model->resonance1);
+		v->getFilter2()->coefficients(sampleRate, model->cutoff2, model->resonance2);
 		v->setSampleRate(sampleRate);	
 		v->getFilter1()->addModulator(v->getFilterEnvelope());
 		v->getFilter2()->addModulator(v->getFilterEnvelope());
@@ -395,30 +396,28 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 	{
 		model->cutoff1 = newValue;
 
+		for (auto& voice : voices) {
+			voice->getFilter1()->setFrequency(model->cutoff1);
+			// Update coefficients to ensure changes take effect
+			voice->getFilter1()->coefficients(sampleRate, model->cutoff1, model->resonance1);
+		}
+
+		// Handle cutoff linking
 		if (cutoffLink) {
-			model->cutoff1 = newValue;
-
+			model->cutoff2 = newValue;
 			for (auto& voice : voices) {
-				voice->getFilter1()->setFrequency(model->cutoff1);
 				voice->getFilter2()->setFrequency(model->cutoff1);
+				voice->getFilter2()->coefficients(sampleRate, model->cutoff1, model->resonance2);
 			}
 		}
-		else {
-			for (auto& voice : voices) {
-				voice->getFilter1()->setFrequency(model->cutoff1);				
-			}
-		}
-
-		//filter1->coefficients(sampleRate, model->cutoff1, model->resonance1);
 	}
 	else if (parameterID == "resonance1") {
 		model->resonance1 = newValue;
 
 		for (auto& voice : voices) {
 			voice->getFilter1()->setResonance(model->resonance1);
+			voice->getFilter1()->coefficients(sampleRate, model->cutoff1, model->resonance1);
 		}
-
-		// filter1->coefficients(sampleRate, model->cutoff1, model->resonance1);
 	}
 	else if (parameterID == "filterMode1") {
 		if (newValue == 0.0f) {
@@ -443,21 +442,17 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 
 		for (auto& voice : voices) {
 			voice->getFilter2()->setFrequency(newValue);
+			voice->getFilter2()->coefficients(sampleRate, newValue, model->resonance2);
 		}
 	}
 	else if (parameterID == "resonance2") {
-
 		model->resonance2 = newValue;
 		
-		if (cutoffLink) {
-			for (auto& voice : voices) {
-				voice->getFilter2()->coefficients(sampleRate, model->cutoff1, model->resonance2);
-			}
-		}
-		else {
-			for (auto& voice : voices) {
-				voice->getFilter2()->coefficients(sampleRate, model->cutoff2, model->resonance2);
-			}
+		float cutoffFreq = cutoffLink ? model->cutoff1 : model->cutoff2;
+		
+		for (auto& voice : voices) {
+			voice->getFilter2()->setResonance(model->resonance2);
+			voice->getFilter2()->coefficients(sampleRate, cutoffFreq, model->resonance2);
 		}
 	}
 	else if (parameterID == "filterMode2") {
@@ -766,7 +761,16 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		filterMode = newValue;
 	}
 	else if (parameterID == "cutoffLink") {
-		newValue > 0 ? cutoffLink = true : cutoffLink = false;
+		cutoffLink = newValue > 0;
+		
+		// If cutoff link is enabled, sync filter 2 to filter 1
+		if (cutoffLink) {
+			model->cutoff2 = model->cutoff1;
+			for (auto& voice : voices) {
+				voice->getFilter2()->setFrequency(model->cutoff1);
+				voice->getFilter2()->coefficients(sampleRate, model->cutoff1, model->resonance2);
+			}
+		}
 	}
 
 	else if (parameterID.startsWith("Amount")) {
