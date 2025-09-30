@@ -19,30 +19,38 @@
 class HighPassFilter : public Filter, public ModTarget {
     
 public:
-    virtual void coefficients(float sampleRate, float frequency, float resonance) override;
-    virtual void process(float *in, float *out,int numSamples);
-	virtual void processModulation() override;
-    
-    void setFrequency(float frequency);
-    void setResonance(float resonance);
+	HighPassFilter();
+	~HighPassFilter() override = default;
 
-    HighPassFilter();
-    virtual ~HighPassFilter();
-    
+	void coefficients(float sampleRate, float frequency, float resonance) override;
+	void process(float* in, int numSamples);
+	void setFrequency(float frequency);
+	void setResonance(float resonance);
+
+	// Force immediate update for real-time control responsiveness
+	void setFrequencyImmediate(float frequency);
+
+	virtual void processModulation() override;
+
 private:
-    juce::ScopedPointer<juce::IIRFilter> filter1;
-    juce::ScopedPointer<juce::IIRFilter> filter2;
-    float frequency;
-    float resonance;
-    float sampleRate = 44100.0f;
-    float currentModulatedValue = 1.0f;
-    
-    // Additional members for artifact prevention
-    int updateCounter = 0;
-    int updateInterval = 4;      // More frequent updates for better response
-    float lastFrequency = -1.0f; // Track last frequency to avoid redundant updates
-    float freqEpsilon = 0.1f;    // Smaller epsilon for more immediate response
-    
+
+	juce::dsp::StateVariableTPTFilter<float> svf1;
+	juce::dsp::StateVariableTPTFilter<float> svf2;
+
+	juce::dsp::ProcessSpec spec{ 44100.0, 512, 1 };
+
+	float frequency = 1000.0f;
+	float resonance = 0.7f;
+	float currentModulatedValue = 1.0f;
+
+	float modulationDepth = 1000.0f;
+	int    updateCounter = 0;
+	int    updateInterval = 4;          // More frequent updates: every 4 samples for better response
+	float  lastCutoff = -1.0f;			// remember last cutoff, to react on changes
+	float  cutoffEpsilon = 0.1f;        // Smaller epsilon for more immediate response
+
+	LinearSmoothedValue<float> smoothedCutoff;
+
     JUCE_LEAK_DETECTOR(HighPassFilter);
 };
 

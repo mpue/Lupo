@@ -38,7 +38,7 @@ FilterPanel::FilterPanel (Model* model, AttachmentFactory* factory)
 
     fltCutoff.reset (new Slider ("fltCutoff"));
     addAndMakeVisible (fltCutoff.get());
-    fltCutoff->setRange (0, 18000, 10);
+    fltCutoff->setRange (0, 20000, 10);
     fltCutoff->setSliderStyle (Slider::RotaryVerticalDrag);
     fltCutoff->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     fltCutoff->addListener (this);
@@ -247,7 +247,7 @@ BEGIN_JUCER_METADATA
   <BACKGROUND backgroundColour="0"/>
   <SLIDER name="fltCutoff" id="820aba5f43f549e0" memberName="fltCutoff"
           virtualName="" explicitFocusOrder="0" pos="5 8 64 64" min="0.0"
-          max="18000.0" int="10.0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
+          max="20000.0" int="10.0" style="RotaryVerticalDrag" textBoxPos="NoTextBox"
           textBoxEditable="1" textBoxWidth="80" textBoxHeight="20" skewFactor="1.0"
           needsCallback="1"/>
   <SLIDER name="fltResonance" id="e9128200d848646a" memberName="fltResonance"

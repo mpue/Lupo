@@ -37,12 +37,12 @@ LupoAudioProcessor::LupoAudioProcessor()
 
 	factory = new AttachmentFactory(this, lupo.get());
 
-	factory->createParam("cutoff1", "Cutoff", 0.01f, 15000.0, 12000.0);
+	factory->createParam("cutoff1", "Cutoff", 0.01f, 20000.0f, 12000.0);
 	factory->createParam("resonance1", "Resonance", 0.01f, 5.0f, 1.0);
 	factory->createParam("envAmt1", "Filter amount", 0.01f, 1.0f, 1.0);
 	factory->createParam("filterMode1", "Filter Mode", 0.0f, 1.0f, 0.0);
 
-	factory->createParam("cutoff2", "Cutoff", 0.01f, 15000.0, 12000.0);
+	factory->createParam("cutoff2", "Cutoff", 0.01f, 20000.0f, 12000.0);
 	factory->createParam("resonance2", "Resonance", 0.01f, 5.0f, 1.0);
 	factory->createParam("envAmt2", "Filter amount", 0.01f, 1.0f, 1.0);
 	factory->createParam("filterMode2", "Filter Mode", 0.0f, 1.0f, 0.0);

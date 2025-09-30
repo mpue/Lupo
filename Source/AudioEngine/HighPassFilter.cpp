@@ -1,4 +1,4 @@
-//
+﻿//
 //  HighPassFilter.cpp
 //  Trio
 //
@@ -9,92 +9,100 @@
 #include "HighPassFilter.h"
 #include "ADSR.h"
 
-using juce::IIRFilter;
-using juce::IIRCoefficients;
 
-HighPassFilter::HighPassFilter() {
-    this->filter1 = new IIRFilter();
-    this->filter2 = new IIRFilter();
-    this->frequency = 1000.0f;
-    this->resonance = 0.7f;
-    this->sampleRate = 44100.0f;
-    this->currentModulatedValue = 1.0f;
-    this->updateCounter = 0;
-    this->updateInterval = 4;  // More frequent updates for better response
-    this->lastFrequency = -1.0f;
-    this->freqEpsilon = 0.1f;  // Smaller epsilon for more immediate response
+HighPassFilter::HighPassFilter()
+{
+    smoothedCutoff.reset(spec.sampleRate, 0.002);            // Much faster smoothing: 2ms for immediate musical response
+    svf1.setType(juce::dsp::StateVariableTPTFilterType::highpass);
+    svf1.prepare(spec);
+    svf2.setType(juce::dsp::StateVariableTPTFilterType::highpass);
+    svf2.prepare(spec);
 }
 
-HighPassFilter::~HighPassFilter() {
-    this->filter1 = nullptr;
-    this->filter2 = nullptr;
+// Wird von außen einmal aufgerufen (z.B. prepareToPlay)
+void HighPassFilter::coefficients(float newSampleRate,
+    float newFrequency,
+    float newResonance)
+{
+    spec.sampleRate = newSampleRate;
+    svf1.prepare(spec);
+    svf2.prepare(spec);
+
+    // Update smoothing for new sample rate with fast response
+    smoothedCutoff.reset(newSampleRate, 0.002);
+
+    frequency = newFrequency;
+    resonance = juce::jlimit(0.05f, 10.0f, newResonance);
+    svf1.setResonance(resonance);
+    svf2.setResonance(resonance);
 }
 
-void HighPassFilter::coefficients(float sampleRate, float frequency, float resonance) {
-    this->sampleRate = sampleRate;
-    this->frequency = frequency;
-    this->resonance = resonance;
-    
-    if (frequency >= sampleRate / 2) {
-        frequency = sampleRate / 2 - 1;
-    }
-    if (frequency <= 0) {
-        frequency = 1.0f;
-    }
-    
-    IIRCoefficients ic1 = IIRCoefficients::makeHighPass(sampleRate, frequency, resonance);
-    filter1->setCoefficients(ic1);
-    filter2->setCoefficients(ic1);
-    
-    lastFrequency = frequency;
-}
-
-void HighPassFilter::setFrequency(float newFrequency) {
+void HighPassFilter::setFrequency(float newFrequency)
+{
     this->frequency = newFrequency;
-    // Don't update coefficients immediately - let process() handle it with throttling
+    // For musical response, we need immediate target updates without large thresholds
 }
 
-void HighPassFilter::setResonance(float newResonance) {
+void HighPassFilter::setFrequencyImmediate(float newFrequency)
+{
+    this->frequency = newFrequency;
+    // For real-time user control, bypass smoothing and update immediately
+    float targetCutoff = frequency * currentModulatedValue;
+    targetCutoff = juce::jlimit(20.0f, 20000.0f, targetCutoff);
+
+    // Force immediate coefficient update for real-time responsiveness
+    svf1.setCutoffFrequency(targetCutoff);
+    svf2.setCutoffFrequency(targetCutoff);
+    lastCutoff = targetCutoff;
+
+    // Also update the smoother to prevent jumps
+    smoothedCutoff.setCurrentAndTargetValue(targetCutoff);
+}
+
+void HighPassFilter::setResonance(float newResonance)
+{
     this->resonance = newResonance;
-    // Update coefficients immediately for resonance as it's less likely to cause artifacts
-    coefficients(sampleRate, frequency, resonance);
+    float clampedResonance = juce::jlimit(0.05f, 5.0f, newResonance);
+    svf1.setResonance(clampedResonance);
+    svf2.setResonance(clampedResonance);
 }
 
-void HighPassFilter::process(float *in, float *out, int numSamples) {
-    
-    for (int i = 0; i < numSamples; ++i) {
-        // Update coefficients at a controlled rate to prevent artifacts
-        if (++updateCounter >= updateInterval) {
-            float targetFreq = this->frequency * currentModulatedValue;
-            
-            if (targetFreq <= 1.0f) {
-                targetFreq = 1.0f;
+// ─────────────────────────────────────────────────────────────
+// Echtzeit-Verarbeitung (in-place, Mono)
+// ─────────────────────────────────────────────────────────────
+void HighPassFilter::process(float* samples, int numSamples)
+{
+    // 1) Calculate new target considering modulation
+    float targetCutoff = frequency * currentModulatedValue;
+    targetCutoff = juce::jlimit(20.0f, 20000.0f, targetCutoff);
+
+    // Always update target for immediate musical response - remove threshold
+    smoothedCutoff.setTargetValue(targetCutoff);
+
+    for (int i = 0; i < numSamples; ++i)
+    {
+        // 2) Update filter coefficients more frequently for responsiveness
+        if (++updateCounter >= updateInterval)
+        {
+            float smooth = smoothedCutoff.getNextValue();   // geglättet
+
+            // Reduce epsilon for more immediate updates
+            if (std::abs(smooth - lastCutoff) > cutoffEpsilon)
+            {
+                svf1.setCutoffFrequency(smooth);
+                svf2.setCutoffFrequency(smooth);
+                lastCutoff = smooth;
             }
-            if (targetFreq >= sampleRate / 2) {
-                targetFreq = sampleRate / 2 - 1;
-            }
-            
-            // Only update if there's a meaningful change
-            if (std::abs(targetFreq - lastFrequency) > freqEpsilon) {
-                IIRCoefficients ic1 = IIRCoefficients::makeHighPass(sampleRate, targetFreq, this->resonance);
-                filter1->setCoefficients(ic1);
-                filter2->setCoefficients(ic1);
-                lastFrequency = targetFreq;
-            }
-            
             updateCounter = 0;
         }
-        
-        // Process the sample
-        float sample = in[i];
-        sample = filter1->processSingleSampleRaw(sample);
-        sample = filter2->processSingleSampleRaw(sample);
-        
-        if (out != in) {
-            out[i] = sample;
-        } else {
-            in[i] = sample;
+        else {
+            // Even when not updating coefficients, advance the smoother
+            smoothedCutoff.skip(1);
         }
+
+        // 3) Sample durch den Filter schicken
+        samples[i] = svf1.processSample(0, samples[i]);
+        samples[i] = svf2.processSample(0, samples[i]);
     }
 }
 
@@ -108,15 +116,14 @@ void HighPassFilter::processModulation()
         // Scale the envelope output by its modulation amount
         float envelopeValue = mod->getOutput();
         float modAmount = mod->getModAmount();
-        
+
         // Apply modulation with proper scaling for musical filter sweep:
         // - The envelope output ranges from 0 to 1
-        // - The modAmount is the user-controlled envelope amount (typically 0-100 or similar)  
+        // - The modAmount is the user-controlled envelope amount (typically 0-100 or similar)
         // - Scale to provide musical filter sweeps (multiply by base frequency works well)
         modulatedValue += (envelopeValue * modAmount * 10.0f); // 10.0f provides good musical scaling
     }
 
     currentModulatedValue = juce::jmax(0.01f, modulatedValue); // Prevent cutoff from going to zero
 }
-
 
