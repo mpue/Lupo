@@ -39,9 +39,9 @@ private:
     
     // Additional members for artifact prevention
     int updateCounter = 0;
-    int updateInterval = 8;      // Update coefficients every 8 samples
+    int updateInterval = 4;      // More frequent updates for better response
     float lastFrequency = -1.0f; // Track last frequency to avoid redundant updates
-    float freqEpsilon = 1.0f;    // Minimum frequency change to trigger update
+    float freqEpsilon = 0.1f;    // Smaller epsilon for more immediate response
     
     JUCE_LEAK_DETECTOR(HighPassFilter);
 };

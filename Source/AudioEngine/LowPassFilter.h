@@ -26,6 +26,10 @@ public:
 	void process(float* in, int numSamples);
 	void setFrequency(float frequency);
 	void setResonance(float resonance);
+	
+	// Force immediate update for real-time control responsiveness
+	void setFrequencyImmediate(float frequency);
+	
 	virtual void processModulation() override;
 
 private:
@@ -41,9 +45,9 @@ private:
 
 	float modulationDepth = 1000.0f;
 	int    updateCounter = 0;
-	int    updateInterval = 8;          // update every 8 Samples
+	int    updateInterval = 4;          // More frequent updates: every 4 samples for better response
 	float  lastCutoff = -1.0f;			// remember last cutoff, to react on changes
-	float  cutoffEpsilon = 0.5f;
+	float  cutoffEpsilon = 0.1f;        // Smaller epsilon for more immediate response
 
 	LinearSmoothedValue<float> smoothedCutoff;
 

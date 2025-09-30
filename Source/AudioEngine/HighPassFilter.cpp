@@ -20,9 +20,9 @@ HighPassFilter::HighPassFilter() {
     this->sampleRate = 44100.0f;
     this->currentModulatedValue = 1.0f;
     this->updateCounter = 0;
-    this->updateInterval = 8;  // Update coefficients every 8 samples
+    this->updateInterval = 4;  // More frequent updates for better response
     this->lastFrequency = -1.0f;
-    this->freqEpsilon = 1.0f;  // Minimum frequency change to trigger coefficient update
+    this->freqEpsilon = 0.1f;  // Smaller epsilon for more immediate response
 }
 
 HighPassFilter::~HighPassFilter() {
