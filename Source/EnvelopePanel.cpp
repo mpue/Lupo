@@ -245,7 +245,7 @@ void EnvelopePanel::sliderValueChanged (Slider* sliderThatWasMoved)
 			model->fltRelease = sliderThatWasMoved->getValue();
 		}
 		if (getName() == "auxEnvelope2") {
-			model->ampRelease = sliderThatWasMoved->getValue();
+			model->auxRelease = sliderThatWasMoved->getValue();
 		}
         //[/UserSliderCode_amp_release]
     }
@@ -329,7 +329,7 @@ void EnvelopePanel::timerCallback()
                 currentValue = synth->getFilterEnvelopeValue();
             }
             else if (getName() == "auxEnvelope2") {
-                currentPhase = synth->getModEnvelopeState(1); // Use second modulation envelope
+                currentPhase = synth->getModEnvelopeState(1); // Use second modulation envelope (index 1)
                 currentValue = synth->getModEnvelopeValue(1);
             }
             

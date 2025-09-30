@@ -150,7 +150,11 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 		v->getFilter2()->coefficients(sampleRate, model->cutoff2, model->resonance2);
 		v->setSampleRate(sampleRate);	
 		v->getFilter1()->addModulator(v->getFilterEnvelope());
-		v->getFilter2()->addModulator(v->getFilterEnvelope());
+		// Connect auxiliary envelope to filter 2 if envAmt2 > 0
+		if (model->envAmt2 > 0.0f) {
+			modEnvelopes.at(1)->setModAmount(model->envAmt2);
+			v->getFilter2()->addModulator(modEnvelopes.at(1).get());
+		}
 		v->getFilterEnvelope()->setAttackRate(0);
 		// v->getFilter1()->addModulator(lfo1.get());
 		// v->addModulator(lfo2.get());	
@@ -470,7 +474,14 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		}
 	}
 	else if (parameterID == "envAmt2") {
-		modEnvelopes.at(1)->setModAmount(newValue);
+		model->envAmt2 = newValue;
+		for (auto& voice : voices) {
+			voice->getFilter2()->clearModulators();
+			if (newValue > 0.0f) {
+				modEnvelopes.at(1)->setModAmount(newValue);
+				voice->getFilter2()->addModulator(modEnvelopes.at(1).get());
+			}
+		}
 	}
 	else if (parameterID == "mainVolume") {
 		mainVolume = newValue;

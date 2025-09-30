@@ -158,7 +158,7 @@ LupoAudioProcessor::LupoAudioProcessor()
 	if (presets.exists() && presets.isDirectory()) {
 		ScopedPointer<DirectoryIterator> iter = new DirectoryIterator(presets, false);
 		while (iter->next()) {
-			if (iter->getFile().exists() && !iter->getFile().isDirectory()) {
+			if (iter->getFile().exists() && !iter->getFile().isDirectory() && iter->getFile().getFileExtension() == ".xml") {				
 				String name = iter->getFile().getFileNameWithoutExtension();
 				Logger::getCurrentLogger()->writeToLog("Found preset : " + name);
 				programNames.push_back(name);
