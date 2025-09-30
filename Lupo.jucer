@@ -30,17 +30,8 @@
         <FILE id="dG4drC" name="SpeedTrig.cpp" compile="1" resource="0" file="Source/SpeedTrig/SpeedTrig.cpp"/>
         <FILE id="ymGJFz" name="SpeedTrig.h" compile="0" resource="0" file="Source/SpeedTrig/SpeedTrig.h"/>
       </GROUP>
-      <FILE id="NJH6XE" name="ModSlotConfig.cpp" compile="1" resource="0"
-            file="Source/ModSlotConfig.cpp"/>
-      <FILE id="Cb5p9a" name="ModSlotConfig.h" compile="0" resource="0" file="Source/ModSlotConfig.h"/>
-      <FILE id="wTmIeK" name="DummyModulator.h" compile="0" resource="0"
-            file="Source/DummyModulator.h"/>
       <FILE id="U7rILB" name="ModMatrix.cpp" compile="1" resource="0" file="Source/ModMatrix.cpp"/>
       <FILE id="yTC21j" name="ModMatrix.h" compile="0" resource="0" file="Source/ModMatrix.h"/>
-      <FILE id="YxjX7b" name="ModMatrixConfig.cpp" compile="1" resource="0"
-            file="Source/ModMatrixConfig.cpp"/>
-      <FILE id="rPMGLd" name="ModMatrixConfig.h" compile="0" resource="0"
-            file="Source/ModMatrixConfig.h"/>
       <FILE id="XiFEss" name="BlitSquare.cpp" compile="1" resource="0" file="Source/BlitSquare.cpp"/>
       <FILE id="U30oV1" name="BlitSquare.h" compile="0" resource="0" file="Source/BlitSquare.h"/>
       <FILE id="ZvSdSy" name="Stk.cpp" compile="1" resource="0" file="Source/Stk.cpp"/>
@@ -94,14 +85,6 @@
         <FILE id="WEYxFH" name="MixerChannelPanel.h" compile="0" resource="0"
               file="Source/MixerChannelPanel.h"/>
         <FILE id="HGJwq9" name="Model.h" compile="0" resource="0" file="Source/Model.h"/>
-        <FILE id="JQtF3C" name="ModMatrixPanel.cpp" compile="1" resource="0"
-              file="Source/ModMatrixPanel.cpp"/>
-        <FILE id="bj5OQM" name="ModMatrixPanel.h" compile="0" resource="0"
-              file="Source/ModMatrixPanel.h"/>
-        <FILE id="V3WVib" name="ModMatrixTable.cpp" compile="1" resource="0"
-              file="Source/ModMatrixTable.cpp"/>
-        <FILE id="G6G2Wk" name="ModMatrixTable.h" compile="0" resource="0"
-              file="Source/ModMatrixTable.h"/>
         <FILE id="LAEuJx" name="ModPanel.cpp" compile="1" resource="0" file="Source/ModPanel.cpp"/>
         <FILE id="K6mSnx" name="ModPanel.h" compile="0" resource="0" file="Source/ModPanel.h"/>
         <FILE id="BN6bBt" name="OscillatorPanel.cpp" compile="1" resource="0"

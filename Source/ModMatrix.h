@@ -17,8 +17,6 @@
 #include <vector>
 #include <map>
 #include "Model.h"
-#include "ModMatrixConfig.h"
-#include "DummyModulator.h"
 #include "AudioEngine/Modulator.h"
 
 class LupoSynth;
@@ -84,15 +82,10 @@ public:
     double getSampleRate();
     void setSampleRate(double rate);
     Model* getModel();
-	void setConfig(ModMatrixConfig* config);
-	ModMatrixConfig* getConfiguration();
     void setModel(Model* model);
 
 	void createDefaultConfig();
 
-	DummyModulator* getDummy() {
-		return dummy;
-	}
 
 private:
     Modulation** modulations;
@@ -104,8 +97,6 @@ private:
     
     double sampleRate;
     Model* model;
-	ModMatrixConfig* config = nullptr;
-	DummyModulator* dummy;
 	
 };
 

@@ -7,7 +7,6 @@
 #include "PresetDialog.h"
 #include "AudioEngine/Oszillator.h"
 #include "Panel.h"
-#include "ModMatrixPanel.h"
 #include <math.h>
 #include "MainUI.h"
 
@@ -18,7 +17,7 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	this->processor = processor;
 	this->model = processor->getModel();
 	this->synth = processor->getSynth();
-	this->matrixModel = new ModMatrixModel(this->synth->getModMatrix(), factory);
+	
 	Arpeggiator* arp = this->synth->getArpeggiator();
 	Logger::getCurrentLogger()->writeToLog("GUI instance created.");
 
@@ -38,7 +37,6 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	GlassPanel->setName("GlassPanel");
 
 	GlassPanel->setBounds(0, 0, 992, 840);
-
 
 	groupComponent.reset(new GroupComponent("new group",TRANS("Amplifier")));
 	addAndMakeVisible(groupComponent.get());
@@ -140,7 +138,6 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 	osc4Panel->setBounds(240, 304, 216, 232);
 
-
 	// Create the main tabbed component to consolidate all modulation and FX components
 	rightSideTabs.reset(new TabbedComponent(TabbedButtonBar::TabsAtTop));
 	addAndMakeVisible(rightSideTabs.get());
@@ -182,7 +179,6 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	modMatrix->setName("modMatrix");
 	modMatrix->setBounds(0, 0, 460, 440);
 	
-
 	// Create LFO/Modulation container
 	modulationTab.reset(new TabbedComponent(TabbedButtonBar::TabsAtBottom));
 	modulationTab->setTabBarDepth(22);

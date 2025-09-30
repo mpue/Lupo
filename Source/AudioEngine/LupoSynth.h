@@ -24,7 +24,6 @@
 #include "../Model.h"
 #include "../ModMatrix.h"
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "../DummyModulator.h"
 
 class LupoSynth : public ChangeListener, 
 			      public AudioProcessorValueTreeState::Listener, 
@@ -87,8 +86,6 @@ private:
 	std::unique_ptr<MultimodeOscillator> lfo1;
 	std::unique_ptr<MultimodeOscillator> lfo2;
 	std::unique_ptr<MultimodeOscillator> lfo3;
-
-	std::unique_ptr <DummyModulator> dummyModulator;
 
 	std::unique_ptr<StereoDelay> delay;
 	std::unique_ptr<StereoReverb> reverb;
