@@ -68,6 +68,7 @@
         <FILE id="ftY232" name="EnvelopePanel.cpp" compile="1" resource="0"
               file="Source/EnvelopePanel.cpp"/>
         <FILE id="bOOBt5" name="EnvelopePanel.h" compile="0" resource="0" file="Source/EnvelopePanel.h"/>
+        <FILE id="gQpyrd" name="FastBus.h" compile="0" resource="0" file="Source/MessageBus/FastBus.h"/>
         <FILE id="wqTKFZ" name="FilterPanel.cpp" compile="1" resource="0" file="Source/FilterPanel.cpp"/>
         <FILE id="HMi8DE" name="FilterPanel.h" compile="0" resource="0" file="Source/FilterPanel.h"/>
         <FILE id="JwbnYu" name="GraphicalEnvelope.cpp" compile="1" resource="0"

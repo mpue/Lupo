@@ -19,6 +19,7 @@
 #include "Sampler.h"
 #include "../ModMatrix.h"
 #include "Modulation.h"
+#include "../MessageBus/FastBus.h"
 
 #ifndef M_PI
 #define M_PI       3.14159265358979323846 
@@ -338,7 +339,12 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 	buffer.applyGain(masterGain);
 }
 
-void LupoSynth::updateState(ValueTree state) {
+void LupoSynth::updateState(ValueTree state, juce::String modMatríxState) {
+
+	model->gridState = modMatríxState;
+
+	auto& bus = FastBus::getInstance();
+	bus.publish("MODMATRIX", modMatríxState);
 
 	for (int j = 0; j < state.getNumChildren(); j++) {
 

@@ -12,7 +12,6 @@
 #include "Sawtooth.h"
 #include "Pulse.h"
 #include "SampleAndHold.h"
-#include "../DummyModulator.h"
 
 MultimodeOscillator::MultimodeOscillator(float sampleRate,int buffersize) : Oszillator(sampleRate) {
     this->volume = 1.0f;

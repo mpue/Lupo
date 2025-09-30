@@ -263,20 +263,28 @@ void LupoAudioProcessor::setSelectedProgram(juce::String name) {
 	String presetPath = appDataPath + "/Audio/Presets/pueski/Lupo/";
 
 	String filename = name + ".xml";
+	String matrixConf = name + ".matrix";
 	File preset = File(presetPath + filename);
+	File matrixFile = File(presetPath + matrixConf);
 
 	if (preset.exists()) {
 
 		std::unique_ptr<XmlElement> xml = XmlDocument(preset).getDocumentElement();
 		ValueTree state = ValueTree::fromXml(*xml.get());
 		
-		getValueTreeState()->state = state;
-
 		xml = nullptr;
 		this->selectedProgram = name;
 
-		lupo->updateState(state);
+		// get the mod matrix state from the preset		
 		
+		String modMatrixState = "5,6;0,0,0,0,0,0;0,0,0,0,0,0;0,0,0,0,0,0;0,0,0,0,0,0;0,0,0,0,0,0";
+
+		if (matrixFile.exists()) {
+			 modMatrixState = matrixFile.loadFileAsString();			
+		}	
+		getValueTreeState()->state = state;
+		lupo->updateState(state,modMatrixState);
+
 		Logger::getCurrentLogger()->writeToLog("Updating synth state");
 	}
 

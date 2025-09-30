@@ -9,6 +9,7 @@
 #include "Panel.h"
 #include <math.h>
 #include "MainUI.h"
+#include "MessageBus/FastBus.h"
 
 //==============================================================================
 MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
@@ -395,6 +396,13 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 	resized();
 
+	auto& bus = FastBus::getInstance();
+
+	bus.subscribe<juce::String>("MODMATRIX", [this](const FastTopic<juce::String>& topic) {
+		modMatrix->setGridStateFromString(topic.getValue());
+		repaint();
+	});
+
 	//[/Constructor]
 }
 
@@ -542,21 +550,26 @@ void MainUI::buttonClicked(Button* buttonThatWasClicked)
 		}
 
 		File preset = File(presetPath + presetName + ".xml");
-
+		File modMatrixConfig = File(presetPath + presetName + ".matrix");
+		
 		bool proceed = true;
-		bool presetExists = false;
-
-		if (preset.exists()) {
-			proceed = false;
-			presetExists = true;
-		}
-
-		if (!proceed) {
-			proceed = AlertWindow::showOkCancelBox(AlertWindow::QuestionIcon, "Warning", "A preset with this name exists already, overwrite?", "Ok", "Fuck! No!", this, nullptr);
-		}
-
 
 		if (proceed) {
+
+			bool success = false;
+			bool presetExists = false;
+
+			if (modMatrixConfig.exists()) {
+				success = modMatrixConfig.replaceWithText(modMatrix->getGridStateAsString());
+			}
+			else {
+				success = modMatrixConfig.create();
+				modMatrixConfig.appendText(modMatrix->getGridStateAsString());
+			}
+
+			if (!success) {
+				return;
+			}
 
 			xml.get()->writeToFile(preset, "");
 
