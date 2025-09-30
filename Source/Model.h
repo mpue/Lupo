@@ -146,6 +146,7 @@ public:
 	bool osc3Enabled = false;
 	bool osc4Enabled = false;
 
+	juce::String gridState = "";
 
 	int getModSource(int source) {
 		return this->modSource[source];

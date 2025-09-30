@@ -164,6 +164,115 @@ void ModPanel::updateMatrix()
 {
 }
 
+juce::String ModPanel::getGridStateAsString() const
+{
+    juce::String gridState;
+    
+    // Create a string representation of the grid state
+    // Format: "rows,cols;r0c0,r0c1,r0c2,...;r1c0,r1c1,r1c2,...;..."
+    // where each value is 1 for enabled buttons and 0 for disabled buttons
+    
+    gridState += juce::String(numSources) + "," + juce::String(numTargets) + ";";
+    
+    for (int row = 0; row < numSources; ++row)
+    {
+        for (int col = 0; col < numTargets; ++col)
+        {
+            if (row < static_cast<int>(gridButtons.size()) && 
+                col < static_cast<int>(gridButtons[row].size()) &&
+                gridButtons[row][col] != nullptr)
+            {
+                gridState += gridButtons[row][col]->getToggleState() ? "1" : "0";
+            }
+            else
+            {
+                gridState += "0";
+            }
+            
+            if (col < numTargets - 1)
+                gridState += ",";
+        }
+        
+        if (row < numSources - 1)
+            gridState += ";";
+    }
+    
+    return gridState;
+}
+
+void ModPanel::setGridStateFromString(const juce::String& gridState)
+{
+    if (gridState.isEmpty())
+        return;
+    
+    // Parse the grid state string
+    // Format: "rows,cols;r0c0,r0c1,r0c2,...;r1c0,r1c1,r1c2,...;..."
+    
+    juce::StringArray parts = juce::StringArray::fromTokens(gridState, ";", "");
+    
+    if (parts.size() < 1)
+        return;
+    
+    // Parse dimensions
+    juce::StringArray dimensions = juce::StringArray::fromTokens(parts[0], ",", "");
+    if (dimensions.size() != 2)
+        return;
+    
+    int rows = dimensions[0].getIntValue();
+    int cols = dimensions[1].getIntValue();
+    
+    // Validate dimensions match current grid
+    if (rows != numSources || cols != numTargets)
+        return;
+    
+    // Parse button states
+    for (int row = 0; row < rows && row + 1 < parts.size(); ++row)
+    {
+        juce::StringArray buttonStates = juce::StringArray::fromTokens(parts[row + 1], ",", "");
+        
+        for (int col = 0; col < cols && col < buttonStates.size(); ++col)
+        {
+            if (row < static_cast<int>(gridButtons.size()) && 
+                col < static_cast<int>(gridButtons[row].size()) &&
+                gridButtons[row][col] != nullptr)
+            {
+                bool buttonState = buttonStates[col].getIntValue() != 0;
+                
+                // Set the button state without triggering the listener
+                gridButtons[row][col]->setToggleState(buttonState, juce::dontSendNotification);
+                
+                // Update the underlying modulation matrix
+                if (buttonState && isValidConnection(row, col))
+                {
+                    const auto& modulators = matrix->getModulators();
+                    const auto& targets = matrix->getModTargets();
+                    
+                    if (row < static_cast<int>(modulators.size()) && 
+                        col < static_cast<int>(targets.size()))
+                    {
+                        Modulator* mod = modulators[row];
+                        ModTarget* target = targets[col];
+                        target->addModulator(mod);
+                    }
+                }
+                else if (!buttonState)
+                {
+                    const auto& modulators = matrix->getModulators();
+                    const auto& targets = matrix->getModTargets();
+                    
+                    if (row < static_cast<int>(modulators.size()) && 
+                        col < static_cast<int>(targets.size()))
+                    {
+                        Modulator* mod = modulators[row];
+                        ModTarget* target = targets[col];
+                        target->removeModulator(mod);
+                    }
+                }
+            }
+        }
+    }
+}
+
 void ModPanel::createMatrix()
 {
     gridButtons.clear();

@@ -40,6 +40,10 @@ public:
     void initAttachments();
     void updateMatrix();
 
+    // Grid state serialization methods
+    juce::String getGridStateAsString() const;
+    void setGridStateFromString(const juce::String& gridState);
+
 private:
     AttachmentFactory* factory;
     Model* model;
