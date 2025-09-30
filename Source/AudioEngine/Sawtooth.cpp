@@ -1,44 +1,44 @@
 /*
   ==============================================================================
-
     Sawtooth.cpp
     Created: 3 Jun 2016 9:02:07pm
     Author:  Matthias Pueski
-
   ==============================================================================
 */
 
 #include "Sawtooth.h"
 #include "../Stk.h"
 #define _USE_MATH_DEFINES
-
 #include <math.h>
 #include <iostream>
 
 using namespace std;
 
 Sawtooth::Sawtooth(float sampleRate, int buffersize) : Oszillator(sampleRate) {
-	this->bufferSIze = buffersize;
-	this->volume = 1.0f;
+    this->bufferSize = buffersize;
+    this->volume = 1.0f;
     this->frequency = 440.0f;
     this->fine = 0.0f;
-    this->p = 0.0f;      //current position
-    this->dp = 1.0f;     //change in postion per sample
-    this->leak = 0.995f; //leaky integrator
-    this->pmax = 0.5f * sampleRate / (frequency + this->fine);
-    this->dc = -0.498f / this->pmax;
     this->lastValue = 0;
-	this->saw = 0;
-	for (int i = 0; i < 8; i++) {
-		blitsaw[i] = new stk::BlitSaw();
-	}
+    this->saw = 0;
+    this->spread = 0.0f;
+    this->value = 0;
+    this->totalWeight = 0;
+
+    // Oszillatoren mit verteilten Phasen initialisieren
+    for (int i = 0; i < 8; i++) {
+        blitsaw[i] = new stk::BlitSaw();
+        // Phasen gleichmäßig verteilen für volleren Klang
+        // Falls BlitSaw keine setPhase() Methode hat, diese Zeilen entfernen
+        // blitsaw[i]->setPhase(i / 8.0f);
+    }
 }
 
 Sawtooth::~Sawtooth()
 {
-	for (int i = 0; i < 8; i++) {
-		delete blitsaw[i];
-	}
+    for (int i = 0; i < 8; i++) {
+        delete blitsaw[i];
+    }
 }
 
 float Sawtooth::getOutput() {
@@ -46,19 +46,80 @@ float Sawtooth::getOutput() {
 }
 
 void Sawtooth::reset() {
-	for (int i = 0; i < 8; i++) {
-		blitsaw[i]->reset();
-	}
+    for (int i = 0; i < 8; i++) {
+        blitsaw[i]->reset();
+    }
+}
+
+float Sawtooth::process()
+{
+    // Oszillator-Sync
+    if (this->slave != 0 && sync) {
+        if (blitsaw[0]->resetFlag) {
+            slave->reset();
+            blitsaw[0]->resetFlag = false;
+        }
+    }
+
+    // Ohne Spread nur den ersten Oszillator verwenden
+    if (spread == 0.0f) {
+        saw = blitsaw[0]->tick();
+        return saw * volume;
+    }
+    else {
+        // Mit Spread alle Oszillatoren mischen
+        value = 0;
+        totalWeight = 0;
+
+        for (int i = 0; i < 8; i++) {
+            float weight = scales[i]; // RMS-basierte Skalierung
+            value += blitsaw[i]->tick() * weight;
+            totalWeight += weight;
+        }
+
+        // Normalisieren um konstante Lautstärke zu halten
+        saw = value / totalWeight;
+        return saw * volume;
+    }
+}
+
+void Sawtooth::setFrequency(double frequency)
+{
+    if (frequency == 0) {
+        frequency = 0.01;
+    }
+
+    this->frequency = frequency;
+
+    // Erster Oszillator auf Grundfrequenz
+    blitsaw[0]->setFrequency(frequency + this->fine + pitchMod);
+
+    // Restliche Oszillatoren symmetrisch verstimmen
+    for (int i = 1; i < 8; i++) {
+        float detune = scales[i - 1] * spread;
+
+        // Abwechselnd positive und negative Verstimmung
+        if (i % 2 == 0) {
+            detune = -detune;
+        }
+
+        // Frequenzabhängige Skalierung für natürlicheren Klang
+        float freqScale = 1.0f + (frequency / 20000.0f);
+
+        blitsaw[i]->setFrequency(frequency + this->fine + pitchMod + (detune * freqScale));
+    }
 }
 
 void Sawtooth::setSpread(float spread)
 {
-	this->spread = spread;
+    this->spread = spread;
+    // Frequenz neu setzen um Verstimmung zu aktualisieren
+    setFrequency(this->frequency);
 }
 
 void Sawtooth::setFine(float fine) {
-	this->fine = fine;    
-	setFrequency(frequency);
+    this->fine = fine;
+    setFrequency(frequency);
 }
 
 float Sawtooth::getFine() const {

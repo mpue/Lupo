@@ -3,9 +3,8 @@
 //  Trio
 //
 //  Created by Matthias Pueski on 16.11.16.
+//  Enhanced to prevent artifacts when adjusting cutoff
 //
-//
-
 
 #include "HighPassFilter.h"
 #include "ADSR.h"
@@ -20,6 +19,10 @@ HighPassFilter::HighPassFilter() {
     this->resonance = 0.7f;
     this->sampleRate = 44100.0f;
     this->currentModulatedValue = 1.0f;
+    this->updateCounter = 0;
+    this->updateInterval = 8;  // Update coefficients every 8 samples
+    this->lastFrequency = -1.0f;
+    this->freqEpsilon = 1.0f;  // Minimum frequency change to trigger coefficient update
 }
 
 HighPassFilter::~HighPassFilter() {
@@ -42,40 +45,55 @@ void HighPassFilter::coefficients(float sampleRate, float frequency, float reson
     IIRCoefficients ic1 = IIRCoefficients::makeHighPass(sampleRate, frequency, resonance);
     filter1->setCoefficients(ic1);
     filter2->setCoefficients(ic1);
+    
+    lastFrequency = frequency;
 }
 
 void HighPassFilter::setFrequency(float newFrequency) {
     this->frequency = newFrequency;
-    // Update coefficients with new frequency
-    coefficients(sampleRate, frequency, resonance);
+    // Don't update coefficients immediately - let process() handle it with throttling
 }
 
 void HighPassFilter::setResonance(float newResonance) {
     this->resonance = newResonance;
-    // Update coefficients with new resonance
+    // Update coefficients immediately for resonance as it's less likely to cause artifacts
     coefficients(sampleRate, frequency, resonance);
 }
 
 void HighPassFilter::process(float *in, float *out, int numSamples) {
-    float f = this->frequency * currentModulatedValue;
-        
-    if (f <= 1.0f) {
-        f = 1.0f;
-    }
-    if (f >= sampleRate / 2) {
-        f = sampleRate / 2 - 1;
-    }
-        
-    IIRCoefficients ic1 = IIRCoefficients::makeHighPass(sampleRate, f, this->resonance);
-        
-    filter1->setCoefficients(ic1);
-    filter2->setCoefficients(ic1);
     
-    this->filter1->processSamples(in, numSamples);
-    // Copy processed samples to output if different from input
-    if (out != in) {
-        for (int i = 0; i < numSamples; ++i) {
-            out[i] = in[i];
+    for (int i = 0; i < numSamples; ++i) {
+        // Update coefficients at a controlled rate to prevent artifacts
+        if (++updateCounter >= updateInterval) {
+            float targetFreq = this->frequency * currentModulatedValue;
+            
+            if (targetFreq <= 1.0f) {
+                targetFreq = 1.0f;
+            }
+            if (targetFreq >= sampleRate / 2) {
+                targetFreq = sampleRate / 2 - 1;
+            }
+            
+            // Only update if there's a meaningful change
+            if (std::abs(targetFreq - lastFrequency) > freqEpsilon) {
+                IIRCoefficients ic1 = IIRCoefficients::makeHighPass(sampleRate, targetFreq, this->resonance);
+                filter1->setCoefficients(ic1);
+                filter2->setCoefficients(ic1);
+                lastFrequency = targetFreq;
+            }
+            
+            updateCounter = 0;
+        }
+        
+        // Process the sample
+        float sample = in[i];
+        sample = filter1->processSingleSampleRaw(sample);
+        sample = filter2->processSingleSampleRaw(sample);
+        
+        if (out != in) {
+            out[i] = sample;
+        } else {
+            in[i] = sample;
         }
     }
 }

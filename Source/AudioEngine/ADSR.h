@@ -87,10 +87,16 @@ namespace SynthLab {
 		case env_idle:
 			break;
 		case env_attack:
-			output = attackBase + output * attackCoef;
-			if (output >= 1.0) {
-				output = 1.0;
+			// Handle instantaneous attack when attackCoef is 0
+			if (attackCoef == 0.0f) {
+				output = 1.0f;  // Jump instantly to full level
 				state = env_decay;
+			} else {
+				output = attackBase + output * attackCoef;
+				if (output >= 1.0) {
+					output = 1.0;
+					state = env_decay;
+				}
 			}
 			break;
 		case env_decay:

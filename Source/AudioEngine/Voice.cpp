@@ -92,9 +92,13 @@ void Voice::processBlock(AudioBuffer<float>& buffer) {
         float outL = 0.0f;
         float outR = 0.0f;
 
+		int numActiveOscillators = 0;
+
         for (int i = 0; i < 4; i++) {
             if (!oscillators[i]->enabled)
                 continue;
+
+			numActiveOscillators++;
 
             if (i == 1 && oscillators[i - 1]->enabled && oscillators[i - 1]->isSync()) {
                 oscillators[i - 1]->reset();
@@ -124,8 +128,8 @@ void Voice::processBlock(AudioBuffer<float>& buffer) {
     // Apply filters to the entire block
     filter1->processModulation();
     filter1->processStereo(leftChannel, rightChannel, numSamples);
-    filter2->processModulation();
-    filter2->processStereo(leftChannel, rightChannel, numSamples);
+    //filter2->processModulation();
+    //filter2->processStereo(leftChannel, rightChannel, numSamples);
 }
 
 void Voice::setNoteNumber(int number) {

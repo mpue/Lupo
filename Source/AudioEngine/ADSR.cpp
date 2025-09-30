@@ -37,9 +37,19 @@ SynthLab::ADSR::~ADSR(void) {
 }
 
 void SynthLab::ADSR::setAttackRate(float rate) {
+    // Store the actual rate for later use
+    float actualRate = rate;
+    
     attackRate = rate * 1000;
-    attackCoef = calcCoef(rate, targetRatioA);
-    attackBase = (1.0 + targetRatioA) * (1.0 - attackCoef);
+    
+    // Handle zero or very small attack rates for instantaneous attack
+    if (actualRate <= 0.0001f) {
+        attackCoef = 0.0f;  // Make attack instantaneous
+        attackBase = 1.0f;  // Jump directly to full level
+    } else {
+        attackCoef = calcCoef(rate, targetRatioA);
+        attackBase = (1.0 + targetRatioA) * (1.0 - attackCoef);
+    }
 }
 
 float SynthLab::ADSR::getAttackRate() {
@@ -84,8 +94,12 @@ void SynthLab::ADSR::setTargetRatioA(float targetRatio) {
     if (targetRatio < 0.000000001)
         targetRatio = 0.000000001;  // -180 dB
     targetRatioA = targetRatio;
-    attackCoef = calcCoef(attackRate, targetRatioA);
-    attackBase = (1.0 + targetRatioA) * (1.0 - attackCoef);
+    
+    // Recalculate coefficients only if attack rate is not zero
+    if (attackRate > 0.0001f) {
+        attackCoef = calcCoef(attackRate / 1000.0f, targetRatioA);
+        attackBase = (1.0 + targetRatioA) * (1.0 - attackCoef);
+    }
 }
 
 void SynthLab::ADSR::setTargetRatioDR(float targetRatio) {

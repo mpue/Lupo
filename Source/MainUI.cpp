@@ -235,15 +235,9 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	fmSlider->setBounds(496, 464, 64, 56);
 
 	distGroup.reset(new GroupComponent("distGroup",TRANS("Distortion")));
-	addAndMakeVisible(distGroup.get());
-	distGroup->setVisible(false);
+	fxContainerPanel->addAndMakeVisible(distGroup.get());
+	distGroup->setVisible(true);
 	distGroup->setBounds(1030, 456, 392, 88);
-
-	distortionPanel.reset(new DistortionPanel(model, factory));
-	addAndMakeVisible(distortionPanel.get());
-	distortionPanel->setName("distortionPanel");
-	distortionPanel->setBounds(1040, 472, 288, 110);
-	distortionPanel->setVisible(true);
 
 	filterPanel1.reset(new FilterPanel(model, factory));
 	addAndMakeVisible(filterPanel1.get());
@@ -378,16 +372,13 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 	ampEnvelope.get()->initAttachments();
 	filterEnvelope->initAttachments();
-	// auxEnvelope2->initAttachments();
-
+	
 	lfo1->setName("lfo1");
 	lfo2->setName("lfo2");
 	lfo3->setName("lfo3");
 	lfo1->initAttachments();
 	lfo2->initAttachments();
 	lfo3->initAttachments();
-
-
 
 	reverbPanel.get()->initAttachments();
 	chorusPanel.get()->initAttachments();

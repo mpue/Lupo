@@ -398,8 +398,7 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 
 		for (auto& voice : voices) {
 			voice->getFilter1()->setFrequency(model->cutoff1);
-			// Update coefficients to ensure changes take effect
-			voice->getFilter1()->coefficients(sampleRate, model->cutoff1, model->resonance1);
+			 // Remove redundant coefficients call - setFrequency should handle the update
 		}
 
 		// Handle cutoff linking
@@ -407,7 +406,6 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 			model->cutoff2 = newValue;
 			for (auto& voice : voices) {
 				voice->getFilter2()->setFrequency(model->cutoff1);
-				voice->getFilter2()->coefficients(sampleRate, model->cutoff1, model->resonance2);
 			}
 		}
 	}
@@ -416,7 +414,7 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 
 		for (auto& voice : voices) {
 			voice->getFilter1()->setResonance(model->resonance1);
-			voice->getFilter1()->coefficients(sampleRate, model->cutoff1, model->resonance1);
+			// Remove redundant coefficients call
 		}
 	}
 	else if (parameterID == "filterMode1") {
@@ -442,17 +440,15 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 
 		for (auto& voice : voices) {
 			voice->getFilter2()->setFrequency(newValue);
-			voice->getFilter2()->coefficients(sampleRate, newValue, model->resonance2);
+			// Remove redundant coefficients call
 		}
 	}
 	else if (parameterID == "resonance2") {
 		model->resonance2 = newValue;
 		
-		float cutoffFreq = cutoffLink ? model->cutoff1 : model->cutoff2;
-		
 		for (auto& voice : voices) {
 			voice->getFilter2()->setResonance(model->resonance2);
-			voice->getFilter2()->coefficients(sampleRate, cutoffFreq, model->resonance2);
+			// Remove redundant coefficients call
 		}
 	}
 	else if (parameterID == "filterMode2") {
@@ -768,7 +764,6 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 			model->cutoff2 = model->cutoff1;
 			for (auto& voice : voices) {
 				voice->getFilter2()->setFrequency(model->cutoff1);
-				voice->getFilter2()->coefficients(sampleRate, model->cutoff1, model->resonance2);
 			}
 		}
 	}

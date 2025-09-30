@@ -1,9 +1,9 @@
 //
-//  LowPassFilter.hpp
+//  HighPassFilter.hpp
 //  Trio
 //
 //  Created by Matthias Pueski on 16.11.16.
-//
+//  Enhanced to prevent artifacts when adjusting cutoff
 //
 
 #ifndef HighPassFilter_hpp
@@ -23,7 +23,6 @@ public:
     virtual void process(float *in, float *out,int numSamples);
 	virtual void processModulation() override;
     
-    // Add missing methods for consistency with LowPassFilter
     void setFrequency(float frequency);
     void setResonance(float resonance);
 
@@ -35,12 +34,17 @@ private:
     juce::ScopedPointer<juce::IIRFilter> filter2;
     float frequency;
     float resonance;
-    float sampleRate = 44100.0f;  // Add sample rate storage
-    float currentModulatedValue = 1.0f;  // Fix initial value - was 0.0f 
-    JUCE_LEAK_DETECTOR(HighPassFilter);
+    float sampleRate = 44100.0f;
+    float currentModulatedValue = 1.0f;
     
+    // Additional members for artifact prevention
+    int updateCounter = 0;
+    int updateInterval = 8;      // Update coefficients every 8 samples
+    float lastFrequency = -1.0f; // Track last frequency to avoid redundant updates
+    float freqEpsilon = 1.0f;    // Minimum frequency change to trigger update
+    
+    JUCE_LEAK_DETECTOR(HighPassFilter);
 };
-
 
 #endif /* HighPassFilter_hpp */
 

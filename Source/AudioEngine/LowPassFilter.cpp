@@ -5,12 +5,11 @@
 // ─────────────────────────────────────────────────────────────
 LowPassFilter::LowPassFilter()
 {
-    smoothedCutoff.reset(spec.sampleRate, 0.02);            // 20 ms Glide
+    smoothedCutoff.reset(spec.sampleRate, 0.005);            // Faster smoothing: 5ms for more responsive feel
     svf1.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
     svf1.prepare(spec);
     svf2.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
     svf2.prepare(spec);
-
 }
 
 // Wird von außen einmal aufgerufen (z.B. prepareToPlay)
@@ -21,6 +20,10 @@ void LowPassFilter::coefficients(float newSampleRate,
     spec.sampleRate = newSampleRate;
     svf1.prepare(spec);
     svf2.prepare(spec);
+    
+    // Update smoothing for new sample rate
+    smoothedCutoff.reset(newSampleRate, 0.005);
+    
     frequency = newFrequency;
     resonance = juce::jlimit(0.05f, 10.0f, newResonance);
     svf1.setResonance(resonance);
@@ -29,17 +32,14 @@ void LowPassFilter::coefficients(float newSampleRate,
 
 void LowPassFilter::setFrequency(float newFrequency)
 {
-    this->frequency = newFrequency;  // Fix: was assigning frequency to itself
-    // Apply the new frequency immediately
-    float targetCutoff = frequency * currentModulatedValue;
-    targetCutoff = juce::jlimit(20.0f, 20000.0f, targetCutoff);
-    svf1.setCutoffFrequency(targetCutoff);
-    svf2.setCutoffFrequency(targetCutoff);
+    this->frequency = newFrequency;  
+    // Don't apply immediately - let the process() method handle smoothing
+    // This prevents artifacts when changing cutoff in real-time
 }
 
 void LowPassFilter::setResonance(float newResonance)
 {
-    this->resonance = newResonance;  // Fix: was assigning resonance to itself
+    this->resonance = newResonance;  
     float clampedResonance = juce::jlimit(0.05f, 5.0f, newResonance);
     svf1.setResonance(clampedResonance);
     svf2.setResonance(clampedResonance);
@@ -50,18 +50,23 @@ void LowPassFilter::setResonance(float newResonance)
 // ─────────────────────────────────────────────────────────────
 void LowPassFilter::process(float* samples, int numSamples)
 {
-    // 1) neues Ziel berechnen
+    // 1) Calculate new target considering modulation
     float targetCutoff = frequency * currentModulatedValue;
     targetCutoff = juce::jlimit(20.0f, 20000.0f, targetCutoff);
-    smoothedCutoff.setTargetValue(targetCutoff);
+    
+    // Only update target if there's a significant change to avoid unnecessary work
+    if (std::abs(targetCutoff - smoothedCutoff.getTargetValue()) > 1.0f) {
+        smoothedCutoff.setTargetValue(targetCutoff);
+    }
 
     for (int i = 0; i < numSamples; ++i)
     {
-        // 2) nur alle updateInterval-Samples Filter neu parametrieren
+        // 2) Update filter coefficients at a controlled rate
         if (++updateCounter >= updateInterval)
         {
             float smooth = smoothedCutoff.getNextValue();   // geglättet
 
+            // Only update coefficients if there's a meaningful change
             if (std::abs(smooth - lastCutoff) > cutoffEpsilon)
             {
                 svf1.setCutoffFrequency(smooth);

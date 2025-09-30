@@ -36,6 +36,7 @@ public:
 
     void setFrequency(float frequency) {
     	this->frequency = frequency;		
+        // Let the individual filters handle smoothing - don't set immediately
         this->lowPassLeftStage1->setFrequency(frequency);
         this->lowPassRightStage1->setFrequency(frequency);
         this->lowPassLeftStage2->setFrequency(frequency);
