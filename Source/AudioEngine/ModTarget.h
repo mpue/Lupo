@@ -18,14 +18,11 @@ public:
     
     virtual ~ModTarget() {};
     
-    virtual void addPwmModulator(Modulator* mod) {
-        // Default implementation does nothing
-	}
-
-    virtual void removePwmModulator(Modulator* mod) {
-        // Default implementation does nothing
-    }
-
+    virtual void addPwmModulator(Modulator* mod) = 0;
+    
+    virtual void removePwmModulator(Modulator* mod) = 0;
+    
+    
     virtual void addModulator(Modulator* mod) {
 		modulators.push_back(mod);
     }
@@ -41,9 +38,9 @@ public:
     virtual void processModulation() = 0;
 
 protected:
-	
 	std::vector<Modulator*> modulators;
-
+    std::vector<Modulator*> pwmModulators;
+    
 };
 
 

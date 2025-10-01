@@ -24,6 +24,7 @@
 #include "../Model.h"
 #include "../ModMatrix.h"
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "ModTargetGroup.h"
 
 class LupoSynth : public ChangeListener, 
 			      public AudioProcessorValueTreeState::Listener, 
@@ -44,7 +45,7 @@ public:
 	void processMidi(MidiBuffer& midiMessages);
 	void prepareToPlay(double sampleRate, int bufferSize);	
 	void updateState(ValueTree state, juce::String modMatrixState);
-	std::unique_ptr<MultimodeOscillator> createOscillator(Oszillator::OscMode mode);
+	std::shared_ptr<MultimodeOscillator> createOscillator(Oszillator::OscMode mode);
 	void configureOscillators(Oszillator::OscMode mode1, Oszillator::OscMode mode2, Oszillator::OscMode mode3, Oszillator::OscMode mode4);
 	void changeListenerCallback(ChangeBroadcaster* source) override;
 	void parameterChanged(const String& parameterID, float newValue) override;
@@ -93,6 +94,10 @@ private:
 	std::unique_ptr<Distortion>	distortion;
 	std::unique_ptr<Arpeggiator> arp;
 	
+	std::unique_ptr<ModTargetGroup> filterTargetGroup1 = nullptr;
+	std::unique_ptr<ModTargetGroup> filterTargetGroup2 = nullptr;
+	std::unique_ptr<ModTargetGroup> oscPwmTarget = nullptr;
+
 	ModMatrix* matrix;
 
 	int highestNote = 0;

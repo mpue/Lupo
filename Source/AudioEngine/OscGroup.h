@@ -25,6 +25,18 @@ public:
 	
 	void processModulation() override;
 
+	virtual void addPwmModulator(Modulator* mod) override {
+		for (auto target : targets) {
+			target->addPwmModulator(mod);
+		}
+	};
+
+	virtual void removePwmModulator(Modulator* mod) override {
+		for (auto target : targets) {
+			target->removePwmModulator(mod);
+		}
+	};
+
 	virtual void addModulator(Modulator* mod) override {
 		this->modulator = mod;
 		for (auto target : targets) {
@@ -43,5 +55,6 @@ private:
 
 	std::vector<ModTarget*> targets;
 	
+
 	Modulator* modulator = nullptr;
 };

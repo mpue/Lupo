@@ -145,11 +145,21 @@ void ModPanel::buttonClicked(juce::Button* button)
 
     if (gridButton->getToggleState())
     {
-		target->addModulator(mod);
+        if (targetIndex <= 5) {
+            target->addModulator(mod);
+        }
+        else {
+            target->addPwmModulator(mod);
+        }        
     }
     else
     {
-		target->removeModulator(mod); 
+        if (targetIndex <= 5) {
+            target->removeModulator(mod);
+        }
+        else {
+            target->removePwmModulator(mod);
+        }
 	}
 
 }

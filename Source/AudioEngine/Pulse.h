@@ -30,9 +30,14 @@ public:
     virtual float getOutput() override;
     virtual void reset() override;
 	virtual void processModulation() override;
-    virtual void addPwmModulator(Modulator* mod) override;
-	virtual void removePwmModulator(Modulator* mod) override;
-    
+    void addPwmModulator(Modulator* mod) override
+    {
+        pwmModulators.push_back(mod);
+    }
+
+    void removePwmModulator(Modulator* mod) override {
+        pwmModulators.erase(std::remove(pwmModulators.begin(), pwmModulators.end(), mod), pwmModulators.end());
+    }
     //! Set the pulse width directly (0.0 to 1.0, where 0.5 = 50% duty cycle)
     void setPulseWidth(float width);
     
@@ -48,8 +53,7 @@ private:
     double phase;
     double value;
     bool on = false;
-	stk::BlitSquare* blitSquare;
-    std::vector<Modulator*> pwmModulators;
+	stk::BlitSquare* blitSquare;    
     float currentModulatedFrequency = 0.0f;  // Track current modulated frequency
 };
 

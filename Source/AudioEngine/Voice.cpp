@@ -61,7 +61,7 @@ void Voice::setPitchBend(float bend) {
     }
 }
 
-void Voice::addOszillator(std::unique_ptr<MultimodeOscillator> o, int index) {
+void Voice::addOszillator(std::shared_ptr<MultimodeOscillator> o, int index) {
     this->oscillators.push_back(std::move(o));
 }
 
@@ -168,6 +168,28 @@ void Voice::addModulator(Modulator* mod)
         oscillators[i]->addModulator(mod);
     }
 }
+
+void Voice::removeModulator(Modulator* mod)
+{
+    for (int i = 0; i < 4; i++) {
+        oscillators[i]->removeModulator(mod);
+    }
+}
+
+void Voice::addPwmModulator(Modulator* mod)
+{
+    for (int i = 0; i < 4; i++) {
+        oscillators[i]->addPwmModulator(mod);
+	}
+}
+
+void Voice::removePwmModulator(Modulator* mod)
+{
+    for (int i = 0; i < 4; i++) {
+        oscillators[i]->removePwmModulator(mod);
+	}
+}
+
 
 void Voice::setOctave(int number) {
     this->octave = number;

@@ -65,15 +65,6 @@ void Pulse::processModulation()
 	blitSquare->setPulseWidth(modulatedValue);
 }
 
-void Pulse::addPwmModulator(Modulator* mod)
-{
-    pwmModulators.push_back(mod);
-}
-
-void Pulse::removePwmModulator(Modulator* mod)
-{
-	pwmModulators.erase(std::remove(pwmModulators.begin(), pwmModulators.end(), mod), pwmModulators.end());
-}
 
 float Pulse::getOutput() {
     return blitSquare->lastOut();

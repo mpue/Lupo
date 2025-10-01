@@ -28,6 +28,9 @@ public:
     
     MultimodeFilter();
     virtual ~MultimodeFilter();
+
+    virtual void addPwmModulator(Modulator* mod) override {};
+    virtual void removePwmModulator(Modulator* mod) override {};
     
     virtual void coefficients(float sampleRate,float frequency, float resonance) override;
     virtual void processStereo(float *const left, float *const right, const int numSamples) override;

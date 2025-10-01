@@ -21,6 +21,7 @@
 #include "Modulation.h"
 #include "../MessageBus/FastBus.h"
 
+
 #ifndef M_PI
 #define M_PI       3.14159265358979323846 
 #endif
@@ -57,6 +58,7 @@ LupoSynth::LupoSynth(Model* model, ModMatrix* modMatrix) {
 	modMatrix->registerTarget("Osc 4 pitch", 4);
 	modMatrix->registerTarget("Filter 1 cutoff", 5);
 	modMatrix->registerTarget("Filter 2 cutoff", 6);
+	modMatrix->registerTarget("Osc 1 PWM", 7);
 
 	oscGroup1 = std::make_unique<OscGroup>();
 	oscGroup2 = std::make_unique<OscGroup>();
@@ -67,18 +69,18 @@ LupoSynth::LupoSynth(Model* model, ModMatrix* modMatrix) {
 	configureModulation();
 }
 
-std::unique_ptr<MultimodeOscillator> LupoSynth::createOscillator(Oszillator::OscMode mode) {
+std::shared_ptr<MultimodeOscillator> LupoSynth::createOscillator(Oszillator::OscMode mode) {
 
-	std::unique_ptr<MultimodeOscillator> osc = nullptr;
+	std::shared_ptr<MultimodeOscillator> osc = nullptr;
 
 	switch (mode) {
 	case Oszillator::OscMode::SAW: {
-		osc = std::make_unique<MultimodeOscillator>(sampleRate, bufferSize);
+		osc = std::make_shared<MultimodeOscillator>(sampleRate, bufferSize);
 		osc->setMode(Oszillator::OscMode::SAW);
 		break;
 	}
 	case Oszillator::OscMode::SINE: {
-		osc = std::make_unique<MultimodeOscillator>(sampleRate, bufferSize);
+		osc = std::make_shared<MultimodeOscillator>(sampleRate, bufferSize);
 		osc->setMode(Oszillator::OscMode::SINE);
 		break;
 	}
@@ -102,16 +104,21 @@ void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscM
 	for (int i = 0; i < maxVoices; i++) {
 		auto v = std::make_unique<Voice>(sampleRate);
 
-		std::unique_ptr<MultimodeOscillator> osc1 = createOscillator(mode1);
-		std::unique_ptr<MultimodeOscillator> osc2 = createOscillator(mode2);
-		std::unique_ptr<MultimodeOscillator> osc3 = createOscillator(mode3);
-		std::unique_ptr<MultimodeOscillator> osc4 = createOscillator(mode4);
+		std::shared_ptr<MultimodeOscillator> osc1 = createOscillator(mode1);
+		std::shared_ptr<MultimodeOscillator> osc2 = createOscillator(mode2);
+		std::shared_ptr<MultimodeOscillator> osc3 = createOscillator(mode3);
+		std::shared_ptr<MultimodeOscillator> osc4 = createOscillator(mode4);
 
 		oscGroup1->addTarget(osc1.get());
 		oscGroup2->addTarget(osc2.get());
 		oscGroup3->addTarget(osc3.get());
 		oscGroup4->addTarget(osc4.get());
+		v->addOszillator(osc1, 0);
+		v->addOszillator(osc2, 1);
+		v->addOszillator(osc3, 2);
+		v->addOszillator(osc4, 3);
 
+		/*
 		std::unique_ptr<MultimodeOscillator> tmpOsc1 = std::move(osc1);
 		v->addOszillator(std::move(tmpOsc1), 0);
 		std::unique_ptr<MultimodeOscillator> tmpOsc2 = std::move(osc2);
@@ -120,7 +127,7 @@ void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscM
 		v->addOszillator(std::move(tmpOsc3), 2);
 		std::unique_ptr<MultimodeOscillator> tmpOsc4 = std::move(osc4);
 		v->addOszillator(std::move(tmpOsc4), 3);
-
+		*/
 		voices.push_back(std::move(v));
 	}
 }
@@ -157,9 +164,6 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 		}
 		v->getFilterEnvelope()->setAttackRate(0);
 		
-		MultimodeOscillator* o1 = dynamic_cast<MultimodeOscillator*>(v->getOscillator(0));
-		o1->addPwmModulator(lfo3.get());
-
 		// v->getFilter1()->addModulator(lfo1.get());
 		// v->addModulator(lfo2.get());	
 	}
@@ -875,14 +879,28 @@ void LupoSynth::configureModulation()
 	matrix->addModTarget(oscGroup2.get());
 	matrix->addModTarget(oscGroup3.get());
 	matrix->addModTarget(oscGroup4.get());
+
+	filterTargetGroup1 = std::make_unique<ModTargetGroup>();
+	for (auto& voice : voices) {
+		filterTargetGroup1->addTarget(voice->getFilter1());
+	}
+	filterTargetGroup2 = std::make_unique<ModTargetGroup>();
+	for (auto& voice : voices) {
+		filterTargetGroup2->addTarget(voice->getFilter2());
+	}
+	oscPwmTarget = std::make_unique<ModTargetGroup>();		
+	
+	oscPwmTarget->addTarget(oscGroup1.get());
+	oscPwmTarget->addTarget(oscGroup2.get());
+	oscPwmTarget->addTarget(oscGroup3.get());
+	oscPwmTarget->addTarget(oscGroup4.get());
+
+	matrix->addModTarget(filterTargetGroup1.get());
+	matrix->addModTarget(filterTargetGroup2.get());
+	matrix->addModTarget(oscPwmTarget.get());
+
 	matrix->addModulator(modEnvelopes.at(0).get());
 	matrix->addModulator(modEnvelopes.at(1).get());
-
-	for (auto& voice : voices) {
-		matrix->addModulator(voice->getFilterEnvelope());
-		matrix->addModTarget(voice->getFilter1());
-		matrix->addModTarget(voice->getFilter2());
-	}
 
 	lfo1->enabled = true;
 	lfo2->enabled = true;

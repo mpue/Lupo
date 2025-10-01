@@ -140,6 +140,8 @@
         <FILE id="jmeD3M" name="LupoSynth.h" compile="0" resource="0" file="Source/AudioEngine/LupoSynth.h"/>
         <FILE id="PkZ20i" name="ModTarget.cpp" compile="1" resource="0" file="Source/AudioEngine/ModTarget.cpp"/>
         <FILE id="W4xhBq" name="ModTarget.h" compile="0" resource="0" file="Source/AudioEngine/ModTarget.h"/>
+        <FILE id="ipKa2Y" name="ModTargetGroup.h" compile="0" resource="0"
+              file="Source/AudioEngine/ModTargetGroup.h"/>
         <FILE id="omjvDY" name="Modulation.cpp" compile="1" resource="0" file="Source/AudioEngine/Modulation.cpp"/>
         <FILE id="r6E06B" name="Modulation.h" compile="0" resource="0" file="Source/AudioEngine/Modulation.h"/>
         <FILE id="uB9uqF" name="Modulator.h" compile="0" resource="0" file="Source/AudioEngine/Modulator.h"/>

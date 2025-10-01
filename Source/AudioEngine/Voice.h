@@ -34,7 +34,7 @@ public:
         oscillators.clear();
     };
 
-    void addOszillator(std::unique_ptr<MultimodeOscillator> o, int index);
+    void addOszillator(std::shared_ptr<MultimodeOscillator> o, int index);
     Oszillator* getOscillator(int num);
     
  
@@ -85,11 +85,14 @@ public:
     }
 
     void addModulator(Modulator* mod) override;
-    
+	void removeModulator(Modulator* mod) override;
+	void addPwmModulator(Modulator* mod) override;
+	void removePwmModulator(Modulator* mod) override;
+
 private:
     std::unique_ptr<MultimodeFilter> filter1;
     std::unique_ptr<MultimodeFilter> filter2;
-    std::vector<std::unique_ptr<MultimodeOscillator>> oscillators;
+    std::vector<std::shared_ptr<MultimodeOscillator>> oscillators;
     float sampleRate = 44100;
     int noteNumber = 0;
     int pitch = 0;
