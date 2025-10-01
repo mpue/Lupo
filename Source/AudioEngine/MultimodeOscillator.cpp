@@ -21,6 +21,7 @@ MultimodeOscillator::MultimodeOscillator(float sampleRate,int buffersize) : Oszi
     this->sine = new Sine(sampleRate, buffersize);
     this->saw = new Sawtooth(sampleRate, buffersize);
     this->pulse = new Pulse(sampleRate, buffersize);
+	this->pulse->setPulseWidth(0.5f);
     this->noise = new WhiteNoise(sampleRate, buffersize);
 	this->sah = new SampleAndHold(sampleRate, buffersize);
 	this->mode = OscMode::SAW;

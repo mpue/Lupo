@@ -30,7 +30,7 @@ namespace BinaryData
     const int            logo_pngSize = 19035;
 
     extern const char*   lupo_ui_png;
-    const int            lupo_ui_pngSize = 484813;
+    const int            lupo_ui_pngSize = 558643;
 
     extern const char*   oscillator_noise_48_png;
     const int            oscillator_noise_48_pngSize = 17465;

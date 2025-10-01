@@ -156,6 +156,10 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 			v->getFilter2()->addModulator(modEnvelopes.at(1).get());
 		}
 		v->getFilterEnvelope()->setAttackRate(0);
+		
+		MultimodeOscillator* o1 = dynamic_cast<MultimodeOscillator*>(v->getOscillator(0));
+		o1->addPwmModulator(lfo3.get());
+
 		// v->getFilter1()->addModulator(lfo1.get());
 		// v->addModulator(lfo2.get());	
 	}

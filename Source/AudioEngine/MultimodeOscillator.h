@@ -38,6 +38,14 @@ public:
 	void setSpread(float spread);
 	virtual void processModulation() override;
 
+    virtual void addPwmModulator(Modulator* mod) override {
+        this->pulse->addPwmModulator(mod);
+	}
+
+    virtual void removePwmModulator(Modulator* mod) override {
+        this->pulse->removePwmModulator(mod);
+	}
+
     void setSampleRate(double sampleRate) override {
         this->sine->setSampleRate(sampleRate);
         this->saw->setSampleRate(sampleRate);

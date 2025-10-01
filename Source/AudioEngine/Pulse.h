@@ -13,8 +13,9 @@
 #include "Oszillator.h"
 #include "Modulator.h"
 #include "..\BlitSquare.h"
+#include "ModTarget.h"
 
-class Pulse : public Oszillator , public Modulator {
+class Pulse : public Oszillator , public Modulator, public ModTarget {
     
     
 public:
@@ -28,6 +29,19 @@ public:
     virtual void setFrequency(double frequency) override;
     virtual float getOutput() override;
     virtual void reset() override;
+	virtual void processModulation() override;
+    virtual void addPwmModulator(Modulator* mod) override;
+	virtual void removePwmModulator(Modulator* mod) override;
+    
+    //! Set the pulse width directly (0.0 to 1.0, where 0.5 = 50% duty cycle)
+    void setPulseWidth(float width);
+    
+    //! Get the current pulse width
+    float getPulseWidth() const;
+    
+    //! Set the sample rate
+    virtual void setSampleRate(double sampleRate) override;
+    
 private:
     float fine;
     double step;
@@ -35,6 +49,8 @@ private:
     double value;
     bool on = false;
 	stk::BlitSquare* blitSquare;
+    std::vector<Modulator*> pwmModulators;
+    float currentModulatedFrequency = 0.0f;  // Track current modulated frequency
 };
 
 #endif /* Pulse_hpp */

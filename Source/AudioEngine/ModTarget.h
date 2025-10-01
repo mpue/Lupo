@@ -18,6 +18,14 @@ public:
     
     virtual ~ModTarget() {};
     
+    virtual void addPwmModulator(Modulator* mod) {
+        // Default implementation does nothing
+	}
+
+    virtual void removePwmModulator(Modulator* mod) {
+        // Default implementation does nothing
+    }
+
     virtual void addModulator(Modulator* mod) {
 		modulators.push_back(mod);
     }

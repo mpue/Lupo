@@ -81,6 +81,17 @@ class BlitSquare: public Generator
   */
   void setHarmonics( unsigned int nHarmonics = 0 );
 
+  //! Set the pulse width (duty cycle) of the square wave.
+  /*!
+    Set the pulse width as a value between 0.0 and 1.0, where 0.5
+    represents a standard square wave (50% duty cycle). Values closer
+    to 0.0 or 1.0 will produce narrower pulses.
+  */
+  void setPulseWidth( StkFloat width );
+
+  //! Get the current pulse width.
+  StkFloat getPulseWidth() const { return pulseWidth_; };
+
   //! Return the last computed output value.
   StkFloat lastOut( void ) const { return lastFrame_[0]; };
 
@@ -109,43 +120,38 @@ class BlitSquare: public Generator
   StkFloat a_;
   StkFloat lastBlitOutput_;
   StkFloat dcbState_;
+  StkFloat pulseWidth_;  // Pulse width (duty cycle) 0.0 to 1.0
+  StkFloat lastPulseOutput_;  // For pulse width filtering
 };
 
 inline StkFloat BlitSquare :: tick( void )
 {
-  StkFloat temp = lastBlitOutput_;
-
-  // A fully  optimized version of this would replace the two sin calls
-  // with a pair of fast sin oscillators, for which stable fast 
-  // two-multiply algorithms are well known. In the spirit of STK,
-  // which favors clarity over performance, the optimization has 
-  // not been made here.
-
-  // Avoid a divide by zero, or use of a denomralized divisor
-  // at the sinc peak, which has a limiting value of 1.0.
-  StkFloat denominator = sin( phase_ );
-  if ( fabs( denominator )  < std::numeric_limits<StkFloat>::epsilon() ) {
-    // Inexact comparison safely distinguishes betwen *close to zero*, and *close to PI*.
-    if ( phase_ < 0.1f || phase_ > TWO_PI - 0.1f )
-      lastBlitOutput_ = a_;
-    else
-      lastBlitOutput_ = -a_;
+  // Simple pulse wave implementation with pulse width modulation
+  StkFloat normalizedPhase = phase_ / TWO_PI;
+  StkFloat output;
+  
+  // Generate the basic pulse wave
+  if (normalizedPhase < pulseWidth_) {
+    output = 1.0;
+  } else {
+    output = -1.0;
   }
-  else {
-    lastBlitOutput_ =  sin( m_ * phase_ );
-    lastBlitOutput_ /= p_ * denominator;
-  }
+  
+  // Apply a simple one-pole low-pass filter to reduce aliasing
+  // This helps make the pulse wave more band-limited
+  StkFloat alpha = 0.1f;  // Filter coefficient (higher = more filtering)
+  StkFloat filteredOutput = alpha * output + (1.0f - alpha) * lastPulseOutput_;
+  lastPulseOutput_ = filteredOutput;
 
-  lastBlitOutput_ += temp;
+  // Apply DC blocker to remove any DC offset
+  lastFrame_[0] = filteredOutput - dcbState_ + 0.999f * lastFrame_[0];
+  dcbState_ = filteredOutput;
 
-  // Now apply DC blocker.
-  lastFrame_[0] = lastBlitOutput_ - dcbState_ + 0.999 * lastFrame_[0];
-  dcbState_ = lastBlitOutput_;
-
+  // Update phase
   phase_ += rate_;
   if ( phase_ >= TWO_PI ) phase_ -= TWO_PI;
 
-	return lastFrame_[0];
+  return lastFrame_[0];
 }
 
 inline StkFrames& BlitSquare :: tick( StkFrames& frames, unsigned int channel )
