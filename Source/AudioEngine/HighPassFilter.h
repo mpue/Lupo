@@ -22,9 +22,6 @@ public:
 	HighPassFilter();
 	~HighPassFilter() override = default;
 
-	virtual void addPwmModulator(Modulator* mod) override {};
-	virtual void removePwmModulator(Modulator* mod) override {};
-
 	void coefficients(float sampleRate, float frequency, float resonance) override;
 	void process(float* in, int numSamples);
 	void setFrequency(float frequency);

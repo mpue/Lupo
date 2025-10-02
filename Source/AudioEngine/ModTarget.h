@@ -10,8 +10,16 @@ public:
     virtual ~ModTarget() = default;
 
     // PWM modulator interface (pure virtual)
-    virtual void addPwmModulator(Modulator* mod) = 0;
-    virtual void removePwmModulator(Modulator* mod) = 0;
+    virtual void addPwmModulator(Modulator* mod)  {
+        pwmModulators.push_back(mod);
+    }
+
+    virtual void removePwmModulator(Modulator* mod)  {
+        pwmModulators.erase(
+            std::remove(pwmModulators.begin(), pwmModulators.end(), mod),
+            pwmModulators.end()
+        );
+    }
 
     // General modulator interface (has default implementation)
     virtual void addModulator(Modulator* mod) {

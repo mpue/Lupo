@@ -77,11 +77,12 @@ public:
 	void setOscPan(int osc, float pan);
 	void setOscSpread(int osc, float spread);
 
-    MultimodeFilter* getFilter1() {
-        return filter1.get();
+    std::shared_ptr<MultimodeFilter> getFilter1() {
+        return filter1;
     }
-    MultimodeFilter* getFilter2() {
-        return filter2.get();       
+
+    std::shared_ptr<MultimodeFilter> getFilter2() {
+        return filter2;       
     }
 
     void addModulator(Modulator* mod) override;
@@ -90,8 +91,8 @@ public:
 	void removePwmModulator(Modulator* mod) override;
 
 private:
-    std::unique_ptr<MultimodeFilter> filter1;
-    std::unique_ptr<MultimodeFilter> filter2;
+    std::shared_ptr<MultimodeFilter> filter1;
+    std::shared_ptr<MultimodeFilter> filter2;
     std::vector<std::shared_ptr<MultimodeOscillator>> oscillators;
     float sampleRate = 44100;
     int noteNumber = 0;

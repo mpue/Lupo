@@ -101,7 +101,7 @@ private:
 	LupoAudioProcessor* processor;
 	AttachmentFactory* factory;
 	vector<std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment>>* sliderAttachments;
-	PresetDialog* dlg;
+	std::unique_ptr<PresetDialog> dlg;
 
 	Component* modSource = nullptr;
 	Component* modTarget = nullptr;

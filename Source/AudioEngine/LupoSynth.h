@@ -35,7 +35,7 @@ class LupoSynth : public ChangeListener,
 public:
 
 	LupoSynth(Model* model, ModMatrix* modMatrix);
-	~LupoSynth() = default;
+	~LupoSynth();
 
 	Arpeggiator* getArpeggiator();
 	Voice* LupoSynth::findFreeVoice(int noteNumber);
@@ -82,10 +82,10 @@ private:
 	int currentSample = 0;
 	int numVoices = 0;
 
-	std::unique_ptr<OscGroup> oscGroup1;
-	std::unique_ptr<OscGroup> oscGroup2;
-	std::unique_ptr<OscGroup> oscGroup3;
-	std::unique_ptr<OscGroup> oscGroup4;
+	std::shared_ptr<OscGroup> oscGroup1;
+	std::shared_ptr<OscGroup> oscGroup2;
+	std::shared_ptr<OscGroup> oscGroup3;
+	std::shared_ptr<OscGroup> oscGroup4;
 
 	std::unique_ptr<MultimodeOscillator> lfo1;
 	std::unique_ptr<MultimodeOscillator> lfo2;

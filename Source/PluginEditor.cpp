@@ -23,8 +23,8 @@ LupoAudioProcessorEditor::LupoAudioProcessorEditor (LupoAudioProcessor& p)
 	setLookAndFeel(&edlf);
     setSize (1550, 780);	
 	setResizable(true,true);
-	mainUI = new MainUI(&p, p.getFactory());
-	addAndMakeVisible(mainUI);
+	mainUI = std::make_unique<MainUI>(&p, p.getFactory());
+	addAndMakeVisible(mainUI.get());
 	mainUI->updatePresetList();
 	loadSettings();
 	resized();
@@ -35,7 +35,7 @@ LupoAudioProcessorEditor::~LupoAudioProcessorEditor()
 	saveSettings();
 	setLookAndFeel(nullptr);
 	if (JUCEApplication::isStandaloneApp()) {
-		delete mainUI;
+		mainUI = nullptr;
 	}
 }
 

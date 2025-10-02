@@ -30,12 +30,12 @@ LupoAudioProcessor::LupoAudioProcessor()
 
 
 	model.reset(new Model());
-	matrix = new ModMatrix();
+	matrix = std::make_unique<ModMatrix>();
 
-	lupo.reset(new LupoSynth(model.get(),matrix));
+	lupo.reset(new LupoSynth(model.get(),matrix.get()));
 	parameters = new AudioProcessorValueTreeState(*this, nullptr);
 
-	factory = new AttachmentFactory(this, lupo.get());
+	factory = std::make_unique<AttachmentFactory>(this, lupo.get());
 
 	factory->createParam("cutoff1", "Cutoff", 0.01f, 20000.0f, 12000.0);
 	factory->createParam("resonance1", "Resonance", 0.01f, 5.0f, 1.0);
@@ -175,11 +175,11 @@ LupoAudioProcessor::LupoAudioProcessor()
 
 LupoAudioProcessor::~LupoAudioProcessor()
 {
-	if (JUCEApplication::isStandaloneApp()) {		
-		// delete factory;
+	if (JUCEApplication::isStandaloneApp()) {				
+		factory = nullptr;
 		lupo.reset();
 		model.reset();
-		delete matrix;
+		matrix = nullptr;
 	}
 // delete messageBus;
 	Logger::getCurrentLogger()->writeToLog("Lupo is dead.");
@@ -277,7 +277,7 @@ void LupoAudioProcessor::setSelectedProgram(juce::String name) {
 
 		// get the mod matrix state from the preset		
 		
-		String modMatrixState = "5,6;0,0,0,0,0,0;0,0,0,0,0,0;0,0,0,0,0,0;0,0,0,0,0,0;0,0,0,0,0,0";
+		String modMatrixState = "5,7;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0";
 
 		if (matrixFile.exists()) {
 			 modMatrixState = matrixFile.loadFileAsString();			

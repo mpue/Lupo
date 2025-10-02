@@ -26,8 +26,8 @@ Voice::Voice(float sampleRate) {
     this->modulator = 0;
     this->pitchBend = 1;
     
-    this->filter1 = std::make_unique<MultimodeFilter>();
-    this->filter2 = std::make_unique<MultimodeFilter>(); 
+    this->filter1 = std::make_shared<MultimodeFilter>();
+    this->filter2 = std::make_shared<MultimodeFilter>();
 
     ampEnvelope->setAttackRate(0 * sampleRate);  // 1 second
     ampEnvelope->setDecayRate(1 * sampleRate);
@@ -86,7 +86,7 @@ void Voice::processBlock(AudioBuffer<float>& buffer) {
     // Block-basierte Envelope-Verarbeitung
     for (int sample = 0; sample < numSamples; ++sample) {
         // Process both envelopes for each sample
-        float amplitude = (velocity / 127.0f) * ampEnvelope->process();
+        float amplitude = (velocity / 127.0f) * ampEnvelope->process() * 2;
         filterEnvelope->process(); // Process filter envelope for each sample!
         
         float outL = 0.0f;

@@ -20,8 +20,8 @@ public:
 	OscGroup();
 	~OscGroup();
 	
-	void addTarget(ModTarget* target);
-	std::vector<ModTarget*> getTargets();
+	void addTarget(std::shared_ptr<ModTarget> target);
+	std::vector<std::shared_ptr<ModTarget>>& getTargets();
 	
 	void processModulation() override;
 
@@ -53,8 +53,7 @@ public:
 
 private:
 
-	std::vector<ModTarget*> targets;
-	
+	std::vector<std::shared_ptr<ModTarget>> targets;
 
 	Modulator* modulator = nullptr;
 };

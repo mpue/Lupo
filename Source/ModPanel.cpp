@@ -262,7 +262,14 @@ void ModPanel::setGridStateFromString(const juce::String& gridState)
                     {
                         Modulator* mod = modulators[row];
                         ModTarget* target = targets[col];
-                        target->addModulator(mod);
+
+                        if (col <= 5) {
+                            target->addModulator(mod);
+                        }
+                        else {
+                            target->addPwmModulator(mod);
+						}
+                        
                     }
                 }
                 else if (!buttonState)
@@ -275,7 +282,13 @@ void ModPanel::setGridStateFromString(const juce::String& gridState)
                     {
                         Modulator* mod = modulators[row];
                         ModTarget* target = targets[col];
-                        target->removeModulator(mod);
+
+                        if (col <= 5) {
+                            target->removeModulator(mod);
+                        }
+                        else {
+                            target->removePwmModulator(mod);
+                        }
                     }
                 }
             }

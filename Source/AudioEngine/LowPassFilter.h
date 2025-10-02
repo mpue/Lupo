@@ -27,9 +27,6 @@ public:
 	void setFrequency(float frequency);
 	void setResonance(float resonance);
 	
-	virtual void addPwmModulator(Modulator* mod) override {};
-	virtual void removePwmModulator(Modulator* mod) override {};
-
 	// Force immediate update for real-time control responsiveness
 	void setFrequencyImmediate(float frequency);
 	

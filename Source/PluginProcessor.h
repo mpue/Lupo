@@ -64,15 +64,15 @@ public:
 	AudioProcessorValueTreeState* parameters = nullptr;
 
 	AttachmentFactory* getFactory() {
-		return factory;
+		return factory.get();
 	}
 
-	AttachmentFactory* factory = nullptr;
+    std::unique_ptr<AttachmentFactory> factory = nullptr;
 	String selectedProgram = "";
 	bool prepared = false;
 	LupoSynth* getSynth();
 	Model* getModel();
-	ModMatrix* matrix;
+    std::unique_ptr<ModMatrix> matrix = nullptr;
 private:
     //==============================================================================
 

@@ -69,6 +69,21 @@ LupoSynth::LupoSynth(Model* model, ModMatrix* modMatrix) {
 	configureModulation();
 }
 
+LupoSynth::~LupoSynth()
+{
+	if (oscGroup1) oscGroup1->clearModulators();
+	if (oscGroup1) oscGroup1->getTargets().clear();
+	if (oscGroup2) oscGroup2->clearModulators();
+	if (oscGroup2) oscGroup2->getTargets().clear();
+	if (oscGroup3) oscGroup3->clearModulators();
+	if (oscGroup3) oscGroup3->getTargets().clear();
+	if (oscGroup4) oscGroup4->clearModulators();
+	if (oscGroup3) oscGroup4->getTargets().clear();
+	if (filterTargetGroup1) filterTargetGroup1->clearTargets();
+	if (filterTargetGroup2) filterTargetGroup2->clearTargets();
+	if (oscPwmTarget) oscPwmTarget->clearTargets();
+}
+
 std::shared_ptr<MultimodeOscillator> LupoSynth::createOscillator(Oszillator::OscMode mode) {
 
 	std::shared_ptr<MultimodeOscillator> osc = nullptr;
@@ -109,10 +124,10 @@ void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscM
 		std::shared_ptr<MultimodeOscillator> osc3 = createOscillator(mode3);
 		std::shared_ptr<MultimodeOscillator> osc4 = createOscillator(mode4);
 
-		oscGroup1->addTarget(osc1.get());
-		oscGroup2->addTarget(osc2.get());
-		oscGroup3->addTarget(osc3.get());
-		oscGroup4->addTarget(osc4.get());
+		oscGroup1->addTarget(osc1);
+		oscGroup2->addTarget(osc2);
+		oscGroup3->addTarget(osc3);
+		oscGroup4->addTarget(osc4);
 		v->addOszillator(osc1, 0);
 		v->addOszillator(osc2, 1);
 		v->addOszillator(osc3, 2);
@@ -797,33 +812,6 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		}
 	}
 
-	else if (parameterID.startsWith("Amount")) {
-		const int i = parameterID.substring(parameterID.lastIndexOf("_") + 1).getIntValue();
-		//model->modAmount[i] = newValue;
-		//matrix->getModulations()[i]->getModulator()->setModAmount(newValue);		
-		// updateMatrix();
-	}
-	else if (parameterID.startsWith("Target")) {
-		const int i = parameterID.substring(parameterID.lastIndexOf("_") + 1).getIntValue();
-		//model->setModTarget(i,(int)newValue);
-		//Modulator* mod = matrix->getModulators().at(model->getModSource(newValue));		
-		//ModTarget* target = matrix->getModulations()[i]->getTarget();		
-		//matrix->getModulations()[i]->getTarget()->setModulator(nullptr);
-		//matrix->getModulations()[i]->setTarget(target);
-		//target->setModulator(mod);
-		// updateMatrix();
-	}
-	else if (parameterID.startsWith("Source")) {
-		const int i = parameterID.substring(parameterID.lastIndexOf("_") + 1).getIntValue();
-		//model->setModSource(i, (int)newValue);
-		//Modulator* mod = matrix->getModulators().at(model->getModSource(newValue));
-		//matrix->getModulations()[i]->setModulator(mod);
-		// updateMatrix();
-	}
-	for (int i = 0; i < 6; i++) {
-		Logger::getCurrentLogger()->writeToLog(String(model->getModSource(i)) + " -> " + String(model->getModTarget(i)) + " : " + String(model->modAmount[i]));
-	}
-
 }
 
 void LupoSynth::parameterValueChanged(int parameterIndex, float newValue)
@@ -896,10 +884,10 @@ void LupoSynth::configureModulation()
 	}
 	oscPwmTarget = std::make_unique<ModTargetGroup>();		
 	
-	oscPwmTarget->addTarget(oscGroup1.get());
-	oscPwmTarget->addTarget(oscGroup2.get());
-	oscPwmTarget->addTarget(oscGroup3.get());
-	oscPwmTarget->addTarget(oscGroup4.get());
+	oscPwmTarget->addTarget(oscGroup1);
+	oscPwmTarget->addTarget(oscGroup2);
+	oscPwmTarget->addTarget(oscGroup3);
+	oscPwmTarget->addTarget(oscGroup4);
 
 	matrix->addModTarget(filterTargetGroup1.get());
 	matrix->addModTarget(filterTargetGroup2.get());

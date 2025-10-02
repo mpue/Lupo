@@ -309,9 +309,9 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 	int x = getScreenX();
 	int y = getScreenY();
-	dlg = new PresetDialog(presetCombo.get(), model);
+	dlg = std::make_unique<PresetDialog>(presetCombo.get(), model);
 	dlg->setBounds(x, y, getWidth(), getHeight());
-	addChildComponent(dlg);
+	addChildComponent(dlg.get());
 
 	osc1Panel.get()->SetTitle("Osc 1");
 	osc2Panel.get()->SetTitle("Osc 2");
@@ -423,9 +423,11 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 MainUI::~MainUI()
 {
+	processor->getFactory()->clearAttachments();
+
 	//[Destructor_pre]. You can add your own custom destruction code here..
 	removeAllChangeListeners();
-	delete dlg;
+	dlg = nullptr;
 
 	//[/Destructor_pre]
 

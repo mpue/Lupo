@@ -17,12 +17,12 @@ OscGroup::OscGroup() {
 OscGroup::~OscGroup() {
 }
 
-void OscGroup::addTarget(ModTarget * target)
+void OscGroup::addTarget(std::shared_ptr<ModTarget> target)
 {
 	targets.push_back(target);
 }
 
-std::vector<ModTarget*> OscGroup::getTargets()
+std::vector<std::shared_ptr<ModTarget>>& OscGroup::getTargets()
 {
 	return targets;
 }

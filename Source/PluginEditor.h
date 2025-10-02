@@ -41,7 +41,7 @@ private:
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     LupoAudioProcessor& processor;
-	MainUI* mainUI = nullptr;
+	std::unique_ptr<MainUI> mainUI = nullptr;
 	ElegantDarkLookAndFeel edlf;
 	TrioLookAndFeel tlf;
     RetroLookAndFeel rlf;

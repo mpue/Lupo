@@ -65,7 +65,7 @@ public:
 		return modulations;
 	}
 
-	vector<Modulator*> getModulators()
+	vector<Modulator*>& getModulators()
 	{
 		return modulators;
 	}
