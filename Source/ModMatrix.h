@@ -70,7 +70,7 @@ public:
 		return modulators;
 	}
 
-	vector<ModTarget*> getModTargets()
+	vector<ModTarget*>& getModTargets()
 	{
 		return targets;
 	}

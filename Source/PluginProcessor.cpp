@@ -358,8 +358,6 @@ AudioProcessorParameter * LupoAudioProcessor::getBypassParameter() const
 	return bypass;
 }
 
-
-
 //==============================================================================
 bool LupoAudioProcessor::hasEditor() const
 {
@@ -394,7 +392,7 @@ AudioProcessor* JUCE_CALLTYPE createPluginFilter()
     return new LupoAudioProcessor();
 }
 
-LupoSynth	* LupoAudioProcessor::getSynth() {
+LupoSynth* LupoAudioProcessor::getSynth() {
 	return lupo.get();
 }
 

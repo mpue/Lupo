@@ -65,6 +65,9 @@ public:
 	float getFilterEnvelopeValue();
 	float getModEnvelopeValue(int index);
 
+	float getLeftPeak();
+	float getRighPeak();
+
 private:
 
 	Model* model;	
@@ -113,6 +116,9 @@ private:
 
 	float volume[4];
 	float pan[4];
+
+	float leftPeak = 0.0f;
+	float rightPeak = 0.0f;
 
 	bool prepared = false;
 };

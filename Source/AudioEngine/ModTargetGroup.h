@@ -24,11 +24,21 @@ public:
     ~ModTargetGroup() = default;
 
     void addTarget(ModTarget* target) {
-        targets.push_back(target);
+        if (!target || target == this) return;
+        if (std::find(targets.begin(), targets.end(), target) == targets.end()) {
+            targets.push_back(target);
+        }
     }
+
     void removeTarget(ModTarget* target) {
-        targets.erase(std::remove(targets.begin(), targets.end(), target), targets.end());
+        targets.erase(std::remove(targets.begin(), targets.end(), target),
+            targets.end());
     }
+
+    const std::vector<ModTarget*>& getModTargets() {
+        return targets;
+    }
+
 
     void addModulator(Modulator* mod) override {
         for (auto& target : targets) {

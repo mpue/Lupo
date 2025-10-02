@@ -349,6 +349,10 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 
 	float masterGain = Decibels::decibelsToGain(model->outputGaindB);
 	buffer.applyGain(masterGain);
+
+	leftPeak =  buffer.getMagnitude(0, bufferSize - 1);
+	rightPeak = buffer.getMagnitude(1, bufferSize - 1);
+
 }
 
 void LupoSynth::updateState(ValueTree state, juce::String modMatríxState) {
@@ -874,6 +878,8 @@ void LupoSynth::configureModulation()
 	matrix->addModulator(lfo1.get());
 	matrix->addModulator(lfo2.get());
 	matrix->addModulator(lfo3.get());
+	matrix->addModulator(modEnvelopes.at(0).get());
+	matrix->addModulator(modEnvelopes.at(1).get());
 
 	matrix->addModTarget(oscGroup1.get());
 	matrix->addModTarget(oscGroup2.get());
@@ -898,9 +904,6 @@ void LupoSynth::configureModulation()
 	matrix->addModTarget(filterTargetGroup1.get());
 	matrix->addModTarget(filterTargetGroup2.get());
 	matrix->addModTarget(oscPwmTarget.get());
-
-	matrix->addModulator(modEnvelopes.at(0).get());
-	matrix->addModulator(modEnvelopes.at(1).get());
 
 	lfo1->enabled = true;
 	lfo2->enabled = true;
@@ -962,4 +965,14 @@ float LupoSynth::getModEnvelopeValue(int index) {
 		return modEnvelopes[index]->getOutput();
 	}
 	return 0.0f;
+}
+
+float LupoSynth::getLeftPeak()
+{
+	return leftPeak;
+}
+
+float LupoSynth::getRighPeak()
+{
+	return rightPeak;
 }

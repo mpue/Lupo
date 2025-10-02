@@ -221,6 +221,7 @@ public:
         g.fillPath(thumb, juce::AffineTransform::rotation(angle).translated(centreX, centreY));
     }
 
+    /*
     void drawLinearSlider(juce::Graphics& g, int x, int y, int width, int height,
         float sliderPos, float minSliderPos, float maxSliderPos,
         juce::Slider::SliderStyle style, juce::Slider& slider) override
@@ -276,6 +277,77 @@ public:
             g.fillEllipse(juce::Rectangle<float>(thumbRadius * 2.0f, thumbRadius * 2.0f).withCentre(thumbPoint));
             g.setColour(slider.findColour(juce::Slider::thumbColourId));
             g.fillEllipse(juce::Rectangle<float>(thumbRadius, thumbRadius).withCentre(thumbPoint));
+        }
+    }
+    */
+
+    void drawLinearSlider(juce::Graphics& g, int x, int y, int width, int height,
+        float sliderPos, float minSliderPos, float maxSliderPos,
+        const juce::Slider::SliderStyle style, juce::Slider& slider) override
+    {
+        if (style == juce::Slider::LinearHorizontal)
+        {
+            // Hintergrund
+            g.setColour(juce::Colour(0xFF1a2332));
+            g.fillRoundedRectangle(x, y, width, height, 4.0f);
+
+            // VU-Meter Bereich berechnen
+            float fillWidth = sliderPos - x;
+
+            // Gradient für VU-Meter erstellen (Blautöne)
+            juce::ColourGradient gradient(
+                juce::Colour(0xFF4a90e2), x, y,  // Helles Blau (links)
+                juce::Colour(0xFF2e5c8a), sliderPos, y,  // Dunkles Blau (rechts)
+                false
+            );
+
+            // Optional: Warnstufe bei hohen Werten (über 80%)
+            float valueRange = slider.getMaximum() - slider.getMinimum();
+            float normalizedValue = (slider.getValue() - slider.getMinimum()) / valueRange;
+
+            if (normalizedValue > 0.8f)
+            {
+                gradient = juce::ColourGradient(
+                    juce::Colour(0xFF4a90e2), x, y,
+                    juce::Colour(0xFF5a7fa0), sliderPos, y,
+                    false
+                );
+            }
+
+            g.setGradientFill(gradient);
+            g.fillRoundedRectangle(x, y, fillWidth, height, 4.0f);
+
+            // Segmentierte Darstellung (optional)
+            g.setColour(juce::Colour(0xFF1a2332));
+            int segments = 20;
+            float segmentWidth = width / (float)segments;
+            for (int i = 1; i < segments; ++i)
+            {
+                float segX = x + i * segmentWidth;
+                if (segX < sliderPos)
+                {
+                    g.drawLine(segX, y + 2, segX, y + height - 2, 2.0f);
+                }
+            }
+
+            // Glanzeffekt oben
+            g.setGradientFill(juce::ColourGradient(
+                juce::Colour(0x40ffffff), x, y,
+                juce::Colour(0x00ffffff), x, y + height * 0.5f,
+                false
+            ));
+            g.fillRoundedRectangle(x, y, fillWidth, height * 0.5f, 4.0f);
+
+            // Rahmen
+            g.setColour(juce::Colour(0xFF0d1419));
+            g.drawRoundedRectangle(x, y, width, height, 4.0f, 1.5f);
+        }
+        else
+        {
+            // Fallback für andere Slider-Stile
+            LookAndFeel_V4::drawLinearSlider(g, x, y, width, height,
+                sliderPos, minSliderPos, maxSliderPos,
+                style, slider);
         }
     }
 
@@ -348,6 +420,7 @@ public:
         g.setColour(findColour(juce::PopupMenu::textColourId).withAlpha(0.1f));
         g.drawRect(0, 0, width, height);
     }
+
 
     /*void drawPopupMenuItem(juce::Graphics& g, const juce::Rectangle<int>& area,
         bool isSeparator, bool isActive, bool isHighlighted, bool isTicked, bool hasSubMenu,

@@ -60,7 +60,8 @@ class MainUI  : public Component,
                 public AudioProcessorValueTreeState::Listener,
                 public Slider::Listener,
                 public Button::Listener,
-                public ComboBox::Listener
+                public ComboBox::Listener,
+                public Timer
 {
 public:
     //==============================================================================
@@ -78,7 +79,7 @@ public:
 	Component* findComponentAtMousePosition(Point<int> mousePos, Component* parent);
 	void parameterChanged(const String& parameterID, float newValue) override;
     //[/UserMethods]
-
+	void timerCallback();
     void paint (Graphics& g) override;
     void resized() override;
     void sliderValueChanged (Slider* sliderThatWasMoved) override;
@@ -159,8 +160,12 @@ private:
     std::unique_ptr<Component> fxContainerPanel;
     std::unique_ptr<Viewport> modMatrixViewport;
 
+	std::unique_ptr<Slider> leftGainSlider;
+	std::unique_ptr<Slider> rightGainSlider;
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainUI)
+
 };
 
 //[EndFile] You can add extra defines here...

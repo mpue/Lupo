@@ -394,6 +394,19 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 	mainDisplay.get()->setText("Lupo V1.0");
 
+	leftGainSlider.reset(new Slider("leftGainSlider"));
+	addAndMakeVisible(leftGainSlider.get());
+	leftGainSlider->setRange(0, 1, 0.01);
+	leftGainSlider->setSliderStyle(Slider::LinearHorizontal);
+	leftGainSlider->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
+	leftGainSlider->setBounds(1050, 600, 400, 10);
+
+	rightGainSlider.reset(new Slider("rightGainSlider"));
+	addAndMakeVisible(rightGainSlider.get());
+	rightGainSlider->setRange(0, 1, 0.01);
+	rightGainSlider->setSliderStyle(Slider::LinearHorizontal);
+	rightGainSlider->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
+	rightGainSlider->setBounds(1050, 615, 400, 10);
 	resized();
 
 	auto& bus = FastBus::getInstance();
@@ -402,6 +415,8 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 		modMatrix->setGridStateFromString(topic.getValue());
 		repaint();
 	});
+
+	startTimer(30);
 
 	//[/Constructor]
 }
@@ -455,6 +470,8 @@ MainUI::~MainUI()
 	label = nullptr;
 	mainDisplay = nullptr;
 	modMatrix = nullptr;
+	leftGainSlider = nullptr;
+	rightGainSlider = nullptr;
 
 
 	//[Destructor]. You can add your own custom destruction code here..
@@ -475,18 +492,11 @@ void MainUI::paint(Graphics& g)
 
 	g.drawImageAt(juce::ImageCache::getFromMemory(BinaryData::lupo_ui_png, BinaryData::lupo_ui_pngSize), 0, 0);
 
-
-
 	//[/UserPaint]
 }
 
 void MainUI::resized()
 {
-	//[UserPreResize] Add your own custom resize code here..
-	//[/UserPreResize]
-
-	//[UserResized] Add your own custom resize handling here..
-	//[/UserResized]
 }
 
 void MainUI::sliderValueChanged(Slider* sliderThatWasMoved)
@@ -636,6 +646,11 @@ void MainUI::comboBoxChanged(ComboBox* comboBoxThatHasChanged)
 	//[/UsercomboBoxChanged_Post]
 }
 
+void MainUI::timerCallback()
+{
+	leftGainSlider->setValue(processor->getSynth()->getLeftPeak(), juce::NotificationType::dontSendNotification);
+	rightGainSlider->setValue(processor->getSynth()->getRighPeak(), juce::NotificationType::dontSendNotification);
+}
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
