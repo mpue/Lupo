@@ -69,7 +69,6 @@ private:
     
     void createMatrix();
     void setupLabels();
-    bool isValidConnection(int sourceIndex, int targetIndex);
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ModPanel)
 };

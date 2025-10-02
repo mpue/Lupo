@@ -57,7 +57,7 @@ public:
 	virtual void processModulation() override;
     
 	SynthLab::ADSR* getAmpEnvelope();
-    SynthLab::ADSR* getFilterEnvelope();
+    std::shared_ptr<SynthLab::ADSR> getFilterEnvelope();
 
     void setSampleRate(double rate);
     float getSampleRate();
@@ -85,10 +85,10 @@ public:
         return filter2;       
     }
 
-    void addModulator(Modulator* mod) override;
-	void removeModulator(Modulator* mod) override;
-	void addPwmModulator(Modulator* mod) override;
-	void removePwmModulator(Modulator* mod) override;
+    void addModulator(std::shared_ptr<Modulator> mod) override;
+	void removeModulator(std::shared_ptr<Modulator> mod) override;
+	void addPwmModulator(std::shared_ptr<Modulator> mod) override;
+	void removePwmModulator(std::shared_ptr<Modulator> mod) override;
 
 private:
     std::shared_ptr<MultimodeFilter> filter1;
@@ -102,7 +102,7 @@ private:
     void calculateFrequencyTable();
     bool playing = false;
     std::unique_ptr <SynthLab::ADSR> ampEnvelope;
-    std::unique_ptr <SynthLab::ADSR> filterEnvelope;
+    std::shared_ptr <SynthLab::ADSR> filterEnvelope;
 	// Modulation
 	Modulator* modulator = nullptr;
     float pitchBend;

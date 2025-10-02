@@ -28,8 +28,8 @@ public:
     ModMatrix();
     ~ModMatrix();
     
-    void addModulator(Modulator* m);
-	void addModTarget(ModTarget* m);
+    void addModulator(std::shared_ptr<Modulator> m);
+	void addModTarget(std::shared_ptr <ModTarget> m);
     void registerSource(String source, int id);
     void registerTarget(String target, int id);
 
@@ -65,12 +65,12 @@ public:
 		return modulations;
 	}
 
-	vector<Modulator*>& getModulators()
+	vector<std::shared_ptr<Modulator>>& getModulators()
 	{
 		return modulators;
 	}
 
-	vector<ModTarget*>& getModTargets()
+	vector<std::shared_ptr<ModTarget>>& getModTargets()
 	{
 		return targets;
 	}
@@ -84,13 +84,10 @@ public:
     Model* getModel();
     void setModel(Model* model);
 
-	void createDefaultConfig();
-
-
 private:
     Modulation** modulations;
-	vector<Modulator*> modulators;
-	vector<ModTarget*> targets;
+	vector<std::shared_ptr<Modulator>> modulators;
+	vector<std::shared_ptr<ModTarget>> targets;
     
     map<int,String>* modSources;
     map<int,String>* modTargets;

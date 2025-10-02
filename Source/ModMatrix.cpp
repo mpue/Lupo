@@ -25,12 +25,12 @@ ModMatrix::~ModMatrix() {
     delete modTargets;
 }
 
-void ModMatrix::addModulator(Modulator * m)
+void ModMatrix::addModulator(std::shared_ptr<Modulator> m)
 {
 	modulators.push_back(m);
 }
 
-void ModMatrix::addModTarget(ModTarget * m)
+void ModMatrix::addModTarget(std::shared_ptr <ModTarget> m)
 {
 	targets.push_back(m);
 }

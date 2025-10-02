@@ -30,12 +30,12 @@ public:
     virtual float getOutput() override;
     virtual void reset() override;
 	virtual void processModulation() override;
-    void addPwmModulator(Modulator* mod) override
+    void addPwmModulator(std::shared_ptr<Modulator> mod) override
     {
         pwmModulators.push_back(mod);
     }
 
-    void removePwmModulator(Modulator* mod) override {
+    void removePwmModulator(std::shared_ptr<Modulator> mod) override {
         pwmModulators.erase(std::remove(pwmModulators.begin(), pwmModulators.end(), mod), pwmModulators.end());
     }
     //! Set the pulse width directly (0.0 to 1.0, where 0.5 = 50% duty cycle)

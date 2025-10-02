@@ -38,11 +38,11 @@ public:
 	void setSpread(float spread);
 	virtual void processModulation() override;
 
-    virtual void addPwmModulator(Modulator* mod) override {
+    virtual void addPwmModulator(std::shared_ptr<Modulator> mod) override {
         this->pulse->addPwmModulator(mod);
 	}
 
-    virtual void removePwmModulator(Modulator* mod) override {
+    virtual void removePwmModulator(std::shared_ptr<Modulator> mod) override {
         this->pulse->removePwmModulator(mod);
 	}
 

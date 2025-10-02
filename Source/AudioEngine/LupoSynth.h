@@ -71,11 +71,11 @@ public:
 private:
 
 	Model* model;	
-	using ADSRPtr = std::unique_ptr<SynthLab::ADSR>;
+	using ADSRPtr = std::shared_ptr<SynthLab::ADSR>;
 	vector<ADSRPtr> modEnvelopes;
 	float sampleRate;
 	int bufferSize;
-	std::vector<std::unique_ptr<Voice>> voices;
+	std::vector<std::shared_ptr<Voice>> voices;
 	float filterMode = 1.0f;
 	float cutoff = 15000.0f;
 	float resonance = 1.0f;
@@ -87,9 +87,9 @@ private:
 	std::shared_ptr<OscGroup> oscGroup3;
 	std::shared_ptr<OscGroup> oscGroup4;
 
-	std::unique_ptr<MultimodeOscillator> lfo1;
-	std::unique_ptr<MultimodeOscillator> lfo2;
-	std::unique_ptr<MultimodeOscillator> lfo3;
+	std::shared_ptr<MultimodeOscillator> lfo1;
+	std::shared_ptr<MultimodeOscillator> lfo2;
+	std::shared_ptr<MultimodeOscillator> lfo3;
 
 	std::unique_ptr<StereoDelay> delay;
 	std::unique_ptr<StereoReverb> reverb;
@@ -97,9 +97,9 @@ private:
 	std::unique_ptr<Distortion>	distortion;
 	std::unique_ptr<Arpeggiator> arp;
 	
-	std::unique_ptr<ModTargetGroup> filterTargetGroup1 = nullptr;
-	std::unique_ptr<ModTargetGroup> filterTargetGroup2 = nullptr;
-	std::unique_ptr<ModTargetGroup> oscPwmTarget = nullptr;
+	std::shared_ptr<ModTargetGroup> filterTargetGroup1 = nullptr;
+	std::shared_ptr<ModTargetGroup> filterTargetGroup2 = nullptr;
+	std::shared_ptr<ModTargetGroup> oscPwmTarget = nullptr;
 
 	ModMatrix* matrix;
 

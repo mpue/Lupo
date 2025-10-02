@@ -162,28 +162,28 @@ void Voice::setOscSpread(int osc, float spread)
 	mmo->setSpread(spread);
 }
 
-void Voice::addModulator(Modulator* mod)
+void Voice::addModulator(std::shared_ptr<Modulator> mod)
 {
     for (int i = 0; i < 4; i++) {
         oscillators[i]->addModulator(mod);
     }
 }
 
-void Voice::removeModulator(Modulator* mod)
+void Voice::removeModulator(std::shared_ptr<Modulator> mod)
 {
     for (int i = 0; i < 4; i++) {
         oscillators[i]->removeModulator(mod);
     }
 }
 
-void Voice::addPwmModulator(Modulator* mod)
+void Voice::addPwmModulator(std::shared_ptr<Modulator> mod)
 {
     for (int i = 0; i < 4; i++) {
         oscillators[i]->addPwmModulator(mod);
 	}
 }
 
-void Voice::removePwmModulator(Modulator* mod)
+void Voice::removePwmModulator(std::shared_ptr<Modulator> mod)
 {
     for (int i = 0; i < 4; i++) {
         oscillators[i]->removePwmModulator(mod);
@@ -266,8 +266,8 @@ SynthLab::ADSR* Voice::getAmpEnvelope() {
     return ampEnvelope.get();
 }
 
-SynthLab::ADSR* Voice::getFilterEnvelope() {
-    return filterEnvelope.get();
+std::shared_ptr<SynthLab::ADSR> Voice::getFilterEnvelope() {
+    return filterEnvelope;
 }
 
 float Voice::getTime() {

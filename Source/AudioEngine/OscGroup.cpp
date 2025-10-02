@@ -11,7 +11,6 @@
 #include "OscGroup.h"
 
 OscGroup::OscGroup() {
-	modulator = nullptr;
 }
 
 OscGroup::~OscGroup() {

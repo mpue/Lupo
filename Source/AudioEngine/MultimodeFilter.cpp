@@ -95,7 +95,7 @@ void MultimodeFilter::processMono(int channel, float * const samples, const int 
 
 }
 
-void MultimodeFilter::addModulator(Modulator* mod)
+void MultimodeFilter::addModulator(std::shared_ptr<Modulator> mod)
 {
 	lowPassLeftStage1->addModulator(mod);
 	lowPassRightStage1->addModulator(mod);

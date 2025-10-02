@@ -126,15 +126,10 @@ void ModPanel::buttonClicked(juce::Button* button)
     int sourceIndex = gridButton->getRow();
     int targetIndex = gridButton->getColumn();
     
-    // Prevent self-modulation
-    if (!isValidConnection(sourceIndex, targetIndex))
-    {
-        gridButton->setToggleState(false, juce::dontSendNotification);
-        return;
-    }
+    gridButton->setToggleState(button->getToggleState(), juce::dontSendNotification);
     
-	Modulator* mod = matrix->getModulators().at(sourceIndex);
-	ModTarget* target = matrix->getModTargets().at(targetIndex);
+    std::shared_ptr<Modulator> mod = matrix->getModulators().at(sourceIndex);
+    std::shared_ptr<ModTarget> target = matrix->getModTargets().at(targetIndex);
 
 
     if (targetIndex < 4) {
@@ -252,7 +247,7 @@ void ModPanel::setGridStateFromString(const juce::String& gridState)
                 gridButtons[row][col]->setToggleState(buttonState, juce::dontSendNotification);
                 
                 // Update the underlying modulation matrix
-                if (buttonState && isValidConnection(row, col))
+                if (buttonState)
                 {
                     const auto& modulators = matrix->getModulators();
                     const auto& targets = matrix->getModTargets();
@@ -260,8 +255,8 @@ void ModPanel::setGridStateFromString(const juce::String& gridState)
                     if (row < static_cast<int>(modulators.size()) && 
                         col < static_cast<int>(targets.size()))
                     {
-                        Modulator* mod = modulators[row];
-                        ModTarget* target = targets[col];
+                        std::shared_ptr<Modulator> mod = modulators[row];
+                        std::shared_ptr<ModTarget> target = targets[col];
 
                         if (col <= 5) {
                             target->addModulator(mod);
@@ -280,8 +275,8 @@ void ModPanel::setGridStateFromString(const juce::String& gridState)
                     if (row < static_cast<int>(modulators.size()) && 
                         col < static_cast<int>(targets.size()))
                     {
-                        Modulator* mod = modulators[row];
-                        ModTarget* target = targets[col];
+                        std::shared_ptr<Modulator> mod = modulators[row];
+                        std::shared_ptr<ModTarget> target = targets[col];
 
                         if (col <= 5) {
                             target->removeModulator(mod);
@@ -336,28 +331,3 @@ void ModPanel::setupLabels()
     // Clear any existing target labels
     targetLabels.clear();
 }
-
-bool ModPanel::isValidConnection(int sourceIndex, int targetIndex)
-{
-    // Prevent self-modulation: check if the source and target refer to the same object
-    const auto& modulators = matrix->getModulators();
-    const auto& targets = matrix->getModTargets();
-    
-    if (sourceIndex >= static_cast<int>(modulators.size()) || targetIndex >= static_cast<int>(targets.size()))
-        return false;
-        
-    // Check if the source modulator is the same object as the target
-    // This prevents self-modulation (e.g., LFO1 modulating itself)
-    auto* sourceModulator = modulators[sourceIndex];
-    auto* targetObject = targets[targetIndex];
-    
-    // If the source is also a ModTarget, check for identity
-    auto* sourceAsModTarget = dynamic_cast<ModTarget*>(sourceModulator);
-    if (sourceAsModTarget && sourceAsModTarget == targetObject)
-    {
-        return false; // Self-modulation not allowed
-    }
-    
-    return true;
-}
-

@@ -117,7 +117,7 @@ void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscM
 	voices.clear();
 
 	for (int i = 0; i < maxVoices; i++) {
-		auto v = std::make_unique<Voice>(sampleRate);
+		auto v = std::make_shared<Voice>(sampleRate);
 
 		std::shared_ptr<MultimodeOscillator> osc1 = createOscillator(mode1);
 		std::shared_ptr<MultimodeOscillator> osc2 = createOscillator(mode2);
@@ -128,21 +128,12 @@ void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscM
 		oscGroup2->addTarget(osc2);
 		oscGroup3->addTarget(osc3);
 		oscGroup4->addTarget(osc4);
+
 		v->addOszillator(osc1, 0);
 		v->addOszillator(osc2, 1);
 		v->addOszillator(osc3, 2);
 		v->addOszillator(osc4, 3);
 
-		/*
-		std::unique_ptr<MultimodeOscillator> tmpOsc1 = std::move(osc1);
-		v->addOszillator(std::move(tmpOsc1), 0);
-		std::unique_ptr<MultimodeOscillator> tmpOsc2 = std::move(osc2);
-		v->addOszillator(std::move(tmpOsc2), 1);
-		std::unique_ptr<MultimodeOscillator> tmpOsc3 = std::move(osc3);
-		v->addOszillator(std::move(tmpOsc3), 2);
-		std::unique_ptr<MultimodeOscillator> tmpOsc4 = std::move(osc4);
-		v->addOszillator(std::move(tmpOsc4), 3);
-		*/
 		voices.push_back(std::move(v));
 	}
 }
@@ -175,7 +166,7 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 		// Connect auxiliary envelope to filter 2 if envAmt2 > 0
 		if (model->envAmt2 > 0.0f) {
 			modEnvelopes.at(1)->setModAmount(model->envAmt2);
-			v->getFilter2()->addModulator(modEnvelopes.at(1).get());
+			v->getFilter2()->addModulator(modEnvelopes.at(1));
 		}
 		v->getFilterEnvelope()->setAttackRate(0);
 		
@@ -506,7 +497,7 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 			voice->getFilter2()->clearModulators();
 			if (newValue > 0.0f) {
 				modEnvelopes.at(1)->setModAmount(newValue);
-				voice->getFilter2()->addModulator(modEnvelopes.at(1).get());
+				voice->getFilter2()->addModulator(modEnvelopes.at(1));
 			}
 		}
 	}
@@ -863,22 +854,22 @@ void LupoSynth::configureModulation()
 	modEnvelopes.at(0)->setName("ENV1");
 	modEnvelopes.at(1)->setName("ENV2");
 
-	matrix->addModulator(lfo1.get());
-	matrix->addModulator(lfo2.get());
-	matrix->addModulator(lfo3.get());
-	matrix->addModulator(modEnvelopes.at(0).get());
-	matrix->addModulator(modEnvelopes.at(1).get());
+	matrix->addModulator(lfo1);
+	matrix->addModulator(lfo2);
+	matrix->addModulator(lfo3);
+	matrix->addModulator(modEnvelopes.at(0));
+	matrix->addModulator(modEnvelopes.at(1));
 
-	matrix->addModTarget(oscGroup1.get());
-	matrix->addModTarget(oscGroup2.get());
-	matrix->addModTarget(oscGroup3.get());
-	matrix->addModTarget(oscGroup4.get());
+	matrix->addModTarget(oscGroup1);
+	matrix->addModTarget(oscGroup2);
+	matrix->addModTarget(oscGroup3);
+	matrix->addModTarget(oscGroup4);
 
-	filterTargetGroup1 = std::make_unique<ModTargetGroup>();
+	filterTargetGroup1 = std::make_shared<ModTargetGroup>();
 	for (auto& voice : voices) {
 		filterTargetGroup1->addTarget(voice->getFilter1());
 	}
-	filterTargetGroup2 = std::make_unique<ModTargetGroup>();
+	filterTargetGroup2 = std::make_shared<ModTargetGroup>();
 	for (auto& voice : voices) {
 		filterTargetGroup2->addTarget(voice->getFilter2());
 	}
@@ -889,9 +880,9 @@ void LupoSynth::configureModulation()
 	oscPwmTarget->addTarget(oscGroup3);
 	oscPwmTarget->addTarget(oscGroup4);
 
-	matrix->addModTarget(filterTargetGroup1.get());
-	matrix->addModTarget(filterTargetGroup2.get());
-	matrix->addModTarget(oscPwmTarget.get());
+	matrix->addModTarget(filterTargetGroup1);
+	matrix->addModTarget(filterTargetGroup2);
+	matrix->addModTarget(oscPwmTarget);
 
 	lfo1->enabled = true;
 	lfo2->enabled = true;

@@ -17,21 +17,22 @@ public:
     ~ModTargetGroup() = default;
 
     void addTarget(std::shared_ptr<ModTarget> target) {
-        targets.push_back(target);
+        if (!target) return;
+
+        auto it = std::find_if(targets.begin(), targets.end(),
+            [target](const std::shared_ptr<ModTarget>& existing) {
+                return existing.get() == target.get();
+            });
+
+        if (it == targets.end()) {
+            targets.push_back(target);
+        }
     }
 
     void removeTarget(std::shared_ptr<ModTarget>target) {
-        if (target.get() == nullptr) return;  // Null-Check
 
-        // Option 1: Expliziter Iterator (am sichersten)
-        //for (auto it = targets.begin(); it != targets.end(); ) {
-        //    if (*it == target) {
-        //        it = targets.erase(it);
-        //    }
-        //    else {
-        //        ++it;
-        //    }
-        //}
+        if (target.get() == nullptr) 
+            return;  // Null-Check
 
         targets.erase(
             std::remove_if(targets.begin(), targets.end(),
@@ -53,11 +54,11 @@ public:
         targets.clear();
     }
 
-    const std::vector<shared_ptr<ModTarget>> & getModTargets() const {
+    const std::vector<shared_ptr<ModTarget>>& getModTargets() const {
         return targets;
     }
 
-    void addModulator(Modulator* mod) override {
+    void addModulator(std::shared_ptr<Modulator> mod) override {
         if (mod == nullptr) return;
 
         for (auto& target : targets) {
@@ -67,7 +68,7 @@ public:
         }
     }
 
-    void removeModulator(Modulator* mod) override {
+    void removeModulator(std::shared_ptr<Modulator> mod) override {
         if (mod == nullptr) return;
 
         for (auto& target : targets) {
@@ -93,7 +94,7 @@ public:
         }
     }
 
-    void addPwmModulator(Modulator* mod) override {
+    void addPwmModulator(std::shared_ptr<Modulator> mod) override {
         if (mod == nullptr) return;
 
         for (auto& target : targets) {
@@ -103,7 +104,7 @@ public:
         }
     }
 
-    void removePwmModulator(Modulator* mod) override {
+    void removePwmModulator(std::shared_ptr<Modulator> mod) override {
         if (mod == nullptr) return;
 
         for (auto& target : targets) {
