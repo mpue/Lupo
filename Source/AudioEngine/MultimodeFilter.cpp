@@ -106,6 +106,15 @@ void MultimodeFilter::addModulator(std::shared_ptr<Modulator> mod)
 
 }
 
+void MultimodeFilter::removeModulator(std::shared_ptr<Modulator> mod) {
+	lowPassLeftStage1->removeModulator(mod);
+	lowPassRightStage1->removeModulator(mod);
+	lowPassLeftStage2->removeModulator(mod);
+	lowPassRightStage2->removeModulator(mod);
+	highPassLeft->removeModulator(mod);
+	highPassRight->removeModulator(mod);
+}
+
 void MultimodeFilter::setKeyTrack(int track) {
 	this->keyTrack = track;
 }

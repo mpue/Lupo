@@ -866,11 +866,9 @@ void LupoSynth::configureModulation()
 	matrix->addModTarget(oscGroup4);
 
 	filterTargetGroup1 = std::make_shared<ModTargetGroup>();
-	for (auto& voice : voices) {
-		filterTargetGroup1->addTarget(voice->getFilter1());
-	}
 	filterTargetGroup2 = std::make_shared<ModTargetGroup>();
 	for (auto& voice : voices) {
+		filterTargetGroup1->addTarget(voice->getFilter1());
 		filterTargetGroup2->addTarget(voice->getFilter2());
 	}
 	oscPwmTarget = std::make_unique<ModTargetGroup>();		

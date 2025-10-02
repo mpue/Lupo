@@ -36,6 +36,7 @@ public:
     virtual void processStereo(float *const left, float *const right, const int numSamples) override;
 	virtual void processMono(int channel, float *const samples, const int numSamples);
     virtual void addModulator(std::shared_ptr<Modulator> mod) override;
+    virtual void removeModulator(std::shared_ptr<Modulator> mod) override;
 
     void setFrequency(float frequency) {
     	this->frequency = frequency;		
