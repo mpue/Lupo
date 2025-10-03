@@ -51,8 +51,7 @@ void Sawtooth::reset() {
     }
 }
 
-float Sawtooth::process()
-{
+float Sawtooth::process() {
     // Oszillator-Sync
     if (this->slave != 0 && sync) {
         if (blitsaw[0]->resetFlag) {
@@ -67,18 +66,21 @@ float Sawtooth::process()
         return saw * volume;
     }
     else {
-        // Mit Spread alle Oszillatoren mischen
-        value = 0;
-        totalWeight = 0;
+        // Bestimme Anzahl aktiver Oszillatoren basierend auf spread
+        int activeOscs = static_cast<int>(1 + spread * 7); // 1-8 Oszillatoren
 
-        for (int i = 0; i < 8; i++) {
-            float weight = scales[i]; // RMS-basierte Skalierung
-            value += blitsaw[i]->tick() * weight;
-            totalWeight += weight;
+        // Verwende den korrekten scale-Wert für die Gesamtzahl
+        float rmsScale = scales[activeOscs - 1]; // Index ist activeOscs - 1
+
+        value = 0;
+
+        // Alle aktiven Oszillatoren mit gleichem Gewicht
+        for (int i = 0; i < activeOscs; i++) {
+            value += blitsaw[i]->tick();
         }
 
-        // Normalisieren um konstante Lautstärke zu halten
-        saw = value / totalWeight;
+        // Skaliere das Gesamtresultat
+        saw = value * rmsScale;
         return saw * volume;
     }
 }

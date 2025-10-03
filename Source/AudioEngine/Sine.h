@@ -13,9 +13,8 @@
 #include "Oszillator.h"
 #include "Modulator.h"
 
-class Sine : public Oszillator , public Modulator {
-    
-    
+class Sine : public Oszillator, public Modulator {
+
 public:
     Sine(float sampleRate, int buffersize);
     virtual float process() override;
@@ -24,12 +23,17 @@ public:
     virtual void setFrequency(double frequency) override;
     virtual float getOutput() override;
     virtual void reset() override;
-    
-private:
+    virtual void setSampleRate(double sampleRate) override;
+
+protected:  // Changed from private to protected
     float fine;
     double step;
-    double phase;
+    double phase;  // This is already defined in Oszillator
     float value;
+
+private:
+    static constexpr double TWO_PI = 6.283185307179586476925286766559;
+    void updateStep();
 };
 
 #endif /* Sine_hpp */

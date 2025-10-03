@@ -1,20 +1,15 @@
-//
-//  ADRS.h
-//
-//  Created by Nigel Redmon on 12/18/12.
-//  EarLevel Engineering: earlevel.com
-//  Copyright 2012 Nigel Redmon
-//
-//  For a complete explanation of the ADSR envelope generator and code,
-//  read the series of articles by the author, starting here:
-//  http://www.earlevel.com/main/2013/06/01/envelope-generators/
-//
-//  License:
-//
-//  This source code is provided as is, without warranty.
-//  You may copy and distribute verbatim copies of this document.
-//  You may modify and use this source code to create binary code for your own purposes, free or commercial.
-//
+/***
+* ADSR.h
+* Created by Nigel Redmon on 12/18/12.
+* EarLevel Engineering: earlevel.com
+* Copyright 2012 Nigel Redmon
+* For a complete explanation of the ADSR envelope generator and code,
+* read the series of articles by the author, starting here:
+* http://www.earlevel.com/main/2013/06/01/envelope-generators/
+*
+*  Improved and revised by Matthias Pueski on 01.06.2016
+* 
+*/
 
 #ifndef ADRS_h
 #define ADRS_h
@@ -81,65 +76,6 @@ namespace SynthLab {
 		float calcCoef(float rate, float targetRatio);
 
 	};
-
-	inline float ADSR::process() {
-		switch (state) {
-		case env_idle:
-			break;
-		case env_attack:
-			// Handle instantaneous attack when attackCoef is 0
-			if (attackCoef == 0.0f) {
-				output = 1.0f;  // Jump instantly to full level
-				state = env_decay;
-			} else {
-				output = attackBase + output * attackCoef;
-				if (output >= 1.0) {
-					output = 1.0;
-					state = env_decay;
-				}
-			}
-			break;
-		case env_decay:
-			output = decayBase + output * decayCoef;
-			if (output <= sustainLevel) {
-				output = sustainLevel;
-				state = env_sustain;
-			}
-			break;
-		case env_sustain:
-			break;
-		case env_release:
-			output = releaseBase + output * releaseCoef;
-			if (output <= 0.0) {
-				output = 0.0;
-				state = env_idle;
-			}
-		}
-
-		return (output / 128) * velocity;
-	}
-
-	inline void ADSR::gate(int gate) {
-
-		// cout << "ADSR gate " << gate << endl;
-
-		if (gate) {
-			velocity = gate;
-			state = env_attack;
-		}
-		else if (state != env_idle)
-			state = env_release;
-	}
-
-	inline int ADSR::getState() {
-		return state;
-	}
-
-	inline void ADSR::reset() {
-		state = env_idle;
-		output = 0.0;
-	}
-
 
 }
 

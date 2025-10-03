@@ -207,6 +207,8 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 			if (voice) {
 				if (!voice->isPlaying()) {
 					numVoices++;
+					voice->getAmpEnvelope()->reset();
+					voice->getFilterEnvelope()->reset();
 				}
 				voice->setPlaying(true);
 				// Fix: Make sure envelopes are properly gated

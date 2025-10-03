@@ -24,17 +24,80 @@
 
 SynthLab::ADSR::ADSR(void) {
     reset();
-    setAttackRate(0);
+    setAttackRate(0.01);
     setDecayRate(1 * 48000);
     setReleaseRate(0);
     setSustainLevel(1.0);
     setTargetRatioA(0.01);
     setTargetRatioDR(0.01);
-    setModAmount(1.0);
+    setModAmount(1.0);	
 }
 
 SynthLab::ADSR::~ADSR(void) {
 }
+
+float SynthLab::ADSR::process() {
+	switch (state) {
+	case env_idle:
+		break;
+	case env_attack:
+		// Handle instantaneous attack when attackCoef is 0
+		if (attackCoef == 0.0f) {
+			output = 1.0f;  // Jump instantly to full level
+			state = env_decay;
+		}
+		else {
+			output = attackBase + output * attackCoef;
+			if (output >= 1.0) {
+				output = 1.0;
+				state = env_decay;
+			}
+		}
+		break;
+	case env_decay:
+		output = decayBase + output * decayCoef;
+		if (output <= sustainLevel) {
+			output = sustainLevel;
+			state = env_sustain;
+		}
+		break;
+	case env_sustain:
+		break;
+	case env_release:
+		output = releaseBase + output * releaseCoef;
+		if (output <= 0.0) {
+			output = 0.0;
+			state = env_idle;
+		}
+	}
+
+	return (output / 127.0f) * velocity; // Korrigiert: Division durch 127 statt 128
+}
+
+void SynthLab::ADSR::gate(int gate) {
+
+	if (gate) {
+		velocity = gate;
+		// Explizit output zurücksetzen um Pops zu vermeiden
+		if (state == env_idle || state == env_release) {
+			output = 0.0f;
+		}
+		state = env_attack;
+	}
+	else if (state != env_idle)
+		state = env_release;
+}
+
+int SynthLab::ADSR::getState() {
+	return state;
+}
+
+void SynthLab::ADSR::reset() {
+	state = env_idle;
+	output = 0.0f;
+	velocity = 0;
+}
+
 
 void SynthLab::ADSR::setAttackRate(float rate) {
     // Store the actual rate for later use

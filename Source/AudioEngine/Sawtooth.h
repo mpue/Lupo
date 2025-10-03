@@ -50,3 +50,5 @@ private:
     float value;
     float totalWeight;
 };
+
+
