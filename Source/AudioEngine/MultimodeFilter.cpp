@@ -12,14 +12,14 @@
 
 MultimodeFilter::MultimodeFilter() {
 
-    this->lowPassLeftStage1 = new LowPassFilter();
-    this->lowPassRightStage1 = new LowPassFilter();
+    this->lowPassLeftStage1 = std::make_unique<LowPassFilter>();
+    this->lowPassRightStage1 = std::make_unique<LowPassFilter>();
 
-	this->lowPassLeftStage2 = new LowPassFilter();
-	this->lowPassRightStage2 = new LowPassFilter();
+	this->lowPassLeftStage2 = std::make_unique<LowPassFilter>();
+	this->lowPassRightStage2 = std::make_unique<LowPassFilter>();
 
-    this->highPassLeft = new HighPassFilter();
-    this->highPassRight = new HighPassFilter();
+    this->highPassLeft = std::make_unique<HighPassFilter>();
+    this->highPassRight = std::make_unique<HighPassFilter>();
     
     this->mode = LOWPASS;
 	this->keyTrack = 0;
@@ -128,3 +128,40 @@ void MultimodeFilter::processModulation()
 	highPassLeft->processModulation();
 	highPassRight->processModulation();
 }
+
+void MultimodeFilter::setFrequency(float frequency) {
+	this->frequency = frequency;		
+	// Let the individual filters handle smoothing - don't set immediately
+	this->lowPassLeftStage1->setFrequency(frequency);
+	this->lowPassRightStage1->setFrequency(frequency);
+	this->lowPassLeftStage2->setFrequency(frequency);
+	this->lowPassRightStage2->setFrequency(frequency);
+	this->highPassLeft->setFrequency(frequency);
+	this->highPassRight->setFrequency(frequency);
+}
+
+void MultimodeFilter::setFrequencyImmediate(float frequency) {
+	this->frequency = frequency;
+	// For real-time control, use immediate updates
+	this->lowPassLeftStage1->setFrequencyImmediate(frequency);
+	this->lowPassRightStage1->setFrequencyImmediate(frequency);
+	this->lowPassLeftStage2->setFrequencyImmediate(frequency);
+	this->lowPassRightStage2->setFrequencyImmediate(frequency);
+	// HighPass filters don't have immediate method yet, use regular
+	this->highPassLeft->setFrequencyImmediate(frequency);
+	this->highPassRight->setFrequencyImmediate(frequency);
+}
+
+void MultimodeFilter::setResonance(float resonance) {
+	this->resonance = resonance;
+	lowPassLeftStage1->setResonance(resonance);
+	lowPassRightStage1->setResonance(resonance);
+	lowPassLeftStage2->setResonance(resonance);
+	lowPassRightStage2->setResonance(resonance);
+	highPassLeft->setResonance(resonance);
+	highPassRight->setResonance(resonance);
+}
+
+
+
+

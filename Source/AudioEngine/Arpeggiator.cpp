@@ -75,9 +75,10 @@ void Arpeggiator::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffe
     }
     else if (clockMode == ClockMode::Internal)
     {
-        // Berechne Schritt-Dauer basierend auf Tempo und Division
-        // BPM zu Samples: (60 / BPM) * sampleRate = Samples pro Beat
-        // Ein Beat = 24 PPQN Ticks, Division wird durch ticksPerStep bestimmt
+        // Calculate step duration based on tempo and division
+        // BPM to Samples: (60 / BPM) * sampleRate = Samples per Beat
+        // One Beat = 24 PPQN Ticks, Division is determined by ticksPerStep
+
         float beatsPerSecond = tempo / 60.0f;
         float samplesPerBeat = sampleRate / beatsPerSecond;
         float samplesPerTick = samplesPerBeat / 24.0f;  // 24 PPQN

@@ -14,13 +14,13 @@
 
 const float scales[] = {
     1.0f,
-    sqrt(1.0 / 2.0),
-    sqrt(1.0 / 3.0),
-    sqrt(1.0 / 4.0),
-    sqrt(1.0 / 5.0),
-    sqrt(1.0 / 6.0),
-    sqrt(1.0 / 7.0),
-    sqrt(1.0 / 8.0),
+    sqrt(1.0f / 2.0f),
+    sqrt(1.0f / 3.0f),
+    sqrt(1.0f / 4.0f),
+    sqrt(1.0f / 5.0f),
+    sqrt(1.0f / 6.0f),
+    sqrt(1.0f / 7.0f),
+    sqrt(1.0f / 8.0f),
 };
 
 class Sawtooth : public Oszillator, public Modulator {

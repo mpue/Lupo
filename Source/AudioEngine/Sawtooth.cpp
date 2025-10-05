@@ -76,7 +76,7 @@ float Sawtooth::process() {
 
         // Alle aktiven Oszillatoren mit gleichem Gewicht
         for (int i = 0; i < activeOscs; i++) {
-            value += blitsaw[i]->tick();
+            value += (float)blitsaw[i]->tick();
         }
 
         // Skaliere das Gesamtresultat

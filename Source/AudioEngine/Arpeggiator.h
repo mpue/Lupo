@@ -3,7 +3,9 @@
 
 class Arpeggiator
 {
+
 public:
+
     Arpeggiator();
     ~Arpeggiator();
 
@@ -13,16 +15,17 @@ public:
     enum class Mode { Up, Down, Random };
     enum class ClockMode { Internal, Midi };
 
-    void setEnabled(bool shouldRun)                     noexcept { enabled = shouldRun; }
-    void setOctaves(int num)                            noexcept { octaves = juce::jmax(1, num); }
-    void setMode(Mode m)                             noexcept { mode = m; }
-    void setClockMode(ClockMode m)                        noexcept { clockMode = m; }
-    void setDivisionIndex(int idx)                            noexcept;
-    void setDivisionTicks(int ticks)                          noexcept { ticksPerStep = juce::jmax(1, ticks); }
-    void setTempo(float bpm)                                  noexcept { tempo = juce::jlimit(60.0f, 200.0f, bpm); }
-    float getTempo() const                                    noexcept { return tempo; }
+    void setEnabled(bool shouldRun)  noexcept { enabled = shouldRun; }
+    void setOctaves(int num)         noexcept { octaves = juce::jmax(1, num); }
+    void setMode(Mode m)             noexcept { mode = m; }
+    void setClockMode(ClockMode m)   noexcept { clockMode = m; }
+    void setDivisionIndex(int idx)   noexcept;
+    void setDivisionTicks(int ticks) noexcept { ticksPerStep = juce::jmax(1, ticks); }
+    void setTempo(float bpm)         noexcept { tempo = juce::jlimit(60.0f, 200.0f, bpm); }
+    float getTempo() const           noexcept { return tempo; }
 
 private:
+
     bool enabled = true;
     int  octaves = 1;
 

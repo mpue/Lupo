@@ -180,25 +180,25 @@ void ChorusPanel::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == delay.get())
     {
         //[UserSliderCode_delay] -- add your slider handling code here..
-		model->chrDelay = sliderThatWasMoved->getValue();
+		model->chrDelay = (float)sliderThatWasMoved->getValue();
         //[/UserSliderCode_delay]
     }
     else if (sliderThatWasMoved == modulation.get())
     {
         //[UserSliderCode_modulation] -- add your slider handling code here..
-		model->chrModulation = sliderThatWasMoved->getValue();
+		model->chrModulation = (float)sliderThatWasMoved->getValue();
         //[/UserSliderCode_modulation]
     }
     else if (sliderThatWasMoved == feedback.get())
     {
         //[UserSliderCode_feedback] -- add your slider handling code here..
-		model->chrFeedback = sliderThatWasMoved->getValue();
+		model->chrFeedback = (float)sliderThatWasMoved->getValue();
         //[/UserSliderCode_feedback]
     }
     else if (sliderThatWasMoved == mix.get())
     {
         //[UserSliderCode_mix] -- add your slider handling code here..
-		model->chrMix = sliderThatWasMoved->getValue();
+		model->chrMix = (float)sliderThatWasMoved->getValue();
         //[/UserSliderCode_mix]
     }
 

@@ -53,7 +53,7 @@ public:
 	float mix = 0.0f;
 
 private:
-	float sampleRate;
+	double sampleRate;
 	int bufferSize;	
 	int currentSample = 0;
 	float leftDelayTime, rightDelayTime = 10;

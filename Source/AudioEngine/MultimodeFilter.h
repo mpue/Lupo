@@ -38,38 +38,9 @@ public:
     virtual void addModulator(std::shared_ptr<Modulator> mod) override;
     virtual void removeModulator(std::shared_ptr<Modulator> mod) override;
 
-    void setFrequency(float frequency) {
-    	this->frequency = frequency;		
-        // Let the individual filters handle smoothing - don't set immediately
-        this->lowPassLeftStage1->setFrequency(frequency);
-        this->lowPassRightStage1->setFrequency(frequency);
-        this->lowPassLeftStage2->setFrequency(frequency);
-        this->lowPassRightStage2->setFrequency(frequency);
-        this->highPassLeft->setFrequency(frequency);
-        this->highPassRight->setFrequency(frequency);
-	}
-	
-	void setFrequencyImmediate(float frequency) {
-    	this->frequency = frequency;		
-        // For real-time control, use immediate updates
-        this->lowPassLeftStage1->setFrequencyImmediate(frequency);
-        this->lowPassRightStage1->setFrequencyImmediate(frequency);
-        this->lowPassLeftStage2->setFrequencyImmediate(frequency);
-        this->lowPassRightStage2->setFrequencyImmediate(frequency);
-        // HighPass filters don't have immediate method yet, use regular
-        this->highPassLeft->setFrequencyImmediate(frequency);
-        this->highPassRight->setFrequencyImmediate(frequency);
-	}
-	
-    void setResonance(float resonance) {
-        this->resonance = resonance;
-        lowPassLeftStage1->setResonance(resonance);
-        lowPassRightStage1->setResonance(resonance);
-        lowPassLeftStage2->setResonance(resonance);
-        lowPassRightStage2->setResonance(resonance);
-        highPassLeft->setResonance(resonance);
-        highPassRight->setResonance(resonance);
-    }
+    void setFrequency(float frequency);	
+    void setFrequencyImmediate(float frequency);
+    void setResonance(float resonance);
     void setMode(Mode mode);
 	void setKeyTrack(int track);
 
@@ -77,14 +48,14 @@ public:
 
 private:
     
-    ScopedPointer<LowPassFilter> lowPassLeftStage1;
-    ScopedPointer<LowPassFilter> lowPassRightStage1;
+    std::unique_ptr<LowPassFilter> lowPassLeftStage1;
+    std::unique_ptr<LowPassFilter> lowPassRightStage1;
 
-	ScopedPointer<LowPassFilter> lowPassLeftStage2;
-	ScopedPointer<LowPassFilter> lowPassRightStage2;
+    std::unique_ptr<LowPassFilter> lowPassLeftStage2;
+    std::unique_ptr<LowPassFilter> lowPassRightStage2;
 
-    ScopedPointer<HighPassFilter> highPassLeft;
-    ScopedPointer<HighPassFilter> highPassRight;
+    std::unique_ptr<HighPassFilter> highPassLeft;
+    std::unique_ptr<HighPassFilter> highPassRight;
         
     float* out;
     
@@ -99,4 +70,4 @@ private:
     
 };
 
-#endif /* MultimodeFilter_hpp */
+#endif 

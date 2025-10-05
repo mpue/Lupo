@@ -73,7 +73,7 @@ private:
 	Model* model;	
 	using ADSRPtr = std::shared_ptr<SynthLab::ADSR>;
 	vector<ADSRPtr> modEnvelopes;
-	float sampleRate;
+	double sampleRate;
 	int bufferSize;
 	std::vector<std::shared_ptr<Voice>> voices;
 	float filterMode = 1.0f;

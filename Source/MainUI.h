@@ -1,25 +1,5 @@
-/*
-  ==============================================================================
-
-  This is an automatically generated GUI class created by the Projucer!
-
-  Be careful when adding custom code to these files, as only the code within
-  the "//[xyz]" and "//[/xyz]" sections will be retained when the file is loaded
-  and re-saved.
-
-  Created with Projucer version: 5.4.7
-
-  ------------------------------------------------------------------------------
-
-  The Projucer is part of the JUCE library.
-  Copyright (c) 2017 - ROLI Ltd.
-
-  ==============================================================================
-*/
-
 #pragma once
 
-//[Headers]     -- You can add your own extra header files here --
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "AudioEngine/LupoSynth.h"
 #include "OscillatorPanel.h"
@@ -36,24 +16,14 @@
 #include "ArpPanel.h"
 #include "FilterPanel.h"
 #include "ModPanel.h"
+
 class ModMatrixPanel;
 class ModMatrixModel;
 class Model;
 class AttachmentFactory;
 class PresetDialog;
 class Panel;
-//[/Headers]
 
-
-
-//==============================================================================
-/**
-                                                                    //[Comments]
-    An auto-generated component, created by the Projucer.
-
-    Describe your class and how it works here!
-                                                                    //[/Comments]
-*/
 class MainUI  : public Component,
                 public ChangeBroadcaster,
                 public ChangeListener,
@@ -64,12 +34,11 @@ class MainUI  : public Component,
                 public Timer
 {
 public:
-    //==============================================================================
+
     MainUI (LupoAudioProcessor* processor, AttachmentFactory* factory);
     ~MainUI() override;
 
-    //==============================================================================
-    //[UserMethods]     -- You can add your own custom methods in this section.
+
 	void changeListenerCallback(ChangeBroadcaster* source);
 	void mouseDown(const MouseEvent& event) override;
 	void mouseUp(const MouseEvent& event) override;
@@ -78,8 +47,8 @@ public:
 	void updatePresetList();
 	Component* findComponentAtMousePosition(Point<int> mousePos, Component* parent);
 	void parameterChanged(const String& parameterID, float newValue) override;
-    //[/UserMethods]
-	void timerCallback();
+
+    void timerCallback();
     void paint (Graphics& g) override;
     void resized() override;
     void sliderValueChanged (Slider* sliderThatWasMoved) override;
@@ -90,9 +59,7 @@ public:
     static const char* logo_png;
     static const int logo_pngSize;
 
-
 private:
-    //[UserVariables]   -- You can add your own custom variables in this section.
 	Model* model;
 	LupoSynth* synth;
 	Point<int> mouseDownPos;
@@ -107,13 +74,8 @@ private:
 	Component* modTarget = nullptr;
 
 	ModMatrixModel* matrixModel;
-
 	Rectangle<int> originalBounds;
-
-    //[/UserVariables]
-
-    //==============================================================================
-    std::unique_ptr<Panel> GlassPanel;
+    
     std::unique_ptr<GroupComponent> ModulationGroup;
     std::unique_ptr<GroupComponent> groupComponent;
     std::unique_ptr<GroupComponent> groupComponent3;
@@ -155,7 +117,7 @@ private:
     std::unique_ptr<TextEditor> mainDisplay;
     std::unique_ptr<ModPanel> modMatrix;
     
-    // New components for the tabbed right side layout
+    // components for the tabbed right side layout
     std::unique_ptr<TabbedComponent> rightSideTabs;
     std::unique_ptr<Component> fxContainerPanel;
     std::unique_ptr<Viewport> modMatrixViewport;
@@ -163,11 +125,9 @@ private:
 	std::unique_ptr<Slider> leftGainSlider;
 	std::unique_ptr<Slider> rightGainSlider;
 
-    //==============================================================================
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainUI)
 
 };
 
-//[EndFile] You can add extra defines here...
-//[/EndFile]
 

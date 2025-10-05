@@ -6,6 +6,8 @@
 #define PI 3.14159265358979323846
 #define TAU 6.28318530717958647692
 
+// TODO : Sounds like shit
+
 class Distortion
 {
 public:

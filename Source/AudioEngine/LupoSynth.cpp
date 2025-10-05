@@ -31,18 +31,18 @@ LupoSynth::LupoSynth(Model* model, ModMatrix* modMatrix) {
 	this->matrix = modMatrix;
 
 	for (int i = 0; i < 3; i++) {
-		modEnvelopes.emplace_back(std::make_unique<SynthLab::ADSR>());		
+		modEnvelopes.emplace_back(std::make_unique<SynthLab::ADSR>());
 	}
 
 	delay = std::make_unique <StereoDelay>();
 	reverb = std::make_unique <StereoReverb>();
 	distortion = std::make_unique <Distortion>();
-	
+
 	// Initialize distortion with model values
 	distortion->controls.mode = static_cast<int>(model->distMode);
 	distortion->controls.drive = model->distDrive;
 	distortion->controls.mix = model->distMix;
-	
+
 	arp = std::make_unique<Arpeggiator>();
 	chorus = std::make_unique<StereoChorus>(sampleRate, bufferSize);
 
@@ -112,7 +112,7 @@ std::shared_ptr<MultimodeOscillator> LupoSynth::createOscillator(Oszillator::Osc
 
 void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscMode mode2, Oszillator::OscMode mode3, Oszillator::OscMode mode4) {
 
-	const int maxVoices = model->maxVoices; // z. B. 16
+	const int maxVoices = model->maxVoices;
 
 	voices.clear();
 
@@ -140,7 +140,7 @@ void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscM
 
 Voice* LupoSynth::findFreeVoice(int noteNumber) {
 	for (auto& v : voices) {
-		if (!v->isPlaying() && v->getAmpEnvelope()->getState() == SynthLab::ADSR::env_idle) {			
+		if (!v->isPlaying() && v->getAmpEnvelope()->getState() == SynthLab::ADSR::env_idle) {
 			return v.get();
 		}
 	}
@@ -152,7 +152,7 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	this->sampleRate = sampleRate;
 	this->bufferSize = samplesPerBlock;
 
-	chorus->prepareToPlay(sampleRate, samplesPerBlock);			
+	chorus->prepareToPlay(sampleRate, samplesPerBlock);
 	arp->prepareToPlay(sampleRate, bufferSize);
 	arp->setEnabled(false);
 	arp->setClockMode(Arpeggiator::ClockMode::Internal);
@@ -161,7 +161,7 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 		// Initialize filters with proper sample rate and initial values
 		v->getFilter1()->coefficients(sampleRate, model->cutoff1, model->resonance1);
 		v->getFilter2()->coefficients(sampleRate, model->cutoff2, model->resonance2);
-		v->setSampleRate(sampleRate);	
+		v->setSampleRate(sampleRate);
 		v->getFilter1()->addModulator(v->getFilterEnvelope());
 		// Connect auxiliary envelope to filter 2 if envAmt2 > 0
 		if (model->envAmt2 > 0.0f) {
@@ -169,9 +169,6 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 			v->getFilter2()->addModulator(modEnvelopes.at(1));
 		}
 		v->getFilterEnvelope()->setAttackRate(0);
-		
-		// v->getFilter1()->addModulator(lfo1.get());
-		// v->addModulator(lfo2.get());	
 	}
 
 	lfo1->setSampleRate(sampleRate);
@@ -234,7 +231,7 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 					voice->getFilterEnvelope()->gate(false);
 					numVoices--;
 					voice->setPlaying(false);
-					break; // nur erste passende Stimme freigeben
+					break; // free ónly one voice per note off
 				}
 			}
 
@@ -243,7 +240,7 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 					env->gate(false);
 				}
 				highestNote = 0;
-				numVoices = 0; // Schutz
+				numVoices = 0;
 			}
 		}
 	}
@@ -260,9 +257,9 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 		nPitch = (nPitch * semitones) / 12;
 		nPitch = pow(2, nPitch);
 
-		for (auto& voice : voices) 
+		for (auto& voice : voices)
 			if (voice->isPlaying())
-				voice->setPitchBend(nPitch);		
+				voice->setPitchBend(nPitch);
 
 	}
 	// TODO : Implement aftertouch and modulation wheel handling
@@ -272,9 +269,6 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 		if (m.getControllerNumber() == 1) {
 
 		}
-	}
-	else {
-		//( Logger::getCurrentLogger()->writeToLog("Other message : " + String(m.getTimeStamp()));
 	}
 
 	for (auto& voice : voices) {
@@ -302,7 +296,7 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 			env->process();
 		}
 	}
-	
+
 	// Process LFOs for the entire block
 	for (int sample = 0; sample < numSamples; ++sample) {
 		lfo1->process();
@@ -316,10 +310,10 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 	for (auto& voice : voices) {
 		if (voice->getAmpEnvelope()->getState() != SynthLab::ADSR::env_idle) {
 			voiceBuffer.clear();
-						
+
 			// Voice verarbeitet den ganzen Block in einem Durchgang
 			voice->processBlock(voiceBuffer);
-			
+
 			// Stereo-Mix mit Skalierung
 			const float gain = mainVolume * 4.0f;
 			for (int sample = 0; sample < numSamples; ++sample) {
@@ -358,7 +352,8 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 	float masterGain = Decibels::decibelsToGain(model->outputGaindB);
 	buffer.applyGain(masterGain);
 
-	leftPeak =  buffer.getMagnitude(0, bufferSize - 1);
+	// for the peak meters in the GUI
+	leftPeak = buffer.getMagnitude(0, bufferSize - 1);
 	rightPeak = buffer.getMagnitude(1, bufferSize - 1);
 
 }
@@ -464,7 +459,6 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 			voice->getFilterEnvelope()->setModAmount(newValue);
 		}
 	}
-
 	if (parameterID == "cutoff2") {
 		model->cutoff2 = newValue;
 
@@ -475,7 +469,7 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 	}
 	else if (parameterID == "resonance2") {
 		model->resonance2 = newValue;
-		
+
 		for (auto& voice : voices) {
 			voice->getFilter2()->setResonance(model->resonance2);
 			// Remove redundant coefficients call
@@ -795,7 +789,6 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 	}
 	else if (parameterID == "cutoffLink") {
 		cutoffLink = newValue > 0;
-		
 		// If cutoff link is enabled, sync filter 2 to filter 1
 		if (cutoffLink) {
 			model->cutoff2 = model->cutoff1;
@@ -817,7 +810,8 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 	else if (parameterID == "arpClockMode") {
 		if (newValue < 0.5f) {
 			arp->setClockMode(Arpeggiator::ClockMode::Internal);
-		} else {
+		}
+		else {
 			arp->setClockMode(Arpeggiator::ClockMode::Midi);
 		}
 	}
@@ -827,9 +821,11 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 	else if (parameterID == "arpMode") {
 		if (newValue < 0.5f) {
 			arp->setMode(Arpeggiator::Mode::Up);
-		} else if (newValue < 1.5f) {
+		}
+		else if (newValue < 1.5f) {
 			arp->setMode(Arpeggiator::Mode::Down);
-		} else {
+		}
+		else {
 			arp->setMode(Arpeggiator::Mode::Random);
 		}
 	}
@@ -901,8 +897,8 @@ void LupoSynth::configureModulation()
 		filterTargetGroup1->addTarget(voice->getFilter1());
 		filterTargetGroup2->addTarget(voice->getFilter2());
 	}
-	oscPwmTarget = std::make_unique<ModTargetGroup>();		
-	
+	oscPwmTarget = std::make_unique<ModTargetGroup>();
+
 	oscPwmTarget->addTarget(oscGroup1);
 	oscPwmTarget->addTarget(oscGroup2);
 	oscPwmTarget->addTarget(oscGroup3);

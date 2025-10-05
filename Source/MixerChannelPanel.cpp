@@ -140,16 +140,16 @@ void MixerChannelPanel::sliderValueChanged (Slider* sliderThatWasMoved)
     {
         //[UserSliderCode_volSlider] -- add your slider handling code here..
 		if (getName().startsWith("channel1")) {
-			model->osc1Volume = sliderThatWasMoved->getValue();
+			model->osc1Volume = (float)sliderThatWasMoved->getValue();
 		}
 		if (getName().startsWith("channel2")) {
-			model->osc2Volume = sliderThatWasMoved->getValue();
+			model->osc2Volume = (float)sliderThatWasMoved->getValue();
 		}
 		if (getName().startsWith("channel3")) {
-			model->osc3Volume = sliderThatWasMoved->getValue();
+			model->osc3Volume = (float)sliderThatWasMoved->getValue();
 		}
 		if (getName().startsWith("channel4")) {
-			model->osc4Volume = sliderThatWasMoved->getValue();
+			model->osc4Volume = (float)sliderThatWasMoved->getValue();
 		}
         //[/UserSliderCode_volSlider]
     }
@@ -157,16 +157,16 @@ void MixerChannelPanel::sliderValueChanged (Slider* sliderThatWasMoved)
     {
         //[UserSliderCode_panSlider] -- add your slider handling code here..
 		if (getName().startsWith("channel1")) {
-			model->osc1Pan = sliderThatWasMoved->getValue();
+			model->osc1Pan = (float)sliderThatWasMoved->getValue();
 		}
 		if (getName().startsWith("channel2")) {
-			model->osc2Pan = sliderThatWasMoved->getValue();
+			model->osc2Pan = (float)sliderThatWasMoved->getValue();
 		}
 		if (getName().startsWith("channel3")) {
-			model->osc3Pan = sliderThatWasMoved->getValue();
+			model->osc3Pan = (float)sliderThatWasMoved->getValue();
 		}
 		if (getName().startsWith("channel4")) {
-			model->osc4Pan = sliderThatWasMoved->getValue();
+			model->osc4Pan = (float)sliderThatWasMoved->getValue();
 		}
         //[/UserSliderCode_panSlider]
     }

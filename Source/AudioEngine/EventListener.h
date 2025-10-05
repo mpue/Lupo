@@ -10,8 +10,6 @@
 
 #include "Event.h"
 
-
-
 class EventListener {
     
 public:

@@ -206,16 +206,16 @@ void OscillatorPanel::sliderValueChanged (Slider* sliderThatWasMoved)
     {
         //[UserSliderCode_oscPitch] -- add your slider handling code here..
 		if (getName().startsWith("osc1")) {
-			model->osc1Pitch = sliderThatWasMoved->getValue();
+			model->osc1Pitch = (float)sliderThatWasMoved->getValue();
 		}
 		if (getName().startsWith("osc2")) {
-			model->osc2Pitch = sliderThatWasMoved->getValue();
+			model->osc2Pitch = (float)sliderThatWasMoved->getValue();
 		}
 		if (getName().startsWith("osc3")) {
-			model->osc3Pitch = sliderThatWasMoved->getValue();
+			model->osc3Pitch = (float)sliderThatWasMoved->getValue();
 		}
 		if (getName().startsWith("osc4")) {
-			model->osc3Pitch = sliderThatWasMoved->getValue();
+			model->osc3Pitch = (float)sliderThatWasMoved->getValue();
 		}
         //[/UserSliderCode_oscPitch]
     }
@@ -223,16 +223,16 @@ void OscillatorPanel::sliderValueChanged (Slider* sliderThatWasMoved)
     {
         //[UserSliderCode_oscFine] -- add your slider handling code here..
 		if (getName().startsWith("osc1")) {
-			model->osc1Fine = sliderThatWasMoved->getValue();
+			model->osc1Fine = (float)sliderThatWasMoved->getValue();
 		}
 		if (getName().startsWith("osc2")) {
-			model->osc2Fine = sliderThatWasMoved->getValue();
+			model->osc2Fine = (float)sliderThatWasMoved->getValue();
 		}
 		if (getName().startsWith("osc3")) {
-			model->osc3Fine = sliderThatWasMoved->getValue();
+			model->osc3Fine = (float)sliderThatWasMoved->getValue();
 		}
 		if (getName().startsWith("osc4")) {
-			model->osc4Fine = sliderThatWasMoved->getValue();
+			model->osc4Fine = (float)sliderThatWasMoved->getValue();
 		}
         //[/UserSliderCode_oscFine]
     }

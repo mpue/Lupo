@@ -17,13 +17,8 @@ class Filter {
     
 public:
     
-    virtual ~Filter();
-    
-    virtual void coefficients(float sampleRate,float frequency, float resonance) = 0;
-    
-    
+    virtual ~Filter();    
+    virtual void coefficients(float sampleRate,float frequency, float resonance) = 0;   
 };
-
-
 
 #endif  // FILTER_H_INCLUDED
