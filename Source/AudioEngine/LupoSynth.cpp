@@ -804,7 +804,35 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 			}
 		}
 	}
-
+	// Arpeggiator parameters
+	else if (parameterID == "arpEnabled") {
+		arp->setEnabled(newValue > 0.5f);
+	}
+	else if (parameterID == "arpSpeed") {
+		arp->setDivisionIndex(static_cast<int>(newValue));
+	}
+	else if (parameterID == "arpTempo") {
+		arp->setTempo(newValue);
+	}
+	else if (parameterID == "arpClockMode") {
+		if (newValue < 0.5f) {
+			arp->setClockMode(Arpeggiator::ClockMode::Internal);
+		} else {
+			arp->setClockMode(Arpeggiator::ClockMode::Midi);
+		}
+	}
+	else if (parameterID == "arpOctaves") {
+		arp->setOctaves(static_cast<int>(newValue) + 1);  // 0-3 -> 1-4 octaves
+	}
+	else if (parameterID == "arpMode") {
+		if (newValue < 0.5f) {
+			arp->setMode(Arpeggiator::Mode::Up);
+		} else if (newValue < 1.5f) {
+			arp->setMode(Arpeggiator::Mode::Down);
+		} else {
+			arp->setMode(Arpeggiator::Mode::Random);
+		}
+	}
 }
 
 void LupoSynth::parameterValueChanged(int parameterIndex, float newValue)

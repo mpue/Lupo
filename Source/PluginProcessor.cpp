@@ -134,9 +134,11 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("distMode", "Distortion MOde", 0, 3.0, 0);
 
 	factory->createParam("arpEnabled", "Arp enabled", 0, 1.0, 0);
-	factory->createParam("arpSpeed", "Arp speed", 0, 1.0, 0);
-	factory->createParam("arpOctaves", "Arp Octaves", 0, 3.0, 0);
-	factory->createParam("arpMode", "Arp mode", 0, 1.0, 0);
+	factory->createParam("arpSpeed", "Arp speed", 0, 3.0, 2);  // Changed from 0, 1.0, 0 to 0, 3.0, 2 to match speedSlider range
+	factory->createParam("arpTempo", "Arp tempo", 60.0f, 200.0f, 120.0f);
+	factory->createParam("arpClockMode", "Arp clock mode", 0, 1.0, 0);  // 0=Internal, 1=MIDI
+	factory->createParam("arpOctaves", "Arp Octaves", 0, 3.0, 0);  // Changed from 0, 3.0, 0 to match octaveCombo (1-4 items, 0-3 index)
+	factory->createParam("arpMode", "Arp mode", 0, 2.0, 0);  // 0=Up, 1=Down, 2=Random
 	
 	factory->createParam("filterMode", "Filter mode", 0, 1.0, 0);
 	factory->createParam("cutoffLink", "Cutoff link", 0, 1.0, 0);

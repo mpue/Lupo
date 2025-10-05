@@ -80,6 +80,7 @@ public:
             "rvbRoomSize", "rvbDamping", "rvbWetLevel", "rvbDryLevel", "rvbWidth", "rvbFreezeMode",  // Fixed typo
             "chrDelay", "chrModulation", "chrFeedback", "chrMix",
             "filterMode","cutoffLink"
+            // "arpSpeed", "arpTempo", "arpMode","arpClockMode","arpOctaves","arpEnabled"  // Added arpeggiator parameters
         };
     }
 

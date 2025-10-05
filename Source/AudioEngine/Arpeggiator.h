@@ -19,6 +19,8 @@ public:
     void setClockMode(ClockMode m)                        noexcept { clockMode = m; }
     void setDivisionIndex(int idx)                            noexcept;
     void setDivisionTicks(int ticks)                          noexcept { ticksPerStep = juce::jmax(1, ticks); }
+    void setTempo(float bpm)                                  noexcept { tempo = juce::jlimit(60.0f, 200.0f, bpm); }
+    float getTempo() const                                    noexcept { return tempo; }
 
 private:
     bool enabled = true;
@@ -32,6 +34,7 @@ private:
     int   clockCounter = 0;
     int   ticksPerStep = 6;  // default: 1/16 bei 24 PPQN
     bool  isPlaying = false;
+    float tempo = 120.0f;    // BPM für interne Clock
 
     juce::Array<int> notes;
     int currentNote = -1;

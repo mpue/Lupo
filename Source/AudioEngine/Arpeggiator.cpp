@@ -75,7 +75,14 @@ void Arpeggiator::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffe
     }
     else if (clockMode == ClockMode::Internal)
     {
-        int duration = static_cast<int> (sampleRate * 0.25f * (24.0f / ticksPerStep)); // skaliert zur Division
+        // Berechne Schritt-Dauer basierend auf Tempo und Division
+        // BPM zu Samples: (60 / BPM) * sampleRate = Samples pro Beat
+        // Ein Beat = 24 PPQN Ticks, Division wird durch ticksPerStep bestimmt
+        float beatsPerSecond = tempo / 60.0f;
+        float samplesPerBeat = sampleRate / beatsPerSecond;
+        float samplesPerTick = samplesPerBeat / 24.0f;  // 24 PPQN
+        int duration = static_cast<int>(samplesPerTick * ticksPerStep);
+        
         timeSamples += buffer.getNumSamples();
         if (timeSamples >= duration)
         {

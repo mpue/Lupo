@@ -2,7 +2,7 @@
   ==============================================================================
 
     CyberpunkLookAndFeel.h
-    Created: Ultimate Cyberpunk-style LookAndFeel with black background and neon yellow
+    Created: Ultimate Cyberpunk-style LookAndFeel with black background and neon colors
     Author:  AI Assistant - Cyberpunk Style Master
 
   ==============================================================================
@@ -18,7 +18,7 @@ public:
     CyberpunkLookAndFeel();
     ~CyberpunkLookAndFeel();
 
-    // Core cyberpunk colors
+    // Extended cyberpunk color palette with more neon variety
     static const Colour CYBER_BLACK;
     static const Colour CYBER_YELLOW;
     static const Colour CYBER_DARK_YELLOW;
@@ -27,6 +27,21 @@ public:
     static const Colour CYBER_MID_GREY;
     static const Colour CYBER_LIGHT_GREY;
     static const Colour CYBER_GLOW;
+    
+    // Additional neon colors for variation
+    static const Colour CYBER_CYAN;
+    static const Colour CYBER_BRIGHT_CYAN;
+    static const Colour CYBER_DARK_CYAN;
+    static const Colour CYBER_MAGENTA;
+    static const Colour CYBER_BRIGHT_MAGENTA;
+    static const Colour CYBER_DARK_MAGENTA;
+    static const Colour CYBER_GREEN;
+    static const Colour CYBER_BRIGHT_GREEN;
+    static const Colour CYBER_DARK_GREEN;
+    static const Colour CYBER_ORANGE;
+    static const Colour CYBER_BRIGHT_ORANGE;
+    static const Colour CYBER_PURPLE;
+    static const Colour CYBER_BRIGHT_PURPLE;
 
     // Rotary Slider - Futuristic knobs with neon glow
     void drawRotarySlider(Graphics& g,
@@ -35,7 +50,7 @@ public:
         float rotaryStartAngle, float rotaryEndAngle,
         Slider& slider) override;
 
-    // Linear Slider - Cyberpunk bars
+    // Linear Slider - Cyberpunk bars (ElegantDark style for horizontal)
     void drawLinearSlider(Graphics& g, int x, int y, int width, int height,
         float sliderPos, float minSliderPos, float maxSliderPos,
         const Slider::SliderStyle style, Slider& slider) override;
@@ -104,18 +119,27 @@ public:
     // Viewport
     void drawCornerResizer(Graphics& g, int w, int h, bool isMouseOver, bool isMouseDragging) override;
 
+    // Font overrides for smaller text
+    Font getTextButtonFont(TextButton&, int buttonHeight) override;
+    Font getComboBoxFont(ComboBox&) override;
+    Font getLabelFont(Label&) override;
+
     // Special effects
     void drawGlowEffect(Graphics& g, const Rectangle<float>& area, const Colour& glowColor, float intensity = 1.0f);
     void drawCyberGrid(Graphics& g, const Rectangle<int>& area, float gridSize = 20.0f);
     void drawNeonBorder(Graphics& g, const Rectangle<float>& area, const Colour& neonColor, float thickness = 2.0f);
     void drawHexagonalPattern(Graphics& g, const Rectangle<int>& area, float hexSize = 15.0f);
+    void drawCircuitPattern(Graphics& g, const Rectangle<int>& area, float spacing = 25.0f);
+    void drawDataStream(Graphics& g, const Rectangle<int>& area, float speed = 1.0f);
 
 private:
-    Font getCyberFont(float size = 14.0f);
+    Font getCyberFont(float size = 10.0f); // Reduced default size
     void drawCyberButton(Graphics& g, const Rectangle<int>& area, bool isPressed, bool isHighlighted, const String& text = "");
+    Colour getRandomNeonColor();
     
     // Animation helpers
     float glowAnimationPhase;
+    float colorCyclePhase;
     int64 lastUpdateTime;
     void updateAnimations();
     

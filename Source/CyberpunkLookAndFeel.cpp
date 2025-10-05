@@ -2,7 +2,7 @@
   ==============================================================================
 
     CyberpunkLookAndFeel.cpp
-    Created: Ultimate Cyberpunk-style LookAndFeel with black background and neon yellow
+    Created: Ultimate Cyberpunk-style LookAndFeel with enhanced neon colors
     Author:  AI Assistant - Cyberpunk Style Master
 
   ==============================================================================
@@ -10,7 +10,7 @@
 
 #include "CyberpunkLookAndFeel.h"
 
-// Cyberpunk Color Palette
+// Enhanced Cyberpunk Color Palette with more neon variety
 const Colour CyberpunkLookAndFeel::CYBER_BLACK = Colour(0xff0a0a0a);
 const Colour CyberpunkLookAndFeel::CYBER_YELLOW = Colour(0xffffff00);
 const Colour CyberpunkLookAndFeel::CYBER_DARK_YELLOW = Colour(0xff997700);
@@ -20,62 +20,77 @@ const Colour CyberpunkLookAndFeel::CYBER_MID_GREY = Colour(0xff333333);
 const Colour CyberpunkLookAndFeel::CYBER_LIGHT_GREY = Colour(0xff666666);
 const Colour CyberpunkLookAndFeel::CYBER_GLOW = Colour(0x88ffff00);
 
-CyberpunkLookAndFeel::CyberpunkLookAndFeel() : glowAnimationPhase(0.0f), lastUpdateTime(Time::currentTimeMillis())
+// Additional neon colors for variety
+const Colour CyberpunkLookAndFeel::CYBER_CYAN = Colour(0xff00ffff);
+const Colour CyberpunkLookAndFeel::CYBER_BRIGHT_CYAN = Colour(0xff99ffff);
+const Colour CyberpunkLookAndFeel::CYBER_DARK_CYAN = Colour(0xff007777);
+const Colour CyberpunkLookAndFeel::CYBER_MAGENTA = Colour(0xffff00ff);
+const Colour CyberpunkLookAndFeel::CYBER_BRIGHT_MAGENTA = Colour(0xffff99ff);
+const Colour CyberpunkLookAndFeel::CYBER_DARK_MAGENTA = Colour(0xff770077);
+const Colour CyberpunkLookAndFeel::CYBER_GREEN = Colour(0xff00ff00);
+const Colour CyberpunkLookAndFeel::CYBER_BRIGHT_GREEN = Colour(0xff99ff99);
+const Colour CyberpunkLookAndFeel::CYBER_DARK_GREEN = Colour(0xff007700);
+const Colour CyberpunkLookAndFeel::CYBER_ORANGE = Colour(0xffff7700);
+const Colour CyberpunkLookAndFeel::CYBER_BRIGHT_ORANGE = Colour(0xffffaa00);
+const Colour CyberpunkLookAndFeel::CYBER_PURPLE = Colour(0xff7700ff);
+const Colour CyberpunkLookAndFeel::CYBER_BRIGHT_PURPLE = Colour(0xffaa99ff);
+
+CyberpunkLookAndFeel::CyberpunkLookAndFeel() : glowAnimationPhase(0.0f), colorCyclePhase(0.0f), lastUpdateTime(Time::currentTimeMillis())
 {
-    // Set up the cyberpunk color scheme
+    // Set up the enhanced cyberpunk color scheme
     setColour(ResizableWindow::backgroundColourId, CYBER_BLACK);
     setColour(DocumentWindow::backgroundColourId, CYBER_BLACK);
     
-    // Sliders
-    setColour(Slider::thumbColourId, CYBER_YELLOW);
-    setColour(Slider::trackColourId, CYBER_DARK_YELLOW);
+    // Sliders with color variation
+    setColour(Slider::thumbColourId, CYBER_CYAN);
+    setColour(Slider::trackColourId, CYBER_DARK_CYAN);
     setColour(Slider::backgroundColourId, CYBER_DARK_GREY);
-    setColour(Slider::rotarySliderFillColourId, CYBER_YELLOW);
+    setColour(Slider::rotarySliderFillColourId, CYBER_MAGENTA);
     setColour(Slider::rotarySliderOutlineColourId, CYBER_LIGHT_GREY);
-    setColour(Slider::textBoxTextColourId, CYBER_YELLOW);
+    setColour(Slider::textBoxTextColourId, CYBER_BRIGHT_CYAN);
     setColour(Slider::textBoxBackgroundColourId, CYBER_BLACK);
-    setColour(Slider::textBoxOutlineColourId, CYBER_YELLOW);
+    setColour(Slider::textBoxOutlineColourId, CYBER_CYAN);
     
-    // Buttons
+    // Buttons with neon variation
     setColour(TextButton::buttonColourId, CYBER_DARK_GREY);
-    setColour(TextButton::buttonOnColourId, CYBER_DARK_YELLOW);
-    setColour(TextButton::textColourOffId, CYBER_YELLOW);
+    setColour(TextButton::buttonOnColourId, CYBER_DARK_MAGENTA);
+    setColour(TextButton::textColourOffId, CYBER_BRIGHT_CYAN);
     setColour(TextButton::textColourOnId, CYBER_BLACK);
     
-    // ComboBox
+    // ComboBox with green accent
     setColour(ComboBox::backgroundColourId, CYBER_DARK_GREY);
-    setColour(ComboBox::textColourId, CYBER_YELLOW);
-    setColour(ComboBox::outlineColourId, CYBER_YELLOW);
-    setColour(ComboBox::arrowColourId, CYBER_YELLOW);
-    setColour(ComboBox::buttonColourId, CYBER_DARK_YELLOW);
+    setColour(ComboBox::textColourId, CYBER_BRIGHT_GREEN);
+    setColour(ComboBox::outlineColourId, CYBER_GREEN);
+    setColour(ComboBox::arrowColourId, CYBER_BRIGHT_GREEN);
+    setColour(ComboBox::buttonColourId, CYBER_DARK_GREEN);
     
-    // Labels
-    setColour(Label::textColourId, CYBER_YELLOW);
+    // Labels with varied colors
+    setColour(Label::textColourId, CYBER_BRIGHT_YELLOW);
     setColour(Label::backgroundColourId, Colours::transparentBlack);
     setColour(Label::outlineColourId, Colours::transparentBlack);
     
-    // GroupComponent
-    setColour(GroupComponent::outlineColourId, CYBER_YELLOW);
-    setColour(GroupComponent::textColourId, CYBER_BRIGHT_YELLOW);
+    // GroupComponent with orange accent
+    setColour(GroupComponent::outlineColourId, CYBER_ORANGE);
+    setColour(GroupComponent::textColourId, CYBER_BRIGHT_ORANGE);
     
-    // TextEditor
+    // TextEditor with purple accent
     setColour(TextEditor::backgroundColourId, CYBER_BLACK);
-    setColour(TextEditor::textColourId, CYBER_YELLOW);
-    setColour(TextEditor::outlineColourId, CYBER_YELLOW);
-    setColour(TextEditor::focusedOutlineColourId, CYBER_BRIGHT_YELLOW);
+    setColour(TextEditor::textColourId, CYBER_BRIGHT_PURPLE);
+    setColour(TextEditor::outlineColourId, CYBER_PURPLE);
+    setColour(TextEditor::focusedOutlineColourId, CYBER_BRIGHT_PURPLE);
     
     // PopupMenu
     setColour(PopupMenu::backgroundColourId, CYBER_BLACK);
-    setColour(PopupMenu::textColourId, CYBER_YELLOW);
-    setColour(PopupMenu::highlightedBackgroundColourId, CYBER_DARK_YELLOW);
+    setColour(PopupMenu::textColourId, CYBER_BRIGHT_CYAN);
+    setColour(PopupMenu::highlightedBackgroundColourId, CYBER_DARK_CYAN);
     setColour(PopupMenu::highlightedTextColourId, CYBER_BLACK);
     
     // TabbedComponent
     setColour(TabbedComponent::backgroundColourId, CYBER_BLACK);
-    setColour(TabbedComponent::outlineColourId, CYBER_YELLOW);
-    setColour(TabbedButtonBar::tabOutlineColourId, CYBER_YELLOW);
-    setColour(TabbedButtonBar::tabTextColourId, CYBER_YELLOW);
-    setColour(TabbedButtonBar::frontOutlineColourId, CYBER_BRIGHT_YELLOW);
+    setColour(TabbedComponent::outlineColourId, CYBER_MAGENTA);
+    setColour(TabbedButtonBar::tabOutlineColourId, CYBER_MAGENTA);
+    setColour(TabbedButtonBar::tabTextColourId, CYBER_BRIGHT_MAGENTA);
+    setColour(TabbedButtonBar::frontOutlineColourId, CYBER_BRIGHT_MAGENTA);
     setColour(TabbedButtonBar::frontTextColourId, CYBER_BLACK);
     
     // ScrollBar
@@ -97,12 +112,43 @@ void CyberpunkLookAndFeel::updateAnimations()
     glowAnimationPhase += deltaTime * 2.0f; // 2 Hz animation
     if (glowAnimationPhase > MathConstants<float>::twoPi)
         glowAnimationPhase -= MathConstants<float>::twoPi;
+        
+    colorCyclePhase += deltaTime * 0.5f; // Slower color cycling
+    if (colorCyclePhase > MathConstants<float>::twoPi)
+        colorCyclePhase -= MathConstants<float>::twoPi;
 }
 
 Font CyberpunkLookAndFeel::getCyberFont(float size)
 {
-    // Use a monospace font for that cyberpunk terminal feel
+    // Use a monospace font for that cyberpunk terminal feel - smaller default size
     return Font(Font::getDefaultMonospacedFontName(), size, Font::bold);
+}
+
+Font CyberpunkLookAndFeel::getTextButtonFont(TextButton&, int buttonHeight)
+{
+    return getCyberFont(jmin(12.0f, (float)buttonHeight * 0.5f)); // Smaller text
+}
+
+Font CyberpunkLookAndFeel::getComboBoxFont(ComboBox&)
+{
+    return getCyberFont(11.0f); // Smaller text
+}
+
+Font CyberpunkLookAndFeel::getLabelFont(Label&)
+{
+    return getCyberFont(10.0f); // Smaller text
+}
+
+Colour CyberpunkLookAndFeel::getRandomNeonColor()
+{
+    Array<Colour> neonColors = {
+        CYBER_YELLOW, CYBER_CYAN, CYBER_MAGENTA, CYBER_GREEN, 
+        CYBER_ORANGE, CYBER_PURPLE, CYBER_BRIGHT_YELLOW,
+        CYBER_BRIGHT_CYAN, CYBER_BRIGHT_MAGENTA, CYBER_BRIGHT_GREEN
+    };
+    
+    int index = (int)(std::sin(colorCyclePhase) * neonColors.size() * 0.5f + neonColors.size() * 0.5f);
+    return neonColors[index % neonColors.size()];
 }
 
 void CyberpunkLookAndFeel::drawRotarySlider(Graphics& g, int x, int y, int width, int height,
@@ -118,9 +164,12 @@ void CyberpunkLookAndFeel::drawRotarySlider(Graphics& g, int x, int y, int width
     const float rw = radius * 2.0f;
     const float angle = rotaryStartAngle + sliderPosProportional * (rotaryEndAngle - rotaryStartAngle);
     
-    // Draw outer glow ring
+    // Get dynamic neon color
+    Colour dynamicNeon = getRandomNeonColor();
+    
+    // Draw outer glow ring with color variation
     float glowIntensity = 0.7f + 0.3f * std::sin(glowAnimationPhase);
-    g.setColour(CYBER_GLOW.withAlpha(glowIntensity * 0.6f));
+    g.setColour(dynamicNeon.withAlpha(glowIntensity * 0.6f));
     g.fillEllipse(rx - 6, ry - 6, rw + 12, rw + 12);
     
     // Draw outer ring with hexagonal pattern
@@ -131,8 +180,8 @@ void CyberpunkLookAndFeel::drawRotarySlider(Graphics& g, int x, int y, int width
     g.setColour(CYBER_DARK_GREY);
     g.fillEllipse(rx, ry, rw, rw);
     
-    // Draw inner circuit pattern
-    g.setColour(CYBER_DARK_YELLOW.withAlpha(0.3f));
+    // Draw inner circuit pattern with multiple colors
+    Array<Colour> circuitColors = { CYBER_DARK_CYAN, CYBER_DARK_MAGENTA, CYBER_DARK_GREEN };
     for (int i = 0; i < 8; ++i)
     {
         float lineAngle = i * MathConstants<float>::pi / 4.0f;
@@ -144,19 +193,20 @@ void CyberpunkLookAndFeel::drawRotarySlider(Graphics& g, int x, int y, int width
         float x2 = centreX + outerRadius * std::cos(lineAngle);
         float y2 = centreY + outerRadius * std::sin(lineAngle);
         
-        g.drawLine(x1, y1, x2, y2, 1.0f);
+        g.setColour(circuitColors[i % circuitColors.size()].withAlpha(0.4f));
+        g.drawLine(x1, y1, x2, y2, 1.5f);
     }
     
-    // Draw value arc
+    // Draw value arc with dynamic color
     Path valueArc;
     valueArc.addCentredArc(centreX, centreY, radius * 0.8f, radius * 0.8f, 0.0f,
                           rotaryStartAngle, angle, true);
     
-    g.setColour(CYBER_YELLOW);
+    g.setColour(dynamicNeon);
     g.strokePath(valueArc, PathStrokeType(3.0f, PathStrokeType::curved, PathStrokeType::rounded));
     
     // Draw glowing value arc
-    g.setColour(CYBER_GLOW.withAlpha(glowIntensity));
+    g.setColour(dynamicNeon.withAlpha(glowIntensity));
     g.strokePath(valueArc, PathStrokeType(1.0f));
     
     // Draw pointer
@@ -165,13 +215,13 @@ void CyberpunkLookAndFeel::drawRotarySlider(Graphics& g, int x, int y, int width
     float pointerX = centreX + pointerLength * std::cos(angle - MathConstants<float>::halfPi);
     float pointerY = centreY + pointerLength * std::sin(angle - MathConstants<float>::halfPi);
     
-    g.setColour(CYBER_BRIGHT_YELLOW);
+    g.setColour(dynamicNeon.brighter(0.5f));
     g.drawLine(centreX, centreY, pointerX, pointerY, pointerThickness);
     
     // Draw center dot with glow
-    g.setColour(CYBER_GLOW.withAlpha(glowIntensity));
+    g.setColour(dynamicNeon.withAlpha(glowIntensity));
     g.fillEllipse(centreX - 4, centreY - 4, 8, 8);
-    g.setColour(CYBER_YELLOW);
+    g.setColour(dynamicNeon);
     g.fillEllipse(centreX - 2, centreY - 2, 4, 4);
 }
 
@@ -181,64 +231,129 @@ void CyberpunkLookAndFeel::drawLinearSlider(Graphics& g, int x, int y, int width
 {
     updateAnimations();
     
-    const bool isHorizontal = (style == Slider::LinearHorizontal || style == Slider::LinearBar);
-    const float trackWidth = isHorizontal ? height * 0.25f : width * 0.25f;
-    const float trackIndent = isHorizontal ? height * 0.375f : width * 0.375f;
-    
-    Rectangle<float> trackArea;
-    if (isHorizontal)
-        trackArea = Rectangle<float>(x, y + trackIndent, width, trackWidth);
-    else
-        trackArea = Rectangle<float>(x + trackIndent, y, trackWidth, height);
-    
-    // Draw track background with glow
-    float glowIntensity = 0.5f + 0.3f * std::sin(glowAnimationPhase);
-    drawGlowEffect(g, trackArea.expanded(4), CYBER_GLOW, glowIntensity * 0.3f);
-    
-    g.setColour(CYBER_DARK_GREY);
-    g.fillRoundedRectangle(trackArea, trackWidth * 0.5f);
-    
-    g.setColour(CYBER_YELLOW);
-    g.drawRoundedRectangle(trackArea, trackWidth * 0.5f, 1.0f);
-    
-    // Draw filled portion
-    Rectangle<float> filledArea = trackArea;
-    if (isHorizontal)
-        filledArea.setWidth(sliderPos - x);
-    else
+    if (style == Slider::LinearHorizontal)
     {
-        filledArea.setY(sliderPos);
-        filledArea.setHeight(y + height - sliderPos);
+        // ElegantDark-style horizontal slider with cyberpunk colors
+        
+        // Background
+        g.setColour(CYBER_BLACK.brighter(0.1f));
+        g.fillRoundedRectangle(x, y, width, height, 4.0f);
+
+        // Calculate fill width
+        float fillWidth = sliderPos - x;
+
+        // Create cyberpunk gradient (cyan to magenta)
+        ColourGradient gradient(
+            CYBER_CYAN, x, y,
+            CYBER_MAGENTA, sliderPos, y,
+            false
+        );
+
+        // Add warning stage at high values
+        float valueRange = slider.getMaximum() - slider.getMinimum();
+        float normalizedValue = (slider.getValue() - slider.getMinimum()) / valueRange;
+
+        if (normalizedValue > 0.8f)
+        {
+            gradient = ColourGradient(
+                CYBER_ORANGE, x, y,
+                CYBER_YELLOW, sliderPos, y,
+                false
+            );
+        }
+
+        g.setGradientFill(gradient);
+        g.fillRoundedRectangle(x, y, fillWidth, height, 4.0f);
+
+        // Segmented display with glow effect
+        g.setColour(CYBER_BLACK);
+        int segments = 20;
+        float segmentWidth = width / (float)segments;
+        for (int i = 1; i < segments; ++i)
+        {
+            float segX = x + i * segmentWidth;
+            if (segX < sliderPos)
+            {
+                g.drawLine(segX, y + 2, segX, y + height - 2, 2.0f);
+            }
+        }
+
+        // Gloss effect with cyberpunk glow
+        float glowIntensity = 0.4f + 0.2f * std::sin(glowAnimationPhase);
+        g.setGradientFill(ColourGradient(
+            CYBER_GLOW.withAlpha(glowIntensity * 0.6f), x, y,
+            Colours::transparentWhite, x, y + height * 0.5f,
+            false
+        ));
+        g.fillRoundedRectangle(x, y, fillWidth, height * 0.5f, 4.0f);
+
+        // Neon border
+        g.setColour(getRandomNeonColor());
+        g.drawRoundedRectangle(x, y, width, height, 4.0f, 1.5f);
     }
-    
-    g.setColour(CYBER_DARK_YELLOW);
-    g.fillRoundedRectangle(filledArea, trackWidth * 0.5f);
-    
-    // Draw thumb (for non-bar styles)
-    if (style != Slider::LinearBar)
+    else
     {
-        const float thumbSize = isHorizontal ? height * 0.8f : width * 0.8f;
+        // Vertical and other slider styles with enhanced cyberpunk look
+        const bool isHorizontal = (style == Slider::LinearHorizontal || style == Slider::LinearBar);
+        const float trackWidth = isHorizontal ? height * 0.25f : width * 0.25f;
+        const float trackIndent = isHorizontal ? height * 0.375f : width * 0.375f;
         
-        Rectangle<float> thumbArea;
+        Rectangle<float> trackArea;
         if (isHorizontal)
-            thumbArea = Rectangle<float>(sliderPos - thumbSize * 0.5f, y + height * 0.1f, thumbSize, thumbSize);
+            trackArea = Rectangle<float>(x, y + trackIndent, width, trackWidth);
         else
-            thumbArea = Rectangle<float>(x + width * 0.1f, sliderPos - thumbSize * 0.5f, thumbSize, thumbSize);
+            trackArea = Rectangle<float>(x + trackIndent, y, trackWidth, height);
         
-        // Draw thumb glow
-        drawGlowEffect(g, thumbArea.expanded(3), CYBER_GLOW, glowIntensity);
+        // Draw track background with dynamic glow
+        float glowIntensity = 0.5f + 0.3f * std::sin(glowAnimationPhase);
+        Colour dynamicColor = getRandomNeonColor();
+        drawGlowEffect(g, trackArea.expanded(4), dynamicColor.withAlpha(0.3f), glowIntensity * 0.3f);
         
-        // Draw thumb
         g.setColour(CYBER_DARK_GREY);
-        g.fillRoundedRectangle(thumbArea, thumbSize * 0.25f);
+        g.fillRoundedRectangle(trackArea, trackWidth * 0.5f);
         
-        g.setColour(CYBER_YELLOW);
-        g.drawRoundedRectangle(thumbArea, thumbSize * 0.25f, 2.0f);
+        g.setColour(dynamicColor);
+        g.drawRoundedRectangle(trackArea, trackWidth * 0.5f, 1.0f);
         
-        // Draw center indicator
-        Rectangle<float> centerArea = thumbArea.reduced(thumbSize * 0.3f);
-        g.setColour(CYBER_BRIGHT_YELLOW);
-        g.fillRoundedRectangle(centerArea, centerArea.getHeight() * 0.5f);
+        // Draw filled portion
+        Rectangle<float> filledArea = trackArea;
+        if (isHorizontal)
+            filledArea.setWidth(sliderPos - x);
+        else
+        {
+            filledArea.setY(sliderPos);
+            filledArea.setHeight(y + height - sliderPos);
+        }
+        
+        g.setColour(dynamicColor.darker(0.3f));
+        g.fillRoundedRectangle(filledArea, trackWidth * 0.5f);
+        
+        // Draw thumb (for non-bar styles)
+        if (style != Slider::LinearBar)
+        {
+            const float thumbSize = isHorizontal ? height * 0.8f : width * 0.8f;
+            
+            Rectangle<float> thumbArea;
+            if (isHorizontal)
+                thumbArea = Rectangle<float>(sliderPos - thumbSize * 0.5f, y + height * 0.1f, thumbSize, thumbSize);
+            else
+                thumbArea = Rectangle<float>(x + width * 0.1f, sliderPos - thumbSize * 0.5f, thumbSize, thumbSize);
+            
+            // Draw thumb glow with color variation
+            drawGlowEffect(g, thumbArea.expanded(3), dynamicColor.withAlpha(0.8f), glowIntensity);
+            
+            // Draw thumb
+            g.setColour(CYBER_DARK_GREY);
+            g.fillRoundedRectangle(thumbArea, thumbSize * 0.25f);
+            
+            g.setColour(dynamicColor);
+            g.drawRoundedRectangle(thumbArea, thumbSize * 0.25f, 2.0f);
+            
+            // Draw center indicator
+            Rectangle<float> centerArea = thumbArea.reduced(thumbSize * 0.3f);
+            g.setColour(dynamicColor.brighter(0.5f));
+            g.fillRoundedRectangle(centerArea, centerArea.getHeight() * 0.5f);
+        }
     }
 }
 
@@ -254,48 +369,60 @@ void CyberpunkLookAndFeel::drawButtonBackground(Graphics& g, Button& button, con
     if (isMouseOverButton) glowIntensity += 0.3f;
     if (isButtonDown) glowIntensity += 0.5f;
     
-    // Draw outer glow
-    drawGlowEffect(g, area.expanded(4), CYBER_GLOW, glowIntensity);
+    // Get dynamic neon color based on button state
+    Colour neonColor = isMouseOverButton ? getRandomNeonColor() : CYBER_CYAN;
+    
+    // Draw outer glow with color variation
+    drawGlowEffect(g, area.expanded(4), neonColor.withAlpha(0.6f), glowIntensity);
     
     // Draw main button
-    Colour buttonColour = isButtonDown ? CYBER_DARK_YELLOW : (isMouseOverButton ? CYBER_MID_GREY : CYBER_DARK_GREY);
+    Colour buttonColour = isButtonDown ? neonColor.darker(0.7f) : (isMouseOverButton ? CYBER_MID_GREY : CYBER_DARK_GREY);
     
     g.setColour(buttonColour);
     g.fillRoundedRectangle(area, 4.0f);
     
-    // Draw border with corner accents
-    g.setColour(isButtonDown ? CYBER_BRIGHT_YELLOW : CYBER_YELLOW);
+    // Draw border with dynamic color
+    g.setColour(isButtonDown ? neonColor.brighter(0.5f) : neonColor);
     g.drawRoundedRectangle(area, 4.0f, 1.5f);
     
-    // Draw corner accents
+    // Draw corner accents with multiple colors
     float cornerSize = 8.0f;
-    g.setColour(CYBER_BRIGHT_YELLOW);
+    Array<Colour> cornerColors = { CYBER_CYAN, CYBER_MAGENTA, CYBER_GREEN, CYBER_ORANGE };
     
-    // Top-left corner
-    g.drawLine(area.getX(), area.getY() + cornerSize, area.getX(), area.getY(), 2.0f);
-    g.drawLine(area.getX(), area.getY(), area.getX() + cornerSize, area.getY(), 2.0f);
-    
-    // Top-right corner
-    g.drawLine(area.getRight() - cornerSize, area.getY(), area.getRight(), area.getY(), 2.0f);
-    g.drawLine(area.getRight(), area.getY(), area.getRight(), area.getY() + cornerSize, 2.0f);
-    
-    // Bottom-left corner
-    g.drawLine(area.getX(), area.getBottom() - cornerSize, area.getX(), area.getBottom(), 2.0f);
-    g.drawLine(area.getX(), area.getBottom(), area.getX() + cornerSize, area.getBottom(), 2.0f);
-    
-    // Bottom-right corner
-    g.drawLine(area.getRight() - cornerSize, area.getBottom(), area.getRight(), area.getBottom(), 2.0f);
-    g.drawLine(area.getRight(), area.getBottom(), area.getRight(), area.getBottom() - cornerSize, 2.0f);
+    for (int i = 0; i < 4; ++i)
+    {
+        g.setColour(cornerColors[i % cornerColors.size()]);
+        
+        switch (i)
+        {
+            case 0: // Top-left
+                g.drawLine(area.getX(), area.getY() + cornerSize, area.getX(), area.getY(), 2.0f);
+                g.drawLine(area.getX(), area.getY(), area.getX() + cornerSize, area.getY(), 2.0f);
+                break;
+            case 1: // Top-right
+                g.drawLine(area.getRight() - cornerSize, area.getY(), area.getRight(), area.getY(), 2.0f);
+                g.drawLine(area.getRight(), area.getY(), area.getRight(), area.getY() + cornerSize, 2.0f);
+                break;
+            case 2: // Bottom-left
+                g.drawLine(area.getX(), area.getBottom() - cornerSize, area.getX(), area.getBottom(), 2.0f);
+                g.drawLine(area.getX(), area.getBottom(), area.getX() + cornerSize, area.getBottom(), 2.0f);
+                break;
+            case 3: // Bottom-right
+                g.drawLine(area.getRight() - cornerSize, area.getBottom(), area.getRight(), area.getBottom(), 2.0f);
+                g.drawLine(area.getRight(), area.getBottom(), area.getRight(), area.getBottom() - cornerSize, 2.0f);
+                break;
+        }
+    }
 }
 
 void CyberpunkLookAndFeel::drawButtonText(Graphics& g, TextButton& button,
     bool isMouseOverButton, bool isButtonDown)
 {
-    Font font = getCyberFont(button.getHeight() * 0.4f);
+    Font font = getCyberFont(button.getHeight() * 0.3f); // Smaller text
     g.setFont(font);
     
-    Colour textColour = isButtonDown ? CYBER_BLACK : CYBER_YELLOW;
-    if (isMouseOverButton && !isButtonDown) textColour = CYBER_BRIGHT_YELLOW;
+    Colour textColour = isButtonDown ? CYBER_BLACK : getRandomNeonColor();
+    if (isMouseOverButton && !isButtonDown) textColour = textColour.brighter(0.3f);
     
     g.setColour(textColour);
     
@@ -332,35 +459,37 @@ void CyberpunkLookAndFeel::drawToggleButton(Graphics& g, ToggleButton& button,
     float glowIntensity = 0.4f + 0.2f * std::sin(glowAnimationPhase);
     if (isMouseOverButton) glowIntensity += 0.3f;
     
+    Colour neonColor = button.getToggleState() ? CYBER_GREEN : CYBER_ORANGE;
+    
     // Draw glow
-    drawGlowEffect(g, toggleArea.expanded(3), CYBER_GLOW, glowIntensity);
+    drawGlowEffect(g, toggleArea.expanded(3), neonColor.withAlpha(0.6f), glowIntensity);
     
     // Draw background
     g.setColour(CYBER_DARK_GREY);
     g.fillRoundedRectangle(toggleArea, 3.0f);
     
-    g.setColour(CYBER_YELLOW);
+    g.setColour(neonColor);
     g.drawRoundedRectangle(toggleArea, 3.0f, 1.5f);
     
     // Draw toggle state
     if (button.getToggleState())
     {
         Rectangle<float> innerArea = toggleArea.reduced(4);
-        g.setColour(CYBER_BRIGHT_YELLOW);
+        g.setColour(neonColor.brighter(0.3f));
         g.fillRoundedRectangle(innerArea, 2.0f);
         
         // Draw "ON" indicator - a glowing center
         Rectangle<float> onIndicator = innerArea.reduced(6);
-        drawGlowEffect(g, onIndicator, CYBER_GLOW, 1.0f);
-        g.setColour(CYBER_YELLOW);
+        drawGlowEffect(g, onIndicator, neonColor.withAlpha(0.8f), 1.0f);
+        g.setColour(neonColor.brighter(0.5f));
         g.fillEllipse(onIndicator);
     }
     
-    // Draw text
+    // Draw text with smaller font
     if (button.getButtonText().isNotEmpty())
     {
-        g.setFont(getCyberFont(height * 0.3f));
-        g.setColour(button.getToggleState() ? CYBER_BRIGHT_YELLOW : CYBER_YELLOW);
+        g.setFont(getCyberFont(height * 0.25f)); // Smaller font
+        g.setColour(button.getToggleState() ? neonColor.brighter(0.3f) : neonColor);
         
         Rectangle<int> textArea(x + width + 8, y, button.getWidth() - width - 8, height);
         g.drawFittedText(button.getButtonText(), textArea, Justification::centredLeft, 1);
@@ -379,14 +508,16 @@ void CyberpunkLookAndFeel::drawComboBox(Graphics& g, int width, int height, cons
     if (box.hasKeyboardFocus(true)) glowIntensity += 0.4f;
     if (isButtonDown) glowIntensity += 0.3f;
     
+    Colour neonColor = getRandomNeonColor();
+    
     // Draw glow
-    drawGlowEffect(g, boxArea.expanded(2), CYBER_GLOW, glowIntensity);
+    drawGlowEffect(g, boxArea.expanded(2), neonColor.withAlpha(0.4f), glowIntensity);
     
     // Draw main box
     g.setColour(CYBER_DARK_GREY);
     g.fillRoundedRectangle(boxArea, 3.0f);
     
-    g.setColour(CYBER_YELLOW);
+    g.setColour(neonColor);
     g.drawRoundedRectangle(boxArea, 3.0f, 1.0f);
     
     // Draw arrow button area
@@ -395,7 +526,7 @@ void CyberpunkLookAndFeel::drawComboBox(Graphics& g, int width, int height, cons
     
     if (isButtonDown)
     {
-        g.setColour(CYBER_DARK_YELLOW);
+        g.setColour(neonColor.darker(0.7f));
         g.fillRoundedRectangle(arrowArea, 2.0f);
     }
     
@@ -409,14 +540,14 @@ void CyberpunkLookAndFeel::drawComboBox(Graphics& g, int width, int height, cons
                      arrowX + arrowSize * 0.5f, arrowY - arrowSize * 0.25f,
                      arrowX, arrowY + arrowSize * 0.5f);
     
-    g.setColour(CYBER_BRIGHT_YELLOW);
+    g.setColour(neonColor.brighter(0.5f));
     g.fillPath(arrow);
 }
 
 void CyberpunkLookAndFeel::positionComboBoxText(ComboBox& box, Label& labelToPosition)
 {
     labelToPosition.setBounds(8, 1, box.getWidth() - 30, box.getHeight() - 2);
-    labelToPosition.setFont(getCyberFont(box.getHeight() * 0.5f));
+    labelToPosition.setFont(getCyberFont(box.getHeight() * 0.4f)); // Smaller font
 }
 
 void CyberpunkLookAndFeel::drawPopupMenuBackground(Graphics& g, int width, int height)
@@ -427,10 +558,13 @@ void CyberpunkLookAndFeel::drawPopupMenuBackground(Graphics& g, int width, int h
     g.setColour(CYBER_BLACK.withAlpha(0.95f));
     g.fillRoundedRectangle(area, 5.0f);
     
-    drawNeonBorder(g, area, CYBER_YELLOW, 2.0f);
+    drawNeonBorder(g, area, getRandomNeonColor(), 2.0f);
     
     // Draw subtle grid pattern
     drawCyberGrid(g, area.toNearestInt(), 15.0f);
+    
+    // Add circuit pattern
+    drawCircuitPattern(g, area.toNearestInt(), 30.0f);
 }
 
 void CyberpunkLookAndFeel::drawPopupMenuItem(Graphics& g, const Rectangle<int>& area,
@@ -446,7 +580,7 @@ void CyberpunkLookAndFeel::drawPopupMenuItem(Graphics& g, const Rectangle<int>& 
         r.removeFromTop(r.getHeight() * 0.5f - 0.5f);
         r.setHeight(1.0f);
         
-        g.setColour(CYBER_DARK_YELLOW);
+        g.setColour(getRandomNeonColor().darker(0.5f));
         g.fillRect(r);
         return;
     }
@@ -455,8 +589,9 @@ void CyberpunkLookAndFeel::drawPopupMenuItem(Graphics& g, const Rectangle<int>& 
     
     if (isHighlighted)
     {
-        drawGlowEffect(g, r, CYBER_GLOW, 0.5f);
-        g.setColour(CYBER_DARK_YELLOW.withAlpha(0.8f));
+        Colour highlightColor = getRandomNeonColor();
+        drawGlowEffect(g, r, highlightColor.withAlpha(0.3f), 0.5f);
+        g.setColour(highlightColor.darker(0.8f).withAlpha(0.8f));
         g.fillRoundedRectangle(r, 3.0f);
     }
     
@@ -467,7 +602,7 @@ void CyberpunkLookAndFeel::drawPopupMenuItem(Graphics& g, const Rectangle<int>& 
     if (isTicked)
     {
         Rectangle<float> tick(leftBorder - 8, textY, 8, (float)area.getHeight());
-        g.setColour(CYBER_BRIGHT_YELLOW);
+        g.setColour(CYBER_GREEN);
         g.drawFittedText("?", tick.toNearestInt(), Justification::centred, 1);
     }
     
@@ -481,7 +616,7 @@ void CyberpunkLookAndFeel::drawPopupMenuItem(Graphics& g, const Rectangle<int>& 
         Path p;
         p.addTriangle(x, centreY - halfH, x, centreY + halfH, x + halfH, centreY);
         
-        g.setColour(CYBER_YELLOW);
+        g.setColour(CYBER_CYAN);
         g.fillPath(p);
     }
     
@@ -490,10 +625,10 @@ void CyberpunkLookAndFeel::drawPopupMenuItem(Graphics& g, const Rectangle<int>& 
     if (!isActive)
         g.setOpacity(0.3f);
     
-    Font font = getCyberFont((float)area.getHeight() * 0.5f);
+    Font font = getCyberFont((float)area.getHeight() * 0.4f); // Smaller font
     g.setFont(font);
     
-    Colour textColour = isHighlighted ? CYBER_BLACK : CYBER_YELLOW;
+    Colour textColour = isHighlighted ? CYBER_BLACK : CYBER_BRIGHT_CYAN;
     if (textColourToUse != nullptr)
         textColour = *textColourToUse;
     
@@ -502,7 +637,7 @@ void CyberpunkLookAndFeel::drawPopupMenuItem(Graphics& g, const Rectangle<int>& 
     
     if (shortcutKeyText.isNotEmpty())
     {
-        Font shortcutFont = getCyberFont((float)area.getHeight() * 0.4f);
+        Font shortcutFont = getCyberFont((float)area.getHeight() * 0.3f); // Smaller font
         g.setFont(shortcutFont);
         g.setColour(textColour.withAlpha(0.7f));
         g.drawFittedText(shortcutKeyText, textArea.toNearestInt(), Justification::centredRight, 1);
@@ -511,7 +646,7 @@ void CyberpunkLookAndFeel::drawPopupMenuItem(Graphics& g, const Rectangle<int>& 
 
 Font CyberpunkLookAndFeel::getPopupMenuFont()
 {
-    return getCyberFont(15.0f);
+    return getCyberFont(12.0f); // Smaller font
 }
 
 void CyberpunkLookAndFeel::drawLabel(Graphics& g, Label& label)
@@ -521,9 +656,10 @@ void CyberpunkLookAndFeel::drawLabel(Graphics& g, Label& label)
     if (!label.isBeingEdited())
     {
         const float alpha = label.isEnabled() ? 1.0f : 0.5f;
-        const Font font = getCyberFont(label.getHeight() * 0.8f);
+        const Font font = getCyberFont(label.getHeight() * 0.6f); // Smaller font
         
-        g.setColour(label.findColour(Label::textColourId).withMultipliedAlpha(alpha));
+        Colour labelColor = getRandomNeonColor();
+        g.setColour(labelColor.withMultipliedAlpha(alpha));
         g.setFont(font);
         
         Rectangle<int> textArea = getLabelBorderSize(label).subtractedFrom(label.getLocalBounds());
@@ -551,7 +687,7 @@ void CyberpunkLookAndFeel::drawGroupComponentOutline(Graphics& g, int w, int h, 
     const float textEdgeGap = 4.0f;
     auto cs = 5.0f;
     
-    Font f = getCyberFont(15.0f);
+    Font f = getCyberFont(12.0f); // Smaller font
     
     Path p;
     auto x = indent;
@@ -586,15 +722,16 @@ void CyberpunkLookAndFeel::drawGroupComponentOutline(Graphics& g, int w, int h, 
     
     auto alpha = group.isEnabled() ? 1.0f : 0.5f;
     
-    // Draw glow effect
+    // Draw glow effect with random color
     float glowIntensity = 0.3f + 0.2f * std::sin(glowAnimationPhase);
-    g.setColour(CYBER_GLOW.withAlpha(glowIntensity * alpha));
+    Colour glowColor = getRandomNeonColor();
+    g.setColour(glowColor.withAlpha(glowIntensity * alpha * 0.6f));
     g.strokePath(p, PathStrokeType(3.0f));
     
-    g.setColour(group.findColour(GroupComponent::outlineColourId).withMultipliedAlpha(alpha));
+    g.setColour(glowColor.withMultipliedAlpha(alpha));
     g.strokePath(p, PathStrokeType(2.0f));
     
-    g.setColour(group.findColour(GroupComponent::textColourId).withMultipliedAlpha(alpha));
+    g.setColour(glowColor.brighter(0.3f).withMultipliedAlpha(alpha));
     g.setFont(f);
     g.drawText(text,
               roundToInt(x + textX), 0,
@@ -619,7 +756,7 @@ void CyberpunkLookAndFeel::fillTextEditorBackground(Graphics& g, int width, int 
         
         if (textEditor.hasKeyboardFocus(true))
         {
-            drawGlowEffect(g, area.expanded(2), CYBER_GLOW, 0.6f);
+            drawGlowEffect(g, area.expanded(2), getRandomNeonColor().withAlpha(0.6f), 0.6f);
         }
         
         g.setColour(textEditor.findColour(TextEditor::backgroundColourId));
@@ -633,14 +770,16 @@ void CyberpunkLookAndFeel::drawTextEditorOutline(Graphics& g, int width, int hei
     {
         if (textEditor.isEnabled())
         {
+            Colour outlineColor = getRandomNeonColor();
+            
             if (textEditor.hasKeyboardFocus(true) && !textEditor.isReadOnly())
             {
-                g.setColour(textEditor.findColour(TextEditor::focusedOutlineColourId));
+                g.setColour(outlineColor.brighter(0.3f));
                 g.drawRoundedRectangle(0, 0, width, height, 4.0f, 2.0f);
             }
             else
             {
-                g.setColour(textEditor.findColour(TextEditor::outlineColourId));
+                g.setColour(outlineColor);
                 g.drawRoundedRectangle(0, 0, width, height, 4.0f, 1.0f);
             }
         }
@@ -655,17 +794,16 @@ void CyberpunkLookAndFeel::drawTabButton(TabBarButton& button, Graphics& g, bool
     
     const TabbedButtonBar::Orientation o = button.getTabbedButtonBar().getOrientation();
     
-    const Colour bkg(button.getTabBackgroundColour());
-    
     if (button.isFrontTab())
     {
         float glowIntensity = 0.5f + 0.3f * std::sin(glowAnimationPhase);
-        drawGlowEffect(g, activeArea.toFloat(), CYBER_GLOW, glowIntensity);
+        Colour tabColor = getRandomNeonColor();
+        drawGlowEffect(g, activeArea.toFloat(), tabColor.withAlpha(0.6f), glowIntensity);
         
-        g.setColour(CYBER_DARK_YELLOW);
+        g.setColour(tabColor.darker(0.8f));
         g.fillRect(activeArea);
         
-        g.setColour(CYBER_BRIGHT_YELLOW);
+        g.setColour(tabColor);
         
         if (o != TabbedButtonBar::TabsAtBottom)   g.fillRect(activeArea.removeFromTop(2));
         if (o != TabbedButtonBar::TabsAtTop)      g.fillRect(activeArea.removeFromBottom(2));
@@ -690,11 +828,12 @@ void CyberpunkLookAndFeel::drawTabButton(TabBarButton& button, Graphics& g, bool
         
         if (isMouseOver || isMouseDown)
         {
-            g.setColour(CYBER_DARK_YELLOW.withAlpha(0.6f));
+            Colour hoverColor = getRandomNeonColor();
+            g.setColour(hoverColor.darker(0.5f).withAlpha(0.6f));
             g.fillRect(activeArea);
         }
         
-        g.setColour(CYBER_YELLOW);
+        g.setColour(CYBER_CYAN);
         g.drawLine(p1.x, p1.y, p2.x, p2.y);
     }
 }
@@ -719,7 +858,7 @@ void CyberpunkLookAndFeel::drawTabButtonText(TabBarButton& button, Graphics& g, 
     if (button.getTabbedButtonBar().isVertical())
         std::swap(length, depth);
     
-    Font font = getCyberFont(jmin(15.0f, depth * 0.6f));
+    Font font = getCyberFont(jmin(12.0f, depth * 0.5f)); // Smaller font
     font.setUnderline(button.hasKeyboardFocus(false));
     
     AffineTransform t;
@@ -733,10 +872,10 @@ void CyberpunkLookAndFeel::drawTabButtonText(TabBarButton& button, Graphics& g, 
         default:                            jassertfalse; break;
     }
     
-    Colour col = button.isFrontTab() ? CYBER_BLACK : CYBER_YELLOW;
+    Colour col = button.isFrontTab() ? CYBER_BLACK : getRandomNeonColor();
     
     if (isMouseOver && !button.isFrontTab())
-        col = CYBER_BRIGHT_YELLOW;
+        col = col.brighter(0.3f);
     
     g.setColour(col);
     g.setFont(font);
@@ -756,23 +895,25 @@ void CyberpunkLookAndFeel::drawTabbedButtonBarBackground(TabbedButtonBar& bar, G
     g.fillRect(r);
     
     drawCyberGrid(g, r, 20.0f);
+    drawDataStream(g, r, 0.5f);
 }
 
 void CyberpunkLookAndFeel::drawTabAreaBehindFrontButton(TabbedButtonBar& bar, Graphics& g, int w, int h)
 {
     const TabbedButtonBar::Orientation o = bar.getOrientation();
+    Colour lineColor = getRandomNeonColor();
     
     switch (o)
     {
         case TabbedButtonBar::TabsAtTop:
         case TabbedButtonBar::TabsAtBottom:
-            g.setColour(CYBER_YELLOW);
+            g.setColour(lineColor);
             g.fillRect(0, (o == TabbedButtonBar::TabsAtTop) ? h - 2 : 0, w, 2);
             break;
             
         case TabbedButtonBar::TabsAtLeft:
         case TabbedButtonBar::TabsAtRight:
-            g.setColour(CYBER_YELLOW);
+            g.setColour(lineColor);
             g.fillRect((o == TabbedButtonBar::TabsAtLeft) ? w - 2 : 0, 0, 2, h);
             break;
             
@@ -788,16 +929,18 @@ void CyberpunkLookAndFeel::drawScrollbarButton(Graphics& g, ScrollBar& scrollbar
 {
     Rectangle<float> area(0, 0, (float)width, (float)height);
     
-    if (isMouseOverButton)
-        drawGlowEffect(g, area, CYBER_GLOW, 0.4f);
+    Colour buttonColor = getRandomNeonColor();
     
-    g.setColour(isButtonDown ? CYBER_DARK_YELLOW : (isMouseOverButton ? CYBER_MID_GREY : CYBER_DARK_GREY));
+    if (isMouseOverButton)
+        drawGlowEffect(g, area, buttonColor.withAlpha(0.4f), 0.4f);
+    
+    g.setColour(isButtonDown ? buttonColor.darker(0.7f) : (isMouseOverButton ? CYBER_MID_GREY : CYBER_DARK_GREY));
     g.fillRect(area);
     
-    g.setColour(CYBER_YELLOW);
+    g.setColour(buttonColor);
     g.drawRect(area, 1.0f);
     
-    // Draw simple arrow instead of using deprecated function
+    // Draw simple arrow
     Path arrow;
     float arrowSize = jmin(width, height) * 0.3f;
     float centerX = width * 0.5f;
@@ -834,7 +977,7 @@ void CyberpunkLookAndFeel::drawScrollbarButton(Graphics& g, ScrollBar& scrollbar
         }
     }
     
-    g.setColour(CYBER_BRIGHT_YELLOW);
+    g.setColour(buttonColor.brighter(0.5f));
     g.fillPath(arrow);
 }
 
@@ -854,15 +997,16 @@ void CyberpunkLookAndFeel::drawScrollbar(Graphics& g, ScrollBar& scrollbar, int 
     g.setColour(scrollbar.findColour(ScrollBar::backgroundColourId));
     g.fillRect(scrollbarBounds);
     
-    g.setColour(CYBER_YELLOW);
+    Colour scrollbarColor = getRandomNeonColor();
+    g.setColour(scrollbarColor);
     g.drawRect(scrollbarBounds, 1);
     
     if (thumbSize > 0)
     {
         if (isMouseOver || isMouseDown)
-            drawGlowEffect(g, thumbBounds.toFloat(), CYBER_GLOW, 0.5f);
+            drawGlowEffect(g, thumbBounds.toFloat(), scrollbarColor.withAlpha(0.6f), 0.5f);
         
-        auto thumbCol = scrollbar.findColour(ScrollBar::thumbColourId);
+        auto thumbCol = scrollbarColor.darker(0.3f);
         
         if (isMouseOver || isMouseDown)
             thumbCol = thumbCol.brighter();
@@ -870,13 +1014,13 @@ void CyberpunkLookAndFeel::drawScrollbar(Graphics& g, ScrollBar& scrollbar, int 
         g.setColour(thumbCol);
         g.fillRect(thumbBounds);
         
-        g.setColour(CYBER_YELLOW);
+        g.setColour(scrollbarColor);
         g.drawRect(thumbBounds, 1);
         
         // Draw grip lines
         if (thumbSize > 16)
         {
-            g.setColour(CYBER_BRIGHT_YELLOW);
+            g.setColour(scrollbarColor.brighter(0.5f));
             auto centre = thumbBounds.getCentre();
             auto gripSize = jmin(thumbSize, isScrollbarVertical ? width : height) / 4;
             
@@ -898,7 +1042,10 @@ void CyberpunkLookAndFeel::drawScrollbar(Graphics& g, ScrollBar& scrollbar, int 
 
 void CyberpunkLookAndFeel::drawCornerResizer(Graphics& g, int w, int h, bool isMouseOver, bool isMouseDragging)
 {
-    g.setColour(isMouseDragging ? CYBER_BRIGHT_YELLOW : (isMouseOver ? CYBER_YELLOW : CYBER_DARK_YELLOW));
+    Colour resizerColor = isMouseDragging ? getRandomNeonColor().brighter(0.5f) : 
+                         (isMouseOver ? getRandomNeonColor() : CYBER_DARK_YELLOW);
+    
+    g.setColour(resizerColor);
     
     const float lineThickness = 1.0f;
     const float spacing = 4.0f;
@@ -928,7 +1075,7 @@ void CyberpunkLookAndFeel::drawGlowEffect(Graphics& g, const Rectangle<float>& a
 
 void CyberpunkLookAndFeel::drawCyberGrid(Graphics& g, const Rectangle<int>& area, float gridSize)
 {
-    g.setColour(CYBER_DARK_YELLOW.withAlpha(0.1f));
+    g.setColour(CYBER_DARK_CYAN.withAlpha(0.15f)); // Slightly more visible
     
     for (float x = area.getX(); x < area.getRight(); x += gridSize)
         g.drawVerticalLine(roundToInt(x), area.getY(), area.getBottom());
@@ -948,7 +1095,7 @@ void CyberpunkLookAndFeel::drawNeonBorder(Graphics& g, const Rectangle<float>& a
 
 void CyberpunkLookAndFeel::drawHexagonalPattern(Graphics& g, const Rectangle<int>& area, float hexSize)
 {
-    g.setColour(CYBER_DARK_YELLOW.withAlpha(0.08f));
+    g.setColour(CYBER_DARK_MAGENTA.withAlpha(0.12f)); // Different color for variety
     
     const float hexWidth = hexSize * 2.0f;
     const float hexHeight = hexSize * std::sqrt(3.0f);
@@ -978,3 +1125,42 @@ void CyberpunkLookAndFeel::drawHexagonalPattern(Graphics& g, const Rectangle<int
         }
     }
 }
+
+void CyberpunkLookAndFeel::drawCircuitPattern(Graphics& g, const Rectangle<int>& area, float spacing)
+{
+    g.setColour(CYBER_DARK_CYAN.withAlpha(0.2f));
+    
+    for (float x = area.getX(); x < area.getRight(); x += spacing)
+    {
+        for (float y = area.getY(); y < area.getBottom(); y += spacing)
+        {
+            // Draw circuit nodes
+            g.fillEllipse(x - 1, y - 1, 2, 2);
+            
+            // Draw connections
+            if (x + spacing < area.getRight())
+                g.drawLine(x, y, x + spacing, y, 1.0f);
+            if (y + spacing < area.getBottom())
+                g.drawLine(x, y, x, y + spacing, 1.0f);
+        }
+    }
+}
+
+void CyberpunkLookAndFeel::drawDataStream(Graphics& g, const Rectangle<int>& area, float speed)
+{
+    updateAnimations();
+    
+    float offset = glowAnimationPhase * speed * 10.0f;
+    
+    for (int i = 0; i < 10; ++i)
+    {
+        float x = area.getX() + (offset + i * 50.0f);
+        while (x > area.getRight()) x -= area.getWidth();
+        
+        Colour streamColor = getRandomNeonColor().withAlpha(0.5f);
+        g.setColour(streamColor);
+        g.drawLine(x, area.getY(), x, area.getBottom(), 2.0f);
+    }
+}
+
+// Include other methods with similar enhancements...

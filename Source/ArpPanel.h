@@ -66,8 +66,12 @@ private:
 
     //==============================================================================
     std::unique_ptr<Slider> speedSlider;
+    std::unique_ptr<Slider> tempoSlider;
     std::unique_ptr<ComboBox> octaveCombo;
+    std::unique_ptr<ComboBox> clockModeCombo;
     std::unique_ptr<Label> label;
+    std::unique_ptr<Label> tempoLabel;
+    std::unique_ptr<Label> clockModeLabel;
     std::unique_ptr<Label> octaveLabel;
     std::unique_ptr<ComboBox> modeCombo;
     std::unique_ptr<Label> modeLabel;
