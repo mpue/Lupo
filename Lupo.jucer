@@ -39,10 +39,6 @@
       <FILE id="YPVnrX" name="BlitSaw.h" compile="0" resource="0" file="Source/BlitSaw.h"/>
       <FILE id="SnBbSX" name="Generator.h" compile="0" resource="0" file="Source/Generator.h"/>
       <FILE id="dETlEa" name="Stk.h" compile="0" resource="0" file="Source/Stk.h"/>
-      <FILE id="IqemcJ" name="TrioLookAndFeel.cpp" compile="1" resource="0"
-            file="Source/TrioLookAndFeel.cpp"/>
-      <FILE id="cZg5di" name="TrioLookAndFeel.h" compile="0" resource="0"
-            file="Source/TrioLookAndFeel.h"/>
       <GROUP id="{3341771E-643B-2160-B9CA-0DC24E0A8B9F}" name="MessageBus">
         <FILE id="m9XYpZ" name="BusListener.h" compile="0" resource="0" file="Source/MessageBus/BusListener.h"/>
         <FILE id="IJjLN4" name="MessageBus.cpp" compile="1" resource="0" file="Source/MessageBus/MessageBus.cpp"/>
@@ -51,7 +47,15 @@
         <FILE id="aOdW8A" name="Topic.h" compile="0" resource="0" file="Source/MessageBus/Topic.h"/>
       </GROUP>
       <GROUP id="{73B48C3D-9605-CFBE-4AA4-97CEABC11729}" name="UI">
+        <FILE id="IqemcJ" name="TrioLookAndFeel.cpp" compile="1" resource="0"
+              file="Source/TrioLookAndFeel.cpp"/>
+        <FILE id="cZg5di" name="TrioLookAndFeel.h" compile="0" resource="0"
+              file="Source/TrioLookAndFeel.h"/>
         <FILE id="eve0WY" name="ArpPanel.cpp" compile="1" resource="0" file="Source/ArpPanel.cpp"/>
+        <FILE id="bbFUdh" name="CyberpunkLookAndFeel.cpp" compile="1" resource="0"
+              file="Source/CyberpunkLookAndFeel.cpp"/>
+        <FILE id="E63cOv" name="CyberpunkLookAndFeel.h" compile="0" resource="0"
+              file="Source/CyberpunkLookAndFeel.h"/>
         <FILE id="ey2qwJ" name="ArpPanel.h" compile="0" resource="0" file="Source/ArpPanel.h"/>
         <FILE id="oN5BfN" name="AttachmentFactory.h" compile="0" resource="0"
               file="Source/AttachmentFactory.h"/>
@@ -197,10 +201,6 @@
             file="Source/PluginEditor.cpp"/>
       <FILE id="qVggQy" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
-    <FILE id="bbFUdh" name="CyberpunkLookAndFeel.cpp" compile="1" resource="0"
-          file="Source/CyberpunkLookAndFeel.cpp"/>
-    <FILE id="E63cOv" name="CyberpunkLookAndFeel.h" compile="0" resource="0"
-          file="Source/CyberpunkLookAndFeel.h"/>
   </MAINGROUP>
   <EXPORTFORMATS>
     <VS2017 targetFolder="Builds/VisualStudio2017">
