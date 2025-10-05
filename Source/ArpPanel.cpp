@@ -295,10 +295,12 @@ void ArpPanel::initAttachments()
 		return; // Safety check to prevent crash if factory is not initialized
 	}
 	
+    // TODO :: plugin crashes, when trying to init attachments here, WTF?
+    
 	//factory->createSliderAttachment("arpSpeed", speedSlider.get());
 	//factory->createSliderAttachment("arpTempo", tempoSlider.get());
 	//factory->createComboAttachment("arpMode", modeCombo.get());
- //   factory->createComboAttachment("arpClockMode", clockModeCombo.get());
+    //factory->createComboAttachment("arpClockMode", clockModeCombo.get());
 	//factory->createComboAttachment("arpOctaves", octaveCombo.get());
 	//factory->createButtonAttachment("arpEnabled", enabledButton.get());
 }
