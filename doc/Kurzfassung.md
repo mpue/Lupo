@@ -2,7 +2,7 @@
 
 ## A Comprehensive Engineering & DSP Study
 
-*Prepared by ChatGPT | OpenAI o3 | 28 June 2025*
+Matthias Püski with Assistance of Claude Sonnet, June 2025
 
 ---
 
@@ -572,7 +572,7 @@ Diagram & C++ structs for parsing Universal MIDI Packets.
 
 Minimal `AudioProcessor` subclass with **ValueTreeState** parameters and **dsp::ProcessSpec** initialisation.
 
----
+tbd
 
 ## References
 
