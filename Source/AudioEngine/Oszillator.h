@@ -8,10 +8,17 @@
   ==============================================================================
 */
 
+#pragma warning(push)
+#pragma warning(disable: 4100)
+#pragma warning(pop)
+
 #ifndef OSZILLATOR_H_INCLUDED
 #define OSZILLATOR_H_INCLUDED
 
 
+#pragma warning(push)
+#pragma warning(disable: 4100)
+#pragma warning(pop)
 
 class Oszillator {
 
@@ -44,8 +51,8 @@ public:
     virtual int getPitch();
     void setPitchBend(float bend);
     float getPitchBend() const;
-    virtual void setSampleRate(double sampleRate) {
-        this->sampleRate = sampleRate;
+    virtual void setSampleRate(double _sampleRate) {
+        this->sampleRate = _sampleRate;
     }
     virtual void setFine(float fine) {};
     virtual float getFine() const { return 0; };
@@ -79,7 +86,5 @@ protected:
     Oszillator* slave = 0;
 
 };
-
-
 
 #endif  // OSZILLATOR_H_INCLUDED

@@ -96,7 +96,7 @@ public:
 private:
     
    
-    float sampleRate;
+    double sampleRate;
     int bufferSize;
     
     float volume = 0.5;

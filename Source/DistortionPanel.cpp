@@ -155,13 +155,13 @@ void DistortionPanel::sliderValueChanged (Slider* sliderThatWasMoved)
     if (sliderThatWasMoved == driveSlider.get())
     {
         //[UserSliderCode_driveSlider] -- add your slider handling code here..
-		model->distDrive = sliderThatWasMoved->getValue();
+		model->distDrive = (float)sliderThatWasMoved->getValue();
         //[/UserSliderCode_driveSlider]
     }
     else if (sliderThatWasMoved == mixSlider.get())
     {
         //[UserSliderCode_mixSlider] -- add your slider handling code here..
-		model->distMix = sliderThatWasMoved->getValue();
+		model->distMix = (float)sliderThatWasMoved->getValue();
         //[/UserSliderCode_mixSlider]
     }
 
@@ -177,7 +177,7 @@ void DistortionPanel::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     if (comboBoxThatHasChanged == modeCombo.get())
     {
         //[UserComboBoxCode_modeCombo] -- add your combo box handling code here..
-		model->distMode = comboBoxThatHasChanged->getSelectedItemIndex();
+		model->distMode = (float)comboBoxThatHasChanged->getSelectedItemIndex();
         //[/UserComboBoxCode_modeCombo]
     }
 

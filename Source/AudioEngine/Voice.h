@@ -94,7 +94,7 @@ private:
     std::shared_ptr<MultimodeFilter> filter1;
     std::shared_ptr<MultimodeFilter> filter2;
     std::vector<std::shared_ptr<MultimodeOscillator>> oscillators;
-    float sampleRate = 44100;
+    double sampleRate = 44100;
     int noteNumber = 0;
     int pitch = 0;
     int velocity = 0;

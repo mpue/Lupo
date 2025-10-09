@@ -37,7 +37,7 @@ MultimodeOscillator::~MultimodeOscillator() {
 }
 
 void MultimodeOscillator::setFrequency(double frequency) {
-	this->frequency = frequency;
+	this->frequency = (float)frequency;
 	this->saw->setFrequency(this->frequency + this->fine);
     this->sine->setFrequency(this->frequency + this->fine);
     this->pulse->setFrequency(this->frequency + this->fine);

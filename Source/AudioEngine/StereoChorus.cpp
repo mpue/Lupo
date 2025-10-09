@@ -36,8 +36,8 @@ void StereoChorus::processStereo(float * left, float * right, const int numSampl
 			float leftMod = (leftOsc->getOutput() + 1.01) * modulation * 100;
 			float rightMod = (leftOsc->getOutput() + 1.01) * modulation * 100;
 
-			leftDelayTime = (delay * 200) + leftMod + .002;
-			rightDelayTime = (delay * 220) + rightMod + .0015;
+			leftDelayTime = (delay * 200) + leftMod + .002f;
+			rightDelayTime = (delay * 220) + rightMod + .0015f;
 
 			float l_xn = left[i];
 			float r_xn = right[i];

@@ -6,6 +6,11 @@
 //
 //
 
+#pragma warning(push)
+#pragma warning(disable: 4100)
+#pragma warning(pop)
+
+
 #include "Pulse.h"
 #include "..\BlitSquare.h"
 
@@ -22,7 +27,7 @@ Pulse::Pulse(float sampleRate, int buffersize) : Oszillator(sampleRate) {
     this->fine = 0.0f;
     this->step = (frequency * 2 * M_PI) / sampleRate;
     this->phase = 0;
-    this->currentModulatedFrequency = this->frequency + this->fine;
+    this->currentModulatedFrequency = (float)(this->frequency + this->fine);
 	blitSquare = new stk::BlitSquare();
 }
 
@@ -77,14 +82,14 @@ float Pulse::process() {
 
 void Pulse::setFrequency(double frequency) {
     this->frequency = frequency;
-    this->currentModulatedFrequency = frequency + this->fine;
+    this->currentModulatedFrequency = (float)frequency + this->fine;
 	blitSquare->setFrequency(this->currentModulatedFrequency);
     //this->step = ((frequency + (double)this->fine) * 2 * M_PI / sampleRate);
 }
 
 void Pulse::setFine(float fine) {
     this->fine = fine;
-    this->currentModulatedFrequency = this->frequency + fine;
+    this->currentModulatedFrequency = (float)(this->frequency + fine);
 	setFrequency(this->frequency);
     // this->step = ((frequency + (double)this->fine) * 2 * M_PI / sampleRate);
 }

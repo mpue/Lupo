@@ -62,7 +62,7 @@ float Sawtooth::process() {
 
     // Ohne Spread nur den ersten Oszillator verwenden
     if (spread == 0.0f) {
-        saw = blitsaw[0]->tick();
+        saw = (float)blitsaw[0]->tick();
         return saw * volume;
     }
     else {
@@ -119,8 +119,8 @@ void Sawtooth::setSpread(float spread)
     setFrequency(this->frequency);
 }
 
-void Sawtooth::setFine(float fine) {
-    this->fine = fine;
+void Sawtooth::setFine(float _fine) {
+    this->fine = _fine;
     setFrequency(frequency);
 }
 

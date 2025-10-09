@@ -11,15 +11,13 @@
 
 #include <stdio.h>
 
-#include "Oszillator.h";
+#include "Oszillator.h"
 #include "ModTarget.h"
 #include "Sine.h"
 #include "Sawtooth.h"
 #include "Pulse.h"
 #include "WhiteNoise.h"
 #include "SampleAndHold.h"
-
-
 
 class MultimodeOscillator : public Oszillator, public Modulator, public ModTarget {
         
