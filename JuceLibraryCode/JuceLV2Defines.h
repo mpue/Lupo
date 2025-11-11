@@ -1,5 +1,5 @@
 #pragma once
 
 #ifndef JucePlugin_LV2URI
- #define JucePlugin_LV2URI "www.MatthiasPueski.com/plugins/Lupo"
+ #define JucePlugin_LV2URI "http://www.pueski.de"
 #endif
