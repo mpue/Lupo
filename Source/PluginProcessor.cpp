@@ -316,7 +316,7 @@ void LupoAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 	Logger::getCurrentLogger()->writeToLog("Preparing playback");
 	if (!prepared) {
 		prepared = true;
-		// setSelectedProgram("init");
+		//setSelectedProgram("init");
 	}
 	lupo->prepareToPlay(sampleRate, samplesPerBlock);
 
