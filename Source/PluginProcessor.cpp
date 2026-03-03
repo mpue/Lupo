@@ -360,6 +360,7 @@ bool LupoAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 
 void LupoAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+	lupo->setPlayHead(getPlayHead());
 	lupo->processBlock(buffer,midiMessages);
 }
 

@@ -12,19 +12,27 @@ void Arpeggiator::prepareToPlay(double sr, int)
     currentNote = -1;
     lastNote = -1;
     octave = 0;
+    lastPpqPosition = -1.0;
     notes.clear();
 }
 
 void Arpeggiator::setDivisionIndex(int idx) noexcept
 {
     static const int table[]{ 24, 12, 6, 3 }; // 1/4, 1/8, 1/16, 1/32
-    idx = juce::jlimit(0, 3, idx);
+idx = juce::jlimit(0, 3, idx);
     ticksPerStep = table[idx];
+}
+
+double Arpeggiator::getStepLengthInQuarterNotes() const noexcept
+{
+    // ticksPerStep is in 24-PPQN ticks
+// 24 ticks = 1 quarter note
+    return static_cast<double>(ticksPerStep) / 24.0;
 }
 
 static int getNextNoteIndex(int current, int size, Arpeggiator::Mode mode, int& dir)
 {
-    if (size == 0) return -1;
+ if (size == 0) return -1;
 
     switch (mode)
     {
@@ -33,8 +41,8 @@ static int getNextNoteIndex(int current, int size, Arpeggiator::Mode mode, int& 
 
     case Arpeggiator::Mode::Down:
         if (current <= 0) dir = 1;
-        else if (current >= size - 1) dir = -1;
-        return juce::jlimit(0, size - 1, current + dir);
+      else if (current >= size - 1) dir = -1;
+      return juce::jlimit(0, size - 1, current + dir);
 
     case Arpeggiator::Mode::Random:
         return juce::Random::getSystemRandom().nextInt(size);
@@ -45,67 +53,115 @@ static int getNextNoteIndex(int current, int size, Arpeggiator::Mode mode, int& 
 
 void Arpeggiator::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midi)
 {
-    if (!enabled) return;
+  if (!enabled) return;
 
+    const int numSamples = buffer.getNumSamples();
+
+    // Collect note-on/off from incoming MIDI, pass through everything else
     juce::MidiMessage msg;
     int pos;
-    juce::MidiBuffer output;
+  juce::MidiBuffer output;
 
     for (juce::MidiBuffer::Iterator it(midi); it.getNextEvent(msg, pos); )
     {
-        if (msg.isMidiClock())               ++clockCounter;
-        else if (msg.isMidiStart()) { clockCounter = 0; isPlaying = true; }
-        else if (msg.isMidiContinue()) { isPlaying = true; }
-        else if (msg.isMidiStop()) { isPlaying = false; }
-
-        else if (msg.isNoteOn())             notes.addIfNotAlreadyThere(msg.getNoteNumber());
-        else if (msg.isNoteOff())            notes.removeFirstMatchingValue(msg.getNoteNumber());
-        else                                 output.addEvent(msg, pos);
+        if (msg.isNoteOn())       notes.addIfNotAlreadyThere(msg.getNoteNumber());
+        else if (msg.isNoteOff())        notes.removeFirstMatchingValue(msg.getNoteNumber());
+        else   output.addEvent(msg, pos);
     }
 
-    bool stepDue = false;
+    // --- Determine step triggers ---
 
-    if (clockMode == ClockMode::Midi && isPlaying)
+    if (clockMode == ClockMode::Midi && playHead != nullptr)
     {
-        if (clockCounter >= ticksPerStep)
+        // === HOST SYNC MODE ===
+     // Use AudioPlayHead to get PPQ position from the DAW
+
+        auto posInfo = playHead->getPosition();
+
+        if (posInfo.hasValue())
         {
-            clockCounter = 0;
-            stepDue = true;
+  auto hostIsPlaying = posInfo->getIsPlaying();
+            auto ppqOpt = posInfo->getPpqPosition();
+            auto bpmOpt = posInfo->getBpm();
+
+            if (hostIsPlaying && ppqOpt.hasValue() && bpmOpt.hasValue())
+            {
+      double ppqPosition = *ppqOpt;
+              double hostBpm = *bpmOpt;
+         double stepLen = getStepLengthInQuarterNotes();
+
+         // How many samples per quarter note at host BPM
+           double samplesPerQuarterNote = (60.0 / hostBpm) * sampleRate;
+     double samplesPerStep = stepLen * samplesPerQuarterNote;
+
+        // Walk through each sample in this block and check for step boundaries
+       for (int sample = 0; sample < numSamples; ++sample)
+        {
+  double currentPpq = ppqPosition + (static_cast<double>(sample) / samplesPerQuarterNote);
+
+        // Quantize to step grid
+            double currentStepIndex = std::floor(currentPpq / stepLen);
+      double prevPpq = currentPpq - (1.0 / samplesPerQuarterNote);
+ double prevStepIndex = std::floor(prevPpq / stepLen);
+
+     if (currentStepIndex != prevStepIndex || lastPpqPosition < 0.0)
+     {
+           // Step boundary crossed at this sample
+       if (lastNote >= 0)
+      output.addEvent(juce::MidiMessage::noteOff(1, lastNote + 12 * octave), sample);
+
+            if (notes.size() > 0)
+         {
+         currentNote = getNextNoteIndex(currentNote, notes.size(), mode, direction);
+  lastNote = notes[currentNote];
+       output.addEvent(juce::MidiMessage::noteOn(1, lastNote + 12 * octave, (uint8)120), sample);
+  }
+
+        if (octaves > 0)
+         octave = (octave + 1) % octaves;
+            }
+      }
+
+lastPpqPosition = ppqPosition + (static_cast<double>(numSamples) / samplesPerQuarterNote);
+  }
+       else
+  {
+         // Host is stopped — release any held note
+         if (lastNote >= 0)
+        {
+          output.addEvent(juce::MidiMessage::noteOff(1, lastNote + 12 * octave), 0);
+     lastNote = -1;
+    }
+                lastPpqPosition = -1.0;
+            }
         }
     }
     else if (clockMode == ClockMode::Internal)
     {
-        // Calculate step duration based on tempo and division
-        // BPM to Samples: (60 / BPM) * sampleRate = Samples per Beat
-        // One Beat = 24 PPQN Ticks, Division is determined by ticksPerStep
-
+   // === INTERNAL CLOCK MODE (unchanged) ===
         float beatsPerSecond = tempo / 60.0f;
-        float samplesPerBeat = sampleRate / beatsPerSecond;
+     float samplesPerBeat = sampleRate / beatsPerSecond;
         float samplesPerTick = samplesPerBeat / 24.0f;  // 24 PPQN
         int duration = static_cast<int>(samplesPerTick * ticksPerStep);
-        
-        timeSamples += buffer.getNumSamples();
+
+        timeSamples += numSamples;
         if (timeSamples >= duration)
         {
             timeSamples %= duration;
-            stepDue = true;
-        }
-    }
 
-    if (stepDue)
+     if (lastNote >= 0)
+  output.addEvent(juce::MidiMessage::noteOff(1, lastNote + 12 * octave), 0);
+
+            if (notes.size() > 0)
     {
-        if (lastNote >= 0)
-            output.addEvent(juce::MidiMessage::noteOff(1, lastNote + 12 * octave), 0);
+      currentNote = getNextNoteIndex(currentNote, notes.size(), mode, direction);
+      lastNote = notes[currentNote];
+   output.addEvent(juce::MidiMessage::noteOn(1, lastNote + 12 * octave, (uint8)120), 0);
+     }
 
-        if (notes.size() > 0)
-        {
-            currentNote = getNextNoteIndex(currentNote, notes.size(), mode, direction);
-            lastNote = notes[currentNote];
-            output.addEvent(juce::MidiMessage::noteOn(1, lastNote + 12 * octave, (uint8)120), 0);
+       if (octaves > 0)
+    octave = (octave + 1) % octaves;
         }
-
-        if (octaves > 0)
-            octave = (octave + 1) % octaves;
     }
 
     midi.swapWith(output);

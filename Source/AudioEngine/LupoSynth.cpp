@@ -1044,3 +1044,8 @@ float LupoSynth::getRighPeak()
 {
 	return rightPeak;
 }
+
+void LupoSynth::setPlayHead(juce::AudioPlayHead* ph)
+{
+	arp->setPlayHead(ph);
+}

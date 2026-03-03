@@ -56,6 +56,9 @@ public:
 	void updateMatrix();
 	void configureModulation();
 
+	/** Pass the host's AudioPlayHead so the arpeggiator can sync to host transport. */
+	void setPlayHead(juce::AudioPlayHead* ph);
+
 	// Methods for real-time envelope visualization
 	Voice* getActiveVoice();
 	int getAmpEnvelopeState();
