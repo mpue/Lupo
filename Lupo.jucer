@@ -2,8 +2,8 @@
 
 <JUCERPROJECT id="M3MHKq" name="Lupo" projectType="audioplug" pluginVST3Category="Instrument"
               pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
-              companyName="Matthias Pueski" pluginFormats="buildLV2" pluginChannelConfigs="{2,2}"
-              jucerFormatVersion="1" lv2Uri="http://www.pueski.de">
+              companyName="Matthias Pueski" pluginFormats="buildStandalone,buildVST3"
+              pluginChannelConfigs="{2,2}" jucerFormatVersion="1" lv2Uri="http://www.pueski.de">
   <MAINGROUP id="GthNfL" name="Lupo">
     <GROUP id="{7D68CE24-8E1B-AC85-29D1-30E03A9479D6}" name="Images">
       <FILE id="cw2qUT" name="DSEG14Classic-Regular.ttf" compile="0" resource="1"

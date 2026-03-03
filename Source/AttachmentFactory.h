@@ -21,7 +21,12 @@ public:
     }
 
     void initState() {
-        processor->getValueTreeState()->state = ValueTree(Identifier("default"));
+        // Only initialize state if it hasn't been set up yet.
+        // Replacing an existing state tree would destroy all parameter values
+        // and crash when attachments or listeners reference the old state.
+        if (!processor->getValueTreeState()->state.isValid()) {
+            processor->getValueTreeState()->state = ValueTree(Identifier("default"));
+        }
     }
 
     void createParam(String name, String label, float min, float max, float defaultValue) {

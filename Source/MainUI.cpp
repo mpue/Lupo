@@ -18,6 +18,7 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	this->processor = processor;
 	this->model = processor->getModel();
 	this->synth = processor->getSynth();
+	this->factory = factory;
 	
 	Arpeggiator* arp = this->synth->getArpeggiator();
 	Logger::getCurrentLogger()->writeToLog("GUI instance created.");
@@ -339,7 +340,12 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	addChangeListener(synth);
 	// addMouseListener(this, true);
 
-	factory->initState();
+	// NOTE: Do NOT call factory->initState() here!
+	// The ValueTree state is already initialized when parameters are created 
+	// in LupoAudioProcessor's constructor. Calling initState() every time 
+	// the editor is recreated (e.g. Ableton's "Configure" button) would 
+	// replace the entire state tree with an empty one, destroying all 
+	// parameter values and causing a crash.
 
 	factory->createSliderAttachment("fmAmount", fmSlider.get());
 	factory->createSliderAttachment("mainVolume", mainVolume.get());
@@ -419,6 +425,21 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 
 MainUI::~MainUI()
 {
+	stopTimer();
+
+	// Remove parameter listeners to prevent callbacks on a destroyed MainUI
+	if (factory != nullptr) {
+		auto params = factory->getSliderParams();
+		for (int i = 0; i < params.size(); i++) {
+			processor->parameters->removeParameterListener(params.getReference(i), this);
+		}
+		for (int i = 0; i < 6; i++) {
+			processor->parameters->removeParameterListener("Source_" + String(i), this);
+			processor->parameters->removeParameterListener("Target_" + String(i), this);
+			processor->parameters->removeParameterListener("Amount_" + String(i), this);
+		}
+	}
+
 	processor->getFactory()->clearAttachments();
 	removeAllChangeListeners();
 
@@ -645,9 +666,15 @@ void MainUI::parameterChanged(const String& parameterID, float newValue)
 {
 	for (int i = 0; i < processor->getNumParameters(); i++) {
 		if (processor->getParameterID(i) == parameterID) {
-			juce::MessageManager::callAsync([this, newValue, i]()
-			{					
-				mainDisplay->setText(processor->getParameters().getUnchecked(i)->getLabel() + " - " + String(newValue, 2));					
+			// Use SafePointer to guard against this MainUI being destroyed
+			// before the async callback executes (e.g. Ableton Configure mode)
+			juce::Component::SafePointer<MainUI> safeThis(this);
+			juce::MessageManager::callAsync([safeThis, newValue, i]()
+			{
+				if (safeThis == nullptr)
+					return;
+				auto* self = safeThis.getComponent();
+				self->mainDisplay->setText(self->processor->getParameters().getUnchecked(i)->getLabel() + " - " + String(newValue, 2));
 			});
 
 			break;
