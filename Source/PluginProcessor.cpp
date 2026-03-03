@@ -159,25 +159,9 @@ LupoAudioProcessor::LupoAudioProcessor()
 	
 	Logger::getCurrentLogger()->writeToLog("Building preset list");
 
-	String presetPath = appDataPath + "/Audio/Presets/pueski/Lupo/";
-	
-	File presets = File(presetPath);
+	refreshPresetList();
 
-	if (presets.exists() && presets.isDirectory()) {
-		ScopedPointer<DirectoryIterator> iter = new DirectoryIterator(presets, false);
-		while (iter->next()) {
-			if (iter->getFile().exists() && !iter->getFile().isDirectory() && iter->getFile().getFileExtension() == ".xml") {				
-				String name = iter->getFile().getFileNameWithoutExtension();
-				Logger::getCurrentLogger()->writeToLog("Found preset : " + name);
-				programNames.push_back(name);
-			}
-
-		}
-		iter = nullptr;
-
-	}
-
-	Logger::getCurrentLogger()->writeToLog("Found"+String(programNames.size())+" presets");
+	Logger::getCurrentLogger()->writeToLog("Found "+String(programNames.size())+" presets");
 	
 }
 
@@ -435,5 +419,26 @@ Model* LupoAudioProcessor::getModel() {
 
 AudioProcessorValueTreeState* LupoAudioProcessor::getValueTreeState() {
 	return this->parameters;
+}
+
+void LupoAudioProcessor::refreshPresetList() {
+	programNames.clear();
+
+	String appDataPath = File::getSpecialLocation(File::userApplicationDataDirectory).getFullPathName();
+	String presetPath = appDataPath + "/Audio/Presets/pueski/Lupo/";
+
+	File presets = File(presetPath);
+
+	if (presets.exists() && presets.isDirectory()) {
+		ScopedPointer<DirectoryIterator> iter = new DirectoryIterator(presets, false);
+		while (iter->next()) {
+			if (iter->getFile().exists() && !iter->getFile().isDirectory() && iter->getFile().getFileExtension() == ".xml") {
+				String name = iter->getFile().getFileNameWithoutExtension();
+				Logger::getCurrentLogger()->writeToLog("Found preset : " + name);
+				programNames.push_back(name);
+			}
+		}
+		iter = nullptr;
+	}
 }
 

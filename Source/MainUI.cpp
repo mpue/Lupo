@@ -595,8 +595,11 @@ void MainUI::buttonClicked(Button* buttonThatWasClicked)
 			}
 		}
 
+		// Refresh the processor's internal preset list from disk so the
+		// newly saved preset is included, then update the ComboBox.
+		processor->selectedProgram = presetName;
+		processor->refreshPresetList();
 		updatePresetList();
-
 	}
 	else if (buttonThatWasClicked == cutoffLink.get())
 	{

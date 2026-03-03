@@ -48,6 +48,7 @@ public:
     double getTailLengthSeconds() const override;
 
 	void setSelectedProgram(String name);
+	void refreshPresetList();
 
     //==============================================================================
     int getNumPrograms() override;
