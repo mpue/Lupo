@@ -9,7 +9,6 @@
 #include "Panel.h"
 #include <math.h>
 #include "MainUI.h"
-#include "MessageBus/FastBus.h"
 
 
 MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
@@ -407,18 +406,6 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	rightGainSlider->setBounds(1050, 615, 400, 10);
 	resized();
 
-	// TODO : change this to a  quasi singleton event bus, such 
-	// that each plugin instance has its own bus, because if we do it like we do now,
-	// all instances will share the same bus and thus the same mod matrix state
-	// which is not what we want :( 
-	
-	auto& bus = FastBus::getInstance();
-
-	bus.subscribe<juce::String>("MODMATRIX", [this](const FastTopic<juce::String>& topic) {
-		modMatrix->setGridStateFromString(topic.getValue());
-		repaint();
-	});
-
 	startTimer(30);
 
 }
@@ -627,6 +614,13 @@ void MainUI::timerCallback()
 {
 	leftGainSlider->setValue(processor->getSynth()->getLeftPeak(), juce::NotificationType::dontSendNotification);
 	rightGainSlider->setValue(processor->getSynth()->getRighPeak(), juce::NotificationType::dontSendNotification);
+
+	// Per-instance mod matrix state update (replaces global FastBus)
+	if (model->modMatrixStateChanged.exchange(false))
+	{
+		modMatrix->setGridStateFromString(model->pendingModMatrixState);
+		repaint();
+	}
 }
 
 void MainUI::changeListenerCallback(ChangeBroadcaster* source) {

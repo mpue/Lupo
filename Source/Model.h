@@ -148,6 +148,10 @@ public:
 
 	juce::String gridState = "";
 
+	// Per-instance mod matrix state notification (replaces global FastBus)
+	std::atomic<bool> modMatrixStateChanged { false };
+	juce::String pendingModMatrixState = "";
+
 	int getModSource(int source) {
 		return this->modSource[source];
 	}

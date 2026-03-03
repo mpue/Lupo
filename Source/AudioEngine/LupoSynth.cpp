@@ -19,7 +19,6 @@
 #include "Sampler.h"
 #include "../ModMatrix.h"
 #include "Modulation.h"
-#include "../MessageBus/FastBus.h"
 
 
 #ifndef M_PI
@@ -188,27 +187,61 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 		{
 			int noteNumber = m.getNoteNumber();
 
+			// First, check if this note is already playing and steal that voice
+			// (handles fast repeated notes where note-on arrives before note-off)
+			for (auto& voice : voices) {
+				if (voice->isPlaying() && voice->getNoteNumber() == noteNumber) {
+					voice->getAmpEnvelope()->gate(false);
+					voice->getFilterEnvelope()->gate(false);
+					voice->setPlaying(false);
+					break;
+				}
+			}
+
 			Voice* voice = findFreeVoice(noteNumber);
+
+			// Voice stealing: if no free voice, steal the oldest one in release phase
+			if (voice == nullptr) {
+				for (auto& v : voices) {
+					if (!v->isPlaying() && v->getAmpEnvelope()->getState() != SynthLab::ADSR::env_idle) {
+						voice = v.get();
+						voice->getAmpEnvelope()->reset();
+						voice->getFilterEnvelope()->reset();
+						break;
+					}
+				}
+			}
+
+			// Last resort: steal any voice (oldest playing)
+			if (voice == nullptr && !voices.empty()) {
+				voice = voices[0].get();
+				voice->getAmpEnvelope()->reset();
+				voice->getFilterEnvelope()->reset();
+				voice->setPlaying(false);
+			}
 
 			if (noteNumber > highestNote) {
 				highestNote = noteNumber;
 			}
 
-			// Fix: Properly gate modulation envelopes when a note is played
-			for (auto& env : modEnvelopes) {
-				if (numVoices == 0) {
-					env->gate(true);
-				}
-			}
-
 			if (voice) {
-				if (!voice->isPlaying()) {
-					numVoices++;
-					voice->getAmpEnvelope()->reset();
-					voice->getFilterEnvelope()->reset();
+				// Gate modulation envelopes if this is the first playing voice
+				bool anyOtherPlaying = false;
+				for (auto& v : voices) {
+					if (v.get() != voice && v->isPlaying()) {
+						anyOtherPlaying = true;
+						break;
+					}
 				}
+				if (!anyOtherPlaying) {
+					for (auto& env : modEnvelopes) {
+						env->gate(true);
+					}
+				}
+
 				voice->setPlaying(true);
-				// Gate envelopes - ADSR is a pure 0-1 shape, velocity scaling is in Voice::processBlock
+				voice->getAmpEnvelope()->reset();
+				voice->getFilterEnvelope()->reset();
 				voice->getAmpEnvelope()->gate(true);
 				voice->getFilterEnvelope()->gate(true);
 				voice->setNoteAndVelocity(noteNumber, m.getVelocity());
@@ -220,27 +253,49 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 			}
 
 		}
-		if (m.isNoteOff() || m.isAllNotesOff())
+		else if (m.isAllNotesOff() || m.isAllSoundOff())
+		{
+			// Release ALL voices
+			for (auto& voice : voices) {
+				if (voice->isPlaying()) {
+					voice->getAmpEnvelope()->gate(false);
+					voice->getFilterEnvelope()->gate(false);
+					voice->setPlaying(false);
+				}
+			}
+			for (auto& env : modEnvelopes) {
+				env->gate(false);
+			}
+			highestNote = 0;
+		}
+		else if (m.isNoteOff())
 		{
 			int noteNumber = m.getNoteNumber();
 
 			for (auto& voice : voices) {
 				if (voice->isPlaying() && voice->getNoteNumber() == noteNumber) {
-					// Fix: Properly release envelopes
 					voice->getAmpEnvelope()->gate(false);
 					voice->getFilterEnvelope()->gate(false);
-					numVoices--;
 					voice->setPlaying(false);
-					break; // free ónly one voice per note off
+					break;
 				}
 			}
 
-			if (numVoices <= 0) {
+			// Recalculate highest note and check if any voices are still playing
+			highestNote = 0;
+			bool anyPlaying = false;
+			for (auto& voice : voices) {
+				if (voice->isPlaying()) {
+					anyPlaying = true;
+					if (voice->getNoteNumber() > highestNote)
+						highestNote = voice->getNoteNumber();
+				}
+			}
+
+			if (!anyPlaying) {
 				for (auto& env : modEnvelopes) {
 					env->gate(false);
 				}
-				highestNote = 0;
-				numVoices = 0;
 			}
 		}
 	}
@@ -325,7 +380,7 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 
 	distortion->controls.mode = static_cast<int>(model->distMode);
 	distortion->controls.drive = model->distDrive;
-	distortion->controls.mix = model->distMix;
+	distortion->controls.mix = static_cast<float>(model->distMix);
 
 	// Distortion processing - only apply if enabled (mix > 0 or drive > 1)
 	if (model->distMix > 0.0f || model->distDrive > 1.0f) {
@@ -362,8 +417,9 @@ void LupoSynth::updateState(ValueTree state, juce::String modMatríxState) {
 
 	model->gridState = modMatríxState;
 
-	auto& bus = FastBus::getInstance();
-	bus.publish("MODMATRIX", modMatríxState);
+	// Per-instance notification: store state in Model for the UI to pick up
+	model->pendingModMatrixState = modMatríxState;
+	model->modMatrixStateChanged.store(true);
 
 	for (int j = 0; j < state.getNumChildren(); j++) {
 
@@ -875,11 +931,11 @@ void LupoSynth::configureModulation()
 	lfo3->setFrequency(0);
 
 	for (int i = 0; i < modEnvelopes.size(); i++) {
-		modEnvelopes.at(i)->setAttackRate(0 * sampleRate);  // 1 second
-		modEnvelopes.at(i)->setDecayRate(1 * sampleRate);
-		modEnvelopes.at(i)->setReleaseRate(1 * sampleRate);
-		modEnvelopes.at(i)->setSustainLevel(.8);
-		modEnvelopes.at(i)->setModAmount(0);
+	modEnvelopes.at(i)->setAttackRate(0 * sampleRate);  // 1 second
+	modEnvelopes.at(i)->setDecayRate(1 * sampleRate);
+	modEnvelopes.at(i)->setReleaseRate(1 * sampleRate);
+	modEnvelopes.at(i)->setSustainLevel(.8);
+	modEnvelopes.at(i)->setModAmount(0);
 	}
 
 	lfo1->setName("LFO1");
@@ -898,7 +954,7 @@ matrix->addModulator(lfo3);
 	matrix->addModTarget(oscGroup1);
 	matrix->addModTarget(oscGroup2);
 	matrix->addModTarget(oscGroup3);
-	matrix->addModTarget(oscGroup4);
+matrix->addModTarget(oscGroup4);
 
 	filterTargetGroup1 = std::make_shared<ModTargetGroup>();
 	filterTargetGroup2 = std::make_shared<ModTargetGroup>();

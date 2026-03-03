@@ -80,7 +80,6 @@ private:
 	float cutoff = 15000.0f;
 	float resonance = 1.0f;
 	int currentSample = 0;
-	int numVoices = 0;
 
 	std::shared_ptr<OscGroup> oscGroup1;
 	std::shared_ptr<OscGroup> oscGroup2;
