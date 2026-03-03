@@ -95,15 +95,11 @@ void LupoAudioProcessorEditor::saveSettings()
 		configFile.create();
 	}
 
-	ValueTree* v = new ValueTree("Settings");
-
+	ValueTree v("Settings");
+	auto xml = v.createXml();
 	
-
-	std::unique_ptr<XmlElement> xml = v->createXml();
-	xml->writeToFile(configFile, "");
-
-	xml = nullptr;
-	delete v;
+	if (xml != nullptr)
+		xml->writeToFile(configFile, "");
 }
 
 void LupoAudioProcessorEditor::loadSettings()
@@ -120,8 +116,10 @@ void LupoAudioProcessorEditor::loadSettings()
 
 	if (configFile.exists()) {
 		std::unique_ptr<XmlElement> xml = XmlDocument(configFile).getDocumentElement();
-		ValueTree v = ValueTree::fromXml(*xml.get());
 		
-		xml = nullptr;
+		if (xml != nullptr) {
+			ValueTree v = ValueTree::fromXml(*xml);
+			// TODO: apply settings from ValueTree
+		}
 	}
 }

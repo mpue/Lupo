@@ -18,7 +18,7 @@ public:
 
 	Model() {
 
-		outputGaindB = 12.0f;
+		outputGaindB = 0.0f;
 
 		cutoff1 = 18000.0f;
 		resonance1 = 0.5f;

@@ -71,13 +71,12 @@ float SynthLab::ADSR::process() {
 		}
 	}
 
-	return (output / 127.0f) * velocity; // Korrigiert: Division durch 127 statt 128
+	return output;
 }
 
 void SynthLab::ADSR::gate(int gate) {
 
 	if (gate) {
-		velocity = gate;
 		// Explizit output zurücksetzen um Pops zu vermeiden
 		if (state == env_idle || state == env_release) {
 			output = 0.0f;
@@ -95,7 +94,6 @@ int SynthLab::ADSR::getState() {
 void SynthLab::ADSR::reset() {
 	state = env_idle;
 	output = 0.0f;
-	velocity = 0;
 }
 
 

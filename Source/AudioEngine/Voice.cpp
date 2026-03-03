@@ -49,15 +49,19 @@ void Voice::setNoteAndVelocity(int note, int velocity) {
 	this->velocity = velocity;
 
     for (int i = 0; i < 4; i++) {
-	    oscillators[i]->setFrequency((midiNote[noteNumber + oscillators[i]->getPitch()]) * pitchBend);
+    int index = noteNumber + oscillators[i]->getPitch();
+        if (index >= 0 && index < 128)
+	    oscillators[i]->setFrequency((midiNote[index]) * pitchBend);
     }
 
 }
 
 void Voice::setPitchBend(float bend) {
     this->pitchBend = bend;
-	for (int i = 0; i < 4;i++) {        
-        oscillators[i]->setFrequency((midiNote[noteNumber + oscillators[i]->getPitch()]) * pitchBend);
+	for (int i = 0; i < 4;i++) {
+        int index = noteNumber + oscillators[i]->getPitch();
+        if (index >= 0 && index < 128)
+  oscillators[i]->setFrequency((midiNote[index]) * pitchBend);
     }
 }
 
@@ -86,7 +90,7 @@ void Voice::processBlock(AudioBuffer<float>& buffer) {
     // Block-basierte Envelope-Verarbeitung
     for (int sample = 0; sample < numSamples; ++sample) {
         // Process both envelopes for each sample
-        float amplitude = (velocity / 127.0f) * ampEnvelope->process() * 2;
+        float amplitude = (velocity / 127.0f) * ampEnvelope->process();
         filterEnvelope->process(); // Process filter envelope for each sample!
         
         float outL = 0.0f;
@@ -218,15 +222,19 @@ void Voice::removePwmModulator(std::shared_ptr<Modulator> mod)
 
 void Voice::setOctave(int number) {
     this->octave = number;
-	for (int i = 0; i < 4; i++) {      
-        oscillators[i]->setFrequency((midiNote[noteNumber + oscillators[i]->getPitch() + this->offset + this->octave * 12]) * pitchBend);
+	for (int i = 0; i < 4; i++) {
+        int index = noteNumber + oscillators[i]->getPitch() + this->offset + this->octave * 12;
+        if (index >= 0 && index < 128)
+            oscillators[i]->setFrequency((midiNote[index]) * pitchBend);
     }
 }
 
 void Voice::setOffset(int number) {
     this->offset = number;
-	for (int i = 0; i < 4; i++) {     
-		oscillators[i]->setFrequency((midiNote[noteNumber + oscillators[i]->getPitch() + this->offset + this->octave * 12]) * pitchBend);
+	for (int i = 0; i < 4; i++) {
+        int index = noteNumber + oscillators[i]->getPitch() + this->offset + this->octave * 12;
+     if (index >= 0 && index < 128)
+		    oscillators[i]->setFrequency((midiNote[index]) * pitchBend);
     }
 }
 
@@ -236,13 +244,15 @@ int Voice::getOctave() const {
 
 void Voice::updateOscillator(int index) {
 	if (this->noteNumber >= 0) {
-	    oscillators[index]->setFrequency(midiNote[this->noteNumber + oscillators[index]->getPitch()]);
+        int midiIndex = this->noteNumber + oscillators[index]->getPitch();
+      if (midiIndex >= 0 && midiIndex < 128)
+	        oscillators[index]->setFrequency(midiNote[midiIndex]);
 	}
 }
 
 void Voice::calculateFrequencyTable() {
     int a = 440; // a is 440 hz...
-    for (int x = 0; x < 127; ++x)
+    for (int x = 0; x < 128; ++x)
     {
         midiNote[x] = a * pow(2.0,(x-69.0)/12.0);
     }

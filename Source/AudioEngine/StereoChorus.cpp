@@ -31,7 +31,7 @@ StereoChorus::~StereoChorus() {
 void StereoChorus::processStereo(float * left, float * right, const int numSamples) {
 	if (this->enabled) {
 
-		for (int i = 0; i < bufferSize; i++) {
+		for (int i = 0; i < numSamples; i++) {
 
 			float leftMod = (leftOsc->getOutput() + 1.01) * modulation * 100;
 			float rightMod = (leftOsc->getOutput() + 1.01) * modulation * 100;

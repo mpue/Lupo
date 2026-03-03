@@ -71,7 +71,6 @@ namespace SynthLab {
 		float decayBase;
 		float releaseBase;
 		float currentEnvValue;
-		int velocity;
 
 		float calcCoef(float rate, float targetRatio);
 

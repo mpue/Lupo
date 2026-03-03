@@ -12,12 +12,19 @@
 
 ModMatrix::ModMatrix() {
     this->modSources = new std::map<int,String>();
-    this->modTargets = new std::map<int,String>();	
+    this->modTargets = new std::map<int,String>();
+    this->modulations = new Modulation*[6 + 128]();  // zero-initialize all pointers
 }
 
 ModMatrix::~ModMatrix() {
 	
     removeAllChangeListeners();
+
+    // Clean up modulations array
+    for (int i = 0; i < 6 + 128; ++i) {
+        delete modulations[i];
+    }
+    delete[] modulations;
 
     modSources->clear();
     modTargets->clear();

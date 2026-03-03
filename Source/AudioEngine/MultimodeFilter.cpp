@@ -23,9 +23,12 @@ MultimodeFilter::MultimodeFilter() {
     
     this->mode = LOWPASS;
 	this->keyTrack = 0;
+    this->out = nullptr;
 }
 
 MultimodeFilter::~MultimodeFilter() {
+    delete[] out;
+
     this->lowPassLeftStage1 = nullptr;
     this->lowPassRightStage1 = nullptr;
     
@@ -161,6 +164,9 @@ void MultimodeFilter::setResonance(float resonance) {
 	highPassLeft->setResonance(resonance);
 	highPassRight->setResonance(resonance);
 }
+
+
+
 
 
 

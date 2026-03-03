@@ -78,7 +78,7 @@ LupoSynth::~LupoSynth()
 	if (oscGroup3) oscGroup3->clearModulators();
 	if (oscGroup3) oscGroup3->getTargets().clear();
 	if (oscGroup4) oscGroup4->clearModulators();
-	if (oscGroup3) oscGroup4->getTargets().clear();
+	if (oscGroup4) oscGroup4->getTargets().clear();
 	if (filterTargetGroup1) filterTargetGroup1->clearTargets();
 	if (filterTargetGroup2) filterTargetGroup2->clearTargets();
 	if (oscPwmTarget) oscPwmTarget->clearTargets();
@@ -208,7 +208,7 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 					voice->getFilterEnvelope()->reset();
 				}
 				voice->setPlaying(true);
-				// Fix: Make sure envelopes are properly gated
+				// Gate envelopes - ADSR is a pure 0-1 shape, velocity scaling is in Voice::processBlock
 				voice->getAmpEnvelope()->gate(true);
 				voice->getFilterEnvelope()->gate(true);
 				voice->setNoteAndVelocity(noteNumber, m.getVelocity());
@@ -315,7 +315,7 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 			voice->processBlock(voiceBuffer);
 
 			// Stereo-Mix mit Skalierung
-			const float gain = mainVolume * 4.0f;
+			const float gain = mainVolume;
 			for (int sample = 0; sample < numSamples; ++sample) {
 				leftChannel[sample] += voiceBuffer.getSample(0, sample) * gain;
 				rightChannel[sample] += voiceBuffer.getSample(1, sample) * gain;
@@ -353,8 +353,8 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 	buffer.applyGain(masterGain);
 
 	// for the peak meters in the GUI
-	leftPeak = buffer.getMagnitude(0, bufferSize - 1);
-	rightPeak = buffer.getMagnitude(1, bufferSize - 1);
+	leftPeak = buffer.getMagnitude(0, 0, buffer.getNumSamples());
+rightPeak = buffer.getMagnitude(1, 0, buffer.getNumSamples());
 
 }
 
@@ -915,7 +915,7 @@ matrix->addModulator(lfo3);
 
 	matrix->addModTarget(filterTargetGroup1);
 	matrix->addModTarget(filterTargetGroup2);
-	matrix->addModTarget(oscPwmTarget);
+matrix->addModTarget(oscPwmTarget);
 
 	lfo1->enabled = true;
 	lfo2->enabled = true;
