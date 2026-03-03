@@ -459,7 +459,7 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 			voice->getFilterEnvelope()->setModAmount(newValue);
 		}
 	}
-	if (parameterID == "cutoff2") {
+	else if (parameterID == "cutoff2") {
 		model->cutoff2 = newValue;
 
 		for (auto& voice : voices) {
@@ -700,7 +700,7 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		params.roomSize = newValue;
 		reverb->setParameters(params);
 	}
-	else if (parameterID == "rvbDdamping") {
+	else if (parameterID == "rvbDamping") {
 		juce::Reverb::Parameters params = reverb->getParameters();
 		params.damping = newValue;
 		reverb->setParameters(params);
@@ -786,6 +786,15 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 	}
 	else if (parameterID == "filterMode") {
 		filterMode = newValue;
+		// Apply serial/parallel routing to all voices
+		for (auto& voice : voices) {
+			if (newValue < 0.5f) {
+				voice->setFilterRouting(Voice::FilterRouting::Serial);
+			}
+			else {
+				voice->setFilterRouting(Voice::FilterRouting::Parallel);
+			}
+		}
 	}
 	else if (parameterID == "cutoffLink") {
 		cutoffLink = newValue > 0;
@@ -882,7 +891,7 @@ void LupoSynth::configureModulation()
 
 	matrix->addModulator(lfo1);
 	matrix->addModulator(lfo2);
-	matrix->addModulator(lfo3);
+matrix->addModulator(lfo3);
 	matrix->addModulator(modEnvelopes.at(0));
 	matrix->addModulator(modEnvelopes.at(1));
 

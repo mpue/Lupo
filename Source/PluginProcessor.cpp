@@ -150,6 +150,12 @@ LupoAudioProcessor::LupoAudioProcessor()
 	}
 
 	bypass = parameters->createAndAddParameter("bypass", "bypass", "Bypass", NormalisableRange<float>(0, 1),0, nullptr, nullptr);
+
+	// Initialize the ValueTree state AFTER all parameters have been created.
+	// The deprecated createAndAddParameter API does not create the state tree
+	// automatically, so we must do it here. Without this, the state is invalid
+	// and any call to state.createXml() (e.g. preset saving) will return nullptr.
+	parameters->state = ValueTree(Identifier("LupoState"));
 	
 	Logger::getCurrentLogger()->writeToLog("Building preset list");
 
@@ -239,8 +245,8 @@ void LupoAudioProcessor::setCurrentProgram (int index)
 {
 	Logger::getCurrentLogger()->writeToLog("Setting program index "+String(index));
 
-	if (index < 0 || index > programNames.size()) {
-		index = 0;
+	if (index < 0 || index >= (int)programNames.size()) {
+		return;
 	}
 
 	if (programNames.size() > 0) {
@@ -255,9 +261,11 @@ void LupoAudioProcessor::setSelectedProgram(juce::String name) {
 
 	Logger::getCurrentLogger()->writeToLog("Loading preset "+name);
 
-	lupo->running = false;
-
 	if (!prepared) {
+		return;
+	}
+
+	if (name.trim().isEmpty()) {
 		return;
 	}
 
@@ -269,28 +277,44 @@ void LupoAudioProcessor::setSelectedProgram(juce::String name) {
 	File preset = File(presetPath + filename);
 	File matrixFile = File(presetPath + matrixConf);
 
-	if (preset.exists()) {
-
-		std::unique_ptr<XmlElement> xml = XmlDocument(preset).getDocumentElement();
-		ValueTree state = ValueTree::fromXml(*xml.get());
-		
-		xml = nullptr;
-		this->selectedProgram = name;
-
-		// get the mod matrix state from the preset		
-		
-		String modMatrixState = "5,7;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0";
-
-		if (matrixFile.exists()) {
-			 modMatrixState = matrixFile.loadFileAsString();			
-		}	
-		getValueTreeState()->state = state;
-		lupo->updateState(state,modMatrixState);
-
-		Logger::getCurrentLogger()->writeToLog("Updating synth state");
+	if (!preset.exists()) {
+		Logger::getCurrentLogger()->writeToLog("Preset file not found: " + preset.getFullPathName());
+		return;
 	}
 
+	std::unique_ptr<XmlElement> xml = XmlDocument(preset).getDocumentElement();
+
+	if (xml == nullptr) {
+		Logger::getCurrentLogger()->writeToLog("ERROR: Failed to parse preset XML: " + preset.getFullPathName());
+		return;
+	}
+
+	ValueTree state = ValueTree::fromXml(*xml);
+	xml = nullptr;
+
+	if (!state.isValid()) {
+		Logger::getCurrentLogger()->writeToLog("ERROR: Invalid ValueTree from preset: " + name);
+		return;
+	}
+
+	this->selectedProgram = name;
+
+	// Get the mod matrix state from the preset		
+	String modMatrixState = "5,7;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0";
+
+	if (matrixFile.exists()) {
+		 modMatrixState = matrixFile.loadFileAsString();			
+	}
+
+	// Use replaceState() for thread-safe state replacement.
+	// This triggers valueTreeRedirected -> updateParameterConnectionsToChildTrees
+	// which reconnects all parameter adapters and fires parameterChanged callbacks.
+	lupo->running = false;
+	getValueTreeState()->replaceState(state);
+	lupo->updateState(state, modMatrixState);
 	lupo->running = true;
+
+	Logger::getCurrentLogger()->writeToLog("Updating synth state");
 }
 
 const String LupoAudioProcessor::getProgramName (int index)
@@ -381,10 +405,17 @@ void LupoAudioProcessor::getStateInformation (MemoryBlock& destData)
 
 void LupoAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-	char* _name = (char*)data;	
-	String name = juce::String(_name,sizeInBytes);
+	if (data == nullptr || sizeInBytes <= 0) {
+		return;
+	}
+
+	String name = juce::String(static_cast<const char*>(data), (size_t)sizeInBytes);
+
+	if (name.trim().isEmpty()) {
+		return;
+	}
+
 	setSelectedProgram(name);
-	//lupo->updateState(getValueTreeState()->state);
 }
 
 //==============================================================================

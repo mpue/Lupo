@@ -522,18 +522,28 @@ void MainUI::buttonClicked(Button* buttonThatWasClicked)
 	}
 	else if (buttonThatWasClicked == saveButton.get())
 	{
+		String presetName = presetCombo->getText().trim();
+
+		if (presetName.isEmpty()) {
+			return;
+		}
+
 		processor->getValueTreeState()->getParameter("osc1Shape")->setValue(model->osc1Shape);
 		processor->getValueTreeState()->getParameter("osc2Shape")->setValue(model->osc2Shape);
 		processor->getValueTreeState()->getParameter("osc3Shape")->setValue(model->osc3Shape);
 		processor->getValueTreeState()->getParameter("osc4Shape")->setValue(model->osc4Shape);
 
-		std::unique_ptr<XmlElement> xml(processor->getValueTreeState()->state.createXml());
+		auto xml = processor->getValueTreeState()->state.createXml();
+
+		if (xml == nullptr) {
+			Logger::getCurrentLogger()->writeToLog("ERROR: Failed to create XML from state tree - state may not be initialized");
+			return;
+		}
 
 		String appDataPath = File::getSpecialLocation(File::userApplicationDataDirectory).getFullPathName();
 
 		String basePath = appDataPath + "/Audio/Presets/pueski/";
 		String presetPath = basePath + "Lupo/";
-		String presetName = presetCombo->getText();
 
 		File baseDir = File(basePath);
 		File presetDir = File(presetPath);
@@ -559,7 +569,6 @@ void MainUI::buttonClicked(Button* buttonThatWasClicked)
 		if (proceed) {
 
 			bool success = false;
-			bool presetExists = false;
 
 			if (modMatrixConfig.exists()) {
 				success = modMatrixConfig.replaceWithText(modMatrix->getGridStateAsString());
@@ -573,10 +582,10 @@ void MainUI::buttonClicked(Button* buttonThatWasClicked)
 				return;
 			}
 
-			xml.get()->writeToFile(preset, "");
+			xml->writeToFile(preset, "");
 
 			// DEBUG
-			ValueTree state = ValueTree::fromXml(*xml.get());
+			ValueTree state = ValueTree::fromXml(*xml);
 
 			for (int i = 0; i < state.getNumChildren(); i++) {
 
@@ -584,21 +593,6 @@ void MainUI::buttonClicked(Button* buttonThatWasClicked)
 				String value = state.getChild(i).getProperty("value").toString();
 				Logger::getCurrentLogger()->writeToLog("Storing : " + id + " with value " + value);
 			}
-
-			if (!presetExists) {
-
-				int itemId = 0;
-
-				for (int i = 0; i < presetCombo->getNumItems(); i++) {
-					if (presetCombo->getItemId(i) > itemId) {
-						itemId = presetCombo->getItemId(i);
-					}
-				}
-
-				itemId++;
-			}
-
-			xml = nullptr;
 		}
 
 		updatePresetList();
@@ -616,7 +610,10 @@ void MainUI::comboBoxChanged(ComboBox* comboBoxThatHasChanged)
 
 	if (comboBoxThatHasChanged == presetCombo.get())
 	{
-		processor->setSelectedProgram(comboBoxThatHasChanged->getText());
+		String presetName = comboBoxThatHasChanged->getText().trim();
+		if (presetName.isNotEmpty()) {
+			processor->setSelectedProgram(presetName);
+		}
 	}
 	else if (comboBoxThatHasChanged == filterModeCombo.get())
 	{

@@ -237,7 +237,7 @@ void ReverbPanel::sliderValueChanged (Slider* sliderThatWasMoved)
     else if (sliderThatWasMoved == damping.get())
     {
         //[UserSliderCode_damping] -- add your slider handling code here..
-		model->rvbDdamping = sliderThatWasMoved->getValue();
+		model->rvbDamping = sliderThatWasMoved->getValue();
         //[/UserSliderCode_damping]
     }
     else if (sliderThatWasMoved == width.get())

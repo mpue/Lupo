@@ -125,11 +125,36 @@ void Voice::processBlock(AudioBuffer<float>& buffer) {
 
     // Process filter modulation before applying filters
     // This will use the filter envelope values that were processed above
-    // Apply filters to the entire block
-    filter1->processModulation();
-    filter1->processStereo(leftChannel, rightChannel, numSamples);
-    filter2->processModulation();
-    filter2->processStereo(leftChannel, rightChannel, numSamples);
+    // Apply filters based on routing mode
+ filter1->processModulation();
+  filter2->processModulation();
+
+    if (filterRouting == FilterRouting::Serial) {
+        // Serial: signal -> Filter1 -> Filter2 -> output
+        filter1->processStereo(leftChannel, rightChannel, numSamples);
+        filter2->processStereo(leftChannel, rightChannel, numSamples);
+    }
+    else {
+        // Parallel: (Filter1(signal) + Filter2(signal)) / 2 -> output
+        // Copy the dry signal for the second filter path
+        AudioBuffer<float> parallelBuffer(2, numSamples);
+    parallelBuffer.copyFrom(0, 0, leftChannel, numSamples);
+     parallelBuffer.copyFrom(1, 0, rightChannel, numSamples);
+
+        // Filter1 processes the original buffer
+   filter1->processStereo(leftChannel, rightChannel, numSamples);
+
+        // Filter2 processes the copy
+   auto* parLeft = parallelBuffer.getWritePointer(0);
+        auto* parRight = parallelBuffer.getWritePointer(1);
+        filter2->processStereo(parLeft, parRight, numSamples);
+
+        // Mix both paths (50/50)
+for (int sample = 0; sample < numSamples; ++sample) {
+  leftChannel[sample] = (leftChannel[sample] + parLeft[sample]) * 0.5f;
+       rightChannel[sample] = (rightChannel[sample] + parRight[sample]) * 0.5f;
+        }
+    }
 }
 
 void Voice::setNoteNumber(int number) {

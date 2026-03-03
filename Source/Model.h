@@ -123,7 +123,7 @@ public:
 	float dlyMix;
 
 	float rvbRoomSize = 0.5f;     /**< Room size, 0 to 1.0, where 1.0 is big, 0 is small. */
-	float rvbDdamping = 0.5f;     /**< Damping, 0 to 1.0, where 0 is not damped, 1.0 is fully damped. */
+	float rvbDamping = 0.5f;     /**< Damping, 0 to 1.0, where 0 is not damped, 1.0 is fully damped. */
 	float rvbWetLevel = 0.0f;    /**< Wet level, 0 to 1.0 */
 	float rvbDryLevel = 1.0f;     /**< Dry level, 0 to 1.0 */
 	float rvbWidth = 1.0f;     /**< Reverb width, 0 to 1.0, where 1.0 is very wide. */

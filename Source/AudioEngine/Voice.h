@@ -28,6 +28,11 @@ using namespace std;
 class Voice : public ModTarget {
     
 public:
+
+    enum class FilterRouting {
+        Serial,   // Filter1 -> Filter2
+        Parallel  // Filter1 + Filter2 mixed
+    };
         
     Voice(float sampleRate);
     ~Voice() {
@@ -77,6 +82,9 @@ public:
 	void setOscPan(int osc, float pan);
 	void setOscSpread(int osc, float spread);
 
+    void setFilterRouting(FilterRouting routing) { filterRouting = routing; }
+    FilterRouting getFilterRouting() const { return filterRouting; }
+
     std::shared_ptr<MultimodeFilter> getFilter1() {
         return filter1;
     }
@@ -112,7 +120,7 @@ private:
     int offset = 0;
 	float value = 0;
     float modAmount = 0;
-	
+	FilterRouting filterRouting = FilterRouting::Serial;
 };
 
 

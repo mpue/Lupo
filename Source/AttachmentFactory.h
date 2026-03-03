@@ -71,21 +71,19 @@ public:
             "cutoff1","resonance1","mainVolume","envAmt1",
             "cutoff2","resonance2","envAmt2",
             "ampAttack","ampDecay","ampSustain","ampRelease",
-            "fltAttack", "fltDecay", "fltSustain", "fltRelease",
             "auxAttack1", "auxDecay1","auxSustain1","auxRelease1",
             "auxAttack2", "auxDecay2","auxSustain2","auxRelease2",
             "lfo1Shape", "lfo1Speed","lfo1Amount",
             "lfo2Shape", "lfo2Speed","lfo2Amount",
             "lfo3Shape", "lfo3Speed","lfo3Amount",
             "osc1Pitch","osc1Fine","osc1Volume","osc1Pan",
-            "osc2Pitch","osc2Fine","osc2Volume","osc2Pan",  // Fixed: added comma
+            "osc2Pitch","osc2Fine","osc2Volume","osc2Pan",
             "osc3Pitch","osc3Fine","osc3Volume","osc3Pan",
             "osc4Pitch","osc4Fine","osc4Volume","osc4Pan",
             "dlyTimeLeft", "dlyTimeRight", "dlyFeedback","dlyMix",
-            "rvbRoomSize", "rvbDamping", "rvbWetLevel", "rvbDryLevel", "rvbWidth", "rvbFreezeMode",  // Fixed typo
+            "rvbRoomSize", "rvbDamping", "rvbWetLevel", "rvbDryLevel", "rvbWidth", "rvbFreezeMode",
             "chrDelay", "chrModulation", "chrFeedback", "chrMix",
             "filterMode","cutoffLink"
-            // "arpSpeed", "arpTempo", "arpMode","arpClockMode","arpOctaves","arpEnabled"  // Added arpeggiator parameters
         };
     }
 
