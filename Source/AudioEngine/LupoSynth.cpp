@@ -173,6 +173,17 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	lfo1->setSampleRate(sampleRate);
 	lfo2->setSampleRate(sampleRate);
 	lfo3->setSampleRate(sampleRate);
+
+	// Sync oscillator enabled flags from the model so the synth produces sound
+	// even when the editor has never been opened (UI panels normally do this via
+	// sendChangeMessage -> changeListenerCallback, but without a UI that path is
+	// never triggered).
+	for (auto& v : voices) {
+		v->getOscillator(0)->enabled = model->osc1Enabled;
+		v->getOscillator(1)->enabled = model->osc2Enabled;
+		v->getOscillator(2)->enabled = model->osc3Enabled;
+		v->getOscillator(3)->enabled = model->osc4Enabled;
+	}
 }
 
 void LupoSynth::processMidi(MidiBuffer& midiMessages) {

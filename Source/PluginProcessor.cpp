@@ -325,12 +325,32 @@ void LupoAudioProcessor::changeProgramName (int index, const String& newName)
 void LupoAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
 	Logger::getCurrentLogger()->writeToLog("Preparing playback");
-	if (!prepared) {
-		prepared = true;
-		//setSelectedProgram("init");
-	}
 	lupo->prepareToPlay(sampleRate, samplesPerBlock);
 
+	if (!prepared)
+	{
+		prepared = true;
+
+		if (pendingPresetName.isNotEmpty())
+		{
+			// A preset was stored before prepareToPlay – load it now.
+			setSelectedProgram(pendingPresetName);
+			pendingPresetName = {};
+		}
+		else
+		{
+			// No preset to load: push all current APVTS default values into the synth
+			// so it is fully initialized even without an editor or a saved project.
+			StringArray ids = factory->getSliderParams();
+			for (int i = 0; i < ids.size(); ++i)
+			{
+				const String& pid = ids.getReference(i);
+				auto range = parameters->getParameterRange(pid);
+				if (auto* param = parameters->getParameter(pid))
+					lupo->parameterChanged(pid, range.convertFrom0to1(param->getValue()));
+			}
+		}
+	}
 }
 
 void LupoAudioProcessor::releaseResources()
@@ -363,12 +383,12 @@ bool LupoAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 
 void LupoAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
-	// Process MIDI CC messages for MIDI Learn before passing to the synth
+	// Buffer MIDI CC messages for MIDI Learn (applied to parameters on the message thread)
 	for (const auto& meta : midiMessages)
 	{
 		auto msg = meta.getMessage();
 		if (msg.isController())
-			midiLearnManager->processMidiCC(msg.getControllerNumber(), msg.getControllerValue(), *parameters);
+			midiLearnManager->processMidiCC(msg.getControllerNumber(), msg.getControllerValue());
 	}
 
 	lupo->setPlayHead(getPlayHead());
@@ -394,24 +414,24 @@ AudioProcessorEditor* LupoAudioProcessor::createEditor()
 //==============================================================================
 void LupoAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-	int program = getCurrentProgram();
-	String name = getProgramName(program);
-	destData.append(name.getCharPointer(),name.length());	
+	String name = selectedProgram.isNotEmpty() ? selectedProgram : getProgramName(getCurrentProgram());
+	destData.append(name.getCharPointer(), name.length());
 }
 
 void LupoAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-	if (data == nullptr || sizeInBytes <= 0) {
+	if (data == nullptr || sizeInBytes <= 0)
 		return;
-	}
 
-	String name = juce::String(static_cast<const char*>(data), (size_t)sizeInBytes);
+	String name = juce::String(static_cast<const char*>(data), (size_t)sizeInBytes).trim();
 
-	if (name.trim().isEmpty()) {
+	if (name.isEmpty())
 		return;
-	}
 
-	setSelectedProgram(name);
+	if (prepared)
+		setSelectedProgram(name);
+	else
+		pendingPresetName = name; // will be loaded in prepareToPlay
 }
 
 //==============================================================================

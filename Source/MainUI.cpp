@@ -622,8 +622,11 @@ void MainUI::timerCallback()
 		repaint();
 	}
 
-	// MIDI Learn feedback
+	// Apply buffered MIDI CC values to parameters (must run on message thread)
 	auto* mlm = processor->getMidiLearnManager();
+	mlm->applyPendingUpdates(*processor->getValueTreeState());
+
+	// MIDI Learn feedback
 	bool isLearning = mlm->isCurrentlyLearning();
 	if (isLearning)
 	{

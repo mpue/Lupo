@@ -79,6 +79,7 @@ public:
     MidiLearnManager* getMidiLearnManager() { return midiLearnManager.get(); }
     static File getMidiLearnFile();
 private:
+    String pendingPresetName; // preset to load once prepareToPlay is called
     //==============================================================================
 
 	std::unique_ptr<LupoSynth> lupo = nullptr;

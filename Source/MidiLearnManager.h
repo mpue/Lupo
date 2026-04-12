@@ -1,6 +1,8 @@
 #pragma once
 #include "../JuceLibraryCode/JuceHeader.h"
 #include <map>
+#include <array>
+#include <atomic>
 
 // Manages MIDI CC learn assignments for plugin parameters.
 // Thread-safe: processMidiCC() may be called from the audio thread.
@@ -36,10 +38,14 @@ public:
         return learningParamID;
     }
 
-    // Called from the audio thread. Handles MIDI CC learn assignment or CC-to-param routing.
-    // Returns true if the CC was consumed (either learned or applied to a parameter).
-    bool processMidiCC(int ccNumber, int value, AudioProcessorValueTreeState& apvts)
+    // Called from the audio thread. Handles MIDI CC learn assignment or pending value buffering.
+    // Returns true if the CC was consumed.
+    // Call applyPendingUpdates() from the message thread to actually push values to parameters.
+    bool processMidiCC(int ccNumber, int value)
     {
+        if (ccNumber < 0 || ccNumber >= 128)
+            return false;
+
         const ScopedTryLock stl(lock);
         if (!stl.isLocked())
             return false;
@@ -69,18 +75,34 @@ public:
             return true;
         }
 
-        auto it = ccToParam.find(ccNumber);
-        if (it != ccToParam.end())
+        if (ccToParam.count(ccNumber) > 0)
         {
-            if (auto* param = apvts.getParameter(it->second))
-            {
-                // setValue is safe to call from the audio thread in JUCE
-                param->setValue(static_cast<float>(value) / 127.0f);
-                return true;
-            }
+            // Buffer the value; message thread will apply it via applyPendingUpdates()
+            pendingValues[ccNumber].store(static_cast<float>(value) / 127.0f,
+                                          std::memory_order_relaxed);
+            return true;
         }
 
         return false;
+    }
+
+    // Call from the message thread (e.g. timer callback) to push buffered CC values to parameters.
+    void applyPendingUpdates(AudioProcessorValueTreeState& apvts)
+    {
+        for (int cc = 0; cc < 128; ++cc)
+        {
+            float v = pendingValues[cc].exchange(-1.0f, std::memory_order_relaxed);
+            if (v >= 0.0f)
+            {
+                const ScopedLock sl(lock);
+                auto it = ccToParam.find(cc);
+                if (it != ccToParam.end())
+                {
+                    if (auto* param = apvts.getParameter(it->second))
+                        param->setValueNotifyingHost(v);
+                }
+            }
+        }
     }
 
     // Returns the CC number assigned to paramID, or -1 if none.
@@ -153,6 +175,14 @@ private:
     String learningParamID;
     std::map<int, String> ccToParam;
     std::map<String, int> paramToCC;
+    // Pending CC values written by audio thread, read by message thread. -1 = no pending.
+    std::array<std::atomic<float>, 128> pendingValues { {} };
+
+    struct PendingInit {
+        PendingInit(std::array<std::atomic<float>, 128>& arr) {
+            for (auto& v : arr) v.store(-1.0f, std::memory_order_relaxed);
+        }
+    } pendingInit { pendingValues };
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(MidiLearnManager)
 };
