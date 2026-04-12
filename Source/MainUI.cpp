@@ -676,10 +676,29 @@ Component* MainUI::findComponentAtMousePosition(Point<int> mousePos, Component* 
 
 void MainUI::parameterChanged(const String& parameterID, float newValue)
 {
+	// Sync cutoff sliders when link is active.
+	// Guard: only update the other side if its value differs to avoid ping-pong.
+	if (cutoffLink->getToggleState())
+	{
+		AudioProcessorValueTreeState* apvts = processor->getValueTreeState();
+		auto syncCutoff = [apvts](const String& targetID, float value)
+		{
+			auto* param = apvts->getParameter(targetID);
+			if (param == nullptr) return;
+			auto range = apvts->getParameterRange(targetID);
+			float currentValue = range.convertFrom0to1(param->getValue());
+			if (std::abs(currentValue - value) > 0.001f)
+				param->setValueNotifyingHost(range.convertTo0to1(value));
+		};
+
+		if (parameterID == "cutoff1")
+			syncCutoff("cutoff2", newValue);
+		else if (parameterID == "cutoff2")
+			syncCutoff("cutoff1", newValue);
+	}
+
 	for (int i = 0; i < processor->getNumParameters(); i++) {
 		if (processor->getParameterID(i) == parameterID) {
-			// Use SafePointer to guard against this MainUI being destroyed
-			// before the async callback executes (e.g. Ableton Configure mode)
 			juce::Component::SafePointer<MainUI> safeThis(this);
 			juce::MessageManager::callAsync([safeThis, newValue, i]()
 			{

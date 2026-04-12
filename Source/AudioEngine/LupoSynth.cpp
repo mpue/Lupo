@@ -530,8 +530,14 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		model->cutoff2 = newValue;
 
 		for (auto& voice : voices) {
-			// Use immediate update for real-time cutoff control responsiveness
 			voice->getFilter2()->setFrequencyImmediate(newValue);
+		}
+
+		if (cutoffLink) {
+			model->cutoff1 = newValue;
+			for (auto& voice : voices) {
+				voice->getFilter1()->setFrequencyImmediate(newValue);
+			}
 		}
 	}
 	else if (parameterID == "resonance2") {
@@ -568,8 +574,9 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		mainVolume = newValue;
 	}
 	else if (parameterID == "ampAttack") {
+		float attack = jmax(0.01f, newValue);
 		for (auto& voice : voices) {
-			voice->getAmpEnvelope()->setAttackRate(newValue * sampleRate);
+			voice->getAmpEnvelope()->setAttackRate(attack * sampleRate);
 		}
 	}
 	else if (parameterID == "ampDecay") {
@@ -588,8 +595,9 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		}
 	}
 	else if (parameterID == "auxAttack1") {
+		float attack = jmax(0.01f, newValue);
 		for (auto& voice : voices) {
-			voice->getFilterEnvelope()->setAttackRate(newValue * sampleRate);
+			voice->getFilterEnvelope()->setAttackRate(attack * sampleRate);
 		}
 	}
 	else if (parameterID == "auxDecay1") {
@@ -608,7 +616,7 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		}
 	}
 	else if (parameterID == "auxAttack2") {
-		modEnvelopes.at(1)->setAttackRate(newValue * sampleRate);
+		modEnvelopes.at(1)->setAttackRate(jmax(0.01f, newValue) * sampleRate);
 	}
 	else if (parameterID == "auxDecay2") {
 		modEnvelopes.at(1)->setDecayRate(newValue * sampleRate);
