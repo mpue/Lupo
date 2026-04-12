@@ -12,7 +12,7 @@
 
 
 #include "Pulse.h"
-#include "..\BlitSquare.h"
+#include "../BlitSquare.h"
 
 #define _USE_MATH_DEFINES
 

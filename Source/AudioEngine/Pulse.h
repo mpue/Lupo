@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include "Oszillator.h"
 #include "Modulator.h"
-#include "..\BlitSquare.h"
+#include "../BlitSquare.h"
 #include "ModTarget.h"
 
 class Pulse : public Oszillator , public Modulator, public ModTarget {

@@ -38,7 +38,7 @@ public:
 	~LupoSynth();
 
 	Arpeggiator* getArpeggiator();
-	Voice* LupoSynth::findFreeVoice(int noteNumber);
+	Voice* findFreeVoice(int noteNumber);
 	ModMatrix* getModMatrix();
 
 	void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages);	

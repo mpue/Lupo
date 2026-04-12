@@ -5,6 +5,7 @@
 #include "MainUI.h"
 #include <vector>
 #include <memory>
+#include <map>
 
 class AttachmentFactory
 {
@@ -18,6 +19,13 @@ public:
         attachments.clear();
         buttonAttachments.clear();
         comboAttachments.clear();
+        componentToParam.clear();
+    }
+
+    // Returns the parameter ID bound to this slider, or empty string if not registered.
+    String getParamForComponent(Component* comp) const {
+        auto it = componentToParam.find(comp);
+        return (it != componentToParam.end()) ? it->second : String();
     }
 
     void initState() {
@@ -44,6 +52,7 @@ public:
                 *processor->getValueTreeState(), name, *comp
             )
         );
+        componentToParam[comp] = name;
     }
 
     void createComboAttachment(String name, ComboBox* comp) {
@@ -91,6 +100,7 @@ private:
     std::vector<std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment>> attachments;
     std::vector<std::unique_ptr<AudioProcessorValueTreeState::ButtonAttachment>> buttonAttachments;
     std::vector<std::unique_ptr<AudioProcessorValueTreeState::ComboBoxAttachment>> comboAttachments;
+    std::map<Component*, String> componentToParam;
 
     LupoAudioProcessor* processor;
     LupoSynth* lupo;

@@ -337,7 +337,7 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	chorusPanel.get()->addChangeListener(this);
 
 	addChangeListener(synth);
-	// addMouseListener(this, true);
+	addMouseListener(this, true);
 
 	// NOTE: Do NOT call factory->initState() here!
 	// The ValueTree state is already initialized when parameters are created 
@@ -621,6 +621,21 @@ void MainUI::timerCallback()
 		modMatrix->setGridStateFromString(model->pendingModMatrixState);
 		repaint();
 	}
+
+	// MIDI Learn feedback
+	auto* mlm = processor->getMidiLearnManager();
+	bool isLearning = mlm->isCurrentlyLearning();
+	if (isLearning)
+	{
+		mainDisplay->setText("MIDI Learn: " + mlm->getCurrentLearningParam() + " - wiggle a knob");
+		midiLearnWasActive = true;
+	}
+	else if (midiLearnWasActive)
+	{
+		midiLearnWasActive = false;
+		mlm->saveToFile(LupoAudioProcessor::getMidiLearnFile());
+		mainDisplay->setText("MIDI CC assigned!");
+	}
 }
 
 void MainUI::changeListenerCallback(ChangeBroadcaster* source) {
@@ -678,6 +693,53 @@ void MainUI::parameterChanged(const String& parameterID, float newValue)
 
 void MainUI::mouseDown(const MouseEvent& event)
 {
+	if (event.mods.isRightButtonDown())
+	{
+		Component* comp = event.eventComponent;
+		if (dynamic_cast<Slider*>(comp) != nullptr)
+		{
+			String paramID = factory->getParamForComponent(comp);
+			if (paramID.isNotEmpty())
+			{
+				showMidiLearnMenu(paramID);
+				return;
+			}
+		}
+	}
+}
+
+void MainUI::showMidiLearnMenu(const String& paramID)
+{
+	auto* mlm = processor->getMidiLearnManager();
+	int existingCC = mlm->getCCForParam(paramID);
+
+	PopupMenu menu;
+	menu.addItem(1, "MIDI Learn");
+	if (existingCC >= 0)
+		menu.addItem(2, "Clear CC " + String(existingCC));
+	else
+		menu.addItem(2, "Clear CC", false, false);
+
+	juce::Component::SafePointer<MainUI> safeThis(this);
+	menu.showMenuAsync(PopupMenu::Options(), [safeThis, paramID](int result)
+	{
+		if (safeThis == nullptr)
+			return;
+		auto* self = safeThis.getComponent();
+		auto* m = self->processor->getMidiLearnManager();
+
+		if (result == 1)
+		{
+			m->startLearning(paramID);
+			self->midiLearnWasActive = false;
+		}
+		else if (result == 2)
+		{
+			m->clearParam(paramID);
+			m->saveToFile(LupoAudioProcessor::getMidiLearnFile());
+			self->mainDisplay->setText("Cleared MIDI CC for " + paramID);
+		}
+	});
 }
 
 void MainUI::mouseUp(const MouseEvent& event)

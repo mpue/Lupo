@@ -14,6 +14,7 @@
 #include "AudioEngine/LupoSynth.h"
 #include "Model.h"
 #include "ModMatrix.h"
+#include "MidiLearnManager.h"
 class AttachmentFactory;
 //==============================================================================
 /**
@@ -74,6 +75,9 @@ public:
 	LupoSynth* getSynth();
 	Model* getModel();
     std::unique_ptr<ModMatrix> matrix = nullptr;
+    std::unique_ptr<MidiLearnManager> midiLearnManager;
+    MidiLearnManager* getMidiLearnManager() { return midiLearnManager.get(); }
+    static File getMidiLearnFile();
 private:
     //==============================================================================
 

@@ -125,6 +125,9 @@ private:
 	std::unique_ptr<Slider> leftGainSlider;
 	std::unique_ptr<Slider> rightGainSlider;
 
+	bool midiLearnWasActive = false;
+
+	void showMidiLearnMenu(const String& paramID);
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MainUI)
 

@@ -156,7 +156,10 @@ LupoAudioProcessor::LupoAudioProcessor()
 	// automatically, so we must do it here. Without this, the state is invalid
 	// and any call to state.createXml() (e.g. preset saving) will return nullptr.
 	parameters->state = ValueTree(Identifier("LupoState"));
-	
+
+	midiLearnManager = std::make_unique<MidiLearnManager>();
+	midiLearnManager->loadFromFile(getMidiLearnFile());
+
 	Logger::getCurrentLogger()->writeToLog("Building preset list");
 
 	refreshPresetList();
@@ -360,6 +363,14 @@ bool LupoAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) con
 
 void LupoAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+	// Process MIDI CC messages for MIDI Learn before passing to the synth
+	for (const auto& meta : midiMessages)
+	{
+		auto msg = meta.getMessage();
+		if (msg.isController())
+			midiLearnManager->processMidiCC(msg.getControllerNumber(), msg.getControllerValue(), *parameters);
+	}
+
 	lupo->setPlayHead(getPlayHead());
 	lupo->processBlock(buffer,midiMessages);
 }
@@ -420,6 +431,12 @@ Model* LupoAudioProcessor::getModel() {
 
 AudioProcessorValueTreeState* LupoAudioProcessor::getValueTreeState() {
 	return this->parameters;
+}
+
+File LupoAudioProcessor::getMidiLearnFile()
+{
+	String appDataPath = File::getSpecialLocation(File::userApplicationDataDirectory).getFullPathName();
+	return File(appDataPath + "/Audio/Presets/pueski/Lupo/midilearn.cfg");
 }
 
 void LupoAudioProcessor::refreshPresetList() {
