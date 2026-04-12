@@ -152,6 +152,7 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	this->bufferSize = samplesPerBlock;
 
 	chorus->prepareToPlay(sampleRate, samplesPerBlock);
+	reverb->setSampleRate(sampleRate);
 	arp->prepareToPlay(sampleRate, bufferSize);
 	arp->setEnabled(false);
 	arp->setClockMode(Arpeggiator::ClockMode::Internal);
@@ -236,18 +237,11 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 			}
 
 			if (voice) {
-				// Gate modulation envelopes if this is the first playing voice
-				bool anyOtherPlaying = false;
-				for (auto& v : voices) {
-					if (v.get() != voice && v->isPlaying()) {
-						anyOtherPlaying = true;
-						break;
-					}
-				}
-				if (!anyOtherPlaying) {
-					for (auto& env : modEnvelopes) {
-						env->gate(true);
-					}
+				// Retrigger modulation envelopes on every note-on so the filter
+				// envelope restarts regardless of how many voices are already playing.
+				for (auto& env : modEnvelopes) {
+					env->reset();
+					env->gate(true);
 				}
 
 				voice->setPlaying(true);

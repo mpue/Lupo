@@ -16,6 +16,7 @@
 #include "ArpPanel.h"
 #include "FilterPanel.h"
 #include "ModPanel.h"
+#include "PresetBrowser.h"
 
 class ModMatrixPanel;
 class ModMatrixModel;
@@ -69,6 +70,7 @@ private:
 	AttachmentFactory* factory;
 	vector<std::unique_ptr<AudioProcessorValueTreeState::SliderAttachment>>* sliderAttachments;
 	std::unique_ptr<PresetDialog> dlg;
+	std::unique_ptr<PresetBrowser> presetBrowser;
 
 	Component* modSource = nullptr;
 	Component* modTarget = nullptr;

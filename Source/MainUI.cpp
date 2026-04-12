@@ -306,6 +306,18 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	dlg->setBounds(x, y, getWidth(), getHeight());
 	addChildComponent(dlg.get());
 
+	presetBrowser.reset(new PresetBrowser(processor));
+	addChildComponent(presetBrowser.get());
+	presetBrowser->onPresetSelected = [this, processor](const String& name)
+	{
+		processor->setSelectedProgram(name);
+		updatePresetList();
+	};
+	presetBrowser->onClose = [this]()
+	{
+		presetBrowser->setVisible(false);
+	};
+
 	osc1Panel.get()->SetTitle("Osc 1");
 	osc2Panel.get()->SetTitle("Osc 2");
 	osc3Panel.get()->SetTitle("Osc 3");
@@ -431,6 +443,7 @@ MainUI::~MainUI()
 	removeAllChangeListeners();
 
 	dlg = nullptr;
+	presetBrowser = nullptr;
 	ModulationGroup = nullptr;
 	groupComponent = nullptr;
 	groupComponent3 = nullptr;
@@ -504,8 +517,10 @@ void MainUI::buttonClicked(Button* buttonThatWasClicked)
 {
 
 	if (buttonThatWasClicked == presetButton.get())
-	{		
-		// TODO : Show preset dialog or menu, or something
+	{
+		presetBrowser->setBounds(getLocalBounds());
+		presetBrowser->setVisible(true);
+		presetBrowser->toFront(true);
 	}
 	else if (buttonThatWasClicked == saveButton.get())
 	{

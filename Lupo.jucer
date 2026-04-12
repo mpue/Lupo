@@ -47,6 +47,9 @@
         <FILE id="aOdW8A" name="Topic.h" compile="0" resource="0" file="Source/MessageBus/Topic.h"/>
       </GROUP>
       <GROUP id="{73B48C3D-9605-CFBE-4AA4-97CEABC11729}" name="UI">
+        <FILE id="yfaOKU" name="PresetBrowser.h" compile="0" resource="0" file="Source/PresetBrowser.h"/>
+        <FILE id="eXHxgI" name="PresetBrowser.cpp" compile="1" resource="0"
+              file="Source/PresetBrowser.cpp"/>
         <FILE id="IqemcJ" name="TrioLookAndFeel.cpp" compile="1" resource="0"
               file="Source/TrioLookAndFeel.cpp"/>
         <FILE id="cZg5di" name="TrioLookAndFeel.h" compile="0" resource="0"

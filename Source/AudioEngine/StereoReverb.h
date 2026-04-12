@@ -26,6 +26,7 @@ public:
     virtual void processStereo (float* const left, float* const right, const int numSamples) override;
     void setParameters (const juce::Reverb::Parameters& newParams);
     const juce::Reverb::Parameters& getParameters();
+    void setSampleRate (double sampleRate);
     void reset();
     
 private:

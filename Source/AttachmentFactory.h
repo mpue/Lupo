@@ -37,10 +37,10 @@ public:
         }
     }
 
-    void createParam(String name, String label, float min, float max, float defaultValue) {
+    void createParam(String name, String label, float min, float max, float defaultValue, float skew = 1.0f) {
         processor->getValueTreeState()->createAndAddParameter(
             name, name, label,
-            NormalisableRange<float>(min, max),
+            NormalisableRange<float>(min, max, 0.0f, skew),
             defaultValue, nullptr, nullptr
         );
         processor->getValueTreeState()->addParameterListener(name, lupo);

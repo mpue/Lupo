@@ -43,6 +43,10 @@ const juce::Reverb::Parameters& StereoReverb::getParameters() {
     return reverb->getParameters();
 }
 
+void StereoReverb::setSampleRate (double sampleRate) {
+    reverb->setSampleRate(sampleRate);
+}
+
 void StereoReverb::reset() {
     reverb->reset();
 }
