@@ -143,6 +143,19 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("filterMode", "Filter mode", 0, 1.0, 0);
 	factory->createParam("cutoffLink", "Cutoff link", 0, 1.0, 0);
 
+	// 8-Band Parametric EQ (bypassed by default: eqEnabled=0)
+	factory->createParam("eqEnabled", "EQ Active", 0.0f, 1.0f, 0.0f);
+	{
+		float eqDefaultFreqs[8] = {60.0f, 200.0f, 500.0f, 1000.0f, 2000.0f, 4000.0f, 8000.0f, 14000.0f};
+		float eqDefaultQ[8]     = {0.7f,  1.0f,   1.0f,   1.0f,    1.0f,    1.0f,    1.0f,    0.7f};
+		for (int i = 1; i <= 8; ++i) {
+			String b = String(i);
+			factory->createParam("eqGain" + b, "EQ Gain " + b, -24.0f, 24.0f,           0.0f);
+			factory->createParam("eqFreq" + b, "EQ Freq " + b,  20.0f, 20000.0f, eqDefaultFreqs[i-1], 0.25f);
+			factory->createParam("eqQ"    + b, "EQ Q "    + b,   0.1f,  10.0f,   eqDefaultQ[i-1], 0.5f);
+		}
+	}
+
 	for (int i = 0; i < 6; i++) {
 		factory->createParam("Source_" + String(i), "Matrix source " + String(i), 0.0f, 4.0f, 0.0);
 		factory->createParam("Target_" + String(i), "Matrix target " + String(i), 0.0f, 5.0f, 0.0);

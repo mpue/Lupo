@@ -11,6 +11,7 @@
 #pragma once
 
 #include "OscGroup.h"
+#include "ParametricEQ.h"
 #include "ADSR.h"
 #include "MultimodeFilter.h"
 #include "Voice.h"
@@ -58,6 +59,7 @@ public:
 
 	/** Pass the host's AudioPlayHead so the arpeggiator can sync to host transport. */
 	void setPlayHead(juce::AudioPlayHead* ph);
+	ParametricEQ* getEQ() { return eq.get(); }
 
 	// Methods for real-time envelope visualization
 	Voice* getActiveVoice();
@@ -99,6 +101,8 @@ private:
 	std::unique_ptr<Distortion>	distortion;
 	std::unique_ptr<Arpeggiator> arp;
 	
+	std::unique_ptr<ParametricEQ> eq;
+
 	std::shared_ptr<ModTargetGroup> filterTargetGroup1 = nullptr;
 	std::shared_ptr<ModTargetGroup> filterTargetGroup2 = nullptr;
 

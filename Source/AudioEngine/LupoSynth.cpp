@@ -33,6 +33,7 @@ LupoSynth::LupoSynth(Model* model, ModMatrix* modMatrix) {
 		modEnvelopes.emplace_back(std::make_unique<SynthLab::ADSR>());
 	}
 
+	eq = std::make_unique<ParametricEQ>();
 	delay = std::make_unique <StereoDelay>();
 	reverb = std::make_unique <StereoReverb>();
 	distortion = std::make_unique <Distortion>();
@@ -156,6 +157,7 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 
 	chorus->prepareToPlay(sampleRate, samplesPerBlock);
 	reverb->setSampleRate(sampleRate);
+	eq->prepare(sampleRate, samplesPerBlock);
 	arp->prepareToPlay(sampleRate, bufferSize);
 	arp->setEnabled(false);
 	arp->setClockMode(Arpeggiator::ClockMode::Internal);
@@ -413,6 +415,9 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 	if (model->reverbEnabled) {
 		reverb->processStereo(leftOut, rightOut, buffer.getNumSamples());
 	}
+
+	// EQ – end of FX chain, before master gain
+	eq->processStereo(leftOut, rightOut, buffer.getNumSamples());
 
 	float masterGain = Decibels::decibelsToGain(model->outputGaindB);
 	buffer.applyGain(masterGain);
@@ -911,6 +916,22 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		else {
 			arp->setMode(Arpeggiator::Mode::Random);
 		}
+	}
+	// EQ parameters
+	else if (parameterID == "eqEnabled") {
+		eq->setEnabled(newValue > 0.5f);
+	}
+	else if (parameterID.startsWith("eqGain")) {
+		int band = parameterID.getLastCharacters(1).getIntValue() - 1;
+		if (band >= 0 && band < 8) eq->setBandGain(band, newValue);
+	}
+	else if (parameterID.startsWith("eqFreq")) {
+		int band = parameterID.getLastCharacters(1).getIntValue() - 1;
+		if (band >= 0 && band < 8) eq->setBandFrequency(band, newValue);
+	}
+	else if (parameterID.startsWith("eqQ")) {
+		int band = parameterID.getLastCharacters(1).getIntValue() - 1;
+		if (band >= 0 && band < 8) eq->setBandQ(band, newValue);
 	}
 }
 

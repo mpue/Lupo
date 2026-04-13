@@ -182,8 +182,13 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	modulationTab->addTab(TRANS("AUX ENV"), Colour(0x00000000), new EnvelopePanel(model, factory), true);
 	modulationTab->setCurrentTabIndex(0);
 
+	// EQ panel
+	eqPanel.reset(new EQPanel(model, factory, synth->getEQ()));
+	eqPanel->setName("eqPanel");
+
 	// Add all tabs to the main tabbed component
 	rightSideTabs->addTab(TRANS("FX"), Colour(0xff1a1a1a), fxContainerPanel.get(), false);
+	rightSideTabs->addTab(TRANS("EQ"), Colour(0xff1a1a1a), eqPanel.get(), false);
 	rightSideTabs->addTab(TRANS("Arpeggiator"), Colour(0xff1a1a1a), arpPanel.get(), false);
 	rightSideTabs->addTab(TRANS("Mod Matrix"), Colour(0xff1a1a1a), modMatrixViewport.get(), false);
 	rightSideTabs->addTab(TRANS("Modulation"), Colour(0xff1a1a1a), modulationTab.get(), false);
@@ -391,6 +396,7 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	chorusPanel.get()->initAttachments();
 	delayPanel.get()->initAttachments();
 	distortionPanel.get()->initAttachments();
+	eqPanel.get()->initAttachments();
 	arpPanel.get()->initAttachments();
 	modMatrix.get()->initAttachments();
 
@@ -484,6 +490,7 @@ MainUI::~MainUI()
 	label = nullptr;
 	mainDisplay = nullptr;
 	modMatrix = nullptr;
+	eqPanel = nullptr;
 	leftGainSlider = nullptr;
 	rightGainSlider = nullptr;
 }
