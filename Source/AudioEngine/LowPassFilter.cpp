@@ -103,7 +103,19 @@ void LowPassFilter::process(float* samples, int numSamples)
 float LowPassFilter::processSample(float sample)
 {
     float targetCutoff = juce::jlimit(20.0f, 20000.0f, frequency * currentModulatedValue);
-    smoothedCutoff.setTargetValue(targetCutoff);
+
+    // Large jumps (e.g. note-on with instant attack) bypass smoothing for immediate response
+    if (std::abs(targetCutoff - lastCutoff) > 500.0f)
+    {
+        smoothedCutoff.setCurrentAndTargetValue(targetCutoff);
+        svf1.setCutoffFrequency(targetCutoff);
+        svf2.setCutoffFrequency(targetCutoff);
+        lastCutoff = targetCutoff;
+    }
+    else
+    {
+        smoothedCutoff.setTargetValue(targetCutoff);
+    }
 
     if (++updateCounter >= updateInterval)
     {
