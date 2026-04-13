@@ -49,10 +49,10 @@ private:
     Model* model;
     ModMatrix* matrix;
     
-    static constexpr int GRID_SIZE = 44;
+    static constexpr int GRID_SIZE = 40;
     static constexpr int LABEL_HEIGHT = 20;
-    static constexpr int LABEL_WIDTH = 120;
-    static constexpr int MARGIN_LEFT = 10;
+    static constexpr int LABEL_WIDTH = 50;
+    static constexpr int MARGIN_LEFT = 5;
     static constexpr int MARGIN_TOP = 50;
     
     // Grid of modulation routing buttons

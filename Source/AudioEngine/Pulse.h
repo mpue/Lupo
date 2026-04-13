@@ -55,6 +55,7 @@ private:
     bool on = false;
 	stk::BlitSquare* blitSquare;    
     float currentModulatedFrequency = 0.0f;  // Track current modulated frequency
+    float basePulseWidth = 0.5f;  // Base pulse width set by setPulseWidth()
 };
 
 #endif /* Pulse_hpp */

@@ -133,7 +133,20 @@ void MultimodeOscillator::setSync(bool sync) {
 
 void MultimodeOscillator::setSpread(float spread)
 {
-	this->saw->setSpread(spread);
+	this->spread = spread;
+	if (this->mode == OscMode::PULSE) {
+		// Map spread 0..1 → pulse width 0.5..0.05 (narrowing pulse)
+		this->pulse->setPulseWidth(0.5f - spread * 0.45f);
+	} else {
+		this->saw->setSpread(spread);
+	}
+}
+
+void MultimodeOscillator::setMode(float mode)
+{
+	Oszillator::setMode(mode);
+	// Re-apply stored spread value when mode changes
+	setSpread(this->spread);
 }
 
 void MultimodeOscillator::processModulation()

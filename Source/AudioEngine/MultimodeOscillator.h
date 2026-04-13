@@ -34,6 +34,7 @@ public:
     virtual void setSlave(Oszillator* slave) override;
     virtual void setSync(bool sync) override;
 	void setSpread(float spread);
+	void setMode(float mode);
 	virtual void processModulation() override;
 
     virtual void addPwmModulator(std::shared_ptr<Modulator> mod) override {
@@ -59,6 +60,7 @@ private:
     float fine = 0;
 	float frequency = 0;
     float currentModulatedValue = 0.0f;
+    float spread = 0.0f;
 };
 
 #endif /* MultimodeOscillator_hpp */

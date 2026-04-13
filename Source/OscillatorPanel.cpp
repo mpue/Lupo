@@ -305,6 +305,9 @@ void OscillatorPanel::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
 		else if (getName().startsWith("osc4")) {
 			model->osc4Shape = comboBoxThatHasChanged->getSelectedItemIndex();
 		}
+		// Update spread label: "PW" for pulse mode, "Spread" otherwise
+		bool isPulse = (comboBoxThatHasChanged->getSelectedItemIndex() == 1); // Pulse is index 1
+		spreadLabel->setText(isPulse ? "PW" : "Spread", juce::dontSendNotification);
 
         //[/UserComboBoxCode_shapeComboBox]
     }

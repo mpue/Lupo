@@ -9,6 +9,7 @@
 */
 
 #include "Oszillator.h"
+#include <cmath>
 
 Oszillator::Oszillator() {
     this->pitch = 0;
@@ -53,6 +54,10 @@ float Oszillator::getFrequency() {
 
 void Oszillator::setPitch(int pitch) {
     this->pitch = pitch;
+}
+
+void Oszillator::setPitch(float pitch) {
+    this->pitch = static_cast<int>(std::round(pitch));
 }
 
 int Oszillator::getPitch() {

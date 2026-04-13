@@ -54,16 +54,16 @@ void Pulse::processModulation()
     }
     
     // Process PWM modulators (for pulse width modulation)
-    float modulatedValue = 0.5f; // Default to 50% duty cycle
+    float modulatedValue = basePulseWidth; // Use stored base pulse width
     
     if (!pwmModulators.empty()) {
-        modulatedValue = 0.0f;
+        float pwmMod = 0.0f;
         for (auto mod : pwmModulators) {
-            modulatedValue += mod->getOutput() * mod->getModAmount();
+            pwmMod += mod->getOutput() * mod->getModAmount();
         }
-        modulatedValue = modulatedValue / (float)pwmModulators.size(); // average
-        modulatedValue = (modulatedValue + 1.0f) / 2.0f; // map from -1..1 to 0..1
-        modulatedValue = jlimit(0.01f, 0.99f, modulatedValue); // limit to avoid extremes
+        pwmMod /= (float)pwmModulators.size();
+        pwmMod = (pwmMod + 1.0f) / 2.0f - 0.5f; // center around 0
+        modulatedValue = jlimit(0.01f, 0.99f, basePulseWidth + pwmMod);
     }
 	
 	// Set pulse width on blitSquare
@@ -99,7 +99,8 @@ float Pulse::getFine() const {
 }
 
 void Pulse::setPulseWidth(float width) {
-    blitSquare->setPulseWidth(width);
+    basePulseWidth = jlimit(0.01f, 0.99f, width);
+    blitSquare->setPulseWidth(basePulseWidth);
 }
 
 float Pulse::getPulseWidth() const {

@@ -58,6 +58,9 @@ LupoSynth::LupoSynth(Model* model, ModMatrix* modMatrix) {
 	modMatrix->registerTarget("Filter 1 cutoff", 5);
 	modMatrix->registerTarget("Filter 2 cutoff", 6);
 	modMatrix->registerTarget("Osc 1 PWM", 7);
+	modMatrix->registerTarget("Osc 2 PWM", 8);
+	modMatrix->registerTarget("Osc 3 PWM", 9);
+	modMatrix->registerTarget("Osc 4 PWM", 10);
 
 	oscGroup1 = std::make_unique<OscGroup>();
 	oscGroup2 = std::make_unique<OscGroup>();
@@ -80,7 +83,7 @@ LupoSynth::~LupoSynth()
 	if (oscGroup4) oscGroup4->getTargets().clear();
 	if (filterTargetGroup1) filterTargetGroup1->clearTargets();
 	if (filterTargetGroup2) filterTargetGroup2->clearTargets();
-	if (oscPwmTarget) oscPwmTarget->clearTargets();
+
 }
 
 std::shared_ptr<MultimodeOscillator> LupoSynth::createOscillator(Oszillator::OscMode mode) {
@@ -977,16 +980,13 @@ matrix->addModTarget(oscGroup4);
 		filterTargetGroup1->addTarget(voice->getFilter1());
 		filterTargetGroup2->addTarget(voice->getFilter2());
 	}
-	oscPwmTarget = std::make_unique<ModTargetGroup>();
-
-	oscPwmTarget->addTarget(oscGroup1);
-	oscPwmTarget->addTarget(oscGroup2);
-	oscPwmTarget->addTarget(oscGroup3);
-	oscPwmTarget->addTarget(oscGroup4);
-
 	matrix->addModTarget(filterTargetGroup1);
 	matrix->addModTarget(filterTargetGroup2);
-matrix->addModTarget(oscPwmTarget);
+	// PWM targets — each oscGroup is re-used; mod panel uses index > 5 to call addPwmModulator
+	matrix->addModTarget(oscGroup1);
+	matrix->addModTarget(oscGroup2);
+	matrix->addModTarget(oscGroup3);
+	matrix->addModTarget(oscGroup4);
 
 	lfo1->enabled = true;
 	lfo2->enabled = true;

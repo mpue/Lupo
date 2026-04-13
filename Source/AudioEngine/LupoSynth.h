@@ -101,7 +101,7 @@ private:
 	
 	std::shared_ptr<ModTargetGroup> filterTargetGroup1 = nullptr;
 	std::shared_ptr<ModTargetGroup> filterTargetGroup2 = nullptr;
-	std::shared_ptr<ModTargetGroup> oscPwmTarget = nullptr;
+
 
 	ModMatrix* matrix;
 

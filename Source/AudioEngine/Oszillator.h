@@ -48,6 +48,7 @@ public:
 
     virtual float process() = 0;
     virtual void setPitch(int pitch);
+    virtual void setPitch(float pitch);
     virtual int getPitch();
     void setPitchBend(float bend);
     float getPitchBend() const;
