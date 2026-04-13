@@ -1,4 +1,4 @@
-﻿#ifndef LowPassFilter_hpp
+#ifndef LowPassFilter_hpp
 #define LowPassFilter_hpp
 
 #include "Filter.h"
@@ -24,8 +24,10 @@ public:
 
 	void coefficients(float sampleRate, float frequency, float resonance) override;
 	void process(float* in, int numSamples);
+	float processSample(float sample);
 	void setFrequency(float frequency);
 	void setResonance(float resonance);
+	void setModulatedValue(float value) { currentModulatedValue = value; }
 	
 	// Force immediate update for real-time control responsiveness
 	void setFrequencyImmediate(float frequency);
@@ -47,7 +49,7 @@ private:
 	int    updateCounter = 0;
 	int    updateInterval = 4;          // More frequent updates: every 4 samples for better response
 	float  lastCutoff = -1.0f;			// remember last cutoff, to react on changes
-	float  cutoffEpsilon = 0.1f;        // Smaller epsilon for more immediate response
+	float  cutoffEpsilon = 0.01f;       // Min Hz change before updating coefficients
 
 	LinearSmoothedValue<float> smoothedCutoff;
 

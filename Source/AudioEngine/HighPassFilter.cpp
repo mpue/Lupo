@@ -1,4 +1,4 @@
-﻿//
+//
 //  HighPassFilter.cpp
 // 
 //  Original use in Trio, adapted for SynthLab, then modified and used here.
@@ -11,6 +11,7 @@
 
 #include "HighPassFilter.h"
 #include "ADSR.h"
+#include <cmath>
 
 HighPassFilter::HighPassFilter()
 {
@@ -109,24 +110,39 @@ void HighPassFilter::process(float* samples, int numSamples)
 	}
 }
 
-void HighPassFilter::processModulation()
+float HighPassFilter::processSample(float sample)
 {
-	// now iterate through all modulators and accumulate their values,
-	// then apply to cutoff frequency
+	float targetCutoff = juce::jlimit(20.0f, 20000.0f, frequency * currentModulatedValue);
+	smoothedCutoff.setTargetValue(targetCutoff);
 
-	float modulatedValue = 1.0f;
-	for (auto mod : modulators) {
-		// Scale the envelope output by its modulation amount
-		float envelopeValue = mod->getOutput();
-		float modAmount = mod->getModAmount();
-
-		// Apply modulation with proper scaling for musical filter sweep:
-		// - The envelope output ranges from 0 to 1
-		// - The modAmount is the user-controlled envelope amount (typically 0-100 or similar)
-		// - Scale to provide musical filter sweeps (multiply by base frequency works well)
-		modulatedValue += (envelopeValue * modAmount * 10.0f); // 10.0f provides good musical scaling
+	if (++updateCounter >= updateInterval)
+	{
+		float smooth = smoothedCutoff.getNextValue();
+		if (std::abs(smooth - lastCutoff) > cutoffEpsilon)
+		{
+			svf1.setCutoffFrequency(smooth);
+			svf2.setCutoffFrequency(smooth);
+			lastCutoff = smooth;
+		}
+		updateCounter = 0;
+	}
+	else
+	{
+		smoothedCutoff.skip(1);
 	}
 
-	currentModulatedValue = juce::jmax(0.01f, modulatedValue); // Prevent cutoff from going to zero
+	sample = svf1.processSample(0, sample);
+	sample = svf2.processSample(0, sample);
+	return sample;
+}
+
+void HighPassFilter::processModulation()
+{
+    // Octave-based modulation: modAmount=1.0 sweeps 4 octaves upward.
+    float totalOctaves = 0.0f;
+    for (auto mod : modulators) {
+        totalOctaves += mod->getOutput() * mod->getModAmount() * 4.0f;
+    }
+    currentModulatedValue = juce::jmax(0.01f, std::pow(2.0f, totalOctaves));
 }
 

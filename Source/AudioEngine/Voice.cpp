@@ -1,4 +1,4 @@
-﻿/*
+/*
   ==============================================================================
 
     Voice.cpp
@@ -11,6 +11,7 @@
 #include "Voice.h"
 #include "MultimodeOscillator.h"
 #include "../fasttrig.hpp"
+#include <cmath>
 
 #ifndef M_PI
 #define M_PI       3.14159265358979323846 
@@ -29,17 +30,17 @@ Voice::Voice(float sampleRate) {
     this->filter1 = std::make_shared<MultimodeFilter>();
     this->filter2 = std::make_shared<MultimodeFilter>();
 
-    ampEnvelope->setAttackRate(0 * sampleRate);  // 1 second
+    ampEnvelope->setAttackRate(0 * sampleRate);
     ampEnvelope->setDecayRate(1 * sampleRate);
     ampEnvelope->setReleaseRate(1 * sampleRate);
-    ampEnvelope->setSustainLevel(.8);
+    ampEnvelope->setSustainLevel(0.8f);
 
-    filterEnvelope->setAttackRate(0 * sampleRate);  // 1 second
+    filterEnvelope->setAttackRate(0 * sampleRate);
     filterEnvelope->setDecayRate(1 * sampleRate);
     filterEnvelope->setReleaseRate(1 * sampleRate);
-    filterEnvelope->setSustainLevel(.8);
+    filterEnvelope->setSustainLevel(0.0f);
     filterEnvelope->setTargetRatioA(0.1f);
-    filterEnvelope->setTargetRatioDR(0.01f);
+    filterEnvelope->setTargetRatioDR(0.1f);
   
 }
 
@@ -61,7 +62,7 @@ void Voice::setPitchBend(float bend) {
 	for (int i = 0; i < 4;i++) {
         int index = noteNumber + oscillators[i]->getPitch();
         if (index >= 0 && index < 128)
-  oscillators[i]->setFrequency((midiNote[index]) * pitchBend);
+            oscillators[i]->setFrequency((midiNote[index]) * pitchBend);
     }
 }
 
@@ -75,89 +76,66 @@ Oszillator* Voice::getOscillator(int num) {
 
 void Voice::processBlock(AudioBuffer<float>& buffer) {
     const int numSamples = buffer.getNumSamples();
-    auto* leftChannel = buffer.getWritePointer(0);
+    auto* leftChannel  = buffer.getWritePointer(0);
     auto* rightChannel = buffer.getWritePointer(1);
 
     if (ampEnvelope->getState() == SynthLab::ADSR::env_idle) {
         ampEnvelope->reset();
-        // Also reset filter envelope when amp envelope is idle
-        if (filterEnvelope->getState() != SynthLab::ADSR::env_idle) {
+        if (filterEnvelope->getState() != SynthLab::ADSR::env_idle)
             filterEnvelope->reset();
-        }
-        return; // Voice ist stumm
+        return;
     }
 
-    // Block-basierte Envelope-Verarbeitung
+    // Filter2 uses a modEnvelope processed block-level in LupoSynth
+    filter2->processModulation();
+
     for (int sample = 0; sample < numSamples; ++sample) {
-        // Process both envelopes for each sample
-        float amplitude = (velocity / 127.0f) * ampEnvelope->process();
-        filterEnvelope->process(); // Process filter envelope for each sample!
-        
+        float amplitude    = (velocity / 127.0f) * ampEnvelope->process();
+        float filterEnvVal = filterEnvelope->process();
+
+        // Per-sample filter1 modulation: envelope opens filter upward by up to 4 octaves
+        float modMult = std::exp2f(filterEnvVal * filterEnvelope->getModAmount() * 4.0f);
+        filter1->setCutoffModulation(modMult);
+
         float outL = 0.0f;
         float outR = 0.0f;
-
-		int numActiveOscillators = 0;
 
         for (int i = 0; i < 4; i++) {
             if (!oscillators[i]->enabled)
                 continue;
-
-			numActiveOscillators++;
 
             if (i == 1 && oscillators[i - 1]->enabled && oscillators[i - 1]->isSync()) {
                 oscillators[i - 1]->reset();
             }
 
             float oscSample = oscillators[i]->process();
-            
+
             if (modulator != nullptr) {
                 oscillators[i]->setPitchMod(modulator->getOutput() * this->modAmount);
             }
 
-            // Stereo-Panning berechnen
-            float pan = oscillators[i]->getPan();
-            float leftGain = fast_trig::sin_fast(((float)M_PI * (pan + 1.0f) / 4.0f));
+            float pan       = oscillators[i]->getPan();
+            float leftGain  = fast_trig::sin_fast(((float)M_PI * (pan + 1.0f) / 4.0f));
             float rightGain = fast_trig::cos_fast(((float)M_PI * (pan + 1.0f) / 4.0f));
 
-            outL += oscSample * leftGain * amplitude;
+            outL += oscSample * leftGain  * amplitude;
             outR += oscSample * rightGain * amplitude;
         }
 
-        leftChannel[sample] = outL;
-        rightChannel[sample] = outR;
-    }
-
-    // Process filter modulation before applying filters
-    // This will use the filter envelope values that were processed above
-    // Apply filters based on routing mode
- filter1->processModulation();
-  filter2->processModulation();
-
-    if (filterRouting == FilterRouting::Serial) {
-        // Serial: signal -> Filter1 -> Filter2 -> output
-        filter1->processStereo(leftChannel, rightChannel, numSamples);
-        filter2->processStereo(leftChannel, rightChannel, numSamples);
-    }
-    else {
-        // Parallel: (Filter1(signal) + Filter2(signal)) / 2 -> output
-        // Copy the dry signal for the second filter path
-        AudioBuffer<float> parallelBuffer(2, numSamples);
-    parallelBuffer.copyFrom(0, 0, leftChannel, numSamples);
-     parallelBuffer.copyFrom(1, 0, rightChannel, numSamples);
-
-        // Filter1 processes the original buffer
-   filter1->processStereo(leftChannel, rightChannel, numSamples);
-
-        // Filter2 processes the copy
-   auto* parLeft = parallelBuffer.getWritePointer(0);
-        auto* parRight = parallelBuffer.getWritePointer(1);
-        filter2->processStereo(parLeft, parRight, numSamples);
-
-        // Mix both paths (50/50)
-for (int sample = 0; sample < numSamples; ++sample) {
-  leftChannel[sample] = (leftChannel[sample] + parLeft[sample]) * 0.5f;
-       rightChannel[sample] = (rightChannel[sample] + parRight[sample]) * 0.5f;
+        // Apply filters per sample
+        if (filterRouting == FilterRouting::Serial) {
+            filter1->processSampleStereo(outL, outR);
+            filter2->processSampleStereo(outL, outR);
+        } else {
+            float parL = outL, parR = outR;
+            filter1->processSampleStereo(outL, outR);
+            filter2->processSampleStereo(parL, parR);
+            outL = (outL + parL) * 0.5f;
+            outR = (outR + parR) * 0.5f;
         }
+
+        leftChannel[sample]  = outL;
+        rightChannel[sample] = outR;
     }
 }
 
@@ -271,26 +249,25 @@ void Voice::processModulation()
     for (int i = 0; i < 4; i++) {
 		// oscillators[i]->processModulation();
     }
-	//filter1->processModulation();
-	//filter2->processModulation();
 }
 
 void Voice::setSampleRate(double rate) {
     this->sampleRate = rate;
-    ampEnvelope->setAttackRate(0 * sampleRate);  // 1 second
+
+    // Rate-dependent envelope parameters (times in samples)
+    // User-set values (attack/decay/release/sustain) are applied via parameterChanged
+    // and will override these defaults. Sustain is NOT rate-dependent, so we don't set it here.
+    ampEnvelope->setAttackRate(0 * sampleRate);
     ampEnvelope->setDecayRate(1 * sampleRate);
     ampEnvelope->setReleaseRate(1 * sampleRate);
-    ampEnvelope->setSustainLevel(.8);
 
-    filterEnvelope->setAttackRate(0 * sampleRate);  // 1 second
+    filterEnvelope->setAttackRate(0 * sampleRate);
     filterEnvelope->setDecayRate(1 * sampleRate);
     filterEnvelope->setReleaseRate(1 * sampleRate);
-    filterEnvelope->setSustainLevel(.8);
 
     for (int i = 0; i < 4; i++) {
         oscillators[i]->setSampleRate(rate);
     }
-   
 }
 
 float Voice::getSampleRate() {

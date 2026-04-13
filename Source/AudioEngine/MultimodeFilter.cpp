@@ -55,6 +55,8 @@ void MultimodeFilter::coefficients(float sampleRate, float frequency, float reso
 	if (resonance <= 0) {
 		resonance = 0.01f;
 	}
+    this->frequency = frequency;
+    this->resonance = resonance;
     this->lowPassLeftStage1->coefficients(sampleRate, frequency , resonance);
     this->lowPassRightStage1->coefficients(sampleRate, frequency, resonance);
 	
@@ -120,6 +122,30 @@ void MultimodeFilter::removeModulator(std::shared_ptr<Modulator> mod) {
 
 void MultimodeFilter::setKeyTrack(int track) {
 	this->keyTrack = track;
+}
+
+void MultimodeFilter::setCutoffModulation(float value)
+{
+	lowPassLeftStage1->setModulatedValue(value);
+	lowPassRightStage1->setModulatedValue(value);
+	lowPassLeftStage2->setModulatedValue(value);
+	lowPassRightStage2->setModulatedValue(value);
+	highPassLeft->setModulatedValue(value);
+	highPassRight->setModulatedValue(value);
+}
+
+void MultimodeFilter::processSampleStereo(float& left, float& right)
+{
+	if (!enabled) return;
+	if (mode == LOWPASS) {
+		left  = lowPassLeftStage1->processSample(left);
+		left  = lowPassLeftStage2->processSample(left);
+		right = lowPassRightStage1->processSample(right);
+		right = lowPassRightStage2->processSample(right);
+	} else {
+		left  = highPassLeft->processSample(left);
+		right = highPassRight->processSample(right);
+	}
 }
 
 void MultimodeFilter::processModulation()

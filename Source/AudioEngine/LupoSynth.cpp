@@ -1,4 +1,4 @@
-﻿/*
+/*
   ==============================================================================
 
 	LupoSynth.cpp
@@ -162,8 +162,10 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 		v->getFilter1()->coefficients(sampleRate, model->cutoff1, model->resonance1);
 		v->getFilter2()->coefficients(sampleRate, model->cutoff2, model->resonance2);
 		v->setSampleRate(sampleRate);
-		v->getFilter1()->addModulator(v->getFilterEnvelope());
+		v->getFilter1()->clearModulators();
+		// Filter1 modulation is handled per-sample in Voice::processBlock via setCutoffModulation()
 		// Connect auxiliary envelope to filter 2 if envAmt2 > 0
+		v->getFilter2()->clearModulators();
 		if (model->envAmt2 > 0.0f) {
 			modEnvelopes.at(1)->setModAmount(model->envAmt2);
 			v->getFilter2()->addModulator(modEnvelopes.at(1));

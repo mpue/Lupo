@@ -44,6 +44,10 @@ public:
     void setMode(Mode mode);
 	void setKeyTrack(int track);
 
+	// Per-sample modulation: set cutoff multiplier directly, then call processSampleStereo
+	void setCutoffModulation(float value);
+	void processSampleStereo(float& left, float& right);
+
 	virtual void processModulation() override;
 
 private:
