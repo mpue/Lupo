@@ -17,6 +17,7 @@
 #include "FilterPanel.h"
 #include "ModPanel.h"
 #include "EQPanel.h"
+#include "StepSequencerPanel.h"
 #include "PresetBrowser.h"
 
 class ModMatrixPanel;
@@ -119,7 +120,8 @@ private:
     std::unique_ptr<Label> label;
     std::unique_ptr<TextEditor> mainDisplay;
     std::unique_ptr<ModPanel> modMatrix;
-    std::unique_ptr<EQPanel>  eqPanel;
+    std::unique_ptr<EQPanel>              eqPanel;
+    std::unique_ptr<StepSequencerPanel>   seqPanel;
     
     // components for the tabbed right side layout
     std::unique_ptr<TabbedComponent> rightSideTabs;

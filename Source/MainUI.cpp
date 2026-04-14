@@ -186,12 +186,17 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	eqPanel.reset(new EQPanel(model, factory, synth->getEQ()));
 	eqPanel->setName("eqPanel");
 
+	// Step Sequencer panel
+	seqPanel.reset(new StepSequencerPanel(synth->getSeq()));
+	seqPanel->setName("seqPanel");
+
 	// Add all tabs to the main tabbed component
-	rightSideTabs->addTab(TRANS("FX"), Colour(0xff1a1a1a), fxContainerPanel.get(), false);
-	rightSideTabs->addTab(TRANS("EQ"), Colour(0xff1a1a1a), eqPanel.get(), false);
-	rightSideTabs->addTab(TRANS("Arpeggiator"), Colour(0xff1a1a1a), arpPanel.get(), false);
-	rightSideTabs->addTab(TRANS("Mod Matrix"), Colour(0xff1a1a1a), modMatrixViewport.get(), false);
-	rightSideTabs->addTab(TRANS("Modulation"), Colour(0xff1a1a1a), modulationTab.get(), false);
+	rightSideTabs->addTab(TRANS("FX"),         Colour(0xff1a1a1a), fxContainerPanel.get(), false);
+	rightSideTabs->addTab(TRANS("EQ"),         Colour(0xff1a1a1a), eqPanel.get(),          false);
+	rightSideTabs->addTab(TRANS("Sequencer"),  Colour(0xff1a1a1a), seqPanel.get(),         false);
+	rightSideTabs->addTab(TRANS("Arpeggiator"),Colour(0xff1a1a1a), arpPanel.get(),         false);
+	rightSideTabs->addTab(TRANS("Mod Matrix"), Colour(0xff1a1a1a), modMatrixViewport.get(),false);
+	rightSideTabs->addTab(TRANS("Modulation"), Colour(0xff1a1a1a), modulationTab.get(),    false);
 	rightSideTabs->setCurrentTabIndex(0);
 	rightSideTabs->setBounds(1020, 48, 480, 520);
 	presetButton.reset(new TextButton("presetButton"));
@@ -490,7 +495,8 @@ MainUI::~MainUI()
 	label = nullptr;
 	mainDisplay = nullptr;
 	modMatrix = nullptr;
-	eqPanel = nullptr;
+	eqPanel  = nullptr;
+	seqPanel = nullptr;
 	leftGainSlider = nullptr;
 	rightGainSlider = nullptr;
 }
@@ -592,6 +598,16 @@ void MainUI::buttonClicked(Button* buttonThatWasClicked)
 			}
 
 			xml->writeToFile(preset, "");
+
+			// Save step sequencer pattern to a separate .seq file
+			File seqFile = File(presetPath + presetName + ".seq");
+			String seqState = synth->getSeq()->getStateAsString();
+			if (seqFile.exists())
+				seqFile.replaceWithText(seqState);
+			else {
+				seqFile.create();
+				seqFile.appendText(seqState);
+			}
 
 			// DEBUG
 			ValueTree state = ValueTree::fromXml(*xml);

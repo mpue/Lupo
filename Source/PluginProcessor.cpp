@@ -143,6 +143,14 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("filterMode", "Filter mode", 0, 1.0, 0);
 	factory->createParam("cutoffLink", "Cutoff link", 0, 1.0, 0);
 
+	// Step Sequencer (disabled by default)
+	factory->createParam("seqEnabled",   "Seq enabled",   0.0f, 1.0f,   0.0f);
+	factory->createParam("seqTempo",     "Seq tempo",    20.0f, 300.0f, 120.0f);
+	factory->createParam("seqSteps",     "Seq steps",     1.0f, 32.0f,  16.0f);
+	factory->createParam("seqDivision",  "Seq division",  0.0f,  3.0f,   2.0f);  // default 1/16
+	factory->createParam("seqDirection", "Seq direction", 0.0f,  3.0f,   0.0f);
+	factory->createParam("seqSwing",     "Seq swing",     0.0f,  0.75f,  0.0f);
+
 	// 8-Band Parametric EQ (bypassed by default: eqEnabled=0)
 	factory->createParam("eqEnabled", "EQ Active", 0.0f, 1.0f, 0.0f);
 	{
@@ -299,12 +307,17 @@ void LupoAudioProcessor::setSelectedProgram(juce::String name) {
 
 	this->selectedProgram = name;
 
-	// Get the mod matrix state from the preset		
+	// Get the mod matrix state from the preset
 	String modMatrixState = "5,7;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0";
 
 	if (matrixFile.exists()) {
-		 modMatrixState = matrixFile.loadFileAsString();			
+		 modMatrixState = matrixFile.loadFileAsString();
 	}
+
+	// Load step sequencer pattern
+	File seqFile = File(presetPath + name + ".seq");
+	if (seqFile.exists())
+		lupo->getSeq()->loadStateFromString(seqFile.loadFileAsString());
 
 	// Use replaceState() for thread-safe state replacement.
 	// This triggers valueTreeRedirected -> updateParameterConnectionsToChildTrees

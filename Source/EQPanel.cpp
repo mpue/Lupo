@@ -53,7 +53,7 @@ float FrequencyResponseDisplay::yToGain (float y) const
 int FrequencyResponseDisplay::findNearestBand (Point<int> pos) const
 {
     int   best = -1;
-    float bestDist = 20.0f;
+    float bestDist = std::numeric_limits<float>::max();
 
     for (int i = 0; i < ParametricEQ::NUM_BANDS; ++i)
     {

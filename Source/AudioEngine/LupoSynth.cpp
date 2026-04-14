@@ -33,7 +33,8 @@ LupoSynth::LupoSynth(Model* model, ModMatrix* modMatrix) {
 		modEnvelopes.emplace_back(std::make_unique<SynthLab::ADSR>());
 	}
 
-	eq = std::make_unique<ParametricEQ>();
+	eq  = std::make_unique<ParametricEQ>();
+	seq = std::make_unique<StepSequencer>();
 	delay = std::make_unique <StereoDelay>();
 	reverb = std::make_unique <StereoReverb>();
 	distortion = std::make_unique <Distortion>();
@@ -158,6 +159,7 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	chorus->prepareToPlay(sampleRate, samplesPerBlock);
 	reverb->setSampleRate(sampleRate);
 	eq->prepare(sampleRate, samplesPerBlock);
+	seq->prepareToPlay(sampleRate, samplesPerBlock);
 	arp->prepareToPlay(sampleRate, bufferSize);
 	arp->setEnabled(false);
 	arp->setClockMode(Arpeggiator::ClockMode::Internal);
@@ -350,7 +352,8 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 	for (auto i = 0; i < 2; ++i)
 		buffer.clear(i, 0, buffer.getNumSamples());
 
-	this->arp->processBlock(buffer, midiMessages);
+	this->seq->processBlock(buffer, midiMessages);  // note-triggered; eats keyboard notes, outputs sequence
+	this->arp->processBlock(buffer, midiMessages);  // runs on remaining MIDI
 	this->processMidi(midiMessages);
 
 	const int numSamples = buffer.getNumSamples();
@@ -917,6 +920,25 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 			arp->setMode(Arpeggiator::Mode::Random);
 		}
 	}
+	// Step Sequencer parameters
+	else if (parameterID == "seqEnabled") {
+		seq->setEnabled(newValue > 0.5f);
+	}
+	else if (parameterID == "seqTempo") {
+		seq->setTempo(newValue);
+	}
+	else if (parameterID == "seqDivision") {
+		seq->setDivision(static_cast<int>(newValue));
+	}
+	else if (parameterID == "seqDirection") {
+		seq->setDirection(static_cast<int>(newValue));
+	}
+	else if (parameterID == "seqSwing") {
+		seq->setSwing(newValue);
+	}
+	else if (parameterID == "seqSteps") {
+		seq->setNumSteps(static_cast<int>(newValue));
+	}
 	// EQ parameters
 	else if (parameterID == "eqEnabled") {
 		eq->setEnabled(newValue > 0.5f);
@@ -1084,4 +1106,5 @@ float LupoSynth::getRighPeak()
 void LupoSynth::setPlayHead(juce::AudioPlayHead* ph)
 {
 	arp->setPlayHead(ph);
+	seq->setPlayHead(ph);
 }
