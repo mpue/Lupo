@@ -46,15 +46,24 @@ Voice::Voice(float sampleRate) {
 
 void Voice::setNoteAndVelocity(int note, int velocity) {
 
-	this->noteNumber = note;
 	this->velocity = velocity;
 
-    for (int i = 0; i < 4; i++) {
-    int index = noteNumber + oscillators[i]->getPitch();
-        if (index >= 0 && index < 128)
-	    oscillators[i]->setFrequency((midiNote[index]) * pitchBend);
-    }
+	float effectiveTime = portamentoTime * portamentoAmount;
+	if (effectiveTime > 0.0f && currentMidiNote >= 0.0f) {
+		// Portamento active: keep current position, just update target
+		targetMidiNote = (float)note;
+	} else {
+		// No portamento: jump immediately to the target note
+		currentMidiNote = (float)note;
+		targetMidiNote  = (float)note;
+		for (int i = 0; i < 4; i++) {
+			int index = note + oscillators[i]->getPitch();
+			if (index >= 0 && index < 128)
+				oscillators[i]->setFrequency((midiNote[index]) * pitchBend);
+		}
+	}
 
+	this->noteNumber = note;
 }
 
 void Voice::setPitchBend(float bend) {
@@ -89,6 +98,25 @@ void Voice::processBlock(AudioBuffer<float>& buffer) {
     // Filter2 uses a modEnvelope processed block-level in LupoSynth
     filter2->processModulation();
 
+    // Portamento: advance currentMidiNote towards targetMidiNote and update oscillator frequencies
+    {
+        float effectiveTime = portamentoTime * portamentoAmount;
+        if (effectiveTime > 0.0f && currentMidiNote != targetMidiNote) {
+            float stepPerBuffer = (float)numSamples / (effectiveTime * (float)sampleRate);
+            float diff = targetMidiNote - currentMidiNote;
+            if (std::abs(diff) <= stepPerBuffer)
+                currentMidiNote = targetMidiNote;
+            else
+                currentMidiNote += (diff > 0.0f ? 1.0f : -1.0f) * stepPerBuffer;
+
+            for (int i = 0; i < (int)oscillators.size(); i++) {
+                float noteF = jlimit(0.0f, 127.0f, currentMidiNote + (float)oscillators[i]->getPitch());
+                float freq  = 440.0f * std::pow(2.0f, (noteF - 69.0f) / 12.0f);
+                oscillators[i]->setFrequency(freq * pitchBend);
+            }
+        }
+    }
+
     for (int sample = 0; sample < numSamples; ++sample) {
         float amplitude    = (velocity / 127.0f) * ampEnvelope->process();
         float filterEnvVal = filterEnvelope->process();
@@ -114,12 +142,17 @@ void Voice::processBlock(AudioBuffer<float>& buffer) {
                 oscillators[i]->setPitchMod(modulator->getOutput() * this->modAmount);
             }
 
-            float pan       = oscillators[i]->getPan();
-            float leftGain  = fast_trig::sin_fast(((float)M_PI * (pan + 1.0f) / 4.0f));
-            float rightGain = fast_trig::cos_fast(((float)M_PI * (pan + 1.0f) / 4.0f));
-
-            outL += oscSample * leftGain  * amplitude;
-            outR += oscSample * rightGain * amplitude;
+            if (oscillators[i]->hasStereoOutput()) {
+                // Saw mode with stereo width: L and R are already separated by the oscillator
+                outL += oscillators[i]->getLeftOutput()  * amplitude;
+                outR += oscillators[i]->getRightOutput() * amplitude;
+            } else {
+                float pan       = oscillators[i]->getPan();
+                float leftGain  = fast_trig::sin_fast(((float)M_PI * (pan + 1.0f) / 4.0f));
+                float rightGain = fast_trig::cos_fast(((float)M_PI * (pan + 1.0f) / 4.0f));
+                outL += oscSample * leftGain  * amplitude;
+                outR += oscSample * rightGain * amplitude;
+            }
         }
 
         // Apply filters per sample
@@ -167,6 +200,11 @@ void Voice::setOscSpread(int osc, float spread)
 {
 	MultimodeOscillator* mmo = oscillators.at(osc).get();
 	mmo->setSpread(spread);
+}
+
+void Voice::setOscWidth(int osc, float width)
+{
+	oscillators.at(osc)->setWidth(width);
 }
 
 void Voice::addModulator(std::shared_ptr<Modulator> mod)
@@ -305,3 +343,9 @@ void Voice::setVelocity(int velocity) {
 int Voice::getVelocity() const {
 	return this->velocity;
 }
+
+void Voice::setPortamento(float time, float amount) {
+	this->portamentoTime   = time;
+	this->portamentoAmount = amount;
+}
+

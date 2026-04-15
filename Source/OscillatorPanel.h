@@ -88,6 +88,8 @@ private:
     std::unique_ptr<Label> pitchlabel1;
     std::unique_ptr<Slider> oscFine;
     std::unique_ptr<Label> fineLabel;
+    std::unique_ptr<Slider> widthSlider;
+    std::unique_ptr<Label> widthLabel;
     std::unique_ptr<Slider> spreadSlider;
     std::unique_ptr<Label> spreadLabel;
     std::unique_ptr<ToggleButton> syncButton;

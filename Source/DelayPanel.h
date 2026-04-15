@@ -72,6 +72,12 @@ private:
     std::unique_ptr<Label> labelFb;
     std::unique_ptr<Label> labelMix;
 
+    std::unique_ptr<GroupComponent> portamentoGroup;
+    std::unique_ptr<Slider> portamentoIntensity;
+    std::unique_ptr<Slider> portamentoSpeed;
+    std::unique_ptr<Label> labelIntensity;
+    std::unique_ptr<Label> labelSpeed;
+
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (DelayPanel)

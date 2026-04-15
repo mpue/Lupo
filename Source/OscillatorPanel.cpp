@@ -70,7 +70,7 @@ OscillatorPanel::OscillatorPanel (Model* model, AttachmentFactory* factory)
     oscFine->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     oscFine->addListener (this);
 
-    oscFine->setBounds (120, 32, 64, 64);
+    oscFine->setBounds (112, 32, 40, 40);
 
     fineLabel.reset (new Label ("fineLabel",
                                 TRANS("Fine\n")));
@@ -81,7 +81,24 @@ OscillatorPanel::OscillatorPanel (Model* model, AttachmentFactory* factory)
     fineLabel->setColour (TextEditor::textColourId, Colours::black);
     fineLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    fineLabel->setBounds (136, 104, 39, 24);
+    fineLabel->setBounds (112, 74, 40, 18);
+
+    widthSlider.reset (new Slider ("widthSlider"));
+    addAndMakeVisible (widthSlider.get());
+    widthSlider->setRange (0.0, 1.0, 0.01);
+    widthSlider->setSliderStyle (Slider::RotaryVerticalDrag);
+    widthSlider->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    widthSlider->addListener (this);
+    widthSlider->setBounds (158, 32, 40, 40);
+
+    widthLabel.reset (new Label ("widthLabel", TRANS("Width")));
+    addAndMakeVisible (widthLabel.get());
+    widthLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
+    widthLabel->setJustificationType (Justification::centredLeft);
+    widthLabel->setEditable (false, false, false);
+    widthLabel->setColour (TextEditor::textColourId, Colours::black);
+    widthLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    widthLabel->setBounds (158, 74, 40, 18);
 
     spreadSlider.reset (new Slider ("spreadSlider"));
     addAndMakeVisible (spreadSlider.get());
@@ -166,6 +183,8 @@ OscillatorPanel::~OscillatorPanel()
     pitchlabel1 = nullptr;
     oscFine = nullptr;
     fineLabel = nullptr;
+    widthSlider = nullptr;
+    widthLabel = nullptr;
     spreadSlider = nullptr;
     spreadLabel = nullptr;
     syncButton = nullptr;
@@ -235,6 +254,10 @@ void OscillatorPanel::sliderValueChanged (Slider* sliderThatWasMoved)
 			model->osc4Fine = (float)sliderThatWasMoved->getValue();
 		}
         //[/UserSliderCode_oscFine]
+    }
+    else if (sliderThatWasMoved == widthSlider.get())
+    {
+        // Width is handled via APVTS attachment
     }
     else if (sliderThatWasMoved == spreadSlider.get())
     {
@@ -330,6 +353,7 @@ void OscillatorPanel::initAttachments()
 		factory->createSliderAttachment("osc1Fine", oscFine.get());
 		factory->createComboAttachment("osc1Shape", shapeComboBox.get());
 		factory->createSliderAttachment("osc1Spread", spreadSlider.get());
+		factory->createSliderAttachment("osc1Width",  widthSlider.get());
         factory->createButtonAttachment("osc1Sync", syncButton.get());
         factory->createButtonAttachment("osc1Enabled", oscEnabledButton.get());
 
@@ -339,6 +363,7 @@ void OscillatorPanel::initAttachments()
 		factory->createSliderAttachment("osc2Fine", oscFine.get());
 		factory->createComboAttachment("osc2Shape", shapeComboBox.get());
 		factory->createSliderAttachment("osc2Spread", spreadSlider.get());
+		factory->createSliderAttachment("osc2Width",  widthSlider.get());
         factory->createButtonAttachment("osc2Enabled", oscEnabledButton.get());
 	}
 	else if (getName().startsWith("osc3")) {
@@ -346,6 +371,7 @@ void OscillatorPanel::initAttachments()
 		factory->createSliderAttachment("osc3Fine", oscFine.get());
 		factory->createComboAttachment("osc3Shape", shapeComboBox.get());
 		factory->createSliderAttachment("osc3Spread", spreadSlider.get());
+		factory->createSliderAttachment("osc3Width",  widthSlider.get());
         factory->createButtonAttachment("osc3Enabled", oscEnabledButton.get());
 	}
 
@@ -354,6 +380,7 @@ void OscillatorPanel::initAttachments()
 		factory->createSliderAttachment("osc4Fine", oscFine.get());
 		factory->createComboAttachment("osc4Shape", shapeComboBox.get());
 		factory->createSliderAttachment("osc4Spread", spreadSlider.get());
+		factory->createSliderAttachment("osc4Width",  widthSlider.get());
         factory->createButtonAttachment("osc4Enabled", oscEnabledButton.get());
 	}
 

@@ -1,6 +1,7 @@
 #pragma once
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "AudioEngine/StepSequencer.h"
+#include "AudioEngine/ChordManager.h"
 
 //==============================================================================
 /** Single step cell: handles display + interaction for one sequencer step. */
@@ -11,6 +12,7 @@ public:
 
     void setStep(StepSequencer::Step* s);
     void setPlaying(bool p);
+    void setChordManager(ChordManager* cm) { chordManager = cm; }
 
     void paint(juce::Graphics& g) override;
     void mouseDown(const juce::MouseEvent& e) override;
@@ -25,7 +27,8 @@ private:
     int  stepIndex  = 0;
     bool isPlaying  = false;
 
-    StepSequencer::Step* step = nullptr;
+    StepSequencer::Step* step         = nullptr;
+    ChordManager*        chordManager = nullptr;
 
     int  dragStartY   = 0;
     int  dragStartVel = 100;
@@ -39,7 +42,7 @@ class StepSequencerPanel : public juce::Component,
                            public juce::Timer
 {
 public:
-    explicit StepSequencerPanel(StepSequencer* sequencer);
+    explicit StepSequencerPanel(StepSequencer* sequencer, ChordManager* chordManager = nullptr);
     ~StepSequencerPanel() override;
 
     void paint(juce::Graphics& g) override;
@@ -53,8 +56,6 @@ private:
 
     std::unique_ptr<juce::ToggleButton> enableButton;
 
-    std::unique_ptr<juce::Slider> tempoSlider;
-    std::unique_ptr<juce::Label>  tempoLabel;
     std::unique_ptr<juce::Slider> swingSlider;
     std::unique_ptr<juce::Label>  swingLabel;
 

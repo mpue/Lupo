@@ -187,7 +187,7 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	eqPanel->setName("eqPanel");
 
 	// Step Sequencer panel
-	seqPanel.reset(new StepSequencerPanel(synth->getSeq()));
+	seqPanel.reset(new StepSequencerPanel(synth->getSeq(), synth->getChordManager()));
 	seqPanel->setName("seqPanel");
 
 	// Add all tabs to the main tabbed component
@@ -427,6 +427,56 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	rightGainSlider->setSliderStyle(Slider::LinearHorizontal);
 	rightGainSlider->setTextBoxStyle(Slider::NoTextBox, false, 80, 20);
 	rightGainSlider->setBounds(1050, 615, 400, 10);
+
+	// Chord buttons — below VU meter, same total width (400px), split equally
+	chordButton.reset(new TextButton("chordButton"));
+	addAndMakeVisible(chordButton.get());
+	chordButton->setButtonText("Chord");
+	chordButton->setClickingTogglesState(true);
+	chordButton->setColour(TextButton::buttonColourId,   Colour(0xff1a1a2e));
+	chordButton->setColour(TextButton::buttonOnColourId, Colour(0xff4040cc));
+	chordButton->setColour(TextButton::textColourOffId,  Colour(0xff8888cc));
+	chordButton->setColour(TextButton::textColourOnId,   Colours::white);
+	chordButton->addListener(this);
+	chordButton->setBounds(1050, 632, 126, 24);
+
+	createChordButton.reset(new TextButton("createChordButton"));
+	addAndMakeVisible(createChordButton.get());
+	createChordButton->setButtonText("Create");
+	createChordButton->setColour(TextButton::buttonColourId,  Colour(0xff1a2a1a));
+	createChordButton->setColour(TextButton::textColourOffId, Colour(0xff66bb66));
+	createChordButton->addListener(this);
+	createChordButton->setBounds(1184, 632, 126, 24);
+
+	autoChordButton.reset(new TextButton("autoChordButton"));
+	addAndMakeVisible(autoChordButton.get());
+	autoChordButton->setButtonText("Auto");
+	autoChordButton->setClickingTogglesState(true);
+	autoChordButton->setColour(TextButton::buttonColourId,   Colour(0xff1a2a2a));
+	autoChordButton->setColour(TextButton::buttonOnColourId, Colour(0xff00aaaa));
+	autoChordButton->setColour(TextButton::textColourOffId,  Colour(0xff44aaaa));
+	autoChordButton->setColour(TextButton::textColourOnId,   Colours::white);
+	autoChordButton->addListener(this);
+	autoChordButton->setBounds(1318, 632, 132, 24);
+
+	// Key selector
+	chordKeyCombo.reset(new ComboBox("chordKeyCombo"));
+	addAndMakeVisible(chordKeyCombo.get());
+	for (const char* n : { "C","C#","D","D#","E","F","F#","G","G#","A","A#","B" })
+		chordKeyCombo->addItem(n, chordKeyCombo->getNumItems() + 1);
+	chordKeyCombo->setSelectedId(1, dontSendNotification);
+	chordKeyCombo->addListener(this);
+	chordKeyCombo->setBounds(1050, 660, 192, 20);
+
+	// Scale selector
+	chordScaleCombo.reset(new ComboBox("chordScaleCombo"));
+	addAndMakeVisible(chordScaleCombo.get());
+	for (const char* n : { "Major","Minor","Dorian","Phrygian","Lydian","Mixolydian" })
+		chordScaleCombo->addItem(n, chordScaleCombo->getNumItems() + 1);
+	chordScaleCombo->setSelectedId(1, dontSendNotification);
+	chordScaleCombo->addListener(this);
+	chordScaleCombo->setBounds(1250, 660, 200, 20);
+
 	resized();
 
 	startTimer(30);
@@ -499,6 +549,11 @@ MainUI::~MainUI()
 	seqPanel = nullptr;
 	leftGainSlider = nullptr;
 	rightGainSlider = nullptr;
+	chordButton       = nullptr;
+	createChordButton = nullptr;
+	autoChordButton   = nullptr;
+	chordKeyCombo     = nullptr;
+	chordScaleCombo   = nullptr;
 }
 
 void MainUI::paint(Graphics& g)
@@ -529,7 +584,34 @@ void MainUI::sliderValueChanged(Slider* sliderThatWasMoved)
 void MainUI::buttonClicked(Button* buttonThatWasClicked)
 {
 
-	if (buttonThatWasClicked == presetButton.get())
+	auto* chord = synth->getChordManager();
+
+	if (buttonThatWasClicked == chordButton.get())
+	{
+		bool on = chordButton->getToggleState();
+		if (chord) { chord->setEnabled(on); chord->setAutoChord(false); }
+		// mutually exclusive with Auto
+		if (on && autoChordButton) autoChordButton->setToggleState(false, dontSendNotification);
+	}
+	else if (buttonThatWasClicked == autoChordButton.get())
+	{
+		bool on = autoChordButton->getToggleState();
+		if (chord) { chord->setAutoChord(on); chord->setEnabled(on); }
+		// mutually exclusive with manual Chord
+		if (on && chordButton) chordButton->setToggleState(false, dontSendNotification);
+	}
+	else if (buttonThatWasClicked == createChordButton.get())
+	{
+		if (chord)
+		{
+			chord->startCapture();
+			// Give visual feedback: button text while capturing
+			createChordButton->setButtonText("...");
+			// Poll until capture finishes, then restore label
+			startTimer(30);
+		}
+	}
+	else if (buttonThatWasClicked == presetButton.get())
 	{
 		presetBrowser->setBounds(getLocalBounds());
 		presetBrowser->setVisible(true);
@@ -609,6 +691,16 @@ void MainUI::buttonClicked(Button* buttonThatWasClicked)
 				seqFile.appendText(seqState);
 			}
 
+			// Save EQ automation to a separate .eqauto file
+			File eqAutoFile = File(presetPath + presetName + ".eqauto");
+			String eqAutoState = synth->getEqAuto()->getStateAsString();
+			if (eqAutoFile.exists())
+				eqAutoFile.replaceWithText(eqAutoState);
+			else {
+				eqAutoFile.create();
+				eqAutoFile.appendText(eqAutoState);
+			}
+
 			// DEBUG
 			ValueTree state = ValueTree::fromXml(*xml);
 
@@ -646,12 +738,32 @@ void MainUI::comboBoxChanged(ComboBox* comboBoxThatHasChanged)
 	else if (comboBoxThatHasChanged == filterModeCombo.get())
 	{
 	}
+	else if (comboBoxThatHasChanged == chordKeyCombo.get())
+	{
+		auto* chord = synth->getChordManager();
+		if (chord) chord->setKey(chordKeyCombo->getSelectedId() - 1);  // selectedId is 1-based
+	}
+	else if (comboBoxThatHasChanged == chordScaleCombo.get())
+	{
+		auto* chord = synth->getChordManager();
+		if (chord) chord->setScale((ChordManager::Scale)(chordScaleCombo->getSelectedId() - 1));
+	}
 }
 
 void MainUI::timerCallback()
 {
 	leftGainSlider->setValue(processor->getSynth()->getLeftPeak(), juce::NotificationType::dontSendNotification);
 	rightGainSlider->setValue(processor->getSynth()->getRighPeak(), juce::NotificationType::dontSendNotification);
+
+	// Update "Create" button label while chord capture is active
+	if (createChordButton != nullptr)
+	{
+		auto* chord = synth->getChordManager();
+		if (chord && chord->isCapturing())
+			createChordButton->setButtonText("...");
+		else
+			createChordButton->setButtonText("Create");
+	}
 
 	// Per-instance mod matrix state update (replaces global FastBus)
 	if (model->modMatrixStateChanged.exchange(false))

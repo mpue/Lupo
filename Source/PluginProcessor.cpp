@@ -88,6 +88,7 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("osc1Pan", "Osc1 pan", -1.0, 1.0, 0);
 	factory->createParam("osc1Shape", "Osc1 shape", 0, 3.0, 0);
 	factory->createParam("osc1Spread", "Osc1 spread", 0, 1.0, 0);
+	factory->createParam("osc1Width",  "Osc1 width",  0, 1.0, 0);
 	factory->createParam("osc1Enabled", "Osc1 enabled", 0, 1.0, 0);
 	factory->createParam("osc1Sync", "Osc1 sync", 0, 1.0, 1);
 
@@ -97,6 +98,7 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("osc2Pan", "Osc2 pan", -1.0, 1.0, 0);
 	factory->createParam("osc2Shape", "Osc2 shape", 0, 3.0, 0);
 	factory->createParam("osc2Spread", "Osc2 spread", 0, 1.0, 0);
+	factory->createParam("osc2Width",  "Osc2 width",  0, 1.0, 0);
 	factory->createParam("osc2Enabled", "Osc2 enabled", 0, 1.0, 0);
 
 	factory->createParam("osc3Pitch", "Osc3 pitch", -36, 36, 0);
@@ -105,6 +107,7 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("osc3Pan", "Osc3 pan", -1.0, 1.0, 0);
 	factory->createParam("osc3Shape", "Osc3 shape", 0, 3.0, 0);
 	factory->createParam("osc3Spread", "Osc3 spread", 0, 1.0, 0);
+	factory->createParam("osc3Width",  "Osc3 width",  0, 1.0, 0);
 	factory->createParam("osc3Enabled", "Osc3 enabled", 0, 1.0, 0);
 
 	factory->createParam("osc4Pitch", "Osc4 pitch", -36, 36, 0);
@@ -113,6 +116,7 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("osc4Pan", "Osc4 pan", -1.0, 1.0, 0);
 	factory->createParam("osc4Shape", "Osc4 shape", 0, 3.0, 0);
 	factory->createParam("osc4Spread", "Osc4 spread", 0, 1.0, 0);
+	factory->createParam("osc4Width",  "Osc4 width",  0, 1.0, 0);
 	factory->createParam("osc4Enabled", "Osc4 enabled", 0, 1.0, 0);
 
 	factory->createParam("lfo1Shape", "Lfo1 shape", 0, 4.0, 0);
@@ -132,6 +136,9 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("distDrive", "Drive", 0, 5.0, 0);
 	factory->createParam("distMix", "Distortion Mix", 0, 1.0, 0);
 	factory->createParam("distMode", "Distortion MOde", 0, 3.0, 0);
+
+	factory->createParam("portamentoTime",   "Portamento Duration",  0.0f, 2.0f, 0.5f);
+	factory->createParam("portamentoAmount", "Portamento Intensity", 0.0f, 1.0f, 0.0f);
 
 	factory->createParam("arpEnabled", "Arp enabled", 0, 1.0, 0);
 	factory->createParam("arpSpeed", "Arp speed", 0, 3.0, 2);  // Changed from 0, 1.0, 0 to 0, 3.0, 2 to match speedSlider range
@@ -318,6 +325,11 @@ void LupoAudioProcessor::setSelectedProgram(juce::String name) {
 	File seqFile = File(presetPath + name + ".seq");
 	if (seqFile.exists())
 		lupo->getSeq()->loadStateFromString(seqFile.loadFileAsString());
+
+	// Load EQ automation
+	File eqAutoFile = File(presetPath + name + ".eqauto");
+	if (eqAutoFile.exists())
+		lupo->getEqAuto()->loadStateFromString(eqAutoFile.loadFileAsString());
 
 	// Use replaceState() for thread-safe state replacement.
 	// This triggers valueTreeRedirected -> updateParameterConnectionsToChildTrees

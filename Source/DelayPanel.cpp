@@ -123,6 +123,45 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     labelMix->setBounds (208, 80, 48, 24);
 
 
+    // Portamento group – positioned to the right of the Stereo delay group
+    portamentoGroup.reset (new GroupComponent ("portamentoGroup", TRANS("Portamento")));
+    addAndMakeVisible (portamentoGroup.get());
+    portamentoGroup->setBounds (264, 0, 184, 112);
+
+    portamentoIntensity.reset (new Slider ("portamentoIntensity"));
+    addAndMakeVisible (portamentoIntensity.get());
+    portamentoIntensity->setRange (0.0, 1.0, 0.01);
+    portamentoIntensity->setSliderStyle (Slider::RotaryVerticalDrag);
+    portamentoIntensity->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    portamentoIntensity->addListener (this);
+    portamentoIntensity->setBounds (280, 24, 56, 64);
+
+    portamentoSpeed.reset (new Slider ("portamentoSpeed"));
+    addAndMakeVisible (portamentoSpeed.get());
+    portamentoSpeed->setRange (0.0, 2.0, 0.01);
+    portamentoSpeed->setSliderStyle (Slider::RotaryVerticalDrag);
+    portamentoSpeed->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    portamentoSpeed->addListener (this);
+    portamentoSpeed->setBounds (352, 24, 56, 64);
+
+    labelIntensity.reset (new Label ("labelIntensity", TRANS("Intensity")));
+    addAndMakeVisible (labelIntensity.get());
+    labelIntensity->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
+    labelIntensity->setJustificationType (Justification::centred);
+    labelIntensity->setEditable (false, false, false);
+    labelIntensity->setColour (TextEditor::textColourId, Colours::black);
+    labelIntensity->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    labelIntensity->setBounds (272, 80, 64, 24);
+
+    labelSpeed.reset (new Label ("labelSpeed", TRANS("Duration")));
+    addAndMakeVisible (labelSpeed.get());
+    labelSpeed->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
+    labelSpeed->setJustificationType (Justification::centred);
+    labelSpeed->setEditable (false, false, false);
+    labelSpeed->setColour (TextEditor::textColourId, Colours::black);
+    labelSpeed->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    labelSpeed->setBounds (344, 80, 56, 24);
+
     //[UserPreSize]
     //[/UserPreSize]
 
@@ -147,7 +186,11 @@ DelayPanel::~DelayPanel()
     labelTime2 = nullptr;
     labelFb = nullptr;
     labelMix = nullptr;
-
+    portamentoGroup = nullptr;
+    portamentoIntensity = nullptr;
+    portamentoSpeed = nullptr;
+    labelIntensity = nullptr;
+    labelSpeed = nullptr;
 
     //[Destructor]. You can add your own custom destruction code here..
     //[/Destructor]
@@ -201,6 +244,14 @@ void DelayPanel::sliderValueChanged (Slider* sliderThatWasMoved)
 		model->dlyMix = sliderThatWasMoved->getValue();
         //[/UserSliderCode_mix]
     }
+    else if (sliderThatWasMoved == portamentoIntensity.get())
+    {
+        model->portamentoAmount = sliderThatWasMoved->getValue();
+    }
+    else if (sliderThatWasMoved == portamentoSpeed.get())
+    {
+        model->portamentoTime = sliderThatWasMoved->getValue();
+    }
 
     //[UsersliderValueChanged_Post]
 	sendChangeMessage();
@@ -216,6 +267,8 @@ void DelayPanel::initAttachments() {
 	factory->createSliderAttachment("dlyTimeRight", timeRight.get());
 	factory->createSliderAttachment("dlyFeedback", feedback.get());
 	factory->createSliderAttachment("dlyMix", mix.get());
+	factory->createSliderAttachment("portamentoAmount", portamentoIntensity.get());
+	factory->createSliderAttachment("portamentoTime",   portamentoSpeed.get());
 }
 //[/MiscUserCode]
 

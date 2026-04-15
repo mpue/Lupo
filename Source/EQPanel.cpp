@@ -180,8 +180,8 @@ void FrequencyResponseDisplay::mouseDrag (const MouseEvent& e)
     if (gainSliders[dragBand]) gainSliders[dragBand]->setValue (newGain, sendNotificationSync);
 
     // Record this movement if automation is in record mode
-    if (eqAuto != nullptr && seq != nullptr && eqAuto->isRecording())
-        eqAuto->recordEvent (dragBand, seq->getLoopPosition(), newFreq, newGain);
+    if (eqAuto != nullptr && eqAuto->isRecording())
+        eqAuto->recordEvent (dragBand, newFreq, newGain);
 
     repaint();
 }
@@ -371,16 +371,22 @@ void EQPanel::buttonClicked (Button* button)
     if (button == recButton.get())
     {
         if (recButton->getToggleState())
+        {
             eqAuto->startRecording();
+            startTimerHz (30);   // repaint so display reflects live recording
+        }
         else
+        {
             eqAuto->stopRecording();
+            if (!playButton->getToggleState()) stopTimer();
+        }
     }
     else if (button == playButton.get())
     {
         bool on = playButton->getToggleState();
         eqAuto->setPlaying (on);
         if (on) startTimerHz (30);
-        else    stopTimer();
+        else if (!recButton->getToggleState()) stopTimer();
     }
     else if (button == clearButton.get())
     {

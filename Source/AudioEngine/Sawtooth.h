@@ -27,6 +27,8 @@ class Sawtooth : public Oszillator, public Modulator {
 
 public:
     void setSpread(float spread);
+    void setWidth(float w) { width = juce::jlimit(0.0f, 1.0f, w); }
+
     virtual float getOutput() override;
     virtual void setFine(float fine) override;
     virtual float getFine() const override;
@@ -38,6 +40,10 @@ public:
 
     float fine;
 
+    // Stereo outputs — valid after process() when width > 0 and spread > 0
+    float leftOutput  = 0.0f;
+    float rightOutput = 0.0f;
+
     virtual void reset() override;
     float process() override;
     void setFrequency(double frequency) override;
@@ -45,8 +51,9 @@ public:
 private:
     float saw;
     float lastValue;
-    int bufferSize;
+    int   bufferSize;
     float spread;
+    float width = 0.0f;
     float value;
     float totalWeight;
 };

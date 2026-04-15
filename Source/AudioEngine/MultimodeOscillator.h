@@ -34,8 +34,14 @@ public:
     virtual void setSlave(Oszillator* slave) override;
     virtual void setSync(bool sync) override;
 	void setSpread(float spread);
+	void setWidth(float w);
 	void setMode(float mode);
 	virtual void processModulation() override;
+
+	// Returns true when saw mode is active and width > 0 → use getLeftOutput/getRightOutput
+	bool  hasStereoOutput() const;
+	float getLeftOutput()   const;
+	float getRightOutput()  const;
 
     virtual void addPwmModulator(std::shared_ptr<Modulator> mod) override {
         this->pulse->addPwmModulator(mod);
@@ -61,6 +67,7 @@ private:
 	float frequency = 0;
     float currentModulatedValue = 0.0f;
     float spread = 0.0f;
+    float width  = 0.0f;
 };
 
 #endif /* MultimodeOscillator_hpp */

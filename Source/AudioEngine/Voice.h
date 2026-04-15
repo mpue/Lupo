@@ -78,9 +78,12 @@ public:
 	int getVelocity() const;
 	void setNoteAndVelocity(int note, int velocity);
 
+	void setPortamento(float time, float amount);
+
 	void setOscVolume(int osc, float volume);
 	void setOscPan(int osc, float pan);
 	void setOscSpread(int osc, float spread);
+	void setOscWidth(int osc, float width);
 
     void setFilterRouting(FilterRouting routing) { filterRouting = routing; }
     FilterRouting getFilterRouting() const { return filterRouting; }
@@ -121,6 +124,12 @@ private:
 	float value = 0;
     float modAmount = 0;
 	FilterRouting filterRouting = FilterRouting::Serial;
+
+	// Portamento
+	float portamentoTime   = 1.0f;   // glide duration in seconds
+	float portamentoAmount = 0.0f;   // intensity 0=off, 1=full
+	float currentMidiNote  = -1.0f;  // current glide position (-1 = uninitialized)
+	float targetMidiNote   = 0.0f;
 };
 
 

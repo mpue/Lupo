@@ -142,11 +142,26 @@ void MultimodeOscillator::setSpread(float spread)
 	}
 }
 
+void MultimodeOscillator::setWidth(float w)
+{
+    this->width = w;
+    this->saw->setWidth(w);
+}
+
+bool MultimodeOscillator::hasStereoOutput() const
+{
+    return (this->mode == OscMode::SAW) && (this->width > 0.0f) && (this->spread > 0.0f);
+}
+
+float MultimodeOscillator::getLeftOutput()  const { return this->saw->leftOutput;  }
+float MultimodeOscillator::getRightOutput() const { return this->saw->rightOutput; }
+
 void MultimodeOscillator::setMode(float mode)
 {
 	Oszillator::setMode(mode);
-	// Re-apply stored spread value when mode changes
+	// Re-apply stored spread and width when mode changes
 	setSpread(this->spread);
+	setWidth(this->width);
 }
 
 void MultimodeOscillator::processModulation()

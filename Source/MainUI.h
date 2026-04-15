@@ -18,6 +18,7 @@
 #include "ModPanel.h"
 #include "EQPanel.h"
 #include "StepSequencerPanel.h"
+#include "AudioEngine/ChordManager.h"
 #include "PresetBrowser.h"
 
 class ModMatrixPanel;
@@ -128,8 +129,14 @@ private:
     std::unique_ptr<Component> fxContainerPanel;
     std::unique_ptr<Viewport> modMatrixViewport;
 
-	std::unique_ptr<Slider> leftGainSlider;
-	std::unique_ptr<Slider> rightGainSlider;
+	std::unique_ptr<Slider>      leftGainSlider;
+	std::unique_ptr<Slider>      rightGainSlider;
+
+	std::unique_ptr<TextButton>  chordButton;
+	std::unique_ptr<TextButton>  createChordButton;
+	std::unique_ptr<TextButton>  autoChordButton;
+	std::unique_ptr<ComboBox>    chordKeyCombo;
+	std::unique_ptr<ComboBox>    chordScaleCombo;
 
 	bool midiLearnWasActive = false;
 

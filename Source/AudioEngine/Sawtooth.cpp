@@ -28,7 +28,7 @@ Sawtooth::Sawtooth(float sampleRate, int buffersize) : Oszillator(sampleRate) {
     // Oszillatoren mit verteilten Phasen initialisieren
     for (int i = 0; i < 8; i++) {
         blitsaw[i] = new stk::BlitSaw();
-        // Phasen gleichmäßig verteilen für volleren Klang
+        // Phasen gleichmï¿½ï¿½ig verteilen fï¿½r volleren Klang
         // Falls BlitSaw keine setPhase() Methode hat, diese Zeilen entfernen
         // blitsaw[i]->setPhase(i / 8.0f);
     }
@@ -63,26 +63,50 @@ float Sawtooth::process() {
     // Ohne Spread nur den ersten Oszillator verwenden
     if (spread == 0.0f) {
         saw = (float)blitsaw[0]->tick();
+        leftOutput = rightOutput = saw * volume;
         return saw * volume;
     }
-    else {
-        // Bestimme Anzahl aktiver Oszillatoren basierend auf spread
-        int activeOscs = static_cast<int>(1 + spread * 7); // 1-8 Oszillatoren
 
-        // Verwende den korrekten scale-Wert für die Gesamtzahl
-        float rmsScale = scales[activeOscs - 1]; // Index ist activeOscs - 1
+    int activeOscs = static_cast<int>(1 + spread * 7); // 1-8 Oszillatoren
+    float rmsScale = scales[activeOscs - 1];
 
+    if (width <= 0.0f) {
+        // Mono supersaw (existing behaviour)
         value = 0;
-
-        // Alle aktiven Oszillatoren mit gleichem Gewicht
-        for (int i = 0; i < activeOscs; i++) {
+        for (int i = 0; i < activeOscs; i++)
             value += (float)blitsaw[i]->tick();
-        }
-
-        // Skaliere das Gesamtresultat
         saw = value * rmsScale;
+        leftOutput = rightOutput = saw * volume;
         return saw * volume;
     }
+
+    // Stereo supersaw:
+    //   i=0            â†’ fundamental, centred
+    //   i odd  (â‰¥1)   â†’ positively detuned  â†’ biased right
+    //   i even (â‰¥2)   â†’ negatively detuned  â†’ biased left
+    float leftSum = 0.0f, rightSum = 0.0f;
+    for (int i = 0; i < activeOscs; i++) {
+        float s = (float)blitsaw[i]->tick();
+        if (i == 0) {
+            leftSum  += s;
+            rightSum += s;
+        } else if (i % 2 == 1) {
+            // positive detune â†’ right
+            leftSum  += s * (0.5f - 0.5f * width);
+            rightSum += s * (0.5f + 0.5f * width);
+        } else {
+            // negative detune â†’ left
+            leftSum  += s * (0.5f + 0.5f * width);
+            rightSum += s * (0.5f - 0.5f * width);
+        }
+    }
+
+    leftOutput  = leftSum  * rmsScale * volume;
+    rightOutput = rightSum * rmsScale * volume;
+
+    // Mono fallback value (average for getOutput())
+    saw = (leftSum + rightSum) * 0.5f * rmsScale;
+    return saw * volume;
 }
 
 void Sawtooth::setFrequency(double frequency)
@@ -105,7 +129,7 @@ void Sawtooth::setFrequency(double frequency)
             detune = -detune;
         }
 
-        // Frequenzabhängige Skalierung für natürlicheren Klang
+        // Frequenzabhï¿½ngige Skalierung fï¿½r natï¿½rlicheren Klang
         float freqScale = 1.0f + (frequency / 20000.0f);
 
         blitsaw[i]->setFrequency(frequency + this->fine + pitchMod + (detune * freqScale));

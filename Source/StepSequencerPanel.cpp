@@ -133,7 +133,17 @@ void StepCell::mouseWheelMove(const MouseEvent&, const MouseWheelDetails& w)
     if (step == nullptr) return;
     int delta = (w.deltaY > 0.0f) ? 1 : -1;
     if (w.isReversed) delta = -delta;
-    step->note.store(jlimit(0, 127, step->note.load() + delta));
+
+    int current = step->note.load();
+    int next;
+
+    // When Auto chord mode is on, snap to scale notes only
+    if (chordManager != nullptr && chordManager->isAutoChord())
+        next = chordManager->nextScaleNote(current, delta);
+    else
+        next = jlimit(0, 127, current + delta);
+
+    step->note.store(next);
     repaint();
 }
 
@@ -154,7 +164,7 @@ static void styleToggleBtn(TextButton& btn, Colour accentColour)
 // StepSequencerPanel
 //==============================================================================
 
-StepSequencerPanel::StepSequencerPanel(StepSequencer* sequencer)
+StepSequencerPanel::StepSequencerPanel(StepSequencer* sequencer, ChordManager* chordManager)
     : seq(sequencer)
 {
     // Enable button
@@ -173,26 +183,9 @@ StepSequencerPanel::StepSequencerPanel(StepSequencer* sequencer)
     {
         cells[i] = std::make_unique<StepCell>(i);
         cells[i]->setStep(&seq->getStep(i));
+        cells[i]->setChordManager(chordManager);
         addAndMakeVisible(*cells[i]);
     }
-
-    // Tempo
-    tempoSlider = std::make_unique<Slider>(Slider::RotaryVerticalDrag, Slider::TextBoxBelow);
-    tempoSlider->setRange(20.0, 300.0, 0.5);
-    tempoSlider->setValue(seq->getTempo(), dontSendNotification);
-    tempoSlider->setColour(Slider::rotarySliderFillColourId,    Colour(0xff40ff80));
-    tempoSlider->setColour(Slider::rotarySliderOutlineColourId, Colour(0xff204020));
-    tempoSlider->setColour(Slider::textBoxTextColourId,         Colours::white);
-    tempoSlider->setColour(Slider::textBoxBackgroundColourId,   Colour(0xff0d1117));
-    tempoSlider->setColour(Slider::textBoxOutlineColourId,      Colours::transparentBlack);
-    tempoSlider->onValueChange = [this] { seq->setTempo((float)tempoSlider->getValue()); };
-    addAndMakeVisible(*tempoSlider);
-
-    tempoLabel = std::make_unique<Label>("", "TEMPO");
-    tempoLabel->setFont(Font(9.0f, Font::bold));
-    tempoLabel->setColour(Label::textColourId, Colours::grey);
-    tempoLabel->setJustificationType(Justification::centred);
-    addAndMakeVisible(*tempoLabel);
 
     // Swing
     swingSlider = std::make_unique<Slider>(Slider::LinearHorizontal, Slider::NoTextBox);
@@ -366,13 +359,9 @@ void StepSequencerPanel::resized()
     // Controls area starts at y=214
     const int ctrlY = 214;
 
-    // Tempo: rotary knob left side
-    tempoLabel->setBounds(4, ctrlY, 68, 12);
-    tempoSlider->setBounds(4, ctrlY + 12, 68, 68);
-
-    // Swing: horizontal slider, right of tempo
-    swingLabel->setBounds(80, ctrlY, 80, 12);
-    swingSlider->setBounds(80, ctrlY + 14, W - 90, 24);
+    // Swing: full width
+    swingLabel->setBounds(4, ctrlY, 60, 12);
+    swingSlider->setBounds(4, ctrlY + 14, W - 8, 24);
 
     // Buttons row 1: Steps
     const int btnY1  = ctrlY + 52;

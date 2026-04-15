@@ -139,6 +139,9 @@ public:
 	float distDrive = 0.0f;
 	float distMix = 0.0f;
 
+	float portamentoTime   = 1.0f;  // glide speed in seconds
+	float portamentoAmount = 0.0f;  // intensity 0=off, 1=full
+
 	float modAmount[6] = { 0.0f };
 
 	bool osc1Enabled = true;

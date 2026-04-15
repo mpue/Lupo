@@ -21,7 +21,7 @@ LupoAudioProcessorEditor::LupoAudioProcessorEditor (LupoAudioProcessor& p)
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
 	setLookAndFeel(&edlf);
-    setSize (1550, 780);	
+    setSize (1550, 780);
 	setResizable(true,true);
 	mainUI = std::make_unique<MainUI>(&p, p.getFactory());
 	addAndMakeVisible(mainUI.get());

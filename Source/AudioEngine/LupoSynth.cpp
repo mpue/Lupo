@@ -33,9 +33,10 @@ LupoSynth::LupoSynth(Model* model, ModMatrix* modMatrix) {
 		modEnvelopes.emplace_back(std::make_unique<SynthLab::ADSR>());
 	}
 
-	eq     = std::make_unique<ParametricEQ>();
-	seq    = std::make_unique<StepSequencer>();
-	eqAuto = std::make_unique<EQAutomationTrack>();
+	eq           = std::make_unique<ParametricEQ>();
+	seq          = std::make_unique<StepSequencer>();
+	eqAuto       = std::make_unique<EQAutomationTrack>();
+	chordManager = std::make_unique<ChordManager>();
 	delay = std::make_unique <StereoDelay>();
 	reverb = std::make_unique <StereoReverb>();
 	distortion = std::make_unique <Distortion>();
@@ -161,6 +162,7 @@ void LupoSynth::prepareToPlay(double sampleRate, int samplesPerBlock)
 	reverb->setSampleRate(sampleRate);
 	eq->prepare(sampleRate, samplesPerBlock);
 	seq->prepareToPlay(sampleRate, samplesPerBlock);
+	eqAuto->prepareToPlay(sampleRate);
 	arp->prepareToPlay(sampleRate, bufferSize);
 	arp->setEnabled(false);
 	arp->setClockMode(Arpeggiator::ClockMode::Internal);
@@ -353,9 +355,11 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 	for (auto i = 0; i < 2; ++i)
 		buffer.clear(i, 0, buffer.getNumSamples());
 
-	this->seq->processBlock(buffer, midiMessages);  // note-triggered; eats keyboard notes, outputs sequence
-	this->eqAuto->apply(seq->getLoopPosition(), eq.get());  // apply EQ automation synced to loop pos
-	this->arp->processBlock(buffer, midiMessages);  // runs on remaining MIDI
+	this->chordManager->captureFromMidi(midiMessages);          // tap raw keyboard for chord capture (before seq eats it)
+	this->seq->processBlock(buffer, midiMessages);              // note-triggered; eats keyboard notes, outputs sequence
+	this->eqAuto->advance(buffer.getNumSamples(), eq.get());    // advance & apply EQ automation loop
+	this->arp->processBlock(buffer, midiMessages);              // runs on remaining MIDI
+	this->chordManager->expandMidi(midiMessages);               // expand all notes (from any source) with chord intervals
 	this->processMidi(midiMessages);
 
 	const int numSamples = buffer.getNumSamples();
@@ -683,6 +687,11 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 			voice->setOscSpread(0, newValue);
 		}
 	}
+	else if (parameterID == "osc1Width") {
+		for (auto& voice : voices) {
+			voice->setOscWidth(0, newValue);
+		}
+	}
 	else if (parameterID == "osc2Pitch") {
 		for (auto& voice : voices) {
 			voice->getOscillator(1)->setPitch(newValue);
@@ -708,6 +717,11 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 	else if (parameterID == "osc2Spread") {
 		for (auto& voice : voices) {
 			voice->setOscSpread(1, newValue);
+		}
+	}
+	else if (parameterID == "osc2Width") {
+		for (auto& voice : voices) {
+			voice->setOscWidth(1, newValue);
 		}
 	}
 	else if (parameterID == "osc3Pitch") {
@@ -737,7 +751,11 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 			voice->setOscSpread(2, newValue);
 		}
 	}
-
+	else if (parameterID == "osc3Width") {
+		for (auto& voice : voices) {
+			voice->setOscWidth(2, newValue);
+		}
+	}
 	else if (parameterID == "osc4Pitch") {
 		for (auto& voice : voices) {
 			voice->getOscillator(3)->setPitch(newValue);
@@ -763,6 +781,11 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 	else if (parameterID == "osc4Spread") {
 		for (auto& voice : voices) {
 			voice->setOscSpread(3, newValue);
+		}
+	}
+	else if (parameterID == "osc4Width") {
+		for (auto& voice : voices) {
+			voice->setOscWidth(3, newValue);
 		}
 	}
 	else if (parameterID == "dlyTimeLeft") {
@@ -867,6 +890,16 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 	else if (parameterID == "distMode") {
 		model->distMode = newValue;
 		distortion->controls.mode = static_cast<int>(newValue);
+	}
+	else if (parameterID == "portamentoTime") {
+		model->portamentoTime = newValue;
+		for (auto& voice : voices)
+			voice->setPortamento(model->portamentoTime, model->portamentoAmount);
+	}
+	else if (parameterID == "portamentoAmount") {
+		model->portamentoAmount = newValue;
+		for (auto& voice : voices)
+			voice->setPortamento(model->portamentoTime, model->portamentoAmount);
 	}
 	else if (parameterID == "filterMode") {
 		filterMode = newValue;
