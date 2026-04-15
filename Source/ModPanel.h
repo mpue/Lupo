@@ -49,7 +49,7 @@ private:
     Model* model;
     ModMatrix* matrix;
     
-    static constexpr int GRID_SIZE = 40;
+    static constexpr int GRID_SIZE = 30;
     static constexpr int LABEL_HEIGHT = 20;
     static constexpr int LABEL_WIDTH = 50;
     static constexpr int MARGIN_LEFT = 5;

@@ -65,6 +65,10 @@ LupoSynth::LupoSynth(Model* model, ModMatrix* modMatrix) {
 	modMatrix->registerTarget("Osc 2 PWM", 8);
 	modMatrix->registerTarget("Osc 3 PWM", 9);
 	modMatrix->registerTarget("Osc 4 PWM", 10);
+	modMatrix->registerTarget("Ch 1 Pan",  11);
+	modMatrix->registerTarget("Ch 2 Pan",  12);
+	modMatrix->registerTarget("Ch 3 Pan",  13);
+	modMatrix->registerTarget("Ch 4 Pan",  14);
 
 	oscGroup1 = std::make_unique<OscGroup>();
 	oscGroup2 = std::make_unique<OscGroup>();
@@ -380,6 +384,12 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 		lfo3->process();
 	}
 
+	// Apply pan modulation once per block
+	if (panGroup1) panGroup1->processModulation();
+	if (panGroup2) panGroup2->processModulation();
+	if (panGroup3) panGroup3->processModulation();
+	if (panGroup4) panGroup4->processModulation();
+
 	// Temp-Buffer für Stereo-Voice-Verarbeitung
 	AudioBuffer<float> voiceBuffer(2, numSamples);
 
@@ -681,6 +691,7 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		for (auto& voice : voices) {
 			voice->setOscPan(0, newValue);
 		}
+		if (panGroup1) panGroup1->setBasePan(newValue);
 	}
 	else if (parameterID == "osc1Spread") {
 		for (auto& voice : voices) {
@@ -713,6 +724,7 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		for (auto& voice : voices) {
 			voice->setOscPan(1, newValue);
 		}
+		if (panGroup2) panGroup2->setBasePan(newValue);
 	}
 	else if (parameterID == "osc2Spread") {
 		for (auto& voice : voices) {
@@ -745,6 +757,7 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		for (auto& voice : voices) {
 			voice->setOscPan(2, newValue);
 		}
+		if (panGroup3) panGroup3->setBasePan(newValue);
 	}
 	else if (parameterID == "osc3Spread") {
 		for (auto& voice : voices) {
@@ -777,6 +790,7 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		for (auto& voice : voices) {
 			voice->setOscPan(3, newValue);
 		}
+		if (panGroup4) panGroup4->setBasePan(newValue);
 	}
 	else if (parameterID == "osc4Spread") {
 		for (auto& voice : voices) {
@@ -1065,6 +1079,16 @@ matrix->addModTarget(oscGroup4);
 	matrix->addModTarget(oscGroup2);
 	matrix->addModTarget(oscGroup3);
 	matrix->addModTarget(oscGroup4);
+
+	// Pan targets — one per mixer channel
+	panGroup1 = std::make_shared<PanModTarget>(oscGroup1.get(), model->osc1Pan);
+	panGroup2 = std::make_shared<PanModTarget>(oscGroup2.get(), model->osc2Pan);
+	panGroup3 = std::make_shared<PanModTarget>(oscGroup3.get(), model->osc3Pan);
+	panGroup4 = std::make_shared<PanModTarget>(oscGroup4.get(), model->osc4Pan);
+	matrix->addModTarget(panGroup1);
+	matrix->addModTarget(panGroup2);
+	matrix->addModTarget(panGroup3);
+	matrix->addModTarget(panGroup4);
 
 	lfo1->enabled = true;
 	lfo2->enabled = true;

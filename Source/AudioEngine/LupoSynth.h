@@ -29,6 +29,7 @@
 #include "../ModMatrix.h"
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "ModTargetGroup.h"
+#include "PanModTarget.h"
 
 class LupoSynth : public ChangeListener, 
 			      public AudioProcessorValueTreeState::Listener, 
@@ -114,6 +115,11 @@ private:
 
 	std::shared_ptr<ModTargetGroup> filterTargetGroup1 = nullptr;
 	std::shared_ptr<ModTargetGroup> filterTargetGroup2 = nullptr;
+
+	std::shared_ptr<PanModTarget> panGroup1;
+	std::shared_ptr<PanModTarget> panGroup2;
+	std::shared_ptr<PanModTarget> panGroup3;
+	std::shared_ptr<PanModTarget> panGroup4;
 
 
 	ModMatrix* matrix;

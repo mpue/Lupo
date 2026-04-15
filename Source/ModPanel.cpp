@@ -138,24 +138,23 @@ void ModPanel::buttonClicked(juce::Button* button)
 
     }
 
+    // Indices 6-9 are PWM targets; all others use regular modulator routing
+    bool isPwm = (targetIndex >= 6 && targetIndex <= 9);
+
     if (gridButton->getToggleState())
     {
-        if (targetIndex <= 5) {
-            target->addModulator(mod);
-        }
-        else {
+        if (isPwm)
             target->addPwmModulator(mod);
-        }        
+        else
+            target->addModulator(mod);
     }
     else
     {
-        if (targetIndex <= 5) {
-            target->removeModulator(mod);
-        }
-        else {
+        if (isPwm)
             target->removePwmModulator(mod);
-        }
-	}
+        else
+            target->removeModulator(mod);
+    }
 
 }
 
@@ -258,32 +257,29 @@ void ModPanel::setGridStateFromString(const juce::String& gridState)
                         std::shared_ptr<Modulator> mod = modulators[row];
                         std::shared_ptr<ModTarget> target = targets[col];
 
-                        if (col <= 5) {
-                            target->addModulator(mod);
-                        }
-                        else {
+                        bool isPwm = (col >= 6 && col <= 9);
+                        if (isPwm)
                             target->addPwmModulator(mod);
-						}
-                        
+                        else
+                            target->addModulator(mod);
                     }
                 }
                 else if (!buttonState)
                 {
                     const auto& modulators = matrix->getModulators();
                     const auto& targets = matrix->getModTargets();
-                    
-                    if (row < static_cast<int>(modulators.size()) && 
+
+                    if (row < static_cast<int>(modulators.size()) &&
                         col < static_cast<int>(targets.size()))
                     {
                         std::shared_ptr<Modulator> mod = modulators[row];
                         std::shared_ptr<ModTarget> target = targets[col];
 
-                        if (col <= 5) {
-                            target->removeModulator(mod);
-                        }
-                        else {
+                        bool isPwm = (col >= 6 && col <= 9);
+                        if (isPwm)
                             target->removePwmModulator(mod);
-                        }
+                        else
+                            target->removeModulator(mod);
                     }
                 }
             }
