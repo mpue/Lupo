@@ -21,9 +21,20 @@ LupoAudioProcessorEditor::LupoAudioProcessorEditor (LupoAudioProcessor& p)
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
 	setLookAndFeel(&edlf);
-    setSize (1550, 780);
-	setResizable(true,true);
+
+	// Native design resolution
+	constexpr int kNativeW = 1550;
+	constexpr int kNativeH = 780;
+
+	sizeConstrainer.setFixedAspectRatio((double)kNativeW / (double)kNativeH);
+	sizeConstrainer.setMinimumSize(kNativeW / 2, kNativeH / 2);
+	sizeConstrainer.setMaximumSize(kNativeW * 2, kNativeH * 2);
+	setConstrainer(&sizeConstrainer);
+	setResizable(true, true);
+	setSize(kNativeW, kNativeH);
+
 	mainUI = std::make_unique<MainUI>(&p, p.getFactory());
+	mainUI->setBounds(0, 0, kNativeW, kNativeH);
 	addAndMakeVisible(mainUI.get());
 	mainUI->updatePresetList();
 	loadSettings();
@@ -67,10 +78,13 @@ void LupoAudioProcessorEditor::paint (Graphics& g)
 
 void LupoAudioProcessorEditor::resized()
 {
-    // This is generally where you'll want to lay out the positions of any
-    // subcomponents in your editor..
-	if (mainUI != nullptr) {
-		mainUI->setBounds(0, 0, getWidth(), getHeight());
+	if (mainUI != nullptr)
+	{
+		constexpr float kNativeW = 1550.0f;
+		constexpr float kNativeH = 780.0f;
+		float scale = (float)getWidth() / kNativeW;
+		mainUI->setBounds(0, 0, (int)kNativeW, (int)kNativeH);
+		mainUI->setTransform(AffineTransform::scale(scale));
 	}
 }
 
