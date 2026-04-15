@@ -183,7 +183,7 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	modulationTab->setCurrentTabIndex(0);
 
 	// EQ panel
-	eqPanel.reset(new EQPanel(model, factory, synth->getEQ()));
+	eqPanel.reset(new EQPanel(model, factory, synth->getEQ(), synth->getSeq(), synth->getEqAuto()));
 	eqPanel->setName("eqPanel");
 
 	// Step Sequencer panel

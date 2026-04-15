@@ -13,6 +13,7 @@
 #include "OscGroup.h"
 #include "ParametricEQ.h"
 #include "StepSequencer.h"
+#include "EQAutomationTrack.h"
 #include "ADSR.h"
 #include "MultimodeFilter.h"
 #include "Voice.h"
@@ -60,8 +61,9 @@ public:
 
 	/** Pass the host's AudioPlayHead so the arpeggiator can sync to host transport. */
 	void setPlayHead(juce::AudioPlayHead* ph);
-	ParametricEQ*    getEQ()  { return eq.get(); }
-	StepSequencer*   getSeq() { return seq.get(); }
+	ParametricEQ*       getEQ()    { return eq.get(); }
+	StepSequencer*      getSeq()   { return seq.get(); }
+	EQAutomationTrack*  getEqAuto(){ return eqAuto.get(); }
 
 	// Methods for real-time envelope visualization
 	Voice* getActiveVoice();
@@ -103,8 +105,9 @@ private:
 	std::unique_ptr<Distortion>	distortion;
 	std::unique_ptr<Arpeggiator> arp;
 	
-	std::unique_ptr<ParametricEQ>   eq;
-	std::unique_ptr<StepSequencer>  seq;
+	std::unique_ptr<ParametricEQ>       eq;
+	std::unique_ptr<StepSequencer>      seq;
+	std::unique_ptr<EQAutomationTrack>  eqAuto;
 
 	std::shared_ptr<ModTargetGroup> filterTargetGroup1 = nullptr;
 	std::shared_ptr<ModTargetGroup> filterTargetGroup2 = nullptr;

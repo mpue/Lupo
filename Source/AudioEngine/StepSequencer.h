@@ -59,6 +59,7 @@ public:
     int   getDirection()       const { return direction.load(); }
     float getSwing()           const { return swing.load(); }
     int   getTransposition()   const { return transposition; }   // semitones, audio-thread value
+    float getLoopPosition()    const { return loopPosition.load(); }  // 0.0 … 1.0
 
     /** Serialises all 32 step values to a compact string (for preset saving). */
     juce::String getStateAsString() const;
@@ -75,8 +76,9 @@ private:
     std::atomic<int>   direction   { 0 };
     std::atomic<float> swing       { 0.0f };
     std::atomic<float> tempo       { 120.0f };
-    std::atomic<int>   playingStep { 0 };
-    std::atomic<bool>  running     { false };
+    std::atomic<int>   playingStep  { 0 };
+    std::atomic<float> loopPosition { 0.0f };
+    std::atomic<bool>  running      { false };
 
     // Audio-thread-only state
     double sampleRate       = 44100.0;

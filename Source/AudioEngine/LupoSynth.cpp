@@ -33,8 +33,9 @@ LupoSynth::LupoSynth(Model* model, ModMatrix* modMatrix) {
 		modEnvelopes.emplace_back(std::make_unique<SynthLab::ADSR>());
 	}
 
-	eq  = std::make_unique<ParametricEQ>();
-	seq = std::make_unique<StepSequencer>();
+	eq     = std::make_unique<ParametricEQ>();
+	seq    = std::make_unique<StepSequencer>();
+	eqAuto = std::make_unique<EQAutomationTrack>();
 	delay = std::make_unique <StereoDelay>();
 	reverb = std::make_unique <StereoReverb>();
 	distortion = std::make_unique <Distortion>();
@@ -353,6 +354,7 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 		buffer.clear(i, 0, buffer.getNumSamples());
 
 	this->seq->processBlock(buffer, midiMessages);  // note-triggered; eats keyboard notes, outputs sequence
+	this->eqAuto->apply(seq->getLoopPosition(), eq.get());  // apply EQ automation synced to loop pos
 	this->arp->processBlock(buffer, midiMessages);  // runs on remaining MIDI
 	this->processMidi(midiMessages);
 

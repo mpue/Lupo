@@ -25,6 +25,7 @@ FrequencyResponseDisplay::FrequencyResponseDisplay (ParametricEQ* eq)
 
 void FrequencyResponseDisplay::setFreqSliders (std::array<Slider*, 8> sliders) { freqSliders = sliders; }
 void FrequencyResponseDisplay::setGainSliders (std::array<Slider*, 8> sliders) { gainSliders = sliders; }
+void FrequencyResponseDisplay::setAutomation  (StepSequencer* s, EQAutomationTrack* a) { seq = s; eqAuto = a; }
 
 float FrequencyResponseDisplay::freqToX (float freq) const
 {
@@ -178,6 +179,10 @@ void FrequencyResponseDisplay::mouseDrag (const MouseEvent& e)
     if (freqSliders[dragBand]) freqSliders[dragBand]->setValue (newFreq, sendNotificationSync);
     if (gainSliders[dragBand]) gainSliders[dragBand]->setValue (newGain, sendNotificationSync);
 
+    // Record this movement if automation is in record mode
+    if (eqAuto != nullptr && seq != nullptr && eqAuto->isRecording())
+        eqAuto->recordEvent (dragBand, seq->getLoopPosition(), newFreq, newGain);
+
     repaint();
 }
 
@@ -191,8 +196,9 @@ void FrequencyResponseDisplay::mouseUp (const MouseEvent&)
 // EQPanel
 //==============================================================================
 
-EQPanel::EQPanel (Model* m, AttachmentFactory* f, ParametricEQ* eq_)
-    : model (m), factory (f), eq (eq_)
+EQPanel::EQPanel (Model* m, AttachmentFactory* f, ParametricEQ* eq_,
+                  StepSequencer* seq_, EQAutomationTrack* eqAuto_)
+    : model (m), factory (f), eq (eq_), seq (seq_), eqAuto (eqAuto_)
 {
     bypassButton = std::make_unique<ToggleButton> ("EQ Active");
     bypassButton->setButtonText ("EQ ON");
@@ -201,7 +207,35 @@ EQPanel::EQPanel (Model* m, AttachmentFactory* f, ParametricEQ* eq_)
     bypassButton->setColour (ToggleButton::tickDisabledColourId, Colours::grey);
     addAndMakeVisible (*bypassButton);
 
+    recButton = std::make_unique<TextButton> ("REC");
+    recButton->setButtonText ("REC");
+    recButton->setColour (TextButton::buttonColourId,   Colour (0xff3a1a1a));
+    recButton->setColour (TextButton::buttonOnColourId, Colour (0xffdd2222));
+    recButton->setColour (TextButton::textColourOffId,  Colour (0xffdd2222));
+    recButton->setColour (TextButton::textColourOnId,   Colours::white);
+    recButton->setClickingTogglesState (true);
+    recButton->addListener (this);
+    addAndMakeVisible (*recButton);
+
+    playButton = std::make_unique<TextButton> ("PLAY");
+    playButton->setButtonText ("PLAY");
+    playButton->setColour (TextButton::buttonColourId,   Colour (0xff1a2a1a));
+    playButton->setColour (TextButton::buttonOnColourId, Colour (0xff22aa44));
+    playButton->setColour (TextButton::textColourOffId,  Colour (0xff22aa44));
+    playButton->setColour (TextButton::textColourOnId,   Colours::white);
+    playButton->setClickingTogglesState (true);
+    playButton->addListener (this);
+    addAndMakeVisible (*playButton);
+
+    clearButton = std::make_unique<TextButton> ("CLEAR");
+    clearButton->setButtonText ("CLEAR");
+    clearButton->setColour (TextButton::buttonColourId,  Colour (0xff2a2a1a));
+    clearButton->setColour (TextButton::textColourOffId, Colours::lightgrey);
+    clearButton->addListener (this);
+    addAndMakeVisible (*clearButton);
+
     responseDisplay = std::make_unique<FrequencyResponseDisplay> (eq);
+    responseDisplay->setAutomation (seq, eqAuto);
     addAndMakeVisible (*responseDisplay);
 
     const char* bandTypeNames[8] = { "LS", "PK", "PK", "PK", "PK", "PK", "PK", "HS" };
@@ -296,6 +330,10 @@ void EQPanel::resized()
     const int controlsY = displayY + displayH + 8;
 
     bypassButton->setBounds (W - 90, 2, 84, 24);
+    // Automation buttons: REC / PLAY / CLEAR  (right of header, left of bypass)
+    clearButton->setBounds (W - 270, 2, 56, 24);
+    playButton ->setBounds (W - 210, 2, 56, 24);
+    recButton  ->setBounds (W - 150, 2, 52, 24);
     responseDisplay->setBounds (4, displayY, W - 8, displayH);
 
     // 8 equal columns for band controls
@@ -324,6 +362,39 @@ void EQPanel::resized()
 void EQPanel::sliderValueChanged (Slider* /*slider*/)
 {
     responseDisplay->repaint();
+}
+
+void EQPanel::buttonClicked (Button* button)
+{
+    if (eqAuto == nullptr) return;
+
+    if (button == recButton.get())
+    {
+        if (recButton->getToggleState())
+            eqAuto->startRecording();
+        else
+            eqAuto->stopRecording();
+    }
+    else if (button == playButton.get())
+    {
+        bool on = playButton->getToggleState();
+        eqAuto->setPlaying (on);
+        if (on) startTimerHz (30);
+        else    stopTimer();
+    }
+    else if (button == clearButton.get())
+    {
+        eqAuto->clearAll();
+        playButton->setToggleState (false, dontSendNotification);
+        eqAuto->setPlaying (false);
+        stopTimer();
+    }
+}
+
+void EQPanel::timerCallback()
+{
+    if (responseDisplay != nullptr)
+        responseDisplay->repaint();
 }
 
 void EQPanel::initAttachments()

@@ -1,6 +1,8 @@
 #pragma once
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "AudioEngine/ParametricEQ.h"
+#include "AudioEngine/EQAutomationTrack.h"
+#include "AudioEngine/StepSequencer.h"
 
 class AttachmentFactory;
 class Model;
@@ -14,6 +16,7 @@ public:
 
     void setFreqSliders (std::array<Slider*, 8> sliders);
     void setGainSliders (std::array<Slider*, 8> sliders);
+    void setAutomation  (StepSequencer* seq, EQAutomationTrack* eqAuto);
 
     void paint  (Graphics& g) override;
     void mouseDown (const MouseEvent& e) override;
@@ -22,6 +25,8 @@ public:
 
 private:
     ParametricEQ*               eq;
+    StepSequencer*              seq     = nullptr;
+    EQAutomationTrack*          eqAuto  = nullptr;
     std::array<Slider*, 8>      freqSliders {};
     std::array<Slider*, 8>      gainSliders {};
 
@@ -41,15 +46,20 @@ private:
 
 //==============================================================================
 class EQPanel : public Component,
-                public Slider::Listener
+                public Slider::Listener,
+                public Button::Listener,
+                public Timer
 {
 public:
-    EQPanel (Model* model, AttachmentFactory* factory, ParametricEQ* eq);
+    EQPanel (Model* model, AttachmentFactory* factory, ParametricEQ* eq,
+             StepSequencer* seq, EQAutomationTrack* eqAuto);
     ~EQPanel() override;
 
     void paint   (Graphics& g) override;
     void resized () override;
     void sliderValueChanged (Slider* slider) override;
+    void buttonClicked (Button* button) override;
+    void timerCallback() override;
 
     void initAttachments();
 
@@ -57,9 +67,14 @@ private:
     Model*              model;
     AttachmentFactory*  factory;
     ParametricEQ*       eq;
+    StepSequencer*      seq;
+    EQAutomationTrack*  eqAuto;
 
     std::unique_ptr<FrequencyResponseDisplay> responseDisplay;
     std::unique_ptr<ToggleButton>             bypassButton;
+    std::unique_ptr<TextButton>               recButton;
+    std::unique_ptr<TextButton>               playButton;
+    std::unique_ptr<TextButton>               clearButton;
 
     std::array<std::unique_ptr<Slider>, 8>  gainKnobs;
     std::array<std::unique_ptr<Slider>, 8>  freqKnobs;

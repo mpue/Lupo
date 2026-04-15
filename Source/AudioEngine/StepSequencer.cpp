@@ -117,6 +117,7 @@ void StepSequencer::reset()
     heldNoteCount    = 0;
     transposition    = 0;
     samplesUntilNext = stepLengthSamples();
+    loopPosition.store(0.0f);
     running.store(false);
 }
 
@@ -223,6 +224,7 @@ void StepSequencer::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuf
                 }
 
                 playingStep.store(currentStep);
+                loopPosition.store((float)currentStep / (float)juce::jmax(1, numSteps.load()));
                 const auto& s = steps[currentStep];
 
                 if (s.active.load())
@@ -244,6 +246,15 @@ void StepSequencer::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuf
 
                 samplesUntilNext = juce::jmax(1, stepLen);
             }
+        }
+
+        // Update loopPosition continuously within the current step so that
+        // automation consumers get a smooth 0..1 ramp rather than step-quantised jumps.
+        {
+            int n    = juce::jmax(1, numSteps.load());
+            int slen = juce::jmax(1, stepLengthSamples());
+            float frac = 1.0f - juce::jlimit(0.0f, 1.0f, (float)samplesUntilNext / (float)slen);
+            loopPosition.store(((float)playingStep.load() + frac) / (float)n);
         }
     }
 
