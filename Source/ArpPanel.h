@@ -48,6 +48,7 @@ public:
     //==============================================================================
     //[UserMethods]     -- You can add your own custom methods in this section.
 	void initAttachments();
+    void syncArpEnabled(bool enabled);
     //[/UserMethods]
 
     void paint (Graphics& g) override;

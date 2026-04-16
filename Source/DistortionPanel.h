@@ -63,6 +63,7 @@ private:
     //[/UserVariables]
 
     //==============================================================================
+    std::unique_ptr<GroupComponent> distortionGroup;
     std::unique_ptr<Slider> driveSlider;
     std::unique_ptr<Slider> mixSlider;
     std::unique_ptr<Label> driveLabel;

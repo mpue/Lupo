@@ -31,6 +31,7 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 		processor->parameters->addParameterListener("Target_" + String(i), this);
 		processor->parameters->addParameterListener("Amount_" + String(i), this);
 	}
+	processor->parameters->addParameterListener("arpEnabled", this);
 
 	groupComponent.reset(new GroupComponent("new group",TRANS("Amplifier")));
 	addAndMakeVisible(groupComponent.get());
@@ -159,7 +160,7 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	distortionPanel.reset(new DistortionPanel(model, factory));
 	distortionPanel->setName("distortionPanel");
 	fxContainerPanel->addAndMakeVisible(distortionPanel.get());
-	distortionPanel->setBounds(8, 368, 460, 88);
+	distortionPanel->setBounds(8, 368, 460, 112);
 
 	// Create Arpeggiator panel
 	arpPanel.reset(new ArpPanel(factory, arp));
@@ -826,6 +827,18 @@ Component* MainUI::findComponentAtMousePosition(Point<int> mousePos, Component* 
 
 void MainUI::parameterChanged(const String& parameterID, float newValue)
 {
+	// Sync arp enabled button when preset is loaded
+	if (parameterID == "arpEnabled")
+	{
+		juce::Component::SafePointer<MainUI> safeThis(this);
+		juce::MessageManager::callAsync([safeThis, newValue]()
+		{
+			if (safeThis == nullptr) return;
+			safeThis->arpPanel->syncArpEnabled(newValue > 0.5f);
+		});
+		return;
+	}
+
 	// Sync cutoff sliders when link is active.
 	// Guard: only update the other side if its value differs to avoid ping-pong.
 	if (cutoffLink->getToggleState())

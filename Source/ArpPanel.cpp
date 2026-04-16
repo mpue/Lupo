@@ -36,32 +36,57 @@ ArpPanel::ArpPanel (AttachmentFactory* factory, Arpeggiator* arp )
 	this->arp = arp;
     //[/Constructor_pre]
 
+    enabledButton.reset (new ToggleButton ("enabledButton"));
+    addAndMakeVisible (enabledButton.get());
+    enabledButton->setButtonText (TRANS("On"));
+    enabledButton->addListener (this);
+    enabledButton->setBounds (16, 20, 100, 32);
+
     speedSlider.reset (new Slider ("speedSlider"));
     addAndMakeVisible (speedSlider.get());
     speedSlider->setRange (0, 3, 1);
     speedSlider->setSliderStyle (Slider::RotaryVerticalDrag);
     speedSlider->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     speedSlider->addListener (this);
-    speedSlider->setBounds (8, 0, 56, 56);
+    speedSlider->setBounds (32, 80, 80, 80);
+
+    label.reset (new Label ("new label",
+                            TRANS("Speed")));
+    addAndMakeVisible (label.get());
+    label->setFont (Font (13.00f, Font::plain).withTypefaceStyle ("Regular"));
+    label->setJustificationType (Justification::centred);
+    label->setEditable (false, false, false);
+    label->setColour (TextEditor::textColourId, Colours::black);
+    label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    label->setBounds (32, 164, 80, 20);
 
     tempoSlider.reset (new Slider ("tempoSlider"));
     addAndMakeVisible (tempoSlider.get());
     tempoSlider->setRange (60, 200, 1);
     tempoSlider->setSliderStyle (Slider::RotaryVerticalDrag);
-    tempoSlider->setTextBoxStyle (Slider::TextBoxBelow, false, 50, 20);
+    tempoSlider->setTextBoxStyle (Slider::TextBoxBelow, false, 60, 20);
     tempoSlider->addListener (this);
-    tempoSlider->setBounds (128, 0, 56, 56);
+    tempoSlider->setBounds (160, 80, 80, 80);
 
-    clockModeCombo.reset (new ComboBox ("clockModeCombo"));
-    addAndMakeVisible (clockModeCombo.get());
-    clockModeCombo->setEditableText (false);
-    clockModeCombo->setJustificationType (Justification::centredLeft);
-    clockModeCombo->setTextWhenNothingSelected (String());
-    clockModeCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
-    clockModeCombo->addItem (TRANS("Internal"), 1);
-    clockModeCombo->addItem (TRANS("MIDI"), 2);
-    clockModeCombo->addListener (this);
-    clockModeCombo->setBounds (200, 16, 60, 24);
+    tempoLabel.reset (new Label ("tempoLabel",
+                                TRANS("Tempo")));
+    addAndMakeVisible (tempoLabel.get());
+    tempoLabel->setFont (Font (13.00f, Font::plain).withTypefaceStyle ("Regular"));
+    tempoLabel->setJustificationType (Justification::centred);
+    tempoLabel->setEditable (false, false, false);
+    tempoLabel->setColour (TextEditor::textColourId, Colours::black);
+    tempoLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    tempoLabel->setBounds (160, 184, 80, 20);
+
+    octaveLabel.reset (new Label ("octaveLabel",
+                                  TRANS("Octaves")));
+    addAndMakeVisible (octaveLabel.get());
+    octaveLabel->setFont (Font (13.00f, Font::plain).withTypefaceStyle ("Regular"));
+    octaveLabel->setJustificationType (Justification::centredLeft);
+    octaveLabel->setEditable (false, false, false);
+    octaveLabel->setColour (TextEditor::textColourId, Colours::black);
+    octaveLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    octaveLabel->setBounds (280, 80, 88, 22);
 
     octaveCombo.reset (new ComboBox ("octaveCombo"));
     addAndMakeVisible (octaveCombo.get());
@@ -74,47 +99,17 @@ ArpPanel::ArpPanel (AttachmentFactory* factory, Arpeggiator* arp )
     octaveCombo->addItem (TRANS("3"), 3);
     octaveCombo->addItem (TRANS("4"), 4);
     octaveCombo->addListener (this);
-    octaveCombo->setBounds (72, 16, 48, 24);
+    octaveCombo->setBounds (280, 104, 88, 28);
 
-    label.reset (new Label ("new label",
-                            TRANS("Speed\n")));
-    addAndMakeVisible (label.get());
-    label->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
-    label->setJustificationType (Justification::centredLeft);
-    label->setEditable (false, false, false);
-    label->setColour (TextEditor::textColourId, Colours::black);
-    label->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    label->setBounds (16, 56, 47, 24);
-
-    tempoLabel.reset (new Label ("tempoLabel",
-                                TRANS("Tempo\n")));
-    addAndMakeVisible (tempoLabel.get());
-    tempoLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
-    tempoLabel->setJustificationType (Justification::centredLeft);
-    tempoLabel->setEditable (false, false, false);
-    tempoLabel->setColour (TextEditor::textColourId, Colours::black);
-    tempoLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    tempoLabel->setBounds (136, 76, 47, 24);
-
-    clockModeLabel.reset (new Label ("clockModeLabel",
-                                    TRANS("Clock")));
-    addAndMakeVisible (clockModeLabel.get());
-    clockModeLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
-    clockModeLabel->setJustificationType (Justification::centredLeft);
-    clockModeLabel->setEditable (false, false, false);
-    clockModeLabel->setColour (TextEditor::textColourId, Colours::black);
-    clockModeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    clockModeLabel->setBounds (200, 48, 56, 24);
-
-    octaveLabel.reset (new Label ("octaveLabel",
-                                  TRANS("Octaves\n")));
-    addAndMakeVisible (octaveLabel.get());
-    octaveLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
-    octaveLabel->setJustificationType (Justification::centredLeft);
-    octaveLabel->setEditable (false, false, false);
-    octaveLabel->setColour (TextEditor::textColourId, Colours::black);
-    octaveLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    octaveLabel->setBounds (72, 48, 56, 24);
+    modeLabel.reset (new Label ("modeLabel",
+                                TRANS("Mode")));
+    addAndMakeVisible (modeLabel.get());
+    modeLabel->setFont (Font (13.00f, Font::plain).withTypefaceStyle ("Regular"));
+    modeLabel->setJustificationType (Justification::centredLeft);
+    modeLabel->setEditable (false, false, false);
+    modeLabel->setColour (TextEditor::textColourId, Colours::black);
+    modeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    modeLabel->setBounds (280, 152, 88, 22);
 
     modeCombo.reset (new ComboBox ("modeCombo"));
     addAndMakeVisible (modeCombo.get());
@@ -126,23 +121,28 @@ ArpPanel::ArpPanel (AttachmentFactory* factory, Arpeggiator* arp )
     modeCombo->addItem (TRANS("Down"), 2);
     modeCombo->addItem (TRANS("Random"), 3);
     modeCombo->addListener (this);
-    modeCombo->setBounds (72, 80, 48, 24);
+    modeCombo->setBounds (280, 176, 88, 28);
 
-    modeLabel.reset (new Label ("modeLabel",
-                                TRANS("Mode")));
-    addAndMakeVisible (modeLabel.get());
-    modeLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
-    modeLabel->setJustificationType (Justification::centredLeft);
-    modeLabel->setEditable (false, false, false);
-    modeLabel->setColour (TextEditor::textColourId, Colours::black);
-    modeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    modeLabel->setBounds (72, 104, 56, 25);
+    clockModeLabel.reset (new Label ("clockModeLabel",
+                                    TRANS("Clock")));
+    addAndMakeVisible (clockModeLabel.get());
+    clockModeLabel->setFont (Font (13.00f, Font::plain).withTypefaceStyle ("Regular"));
+    clockModeLabel->setJustificationType (Justification::centredLeft);
+    clockModeLabel->setEditable (false, false, false);
+    clockModeLabel->setColour (TextEditor::textColourId, Colours::black);
+    clockModeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    clockModeLabel->setBounds (384, 80, 80, 22);
 
-    enabledButton.reset (new ToggleButton ("enabledButton"));
-    addAndMakeVisible (enabledButton.get());
-    enabledButton->setButtonText (TRANS("on"));
-    enabledButton->addListener (this);
-    enabledButton->setBounds (16, 80, 48, 24);
+    clockModeCombo.reset (new ComboBox ("clockModeCombo"));
+    addAndMakeVisible (clockModeCombo.get());
+    clockModeCombo->setEditableText (false);
+    clockModeCombo->setJustificationType (Justification::centredLeft);
+    clockModeCombo->setTextWhenNothingSelected (String());
+    clockModeCombo->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
+    clockModeCombo->addItem (TRANS("Internal"), 1);
+    clockModeCombo->addItem (TRANS("MIDI"), 2);
+    clockModeCombo->addListener (this);
+    clockModeCombo->setBounds (384, 104, 80, 28);
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -278,7 +278,21 @@ void ArpPanel::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == enabledButton.get())
     {
         //[UserButtonCode_enabledButton] -- add your button handler code here..
-		arp->setEnabled(enabledButton->getToggleState());             
+        bool enabled = enabledButton->getToggleState();
+        arp->setEnabled(enabled);
+        // Also write to the APVTS parameter so the state is saved with presets
+        if (factory)
+        {
+            auto* apvts = factory->getValueTreeState();
+            if (apvts)
+            {
+                if (auto* param = apvts->getParameter("arpEnabled"))
+                {
+                    auto range = apvts->getParameterRange("arpEnabled");
+                    param->setValueNotifyingHost(range.convertTo0to1(enabled ? 1.0f : 0.0f));
+                }
+            }
+        }
         //[/UserButtonCode_enabledButton]
     }
 
@@ -289,6 +303,12 @@ void ArpPanel::buttonClicked (Button* buttonThatWasClicked)
 
 
 //[MiscUserCode] You can add your own definitions of your custom methods or any other code here...
+void ArpPanel::syncArpEnabled(bool enabled)
+{
+    enabledButton->setToggleState(enabled, juce::dontSendNotification);
+    arp->setEnabled(enabled);
+}
+
 void ArpPanel::initAttachments()
 {
 	if (factory == nullptr) {

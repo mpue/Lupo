@@ -36,6 +36,10 @@ DistortionPanel::DistortionPanel (Model* model, AttachmentFactory* factory)
 	this->factory = factory;
     //[/Constructor_pre]
 
+    distortionGroup.reset (new GroupComponent ("distortionGroup", TRANS("Overdrive")));
+    addAndMakeVisible (distortionGroup.get());
+    distortionGroup->setBounds (0, 0, 224, 112);
+
     driveSlider.reset (new Slider ("driveSlider"));
     addAndMakeVisible (driveSlider.get());
     driveSlider->setRange (0, 5, 0.01);
@@ -43,7 +47,7 @@ DistortionPanel::DistortionPanel (Model* model, AttachmentFactory* factory)
     driveSlider->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     driveSlider->addListener (this);
 
-    driveSlider->setBounds (0, 0, 56, 56);
+    driveSlider->setBounds (8, 24, 56, 56);
 
     mixSlider.reset (new Slider ("mixSlider"));
     addAndMakeVisible (mixSlider.get());
@@ -52,7 +56,7 @@ DistortionPanel::DistortionPanel (Model* model, AttachmentFactory* factory)
     mixSlider->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     mixSlider->addListener (this);
 
-    mixSlider->setBounds (56, 0, 56, 56);
+    mixSlider->setBounds (72, 24, 56, 56);
 
     driveLabel.reset (new Label ("driveLabel",
                                  TRANS("Drive\n")));
@@ -63,7 +67,7 @@ DistortionPanel::DistortionPanel (Model* model, AttachmentFactory* factory)
     driveLabel->setColour (TextEditor::textColourId, Colours::black);
     driveLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    driveLabel->setBounds (8, 48, 40, 24);
+    driveLabel->setBounds (16, 82, 40, 18);
 
     mixLabel.reset (new Label ("mixLabel",
                                TRANS("Mix\n")));
@@ -74,7 +78,7 @@ DistortionPanel::DistortionPanel (Model* model, AttachmentFactory* factory)
     mixLabel->setColour (TextEditor::textColourId, Colours::black);
     mixLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    mixLabel->setBounds (72, 48, 40, 24);
+    mixLabel->setBounds (80, 82, 40, 18);
 
     modeCombo.reset (new ComboBox ("modeCombo"));
     addAndMakeVisible (modeCombo.get());
@@ -87,7 +91,7 @@ DistortionPanel::DistortionPanel (Model* model, AttachmentFactory* factory)
     modeCombo->addItem (TRANS("Cubic"), 3);
     modeCombo->addListener (this);
 
-    modeCombo->setBounds (120, 16, 80, 24);
+    modeCombo->setBounds (136, 40, 80, 24);
 
     modeLabel.reset (new Label ("modeLabel",
                                 TRANS("Mode")));
@@ -98,7 +102,7 @@ DistortionPanel::DistortionPanel (Model* model, AttachmentFactory* factory)
     modeLabel->setColour (TextEditor::textColourId, Colours::black);
     modeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    modeLabel->setBounds (136, 48, 40, 24);
+    modeLabel->setBounds (144, 66, 40, 18);
 
 
     //[UserPreSize]
@@ -116,6 +120,7 @@ DistortionPanel::~DistortionPanel()
     //[Destructor_pre]. You can add your own custom destruction code here..
     //[/Destructor_pre]
 
+    distortionGroup = nullptr;
     driveSlider = nullptr;
     mixSlider = nullptr;
     driveLabel = nullptr;

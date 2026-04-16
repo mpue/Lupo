@@ -171,7 +171,7 @@ public:
         {
             g.setColour(backgroundColour.brighter(0.1f));
 
-            // Glow-Effekt für Hover
+            // Glow-Effekt fï¿½r Hover
             juce::Path glowPath;
             glowPath.addRoundedRectangle(bounds.expanded(2.0f), cornerSize + 2.0f);
             juce::ColourGradient glow(juce::Colour(0x334d9eff), bounds.getCentreX(), bounds.getCentreY(),
@@ -191,34 +191,57 @@ public:
         g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
     }
 
-    // Custom Slider Drawing mit modernem Look
+    // Rotary slider using image strip (128 frames), resolution chosen by slider size
     void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
-        const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider& slider) override
+        const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider& /*slider*/) override
     {
-        auto radius = (float)juce::jmin(width / 2, height / 2) - 4.0f;
-        auto centreX = (float)x + (float)width * 0.5f;
-        auto centreY = (float)y + (float)height * 0.5f;
-        auto rx = centreX - radius;
-        auto ry = centreY - radius;
-        auto rw = radius * 2.0f;
-        auto angle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
+        const int sliderSize = juce::jmin(width, height);
 
-        // Outer ring (track)
-        g.setColour(juce::Colour(0xff404040));
-        g.drawEllipse(rx, ry, rw, rw, 3.0f);
+        // Pick the sharpest strip that still fits without upscaling
+        juce::Image strip;
+        if (sliderSize <= 40)
+            strip = juce::ImageCache::getFromMemory(BinaryData::Knob_32_png,  BinaryData::Knob_32_pngSize);
+        else if (sliderSize <= 56)
+            strip = juce::ImageCache::getFromMemory(BinaryData::Knob_48_png,  BinaryData::Knob_48_pngSize);
+        else if (sliderSize <= 96)
+            strip = juce::ImageCache::getFromMemory(BinaryData::Knob_64_png,  BinaryData::Knob_64_pngSize);
+        else
+            strip = juce::ImageCache::getFromMemory(BinaryData::Knob_128_png, BinaryData::Knob_128_pngSize);
 
-        // Inner fill
-        juce::Path valuePath;
-        valuePath.addPieSegment(rx, ry, rw, rw, rotaryStartAngle, angle, 0.6f);
-        g.setColour(juce::Colour(0xff4d9eff));
-        g.fillPath(valuePath);
+        juce::Image shadow = juce::ImageCache::getFromMemory(BinaryData::knob_shadow_64_png,
+                                                             BinaryData::knob_shadow_64_pngSize);
 
-        // Thumb (Zeiger)
-        juce::Path thumb;
-        auto thumbWidth = radius * 0.15f;
-        thumb.addRectangle(-thumbWidth * 0.5f, -radius * 0.9f, thumbWidth, radius * 0.3f);
-        g.setColour(juce::Colour(0xffffffff));
-        g.fillPath(thumb, juce::AffineTransform::rotation(angle).translated(centreX, centreY));
+        const float radius  = (float)juce::jmin(width / 2, height / 2);
+        const float centreX = (float)x + (float)width  * 0.5f;
+        const float centreY = (float)y + (float)height * 0.5f;
+        const float rx      = centreX - radius - 1.0f;
+        const float ry      = centreY - radius - 1.0f;
+        const float rw      = radius * 2.0f;
+        const float angle   = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
+
+        // Blue value arc drawn behind the knob image
+        {
+            juce::Path arc;
+            arc.addPieSegment(rx + 1.0f, ry + 1.0f, rw - 0.5f, rw - 0.5f,
+                              rotaryStartAngle, angle, 0.85f);
+            g.setColour(juce::Colour(0xff4d9eff).withAlpha(0.75f));
+            g.fillPath(arc);
+        }
+
+        // Frame index (strip has 128 frames stacked vertically)
+        const int nFrames  = strip.getHeight() / strip.getWidth();
+        const int frameIdx = juce::jlimit(0, nFrames - 1,
+                                (int)std::ceil(sliderPos * (double)(nFrames - 1)));
+
+        // Drop shadow
+        g.drawImage(shadow,
+                    (int)rx, (int)ry, 2 * (int)radius, 2 * (int)radius,
+                    0, 0, shadow.getWidth(), shadow.getHeight());
+
+        // Knob frame
+        g.drawImage(strip,
+                    (int)rx, (int)ry, 2 * (int)radius, 2 * (int)radius,
+                    0, frameIdx * strip.getWidth(), strip.getWidth(), strip.getWidth());
     }
 
     /*
@@ -294,14 +317,14 @@ public:
             // VU-Meter Bereich berechnen
             float fillWidth = sliderPos - x;
 
-            // Gradient für VU-Meter erstellen (Blautöne)
+            // Gradient fï¿½r VU-Meter erstellen (Blautï¿½ne)
             juce::ColourGradient gradient(
                 juce::Colour(0xFF4a90e2), x, y,  // Helles Blau (links)
                 juce::Colour(0xFF2e5c8a), sliderPos, y,  // Dunkles Blau (rechts)
                 false
             );
 
-            // Optional: Warnstufe bei hohen Werten (über 80%)
+            // Optional: Warnstufe bei hohen Werten (ï¿½ber 80%)
             float valueRange = slider.getMaximum() - slider.getMinimum();
             float normalizedValue = (slider.getValue() - slider.getMinimum()) / valueRange;
 
@@ -344,7 +367,7 @@ public:
         }
         else
         {
-            // Fallback für andere Slider-Stile
+            // Fallback fï¿½r andere Slider-Stile
             LookAndFeel_V4::drawLinearSlider(g, x, y, width, height,
                 sliderPos, minSliderPos, maxSliderPos,
                 style, slider);
@@ -391,7 +414,7 @@ public:
         g.fillRoundedRectangle(thumbBounds.toFloat(), cornerSize);
     }
 
-    // Bessere Fonts für bessere Lesbarkeit
+    // Bessere Fonts fï¿½r bessere Lesbarkeit
     juce::Font getTextButtonFont(juce::TextButton&, int buttonHeight) override
     {
         return juce::Font(juce::jmin(15.0f, (float)buttonHeight * 0.6f), juce::Font::FontStyleFlags::plain);

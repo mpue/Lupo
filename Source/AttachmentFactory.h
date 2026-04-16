@@ -75,6 +75,10 @@ public:
         return lupo;
     }
 
+    AudioProcessorValueTreeState* getValueTreeState() {
+        return processor->getValueTreeState();
+    }
+
     StringArray getSliderParams() {
         return {
             "cutoff1","resonance1","mainVolume","envAmt1",
