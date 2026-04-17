@@ -156,12 +156,12 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	chorusPanel.reset(new ChorusPanel(model, factory));
 	chorusPanel->setName("chorusPanel");
 	fxContainerPanel->addAndMakeVisible(chorusPanel.get());
-	chorusPanel->setBounds(8, 248, 460, 112);
+	chorusPanel->setBounds(8, 248, 284, 112);
 
 	distortionPanel.reset(new DistortionPanel(model, factory));
 	distortionPanel->setName("distortionPanel");
 	fxContainerPanel->addAndMakeVisible(distortionPanel.get());
-	distortionPanel->setBounds(8, 368, 460, 112);
+	distortionPanel->setBounds(296, 248, 172, 112);
 
 	// Create Arpeggiator panel
 	arpPanel.reset(new ArpPanel(factory, arp));

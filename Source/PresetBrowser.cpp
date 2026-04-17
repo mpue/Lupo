@@ -281,7 +281,9 @@ void PresetBrowser::saveMetadata()
         p->setAttribute("rating",      pair.second.rating);
     }
 
-    root.writeToFile(getMetadataFile(), "");
+    File f = getMetadataFile();
+    f.getParentDirectory().createDirectory();   // ensure directory exists
+    root.writeToFile(f, "");
 }
 
 // ============================================================
@@ -297,7 +299,11 @@ void PresetBrowser::updateCategoryList()
 
     int idx = categoryModel.items.indexOf(selectedCategory);
     if (idx < 0) { selectedCategory = "All"; idx = 0; }
-    categoryBox->selectRow(idx);
+
+    // Use dontSendNotification so programmatic selection doesn't trigger onSelectionChanged
+    SparseSet<int> sel;
+    if (idx >= 0) sel.addRange(Range<int>(idx, idx + 1));
+    categoryBox->setSelectedRows(sel, dontSendNotification);
 }
 
 void PresetBrowser::updateFilteredPresets()
@@ -318,6 +324,7 @@ void PresetBrowser::updateFilteredPresets()
         }
     }
     listBox->updateContent();
+    listBox->repaint();
     listBox->deselectAllRows();
     currentDetailPreset = {};
     updateDetailPanel({});
@@ -623,7 +630,7 @@ void PresetBrowser::addCategory()
             }
             delete aw;
         }),
-        true);
+        false);  // false = don't auto-delete; the lambda owns deletion
 }
 
 void PresetBrowser::deleteCategory()

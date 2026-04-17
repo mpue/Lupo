@@ -40,7 +40,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
                                            TRANS("Reverb")));
     addAndMakeVisible (reverbGroup.get());
 
-    reverbGroup->setBounds (0, 0, 420, 112);
+    reverbGroup->setBounds (0, 0, 460, 112);
 
     roomSize.reset (new Slider ("roomSize"));
     addAndMakeVisible (roomSize.get());
@@ -49,7 +49,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     roomSize->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     roomSize->addListener (this);
 
-    roomSize->setBounds (10, 24, 56, 64);
+    roomSize->setBounds (16, 24, 56, 64);
 
     roomSIzeLbl.reset (new Label ("roomSIzeLbl",
                                   TRANS("Room size")));
@@ -60,7 +60,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     roomSIzeLbl->setColour (TextEditor::textColourId, Colours::black);
     roomSIzeLbl->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    roomSIzeLbl->setBounds (10, 80, 63, 24);
+    roomSIzeLbl->setBounds (8, 80, 72, 24);
 
     damping.reset (new Slider ("damping"));
     addAndMakeVisible (damping.get());
@@ -69,7 +69,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     damping->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     damping->addListener (this);
 
-    damping->setBounds (70, 24, 56, 64);
+    damping->setBounds (88, 24, 56, 64);
 
     dampingLbl.reset (new Label ("dampingLbl",
                                  TRANS("Damping")));
@@ -80,7 +80,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     dampingLbl->setColour (TextEditor::textColourId, Colours::black);
     dampingLbl->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    dampingLbl->setBounds (70, 80, 63, 24);
+    dampingLbl->setBounds (80, 80, 72, 24);
 
     width.reset (new Slider ("damping"));
     addAndMakeVisible (width.get());
@@ -89,7 +89,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     width->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     width->addListener (this);
 
-    width->setBounds (130, 24, 56, 64);
+    width->setBounds (160, 24, 56, 64);
 
     widthLbl.reset (new Label ("widthLbl",
                                TRANS("Width")));
@@ -100,7 +100,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     widthLbl->setColour (TextEditor::textColourId, Colours::black);
     widthLbl->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    widthLbl->setBounds (134, 80, 63, 24);
+    widthLbl->setBounds (152, 80, 72, 24);
 
     dryLevel.reset (new Slider ("dryLevel"));
     addAndMakeVisible (dryLevel.get());
@@ -109,7 +109,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     dryLevel->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     dryLevel->addListener (this);
 
-    dryLevel->setBounds (190, 24, 56, 64);
+    dryLevel->setBounds (232, 24, 56, 64);
 
     dryLbl.reset (new Label ("dryLbl",
                              TRANS("Dry\n")));
@@ -120,7 +120,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     dryLbl->setColour (TextEditor::textColourId, Colours::black);
     dryLbl->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    dryLbl->setBounds (198, 80, 34, 24);
+    dryLbl->setBounds (224, 80, 72, 24);
 
     wetLevel.reset (new Slider ("wetLevel"));
     addAndMakeVisible (wetLevel.get());
@@ -129,7 +129,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     wetLevel->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     wetLevel->addListener (this);
 
-    wetLevel->setBounds (254, 24, 56, 64);
+    wetLevel->setBounds (304, 24, 56, 64);
 
     wetLbl.reset (new Label ("wetLbl",
                              TRANS("Wet")));
@@ -140,7 +140,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     wetLbl->setColour (TextEditor::textColourId, Colours::black);
     wetLbl->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    wetLbl->setBounds (264, 80, 34, 24);
+    wetLbl->setBounds (296, 80, 72, 24);
 
     freeze.reset (new Slider ("wetLevel"));
     addAndMakeVisible (freeze.get());
@@ -149,7 +149,7 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     freeze->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     freeze->addListener (this);
 
-    freeze->setBounds (318, 24, 56, 64);
+    freeze->setBounds (376, 24, 56, 64);
 
     freezeLbl.reset (new Label ("freezeLbl",
                                 TRANS("Freeze\n")));
@@ -160,14 +160,14 @@ ReverbPanel::ReverbPanel (Model* model, AttachmentFactory* factory)
     freezeLbl->setColour (TextEditor::textColourId, Colours::black);
     freezeLbl->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    freezeLbl->setBounds (330, 80, 48, 24);
+    freezeLbl->setBounds (368, 80, 72, 24);
 
     reverbEnabledButton.reset(new ToggleButton("reverbEnabled"));
     addAndMakeVisible(reverbEnabledButton.get());
     reverbEnabledButton->setButtonText(String());
     reverbEnabledButton->addListener(this);
 
-    reverbEnabledButton->setBounds(350, 0, 32, 24);
+    reverbEnabledButton->setBounds(424, 0, 32, 24);
     reverbEnabledButton->setAlwaysOnTop(true);
 
     //[UserPreSize]

@@ -40,7 +40,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
                                           TRANS("Stereo delay")));
     addAndMakeVisible (delayGroup.get());
 
-    delayGroup->setBounds (8, 0, 248, 112);
+    delayGroup->setBounds (0, 0, 294, 112);
 
     timeLeft.reset (new Slider ("timeLeft"));
     addAndMakeVisible (timeLeft.get());
@@ -49,7 +49,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     timeLeft->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     timeLeft->addListener (this);
 
-    timeLeft->setBounds (24, 24, 56, 64);
+    timeLeft->setBounds (16, 24, 56, 64);
 
     timeRight.reset (new Slider ("timeRight"));
     addAndMakeVisible (timeRight.get());
@@ -58,7 +58,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     timeRight->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     timeRight->addListener (this);
 
-    timeRight->setBounds (80, 24, 56, 64);
+    timeRight->setBounds (88, 24, 56, 64);
 
     feedback.reset (new Slider ("feedback"));
     addAndMakeVisible (feedback.get());
@@ -67,7 +67,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     feedback->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     feedback->addListener (this);
 
-    feedback->setBounds (136, 24, 56, 64);
+    feedback->setBounds (160, 24, 56, 64);
 
     mix.reset (new Slider ("mix"));
     addAndMakeVisible (mix.get());
@@ -76,7 +76,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     mix->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     mix->addListener (this);
 
-    mix->setBounds (192, 24, 56, 64);
+    mix->setBounds (232, 24, 56, 64);
 
     labelTime.reset (new Label ("labelTime",
                                 TRANS("Time L\n")));
@@ -87,7 +87,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     labelTime->setColour (TextEditor::textColourId, Colours::black);
     labelTime->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    labelTime->setBounds (24, 80, 48, 24);
+    labelTime->setBounds (8, 80, 72, 24);
 
     labelTime2.reset (new Label ("labelTime",
                                  TRANS("Time R\n")));
@@ -98,7 +98,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     labelTime2->setColour (TextEditor::textColourId, Colours::black);
     labelTime2->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    labelTime2->setBounds (80, 80, 56, 24);
+    labelTime2->setBounds (80, 80, 72, 24);
 
     labelFb.reset (new Label ("labelFb",
                               TRANS("Feedback")));
@@ -109,7 +109,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     labelFb->setColour (TextEditor::textColourId, Colours::black);
     labelFb->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    labelFb->setBounds (136, 80, 56, 24);
+    labelFb->setBounds (152, 80, 72, 24);
 
     labelMix.reset (new Label ("labelMix",
                                TRANS("Mix")));
@@ -120,13 +120,13 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     labelMix->setColour (TextEditor::textColourId, Colours::black);
     labelMix->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    labelMix->setBounds (208, 80, 48, 24);
+    labelMix->setBounds (224, 80, 72, 24);
 
 
     // Portamento group – positioned to the right of the Stereo delay group
     portamentoGroup.reset (new GroupComponent ("portamentoGroup", TRANS("Portamento")));
     addAndMakeVisible (portamentoGroup.get());
-    portamentoGroup->setBounds (264, 0, 184, 112);
+    portamentoGroup->setBounds (298, 0, 162, 112);
 
     portamentoIntensity.reset (new Slider ("portamentoIntensity"));
     addAndMakeVisible (portamentoIntensity.get());
@@ -134,7 +134,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     portamentoIntensity->setSliderStyle (Slider::RotaryVerticalDrag);
     portamentoIntensity->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     portamentoIntensity->addListener (this);
-    portamentoIntensity->setBounds (280, 24, 56, 64);
+    portamentoIntensity->setBounds (304, 24, 56, 64);
 
     portamentoSpeed.reset (new Slider ("portamentoSpeed"));
     addAndMakeVisible (portamentoSpeed.get());
@@ -142,7 +142,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     portamentoSpeed->setSliderStyle (Slider::RotaryVerticalDrag);
     portamentoSpeed->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     portamentoSpeed->addListener (this);
-    portamentoSpeed->setBounds (352, 24, 56, 64);
+    portamentoSpeed->setBounds (376, 24, 56, 64);
 
     labelIntensity.reset (new Label ("labelIntensity", TRANS("Intensity")));
     addAndMakeVisible (labelIntensity.get());
@@ -151,7 +151,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     labelIntensity->setEditable (false, false, false);
     labelIntensity->setColour (TextEditor::textColourId, Colours::black);
     labelIntensity->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    labelIntensity->setBounds (272, 80, 64, 24);
+    labelIntensity->setBounds (296, 80, 72, 24);
 
     labelSpeed.reset (new Label ("labelSpeed", TRANS("Duration")));
     addAndMakeVisible (labelSpeed.get());
@@ -160,7 +160,7 @@ DelayPanel::DelayPanel (Model* model, AttachmentFactory* factory)
     labelSpeed->setEditable (false, false, false);
     labelSpeed->setColour (TextEditor::textColourId, Colours::black);
     labelSpeed->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
-    labelSpeed->setBounds (344, 80, 56, 24);
+    labelSpeed->setBounds (368, 80, 72, 24);
 
     //[UserPreSize]
     //[/UserPreSize]

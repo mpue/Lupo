@@ -40,7 +40,7 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
                                            TRANS("Chorus")));
     addAndMakeVisible (chorusGroup.get());
 
-    chorusGroup->setBounds (0, 0, 240, 112);
+    chorusGroup->setBounds (0, 0, 284, 112);
 
     delay.reset (new Slider ("delay"));
     addAndMakeVisible (delay.get());
@@ -49,7 +49,7 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
     delay->setTextBoxStyle (Slider::NoTextBox, false, 80, 12);
     delay->addListener (this);
 
-    delay->setBounds (8, 24, 56, 64);
+    delay->setBounds (16, 24, 56, 64);
 
     delayLabel.reset (new Label ("delayLabel",
                                  TRANS("Delay\n")));
@@ -60,7 +60,7 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
     delayLabel->setColour (TextEditor::textColourId, Colours::black);
     delayLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    delayLabel->setBounds (16, 80, 40, 24);
+    delayLabel->setBounds (8, 80, 72, 24);
 
     modulation.reset (new Slider ("modulation"));
     addAndMakeVisible (modulation.get());
@@ -69,7 +69,7 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
     modulation->setTextBoxStyle (Slider::NoTextBox, false, 80, 12);
     modulation->addListener (this);
 
-    modulation->setBounds (64, 24, 56, 64);
+    modulation->setBounds (88, 24, 56, 64);
 
     modLabel.reset (new Label ("modLabel",
                                TRANS("Modulation\n")));
@@ -80,7 +80,7 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
     modLabel->setColour (TextEditor::textColourId, Colours::black);
     modLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    modLabel->setBounds (56, 80, 72, 24);
+    modLabel->setBounds (80, 80, 72, 24);
 
     feedback.reset (new Slider ("feedback"));
     addAndMakeVisible (feedback.get());
@@ -89,7 +89,7 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
     feedback->setTextBoxStyle (Slider::NoTextBox, false, 80, 12);
     feedback->addListener (this);
 
-    feedback->setBounds (120, 24, 56, 64);
+    feedback->setBounds (160, 24, 56, 64);
 
     fblabel.reset (new Label ("fblabel",
                               TRANS("Feedback")));
@@ -100,7 +100,7 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
     fblabel->setColour (TextEditor::textColourId, Colours::black);
     fblabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    fblabel->setBounds (120, 80, 56, 24);
+    fblabel->setBounds (152, 80, 72, 24);
 
     mix.reset (new Slider ("mix"));
     addAndMakeVisible (mix.get());
@@ -109,7 +109,7 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
     mix->setTextBoxStyle (Slider::NoTextBox, false, 80, 12);
     mix->addListener (this);
 
-    mix->setBounds (176, 24, 56, 64);
+    mix->setBounds (232, 24, 56, 64);
 
     mixLabel.reset (new Label ("mixLabel",
                                TRANS("Mix\n")));
@@ -120,7 +120,7 @@ ChorusPanel::ChorusPanel (Model* model, AttachmentFactory* factory)
     mixLabel->setColour (TextEditor::textColourId, Colours::black);
     mixLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    mixLabel->setBounds (192, 80, 32, 24);
+    mixLabel->setBounds (224, 80, 72, 24);
 
 
     //[UserPreSize]
