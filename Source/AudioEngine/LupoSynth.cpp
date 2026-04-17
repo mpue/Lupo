@@ -513,15 +513,14 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		model->cutoff1 = newValue;
 
 		for (auto& voice : voices) {
-			// Use immediate update for real-time cutoff control responsiveness
-			voice->getFilter1()->setFrequencyImmediate(model->cutoff1);
+			voice->getFilter1()->setFrequency(model->cutoff1);
 		}
 
 		// Handle cutoff linking
 		if (cutoffLink) {
 			model->cutoff2 = newValue;
 			for (auto& voice : voices) {
-				voice->getFilter2()->setFrequencyImmediate(model->cutoff1);
+				voice->getFilter2()->setFrequency(model->cutoff1);
 			}
 		}
 	}
@@ -554,13 +553,13 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		model->cutoff2 = newValue;
 
 		for (auto& voice : voices) {
-			voice->getFilter2()->setFrequencyImmediate(newValue);
+			voice->getFilter2()->setFrequency(newValue);
 		}
 
 		if (cutoffLink) {
 			model->cutoff1 = newValue;
 			for (auto& voice : voices) {
-				voice->getFilter1()->setFrequencyImmediate(newValue);
+				voice->getFilter1()->setFrequency(newValue);
 			}
 		}
 	}

@@ -6,7 +6,7 @@
 // ─────────────────────────────────────────────────────────────
 LowPassFilter::LowPassFilter()
 {
-    smoothedCutoff.reset(spec.sampleRate, 0.002);            // Much faster smoothing: 2ms for immediate musical response
+    smoothedCutoff.reset(spec.sampleRate, 0.015);            // 15ms smoothing prevents zipper noise from MIDI CC steps
     svf1.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
     svf1.prepare(spec);
     svf2.setType(juce::dsp::StateVariableTPTFilterType::lowpass);
@@ -22,8 +22,7 @@ void LowPassFilter::coefficients(float newSampleRate,
     svf1.prepare(spec);
     svf2.prepare(spec);
     
-    // Update smoothing for new sample rate with fast response
-    smoothedCutoff.reset(newSampleRate, 0.002);
+    smoothedCutoff.reset(newSampleRate, 0.015);
     
     frequency = newFrequency;
     resonance = juce::jlimit(0.05f, 10.0f, newResonance);
@@ -104,18 +103,7 @@ float LowPassFilter::processSample(float sample)
 {
     float targetCutoff = juce::jlimit(20.0f, 20000.0f, frequency * currentModulatedValue);
 
-    // Large jumps (e.g. note-on with instant attack) bypass smoothing for immediate response
-    if (std::abs(targetCutoff - lastCutoff) > 500.0f)
-    {
-        smoothedCutoff.setCurrentAndTargetValue(targetCutoff);
-        svf1.setCutoffFrequency(targetCutoff);
-        svf2.setCutoffFrequency(targetCutoff);
-        lastCutoff = targetCutoff;
-    }
-    else
-    {
-        smoothedCutoff.setTargetValue(targetCutoff);
-    }
+    smoothedCutoff.setTargetValue(targetCutoff);
 
     if (++updateCounter >= updateInterval)
     {
