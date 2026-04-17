@@ -32,6 +32,7 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 		processor->parameters->addParameterListener("Amount_" + String(i), this);
 	}
 	processor->parameters->addParameterListener("arpEnabled", this);
+	processor->parameters->addParameterListener("seqEnabled", this);
 
 	groupComponent.reset(new GroupComponent("new group",TRANS("Amplifier")));
 	addAndMakeVisible(groupComponent.get());
@@ -44,7 +45,7 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	filterGroup1.reset(new GroupComponent("filterGroup1",TRANS("Filter 1")));
 	addAndMakeVisible(filterGroup1.get());
 
-	filterGroup1->setBounds(612, 260, 392, 112);
+	filterGroup1->setBounds(612, 260, 392, 128);
 
 	osc1Panel.reset(new OscillatorPanel(model, factory));
 	addAndMakeVisible(osc1Panel.get());
@@ -71,13 +72,13 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	
 	filterEnvelopeGroup.reset(new GroupComponent("filterEnvelopeGroup", "Filter Env."));
 	addAndMakeVisible(filterEnvelopeGroup.get());
-	filterEnvelopeGroup->setBounds(612, 550, 392, 200);
+	filterEnvelopeGroup->setBounds(612, 552, 392, 216);
 
 	filterEnvelope.reset(new EnvelopePanel(model, factory));
 	filterEnvelope->setName("auxEnvelope1");
 	filterEnvelope->setDecayTime(3.0f);
 	addAndMakeVisible(filterEnvelope.get());
-	filterEnvelope->setBounds(628, 560, 288, 150);
+	filterEnvelope->setBounds(628, 562, 288, 150);
 	
 	mainVolume.reset(new Slider("mainVolume"));
 	addAndMakeVisible(mainVolume.get());
@@ -244,18 +245,18 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	addAndMakeVisible(filterPanel1.get());
 	filterPanel1->setName("filterPanel1");
 
-	filterPanel1->setBounds(628,268, 360, 120);
+	filterPanel1->setBounds(628, 268, 360, 116);
 
 	filterGroup2.reset(new GroupComponent("filterGroup2",TRANS("Filter 2")));
 	addAndMakeVisible(filterGroup2.get());
 
-	filterGroup2->setBounds(612, 444, 392, 112);
+	filterGroup2->setBounds(612, 416, 392, 128);
 
 	filterPanel2.reset(new FilterPanel(model, factory));
 	addAndMakeVisible(filterPanel2.get());
 	filterPanel2->setName("filterPanel2");
 
-	filterPanel2->setBounds(628, 460, 360, 80);
+	filterPanel2->setBounds(628, 424, 360, 112);
 
 	filterModeLabel.reset(new Label("filterModeLabel",TRANS("Filter mode")));
 	addAndMakeVisible(filterModeLabel.get());
@@ -265,7 +266,7 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	filterModeLabel->setColour(TextEditor::textColourId, Colours::black);
 	filterModeLabel->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-	filterModeLabel->setBounds(824, 420, 64, 24);
+	filterModeLabel->setBounds(824, 390, 64, 24);
 	
 	filterModeCombo.reset(new ComboBox("new combo box"));
 	addAndMakeVisible(filterModeCombo.get());
@@ -277,14 +278,14 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	filterModeCombo->addItem(TRANS("Parallel"), 2);
 	filterModeCombo->addListener(this);
 
-	filterModeCombo->setBounds(896, 420, 88, 24);
+	filterModeCombo->setBounds(896, 390, 88, 24);
 
 	cutoffLink.reset(new ToggleButton("cutoffLink"));
 	addAndMakeVisible(cutoffLink.get());
 	cutoffLink->setButtonText(String());
 	cutoffLink->addListener(this);
 
-	cutoffLink->setBounds(688, 420, 32, 24);
+	cutoffLink->setBounds(688, 390, 32, 24);
 
 	label.reset(new Label("new label",
 		TRANS("Cutoff link")));
@@ -295,7 +296,7 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	label->setColour(TextEditor::textColourId, Colours::black);
 	label->setColour(TextEditor::backgroundColourId, Colour(0x00000000));
 
-	label->setBounds(720, 420, 64, 24);
+	label->setBounds(720, 390, 64, 24);
 
 	mainDisplay.reset(new TextEditor("mainDisplay"));
 	addAndMakeVisible(mainDisplay.get());
@@ -631,6 +632,11 @@ void MainUI::buttonClicked(Button* buttonThatWasClicked)
 		processor->getValueTreeState()->getParameter("osc3Shape")->setValue(model->osc3Shape);
 		processor->getValueTreeState()->getParameter("osc4Shape")->setValue(model->osc4Shape);
 
+		// Sync seq enabled state (enableButton writes directly to the sequencer,
+		// not to the APVTS, so we sync it manually here before serialising).
+		processor->getValueTreeState()->getParameter("seqEnabled")->setValue(
+			synth->getSeq()->isRunning() ? 1.0f : 0.0f);
+
 		auto xml = processor->getValueTreeState()->state.createXml();
 
 		if (xml == nullptr) {
@@ -789,6 +795,11 @@ void MainUI::timerCallback()
 		midiLearnWasActive = false;
 		mlm->saveToFile(LupoAudioProcessor::getMidiLearnFile());
 		mainDisplay->setText("MIDI CC assigned!");
+		midiLearnFeedbackCountdown = 66; // ~2 s at 30 ms tick
+	}
+	else if (midiLearnFeedbackCountdown > 0)
+	{
+		--midiLearnFeedbackCountdown;
 	}
 }
 
@@ -839,6 +850,18 @@ void MainUI::parameterChanged(const String& parameterID, float newValue)
 		return;
 	}
 
+	// Sync sequencer enabled button when preset is loaded
+	if (parameterID == "seqEnabled")
+	{
+		juce::Component::SafePointer<MainUI> safeThis(this);
+		juce::MessageManager::callAsync([safeThis, newValue]()
+		{
+			if (safeThis == nullptr) return;
+			safeThis->seqPanel->syncEnabled(newValue > 0.5f);
+		});
+		return;
+	}
+
 	// Sync cutoff sliders when link is active.
 	// Guard: only update the other side if its value differs to avoid ping-pong.
 	if (cutoffLink->getToggleState())
@@ -868,6 +891,9 @@ void MainUI::parameterChanged(const String& parameterID, float newValue)
 				if (safeThis == nullptr)
 					return;
 				auto* self = safeThis.getComponent();
+				// Don't overwrite MIDI Learn feedback while it's still being shown
+				if (self->midiLearnWasActive || self->midiLearnFeedbackCountdown > 0)
+					return;
 				self->mainDisplay->setText(self->processor->getParameters().getUnchecked(i)->getLabel() + " - " + String(newValue, 2));
 			});
 

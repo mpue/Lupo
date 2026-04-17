@@ -150,6 +150,9 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("filterMode", "Filter mode", 0, 1.0, 0);
 	factory->createParam("cutoffLink", "Cutoff link", 0, 1.0, 0);
 
+	factory->createParam("filterChar1", "Filter 1 character", 0.0f, 4.0f, 0.0f);
+	factory->createParam("filterChar2", "Filter 2 character", 0.0f, 4.0f, 0.0f);
+
 	// Step Sequencer (disabled by default)
 	factory->createParam("seqEnabled",   "Seq enabled",   0.0f, 1.0f,   0.0f);
 	factory->createParam("seqTempo",     "Seq tempo",    20.0f, 300.0f, 120.0f);
@@ -320,6 +323,10 @@ void LupoAudioProcessor::setSelectedProgram(juce::String name) {
 	if (matrixFile.exists()) {
 		 modMatrixState = matrixFile.loadFileAsString();
 	}
+
+	// Stop the sequencer before loading the new preset so it doesn't keep
+	// running with stale pattern/timing during the state transition.
+	lupo->getSeq()->setEnabled(false);
 
 	// Load step sequencer pattern
 	File seqFile = File(presetPath + name + ".seq");

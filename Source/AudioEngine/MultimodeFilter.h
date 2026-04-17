@@ -13,6 +13,7 @@
 #include "Filter.h"
 #include "LowPassFilter.h"
 #include "HighPassFilter.h"
+#include "CharacterFilter.h"
 #include "StereoEffect.h"
 #include "ModTarget.h"
 
@@ -42,6 +43,7 @@ public:
     void setFrequencyImmediate(float frequency);
     void setResonance(float resonance);
     void setMode(Mode mode);
+    void setCharacter(CharacterFilter::Character character);
 	void setKeyTrack(int track);
 
 	// Per-sample modulation: set cutoff multiplier directly, then call processSampleStereo
@@ -69,6 +71,9 @@ private:
 
     float frequency;
     float resonance;
+
+    std::unique_ptr<CharacterFilter> charFilter;
+    CharacterFilter::Character character = CharacterFilter::STANDARD;
 
     JUCE_LEAK_DETECTOR(MultimodeFilter);
     

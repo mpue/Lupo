@@ -65,7 +65,7 @@ private:
     std::vector<std::unique_ptr<juce::Label>> targetLabels;
     
     int numSources = 0;
-    int numTargets = 0;
+    int numTargets = 0; 
     
     void createMatrix();
     void setupLabels();

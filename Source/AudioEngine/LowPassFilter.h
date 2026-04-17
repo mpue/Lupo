@@ -28,6 +28,7 @@ public:
 	void setFrequency(float frequency);
 	void setResonance(float resonance);
 	void setModulatedValue(float value) { currentModulatedValue = value; }
+	float getModulatedValue() const { return currentModulatedValue; }
 	
 	// Force immediate update for real-time control responsiveness
 	void setFrequencyImmediate(float frequency);

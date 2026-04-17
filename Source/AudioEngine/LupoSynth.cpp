@@ -14,6 +14,7 @@
 */
 
 #include "LupoSynth.h"
+#include "CharacterFilter.h"
 #include "LowPassFilter.h"
 #include "MultimodeOscillator.h"
 #include "Sampler.h"
@@ -591,6 +592,18 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 				modEnvelopes.at(1)->setModAmount(newValue);
 				voice->getFilter2()->addModulator(modEnvelopes.at(1));
 			}
+		}
+	}
+	else if (parameterID == "filterChar1") {
+		auto character = static_cast<CharacterFilter::Character>((int)newValue);
+		for (auto& voice : voices) {
+			voice->getFilter1()->setCharacter(character);
+		}
+	}
+	else if (parameterID == "filterChar2") {
+		auto character = static_cast<CharacterFilter::Character>((int)newValue);
+		for (auto& voice : voices) {
+			voice->getFilter2()->setCharacter(character);
 		}
 	}
 	else if (parameterID == "mainVolume") {

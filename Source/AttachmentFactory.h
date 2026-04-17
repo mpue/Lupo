@@ -96,7 +96,9 @@ public:
             "dlyTimeLeft", "dlyTimeRight", "dlyFeedback","dlyMix",
             "rvbRoomSize", "rvbDamping", "rvbWetLevel", "rvbDryLevel", "rvbWidth", "rvbFreezeMode",
             "chrDelay", "chrModulation", "chrFeedback", "chrMix",
-            "filterMode","cutoffLink"
+            "filterMode","cutoffLink",
+            "filterMode1","filterMode2",
+            "filterChar1","filterChar2"
         };
     }
 

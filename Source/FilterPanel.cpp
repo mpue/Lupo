@@ -43,7 +43,7 @@ FilterPanel::FilterPanel (Model* model, AttachmentFactory* factory)
     fltCutoff->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     fltCutoff->addListener (this);
 
-    fltCutoff->setBounds (5, 8, 64, 64);
+    fltCutoff->setBounds (5, 18, 64, 64);
 
     fltResonance.reset (new Slider ("fltResonance"));
     addAndMakeVisible (fltResonance.get());
@@ -52,7 +52,7 @@ FilterPanel::FilterPanel (Model* model, AttachmentFactory* factory)
     fltResonance->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     fltResonance->addListener (this);
 
-    fltResonance->setBounds (93, 8, 64, 64);
+    fltResonance->setBounds (93, 18, 64, 64);
 
     Cutoff.reset (new Label ("Cutoff",
                              TRANS("Cutoff\n")));
@@ -63,7 +63,7 @@ FilterPanel::FilterPanel (Model* model, AttachmentFactory* factory)
     Cutoff->setColour (TextEditor::textColourId, Colours::black);
     Cutoff->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    Cutoff->setBounds (13, 64, 56, 24);
+    Cutoff->setBounds (13, 74, 56, 24);
 
     Res.reset (new Label ("Res",
                           TRANS("Q")));
@@ -74,7 +74,7 @@ FilterPanel::FilterPanel (Model* model, AttachmentFactory* factory)
     Res->setColour (TextEditor::textColourId, Colours::black);
     Res->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    Res->setBounds (117, 64, 24, 24);
+    Res->setBounds (117, 74, 24, 24);
 
     envAmt.reset (new Slider ("envAmt"));
     addAndMakeVisible (envAmt.get());
@@ -83,7 +83,7 @@ FilterPanel::FilterPanel (Model* model, AttachmentFactory* factory)
     envAmt->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     envAmt->addListener (this);
 
-    envAmt->setBounds (181, 8, 64, 64);
+    envAmt->setBounds (181, 18, 64, 64);
 
     Amt.reset (new Label ("Amt",
                           TRANS("Env. Amount")));
@@ -94,7 +94,7 @@ FilterPanel::FilterPanel (Model* model, AttachmentFactory* factory)
     Amt->setColour (TextEditor::textColourId, Colours::black);
     Amt->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    Amt->setBounds (173, 64, 88, 24);
+    Amt->setBounds (173, 74, 88, 24);
 
     filterMode.reset (new ComboBox ("filterMode"));
     addAndMakeVisible (filterMode.get());
@@ -106,7 +106,7 @@ FilterPanel::FilterPanel (Model* model, AttachmentFactory* factory)
     filterMode->addItem (TRANS("HP"), 2);
     filterMode->addListener (this);
 
-    filterMode->setBounds (261, 32, 64, 24);
+    filterMode->setBounds (261, 8, 80, 24);
 
     filterModeLabel.reset (new Label ("filterModeLabel",
                                       TRANS("Filter Mode")));
@@ -117,8 +117,30 @@ FilterPanel::FilterPanel (Model* model, AttachmentFactory* factory)
     filterModeLabel->setColour (TextEditor::textColourId, Colours::black);
     filterModeLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
 
-    filterModeLabel->setBounds (261, 64, 88, 24);
+    filterModeLabel->setBounds (261, 36, 80, 16);
 
+    filterChar.reset (new ComboBox ("filterChar"));
+    addAndMakeVisible (filterChar.get());
+    filterChar->setEditableText (false);
+    filterChar->setJustificationType (Justification::centredLeft);
+    filterChar->setTextWhenNothingSelected (String());
+    filterChar->setTextWhenNoChoicesAvailable (TRANS("(no choices)"));
+    filterChar->addItem (TRANS("Standard"),       1);
+    filterChar->addItem (TRANS("Butterworth"),     2);
+    filterChar->addItem (TRANS("Chebyshev"),       3);
+    filterChar->addItem (TRANS("Bessel"),          4);
+    filterChar->addItem (TRANS("Linkwitz-Riley"),  5);
+    filterChar->addListener (this);
+    filterChar->setBounds (261, 56, 80, 24);
+
+    filterCharLabel.reset (new Label ("filterCharLabel", TRANS("Character")));
+    addAndMakeVisible (filterCharLabel.get());
+    filterCharLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
+    filterCharLabel->setJustificationType (Justification::centredLeft);
+    filterCharLabel->setEditable (false, false, false);
+    filterCharLabel->setColour (TextEditor::textColourId, Colours::black);
+    filterCharLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    filterCharLabel->setBounds (261, 84, 80, 16);
 
     //[UserPreSize]
     //[/UserPreSize]
@@ -143,6 +165,8 @@ FilterPanel::~FilterPanel()
     Amt = nullptr;
     filterMode = nullptr;
     filterModeLabel = nullptr;
+    filterChar = nullptr;
+    filterCharLabel = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -203,6 +227,11 @@ void FilterPanel::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
         //[UserComboBoxCode_filterMode] -- add your combo box handling code here..
         //[/UserComboBoxCode_filterMode]
     }
+    else if (comboBoxThatHasChanged == filterChar.get())
+    {
+        //[UserComboBoxCode_filterChar] -- add your combo box handling code here..
+        //[/UserComboBoxCode_filterChar]
+    }
 
     //[UsercomboBoxChanged_Post]
     //[/UsercomboBoxChanged_Post]
@@ -218,12 +247,14 @@ void FilterPanel::initAttachments()
 		factory->createSliderAttachment("resonance1", fltResonance.get());
 		factory->createSliderAttachment("envAmt1", envAmt.get());
 		factory->createComboAttachment("filterMode1", filterMode.get());
+		factory->createComboAttachment("filterChar1", filterChar.get());
 	}
 	else {
 		factory->createSliderAttachment("cutoff2", fltCutoff.get());
 		factory->createSliderAttachment("resonance2", fltResonance.get());
 		factory->createSliderAttachment("envAmt2", envAmt.get());
-		factory->createComboAttachment("filterMode2", filterMode.get());		
+		factory->createComboAttachment("filterMode2", filterMode.get());
+		factory->createComboAttachment("filterChar2", filterChar.get());
 	}
 
 

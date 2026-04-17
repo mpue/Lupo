@@ -49,6 +49,13 @@ public:
     void resized() override;
     void timerCallback() override;
 
+    /** Called from the message thread after a preset load to sync the button UI. */
+    void syncEnabled(bool enabled)
+    {
+        if (enableButton)
+            enableButton->setToggleState(enabled, juce::dontSendNotification);
+    }
+
 private:
     StepSequencer* seq;
 

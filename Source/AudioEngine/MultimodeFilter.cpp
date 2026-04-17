@@ -20,6 +20,8 @@ MultimodeFilter::MultimodeFilter() {
 
     this->highPassLeft = std::make_unique<HighPassFilter>();
     this->highPassRight = std::make_unique<HighPassFilter>();
+
+    this->charFilter = std::make_unique<CharacterFilter>();
     
     this->mode = LOWPASS;
 	this->keyTrack = 0;
@@ -37,10 +39,18 @@ MultimodeFilter::~MultimodeFilter() {
 
 	this->highPassLeft = nullptr;
     this->highPassRight = nullptr;
+
+    this->charFilter = nullptr;
 }
 
 void MultimodeFilter::setMode(Mode mode) {
     this->mode = mode;
+    charFilter->setMode(mode == LOWPASS ? CharacterFilter::LOWPASS : CharacterFilter::HIGHPASS);
+}
+
+void MultimodeFilter::setCharacter(CharacterFilter::Character c) {
+    this->character = c;
+    charFilter->setCharacter(c);
 }
 
 void MultimodeFilter::coefficients(float sampleRate, float frequency, float resonance) {	
@@ -65,6 +75,10 @@ void MultimodeFilter::coefficients(float sampleRate, float frequency, float reso
 	
     this->highPassLeft->coefficients(sampleRate, frequency, resonance);
     this->highPassRight->coefficients(sampleRate, frequency, resonance);
+
+    charFilter->prepare(sampleRate);
+    charFilter->setFrequencyImmediate(frequency);
+    charFilter->setResonance(resonance);
 }
 
 void MultimodeFilter::processStereo(float *const left, float *const right, const int numSamples) {
@@ -132,11 +146,19 @@ void MultimodeFilter::setCutoffModulation(float value)
 	lowPassRightStage2->setModulatedValue(value);
 	highPassLeft->setModulatedValue(value);
 	highPassRight->setModulatedValue(value);
+	charFilter->setModulatedValue(value);
 }
 
 void MultimodeFilter::processSampleStereo(float& left, float& right)
 {
 	if (!enabled) return;
+
+	if (character != CharacterFilter::STANDARD)
+	{
+		charFilter->processSample(left, right);
+		return;
+	}
+
 	if (mode == LOWPASS) {
 		left  = lowPassLeftStage1->processSample(left);
 		left  = lowPassLeftStage2->processSample(left);
@@ -156,17 +178,21 @@ void MultimodeFilter::processModulation()
 	lowPassRightStage2->processModulation();
 	highPassLeft->processModulation();
 	highPassRight->processModulation();
+
+	// Sync character filter with the modulated cutoff multiplier from stage 1
+	if (character != CharacterFilter::STANDARD)
+		charFilter->setModulatedValue(lowPassLeftStage1->getModulatedValue());
 }
 
 void MultimodeFilter::setFrequency(float frequency) {
 	this->frequency = frequency;		
-	// Let the individual filters handle smoothing - don't set immediately
 	this->lowPassLeftStage1->setFrequency(frequency);
 	this->lowPassRightStage1->setFrequency(frequency);
 	this->lowPassLeftStage2->setFrequency(frequency);
 	this->lowPassRightStage2->setFrequency(frequency);
 	this->highPassLeft->setFrequency(frequency);
 	this->highPassRight->setFrequency(frequency);
+	charFilter->setFrequency(frequency);
 }
 
 void MultimodeFilter::setFrequencyImmediate(float frequency) {
@@ -179,6 +205,7 @@ void MultimodeFilter::setFrequencyImmediate(float frequency) {
 	// HighPass filters don't have immediate method yet, use regular
 	this->highPassLeft->setFrequencyImmediate(frequency);
 	this->highPassRight->setFrequencyImmediate(frequency);
+	charFilter->setFrequencyImmediate(frequency);
 }
 
 void MultimodeFilter::setResonance(float resonance) {
@@ -189,6 +216,7 @@ void MultimodeFilter::setResonance(float resonance) {
 	lowPassRightStage2->setResonance(resonance);
 	highPassLeft->setResonance(resonance);
 	highPassRight->setResonance(resonance);
+	charFilter->setResonance(resonance);
 }
 
 

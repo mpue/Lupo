@@ -66,7 +66,7 @@ public:
 	~Model() {}
 
 	float outputGaindB;
-	float maxVoices = 16;
+	float maxVoices = 32;
 	float cutoff1;
 	float resonance1;
 	float envAmt1;
@@ -74,6 +74,9 @@ public:
 	float cutoff2;
 	float resonance2;
 	float envAmt2;
+
+	float filterChar1 = 0.f;
+	float filterChar2 = 0.f;
 
 	float mainVolume;
 	float ampAttack = 0;

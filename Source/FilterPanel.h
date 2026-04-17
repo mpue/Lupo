@@ -71,6 +71,8 @@ private:
     std::unique_ptr<Label> Amt;
     std::unique_ptr<ComboBox> filterMode;
     std::unique_ptr<Label> filterModeLabel;
+    std::unique_ptr<ComboBox> filterChar;
+    std::unique_ptr<Label> filterCharLabel;
 
 
     //==============================================================================

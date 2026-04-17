@@ -156,6 +156,57 @@ public:
         setDefaultSansSerifTypefaceName("Arial");
     }
 
+    // Square LED toggle button
+    void drawToggleButton(juce::Graphics& g, juce::ToggleButton& button,
+                          bool isMouseOverButton, bool isButtonDown) override
+    {
+        const bool  on      = button.getToggleState();
+        const float ledSize = juce::jmin(14.0f, (float)button.getHeight() * 0.55f);
+        const float ledX    = 2.0f;
+        const float ledY    = ((float)button.getHeight() - ledSize) * 0.5f;
+
+        juce::Rectangle<float> led(ledX, ledY, ledSize, ledSize);
+
+        // Outer frame
+        g.setColour(juce::Colour(0xff404040));
+        g.drawRect(led, 1.0f);
+
+        if (on)
+        {
+            // Glow halo
+            juce::Colour glowCol = juce::Colour(0xff4d9eff).withAlpha(0.25f);
+            g.setColour(glowCol);
+            g.fillRect(led.expanded(2.5f));
+
+            // Bright fill
+            g.setColour(juce::Colour(0xff4d9eff));
+            g.fillRect(led.reduced(1.0f));
+
+            // Inner highlight
+            g.setColour(juce::Colours::white.withAlpha(0.35f));
+            g.fillRect(led.reduced(1.0f).removeFromTop(ledSize * 0.35f).removeFromLeft(ledSize * 0.55f));
+        }
+        else
+        {
+            // Dark fill
+            g.setColour(juce::Colour(0xff1a1a1a));
+            g.fillRect(led.reduced(1.0f));
+
+            // Subtle dim centre
+            g.setColour(juce::Colour(0xff2a3040));
+            g.fillRect(led.reduced(3.0f));
+        }
+
+        // Label text
+        g.setColour(button.findColour(juce::ToggleButton::textColourId)
+                          .withAlpha(button.isEnabled() ? 1.0f : 0.4f));
+        g.setFont(juce::Font(juce::jmin(13.0f, (float)button.getHeight() * 0.55f)));
+        g.drawText(button.getButtonText(),
+                   (int)(ledX + ledSize + 6.0f), 0,
+                   button.getWidth() - (int)(ledX + ledSize + 6.0f), button.getHeight(),
+                   juce::Justification::centredLeft, false);
+    }
+
     // Custom Button Drawing mit abgerundeten Ecken und Glow-Effekt
     void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
         bool isMouseOverButton, bool isButtonDown) override
@@ -191,13 +242,13 @@ public:
         g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
     }
 
-    // Rotary slider using image strip (128 frames), resolution chosen by slider size
+    // Rotary slider using image strip (128 frames), resolution chosen by slider size.
+    // Tick-mark scale drawn in the outer ring around the knob.
     void drawRotarySlider(juce::Graphics& g, int x, int y, int width, int height, float sliderPos,
         const float rotaryStartAngle, const float rotaryEndAngle, juce::Slider& /*slider*/) override
     {
         const int sliderSize = juce::jmin(width, height);
 
-        // Pick the sharpest strip that still fits without upscaling
         juce::Image strip;
         if (sliderSize <= 40)
             strip = juce::ImageCache::getFromMemory(BinaryData::Knob_32_png,  BinaryData::Knob_32_pngSize);
@@ -211,36 +262,63 @@ public:
         juce::Image shadow = juce::ImageCache::getFromMemory(BinaryData::knob_shadow_64_png,
                                                              BinaryData::knob_shadow_64_pngSize);
 
-        const float radius  = (float)juce::jmin(width / 2, height / 2);
-        const float centreX = (float)x + (float)width  * 0.5f;
-        const float centreY = (float)y + (float)height * 0.5f;
-        const float rx      = centreX - radius - 1.0f;
-        const float ry      = centreY - radius - 1.0f;
-        const float rw      = radius * 2.0f;
-        const float angle   = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
+        const float outerRadius = (float)juce::jmin(width / 2, height / 2);
+        const float centreX     = (float)x + (float)width  * 0.5f;
+        const float centreY     = (float)y + (float)height * 0.5f;
 
-        // Blue value arc drawn behind the knob image
+        // Knob occupies the inner 78 %; ticks use the outer ring
+        const float knobRadius = outerRadius * 0.78f;
+        const float kx = centreX - knobRadius;
+        const float ky = centreY - knobRadius;
+        const float kw = knobRadius * 2.0f;
+
+        // --- Tick scale ---
+        // 33 ticks spanning rotaryStartAngle … rotaryEndAngle;
+        // every 4th tick (indices 0,4,8,…,32) is a major tick.
+        const int   numTicks = 33;
+        const float angleRange = rotaryEndAngle - rotaryStartAngle;
+
+        for (int i = 0; i < numTicks; ++i)
         {
-            juce::Path arc;
-            arc.addPieSegment(rx + 1.0f, ry + 1.0f, rw - 0.5f, rw - 0.5f,
-                              rotaryStartAngle, angle, 0.85f);
-            g.setColour(juce::Colour(0xff4d9eff).withAlpha(0.75f));
-            g.fillPath(arc);
+            const float t         = (float)i / (float)(numTicks - 1);
+            const float tickAngle = rotaryStartAngle + t * angleRange;
+            const bool  isMajor   = (i % 4 == 0);
+            const bool  isActive  = (t <= sliderPos + 0.001f);
+
+            // Major ticks start at the knob edge; minor ticks start slightly further out
+            const float iR = isMajor ? outerRadius * 0.78f : outerRadius * 0.83f;
+            const float oR = isMajor ? outerRadius * 0.99f : outerRadius * 0.93f;
+
+            const float sinA = std::sin(tickAngle);
+            const float cosA = std::cos(tickAngle);
+
+            const float px1 = centreX + iR * sinA;
+            const float py1 = centreY - iR * cosA;
+            const float px2 = centreX + oR * sinA;
+            const float py2 = centreY - oR * cosA;
+
+            juce::Colour col;
+            if (isActive)
+                col = isMajor ? juce::Colour(0xff4d9eff) : juce::Colour(0xaa4d9eff);
+            else
+                col = isMajor ? juce::Colour(0xff555555) : juce::Colour(0xff383838);
+
+            g.setColour(col);
+            g.drawLine(px1, py1, px2, py2, isMajor ? 1.5f : 1.0f);
         }
 
-        // Frame index (strip has 128 frames stacked vertically)
+        // Drop shadow
+        g.drawImage(shadow,
+                    (int)kx, (int)ky, (int)kw, (int)kw,
+                    0, 0, shadow.getWidth(), shadow.getHeight());
+
+        // Knob frame
         const int nFrames  = strip.getHeight() / strip.getWidth();
         const int frameIdx = juce::jlimit(0, nFrames - 1,
                                 (int)std::ceil(sliderPos * (double)(nFrames - 1)));
 
-        // Drop shadow
-        g.drawImage(shadow,
-                    (int)rx, (int)ry, 2 * (int)radius, 2 * (int)radius,
-                    0, 0, shadow.getWidth(), shadow.getHeight());
-
-        // Knob frame
         g.drawImage(strip,
-                    (int)rx, (int)ry, 2 * (int)radius, 2 * (int)radius,
+                    (int)kx, (int)ky, (int)kw, (int)kw,
                     0, frameIdx * strip.getWidth(), strip.getWidth(), strip.getWidth());
     }
 

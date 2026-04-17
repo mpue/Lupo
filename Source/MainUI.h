@@ -139,6 +139,7 @@ private:
 	std::unique_ptr<ComboBox>    chordScaleCombo;
 
 	bool midiLearnWasActive = false;
+	int  midiLearnFeedbackCountdown = 0;  // timer ticks to keep "MIDI CC assigned!" visible
 
 	void showMidiLearnMenu(const String& paramID);
 
