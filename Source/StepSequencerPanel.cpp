@@ -14,11 +14,9 @@ String StepCell::noteName(int n)
     return String(kNoteNames[n % 12]) + String(n / 12 - 1);
 }
 
-Colour StepCell::cellColour(int index)
+Colour StepCell::cellColour(int /*index*/)
 {
-    // 16 distinct hues cycling
-    float hue = (float)(index % 16) / 16.0f;
-    return Colour::fromHSV(hue, 0.75f, 0.9f, 1.0f);
+    return Colour(0xff4d9eff);
 }
 
 //==============================================================================
@@ -170,7 +168,7 @@ StepSequencerPanel::StepSequencerPanel(StepSequencer* sequencer, ChordManager* c
     // Enable button
     enableButton = std::make_unique<ToggleButton>("SEQ ON");
     enableButton->setButtonText("SEQ ON");
-    enableButton->setColour(ToggleButton::tickColourId,         Colour(0xff40ff80));
+    enableButton->setColour(ToggleButton::tickColourId,         Colour(0xff4d9eff));
     enableButton->setColour(ToggleButton::tickDisabledColourId, Colours::grey);
     enableButton->setColour(ToggleButton::textColourId,         Colours::white);
     enableButton->onStateChange = [this] {
@@ -213,7 +211,7 @@ StepSequencerPanel::StepSequencerPanel(StepSequencer* sequencer, ChordManager* c
     for (int i = 0; i < 3; ++i)
     {
         stepsButtons[i] = std::make_unique<TextButton>(stepsCaptions[i]);
-        styleToggleBtn(*stepsButtons[i], Colour(0xff40ff80));
+        styleToggleBtn(*stepsButtons[i], Colour(0xff4d9eff));
         int val = stepsValues[i];
         stepsButtons[i]->onClick = [this, val] {
             seq->setNumSteps(val);
@@ -232,7 +230,7 @@ StepSequencerPanel::StepSequencerPanel(StepSequencer* sequencer, ChordManager* c
     for (int i = 0; i < 4; ++i)
     {
         divButtons[i] = std::make_unique<TextButton>(divCaptions[i]);
-        styleToggleBtn(*divButtons[i], Colour(0xff4d96ff));
+        styleToggleBtn(*divButtons[i], Colour(0xff4d9eff));
         int idx = i;
         divButtons[i]->onClick = [this, idx] {
             seq->setDivision(idx);
@@ -251,7 +249,7 @@ StepSequencerPanel::StepSequencerPanel(StepSequencer* sequencer, ChordManager* c
     for (int i = 0; i < 4; ++i)
     {
         dirButtons[i] = std::make_unique<TextButton>(dirCaptions[i]);
-        styleToggleBtn(*dirButtons[i], Colour(0xffb983ff));
+        styleToggleBtn(*dirButtons[i], Colour(0xff4d9eff));
         int idx = i;
         dirButtons[i]->onClick = [this, idx] {
             seq->setDirection(idx);
@@ -281,9 +279,9 @@ void StepSequencerPanel::updateStepsButtons()
         bool sel = (n == indices[i]);
         stepsButtons[i]->setToggleState(sel, dontSendNotification);
         stepsButtons[i]->setColour(TextButton::buttonColourId,
-                                   sel ? Colour(0xff204020) : Colour(0xff1a1a2e));
+                                   sel ? Colour(0xff1c2a50) : Colour(0xff1a1a2e));
         stepsButtons[i]->setColour(TextButton::textColourOffId,
-                                   sel ? Colour(0xff40ff80) : Colours::grey);
+                                   sel ? Colour(0xff4d9eff) : Colours::grey);
     }
 }
 
@@ -294,9 +292,9 @@ void StepSequencerPanel::updateDivButtons()
     {
         bool sel = (d == i);
         divButtons[i]->setColour(TextButton::buttonColourId,
-                                  sel ? Colour(0xff1a2040) : Colour(0xff1a1a2e));
+                                  sel ? Colour(0xff1c2a50) : Colour(0xff1a1a2e));
         divButtons[i]->setColour(TextButton::textColourOffId,
-                                  sel ? Colour(0xff4d96ff) : Colours::grey);
+                                  sel ? Colour(0xff4d9eff) : Colours::grey);
     }
 }
 
@@ -307,9 +305,9 @@ void StepSequencerPanel::updateDirButtons()
     {
         bool sel = (d == i);
         dirButtons[i]->setColour(TextButton::buttonColourId,
-                                  sel ? Colour(0xff201a30) : Colour(0xff1a1a2e));
+                                  sel ? Colour(0xff1c2a50) : Colour(0xff1a1a2e));
         dirButtons[i]->setColour(TextButton::textColourOffId,
-                                  sel ? Colour(0xffb983ff) : Colours::grey);
+                                  sel ? Colour(0xff4d9eff) : Colours::grey);
     }
 }
 
@@ -323,7 +321,7 @@ void StepSequencerPanel::paint(Graphics& g)
     g.fillRect(0, 0, getWidth(), 28);
 
     g.setFont(Font(13.0f, Font::bold));
-    g.setColour(Colour(0xff40ff80));
+    g.setColour(Colour(0xff4d9eff));
     g.drawText("STEP SEQUENCER", 10, 0, 240, 28, Justification::centredLeft);
 
     // Row labels

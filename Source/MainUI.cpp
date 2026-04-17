@@ -205,17 +205,13 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	addAndMakeVisible(presetButton.get());
 	presetButton->setButtonText(TRANS("Presets"));
 	presetButton->addListener(this);
-	presetButton->setColour(TextButton::buttonColourId, Colours::grey);
-
 	presetButton->setBounds(16, 16, 64, 24);
 
 	saveButton.reset(new TextButton("saveButton"));
 	addAndMakeVisible(saveButton.get());
 	saveButton->setButtonText(TRANS("Save"));
 	saveButton->addListener(this);
-	saveButton->setColour(TextButton::buttonColourId, Colours::grey);
-
-	saveButton->setBounds(320, 16, 64, 24);
+	saveButton->setBounds(336, 16, 64, 24);
 
 	presetCombo.reset(new ComboBox("presetCombo"));
 	addAndMakeVisible(presetCombo.get());
@@ -225,7 +221,19 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	presetCombo->setTextWhenNoChoicesAvailable(TRANS("(no choices)"));
 	presetCombo->addListener(this);
 
-	presetCombo->setBounds(88, 16, 224, 24);
+	presetCombo->setBounds(88, 16, 192, 24);
+
+	prevPresetButton.reset(new TextButton("prevPresetButton"));
+	addAndMakeVisible(prevPresetButton.get());
+	prevPresetButton->setButtonText("<");
+	prevPresetButton->addListener(this);
+	prevPresetButton->setBounds(284, 16, 24, 24);
+
+	nextPresetButton.reset(new TextButton("nextPresetButton"));
+	addAndMakeVisible(nextPresetButton.get());
+	nextPresetButton->setButtonText(">");
+	nextPresetButton->addListener(this);
+	nextPresetButton->setBounds(312, 16, 24, 24);
 
 	fmSlider.reset(new Slider("fmSlider"));
 	addAndMakeVisible(fmSlider.get());
@@ -435,18 +443,16 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	addAndMakeVisible(chordButton.get());
 	chordButton->setButtonText("Chord");
 	chordButton->setClickingTogglesState(true);
-	chordButton->setColour(TextButton::buttonColourId,   Colour(0xff1a1a2e));
-	chordButton->setColour(TextButton::buttonOnColourId, Colour(0xff4040cc));
-	chordButton->setColour(TextButton::textColourOffId,  Colour(0xff8888cc));
-	chordButton->setColour(TextButton::textColourOnId,   Colours::white);
+	chordButton->setColour(TextButton::buttonOnColourId,  Colour(0xff2a52c8));
+	chordButton->setColour(TextButton::textColourOffId,  Colour(0xff7a99c0));
+	chordButton->setColour(TextButton::textColourOnId,   Colour(0xffe8f0ff));
 	chordButton->addListener(this);
 	chordButton->setBounds(1050, 632, 126, 24);
 
 	createChordButton.reset(new TextButton("createChordButton"));
 	addAndMakeVisible(createChordButton.get());
 	createChordButton->setButtonText("Create");
-	createChordButton->setColour(TextButton::buttonColourId,  Colour(0xff1a2a1a));
-	createChordButton->setColour(TextButton::textColourOffId, Colour(0xff66bb66));
+	createChordButton->setColour(TextButton::textColourOffId, Colour(0xff55aa66));
 	createChordButton->addListener(this);
 	createChordButton->setBounds(1184, 632, 126, 24);
 
@@ -454,10 +460,9 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	addAndMakeVisible(autoChordButton.get());
 	autoChordButton->setButtonText("Auto");
 	autoChordButton->setClickingTogglesState(true);
-	autoChordButton->setColour(TextButton::buttonColourId,   Colour(0xff1a2a2a));
-	autoChordButton->setColour(TextButton::buttonOnColourId, Colour(0xff00aaaa));
-	autoChordButton->setColour(TextButton::textColourOffId,  Colour(0xff44aaaa));
-	autoChordButton->setColour(TextButton::textColourOnId,   Colours::white);
+	autoChordButton->setColour(TextButton::buttonOnColourId,  Colour(0xff0a8888));
+	autoChordButton->setColour(TextButton::textColourOffId,  Colour(0xff50a0a0));
+	autoChordButton->setColour(TextButton::textColourOnId,   Colour(0xffe8f0ff));
 	autoChordButton->addListener(this);
 	autoChordButton->setBounds(1318, 632, 132, 24);
 
@@ -478,6 +483,22 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	chordScaleCombo->setSelectedId(1, dontSendNotification);
 	chordScaleCombo->addListener(this);
 	chordScaleCombo->setBounds(1250, 660, 200, 20);
+
+	transposeDownButton.reset(new TextButton("transposeDown"));
+	addAndMakeVisible(transposeDownButton.get());
+	transposeDownButton->setButtonText("-");
+	transposeDownButton->addListener(this);
+	transposeDownButton->setBounds(1050, 686, 24, 20);
+
+	transposeLED.reset(new TransposeLEDDisplay());
+	addAndMakeVisible(transposeLED.get());
+	transposeLED->setBounds(1078, 686, 110, 20);
+
+	transposeUpButton.reset(new TextButton("transposeUp"));
+	addAndMakeVisible(transposeUpButton.get());
+	transposeUpButton->setButtonText("+");
+	transposeUpButton->addListener(this);
+	transposeUpButton->setBounds(1192, 686, 24, 20);
 
 	resized();
 
@@ -530,6 +551,8 @@ MainUI::~MainUI()
 	delayPanel = nullptr;
 	chorusPanel = nullptr;
 	presetButton = nullptr;
+	prevPresetButton = nullptr;
+	nextPresetButton = nullptr;
 	saveButton = nullptr;
 	presetCombo = nullptr;
 	fmSlider = nullptr;
@@ -556,6 +579,9 @@ MainUI::~MainUI()
 	autoChordButton   = nullptr;
 	chordKeyCombo     = nullptr;
 	chordScaleCombo   = nullptr;
+	transposeLED         = nullptr;
+	transposeDownButton  = nullptr;
+	transposeUpButton    = nullptr;
 }
 
 void MainUI::paint(Graphics& g)
@@ -612,6 +638,30 @@ void MainUI::buttonClicked(Button* buttonThatWasClicked)
 			// Poll until capture finishes, then restore label
 			startTimer(30);
 		}
+	}
+	else if (buttonThatWasClicked == transposeDownButton.get())
+	{
+		int v = synth->getGlobalTranspose() - 1;
+		synth->setGlobalTranspose(v);
+		transposeLED->setValue(synth->getGlobalTranspose());
+	}
+	else if (buttonThatWasClicked == transposeUpButton.get())
+	{
+		int v = synth->getGlobalTranspose() + 1;
+		synth->setGlobalTranspose(v);
+		transposeLED->setValue(synth->getGlobalTranspose());
+	}
+	else if (buttonThatWasClicked == prevPresetButton.get())
+	{
+		int idx = presetCombo->getSelectedItemIndex();
+		if (idx > 0)
+			presetCombo->setSelectedItemIndex(idx - 1, sendNotification);
+	}
+	else if (buttonThatWasClicked == nextPresetButton.get())
+	{
+		int idx = presetCombo->getSelectedItemIndex();
+		if (idx < presetCombo->getNumItems() - 1)
+			presetCombo->setSelectedItemIndex(idx + 1, sendNotification);
 	}
 	else if (buttonThatWasClicked == presetButton.get())
 	{
@@ -755,6 +805,7 @@ void MainUI::comboBoxChanged(ComboBox* comboBoxThatHasChanged)
 		auto* chord = synth->getChordManager();
 		if (chord) chord->setScale((ChordManager::Scale)(chordScaleCombo->getSelectedId() - 1));
 	}
+
 }
 
 void MainUI::timerCallback()

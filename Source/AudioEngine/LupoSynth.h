@@ -68,6 +68,9 @@ public:
 	EQAutomationTrack*  getEqAuto()     { return eqAuto.get(); }
 	ChordManager*       getChordManager(){ return chordManager.get(); }
 
+	void setGlobalTranspose(int semitones) { globalTranspose = juce::jlimit(-24, 24, semitones); }
+	int  getGlobalTranspose() const        { return globalTranspose; }
+
 	// Methods for real-time envelope visualization
 	Voice* getActiveVoice();
 	int getAmpEnvelopeState();
@@ -125,6 +128,7 @@ private:
 	ModMatrix* matrix;
 
 	int highestNote = 0;
+	int globalTranspose = 0;
 
 	float mainVolume = 1.0f;
 	float* leftOut;

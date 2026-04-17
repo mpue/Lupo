@@ -30,10 +30,10 @@ public:
         setColour(juce::TextEditor::focusedOutlineColourId, juce::Colour(0xff4d9eff));
 
         // Button Farben
-        setColour(juce::TextButton::buttonColourId, juce::Colour(0xff2a2a2a));
-        setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xff4d9eff));
-        setColour(juce::TextButton::textColourOffId, juce::Colour(0xffe8e8e8));
-        setColour(juce::TextButton::textColourOnId, juce::Colour(0xffffffff));
+        setColour(juce::TextButton::buttonColourId,  juce::Colour(0xff1c2438));   // dark navy
+        setColour(juce::TextButton::buttonOnColourId, juce::Colour(0xff2a52a8)); // active blue
+        setColour(juce::TextButton::textColourOffId, juce::Colour(0xff7a99c0));  // steel-blue text
+        setColour(juce::TextButton::textColourOnId,  juce::Colour(0xffe8f0ff));  // bright text (on)
 
         // ComboBox
         setColour(juce::ComboBox::backgroundColourId, juce::Colour(0xff2a2a2a));
@@ -207,39 +207,52 @@ public:
                    juce::Justification::centredLeft, false);
     }
 
-    // Custom Button Drawing mit abgerundeten Ecken und Glow-Effekt
+    // Modern button with gradient body, specular top line and glow
     void drawButtonBackground(juce::Graphics& g, juce::Button& button, const juce::Colour& backgroundColour,
         bool isMouseOverButton, bool isButtonDown) override
     {
         auto bounds = button.getLocalBounds().toFloat().reduced(0.5f, 0.5f);
-        auto cornerSize = 8.0f;
+        const float corner  = 5.0f;
+        const bool  isOn    = button.getToggleState();
 
-        if (isButtonDown)
-        {
-            g.setColour(backgroundColour.brighter(0.2f));
-        }
-        else if (isMouseOverButton)
-        {
-            g.setColour(backgroundColour.brighter(0.1f));
+        juce::Colour base = backgroundColour;
+        if (isButtonDown)      base = base.brighter(0.35f);
+        else if (isMouseOverButton) base = base.brighter(0.15f);
 
-            // Glow-Effekt f�r Hover
+        // Subtle top-to-bottom gradient gives depth
+        juce::ColourGradient body(
+            base.brighter(0.10f), bounds.getX(), bounds.getY(),
+            base.darker (0.10f), bounds.getX(), bounds.getBottom(), false);
+        g.setGradientFill(body);
+        g.fillRoundedRectangle(bounds, corner);
+
+        // Radial outer glow when hovered or toggled on
+        if (isMouseOverButton || isOn)
+        {
+            juce::Colour glowCol = isOn
+                ? base.withAlpha(0.30f)
+                : juce::Colour(0x224d9eff);
+
             juce::Path glowPath;
-            glowPath.addRoundedRectangle(bounds.expanded(2.0f), cornerSize + 2.0f);
-            juce::ColourGradient glow(juce::Colour(0x334d9eff), bounds.getCentreX(), bounds.getCentreY(),
-                juce::Colour(0x004d9eff), bounds.getRight(), bounds.getBottom(), true);
+            glowPath.addRoundedRectangle(bounds.expanded(3.0f), corner + 3.0f);
+            juce::ColourGradient glow(
+                glowCol,                       bounds.getCentreX(), bounds.getCentreY(),
+                glowCol.withAlpha(0.0f),       bounds.getRight(),   bounds.getBottom(), true);
             g.setGradientFill(glow);
             g.fillPath(glowPath);
         }
-        else
-        {
-            g.setColour(backgroundColour);
-        }
 
-        g.fillRoundedRectangle(bounds, cornerSize);
+        // Specular top-edge highlight (makes it look raised)
+        g.setColour(juce::Colours::white.withAlpha(isOn ? 0.20f : 0.07f));
+        g.drawLine(bounds.getX() + corner, bounds.getY() + 0.5f,
+                   bounds.getRight() - corner, bounds.getY() + 0.5f, 1.0f);
 
-        // Subtiler Outline
-        g.setColour(juce::Colour(0xff404040));
-        g.drawRoundedRectangle(bounds, cornerSize, 1.0f);
+        // Border – brighter when active
+        juce::Colour borderCol = isOn
+            ? base.brighter(0.6f).withAlpha(0.75f)
+            : base.brighter(0.25f).withAlpha(0.45f);
+        g.setColour(borderCol);
+        g.drawRoundedRectangle(bounds, corner, 1.0f);
     }
 
     // Rotary slider using image strip (128 frames), resolution chosen by slider size.

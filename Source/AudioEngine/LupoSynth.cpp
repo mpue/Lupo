@@ -214,7 +214,7 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 
 		if (m.isNoteOn())
 		{
-			int noteNumber = m.getNoteNumber();
+			int noteNumber = juce::jlimit(0, 127, m.getNoteNumber() + globalTranspose);
 
 			// First, check if this note is already playing and steal that voice
 			// (handles fast repeated notes where note-on arrives before note-off)
@@ -292,7 +292,7 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 		}
 		else if (m.isNoteOff())
 		{
-			int noteNumber = m.getNoteNumber();
+			int noteNumber = juce::jlimit(0, 127, m.getNoteNumber() + globalTranspose);
 
 			for (auto& voice : voices) {
 				if (voice->isPlaying() && voice->getNoteNumber() == noteNumber) {

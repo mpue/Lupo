@@ -20,6 +20,7 @@
 #include "StepSequencerPanel.h"
 #include "AudioEngine/ChordManager.h"
 #include "PresetBrowser.h"
+#include "TransposeLEDDisplay.h"
 
 class ModMatrixPanel;
 class ModMatrixModel;
@@ -104,6 +105,8 @@ private:
     std::unique_ptr<DelayPanel> delayPanel;
     std::unique_ptr<ChorusPanel> chorusPanel;
     std::unique_ptr<TextButton> presetButton;
+    std::unique_ptr<TextButton> prevPresetButton;
+    std::unique_ptr<TextButton> nextPresetButton;
     std::unique_ptr<TextButton> saveButton;
     std::unique_ptr<ComboBox> presetCombo;
     std::unique_ptr<Slider> fmSlider;
@@ -137,6 +140,10 @@ private:
 	std::unique_ptr<TextButton>  autoChordButton;
 	std::unique_ptr<ComboBox>    chordKeyCombo;
 	std::unique_ptr<ComboBox>    chordScaleCombo;
+
+	std::unique_ptr<TransposeLEDDisplay> transposeLED;
+	std::unique_ptr<TextButton>          transposeDownButton;
+	std::unique_ptr<TextButton>          transposeUpButton;
 
 	bool midiLearnWasActive = false;
 	int  midiLearnFeedbackCountdown = 0;  // timer ticks to keep "MIDI CC assigned!" visible

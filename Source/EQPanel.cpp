@@ -123,10 +123,10 @@ void FrequencyResponseDisplay::paint (Graphics& g)
     filled.lineTo (0.0f,      gainToY (0.0f));
     filled.closeSubPath();
 
-    g.setColour (Colour (0x2240ff80));
+    g.setColour (Colour (0x224d9eff));
     g.fillPath (filled);
 
-    g.setColour (Colour (0xff40ff80));
+    g.setColour (Colour (0xff4d9eff));
     g.strokePath (curve, PathStrokeType (1.5f));
 
     // Band nodes
@@ -203,7 +203,7 @@ EQPanel::EQPanel (Model* m, AttachmentFactory* f, ParametricEQ* eq_,
     bypassButton = std::make_unique<ToggleButton> ("EQ Active");
     bypassButton->setButtonText ("EQ ON");
     bypassButton->setColour (ToggleButton::textColourId,   Colours::white);
-    bypassButton->setColour (ToggleButton::tickColourId,   Colour (0xff40ff80));
+    bypassButton->setColour (ToggleButton::tickColourId,   Colour (0xff4d9eff));
     bypassButton->setColour (ToggleButton::tickDisabledColourId, Colours::grey);
     addAndMakeVisible (*bypassButton);
 
@@ -219,10 +219,9 @@ EQPanel::EQPanel (Model* m, AttachmentFactory* f, ParametricEQ* eq_,
 
     playButton = std::make_unique<TextButton> ("PLAY");
     playButton->setButtonText ("PLAY");
-    playButton->setColour (TextButton::buttonColourId,   Colour (0xff1a2a1a));
-    playButton->setColour (TextButton::buttonOnColourId, Colour (0xff22aa44));
-    playButton->setColour (TextButton::textColourOffId,  Colour (0xff22aa44));
-    playButton->setColour (TextButton::textColourOnId,   Colours::white);
+    playButton->setColour (TextButton::buttonOnColourId, Colour (0xff2a52a8));
+    playButton->setColour (TextButton::textColourOffId,  Colour (0xff4d9eff));
+    playButton->setColour (TextButton::textColourOnId,   Colour (0xffe8f0ff));
     playButton->setClickingTogglesState (true);
     playButton->addListener (this);
     addAndMakeVisible (*playButton);
@@ -313,7 +312,7 @@ void EQPanel::paint (Graphics& g)
     g.fillRect (0, 0, getWidth(), 28);
 
     g.setFont (Font (13.0f, Font::bold));
-    g.setColour (Colour (0xff40ff80));
+    g.setColour (Colour (0xff4d9eff));
     g.drawText ("8-BAND PARAMETRIC EQ", 10, 0, 250, 28, Justification::centredLeft, false);
 
     // Separator
