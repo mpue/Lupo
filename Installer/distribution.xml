@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="2">
+
+    <title>Lupo Synthesizer 1.0.0</title>
+    <welcome    file="welcome.html"    mime-type="text/html" />
+    <license    file="license.html"    mime-type="text/html" />
+    <readme     file="readme.html"     mime-type="text/html" />
+
+    <options customize="allow" require-scripts="false" rootVolumeOnly="false"/>
+
+    <choices-outline>
+        <line choice="LupoComponent"/>
+        <line choice="LupoPresets"/>
+    </choices-outline>
+
+    <choice id="LupoComponent"
+            title="Lupo AU Plugin"
+            description="Installs the Lupo Audio Unit plugin to /Library/Audio/Plug-Ins/Components."
+            start_selected="true"
+            start_enabled="true"
+            start_visible="true">
+        <pkg-ref id="com.MatthiasPueski.Lupo.component"/>
+    </choice>
+
+    <choice id="LupoPresets"
+            title="Factory Presets"
+            description="Installs factory presets to /Library/Audio/Presets/Matthias Pueski/Lupo."
+            start_selected="true"
+            start_enabled="true"
+            start_visible="true">
+        <pkg-ref id="com.MatthiasPueski.Lupo.presets"/>
+    </choice>
+
+    <pkg-ref id="com.MatthiasPueski.Lupo.component" version="1.0.0" onConclusion="none">LupoComponent.pkg</pkg-ref>
+    <pkg-ref id="com.MatthiasPueski.Lupo.presets"   version="1.0.0" onConclusion="none">LupoPresets.pkg</pkg-ref>
+
+</installer-gui-script>

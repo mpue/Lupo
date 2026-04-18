@@ -132,10 +132,6 @@ void Voice::processBlock(AudioBuffer<float>& buffer) {
             if (!oscillators[i]->enabled)
                 continue;
 
-            if (i == 1 && oscillators[i - 1]->enabled && oscillators[i - 1]->isSync()) {
-                oscillators[i - 1]->reset();
-            }
-
             float oscSample = oscillators[i]->process();
 
             if (modulator != nullptr) {

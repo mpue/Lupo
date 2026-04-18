@@ -363,6 +363,7 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	LFOPanel* lfo1 = dynamic_cast<LFOPanel*> (modulationTab.get()->getTabContentComponent(0));
 	LFOPanel* lfo2 = dynamic_cast<LFOPanel*> (modulationTab.get()->getTabContentComponent(1));
 	LFOPanel* lfo3 = dynamic_cast<LFOPanel*> (modulationTab.get()->getTabContentComponent(2));
+	EnvelopePanel* auxEnv2 = dynamic_cast<EnvelopePanel*> (modulationTab.get()->getTabContentComponent(3));
 
 	delayPanel.get()->addChangeListener(this);
 	reverbPanel.get()->addChangeListener(this);
@@ -406,6 +407,11 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	lfo1->initAttachments();
 	lfo2->initAttachments();
 	lfo3->initAttachments();
+
+	if (auxEnv2 != nullptr) {
+		auxEnv2->setName("auxEnvelope2");
+		auxEnv2->initAttachments();
+	}
 
 	reverbPanel.get()->initAttachments();
 	chorusPanel.get()->initAttachments();
@@ -790,6 +796,8 @@ void MainUI::comboBoxChanged(ComboBox* comboBoxThatHasChanged)
 		String presetName = comboBoxThatHasChanged->getText().trim();
 		if (presetName.isNotEmpty()) {
 			processor->setSelectedProgram(presetName);
+			if (eqPanel != nullptr)
+				eqPanel->syncPlayButtonState();
 		}
 	}
 	else if (comboBoxThatHasChanged == filterModeCombo.get())

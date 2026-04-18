@@ -58,7 +58,7 @@ LFOPanel::LFOPanel (Model* model, AttachmentFactory* factory)
 
     lfoAmount.reset (new Slider ("lfoAmount"));
     addAndMakeVisible (lfoAmount.get());
-    lfoAmount->setRange (0, 1, 0.01);
+    lfoAmount->setRange (0, 10, 0.01);
     lfoAmount->setSliderStyle (Slider::RotaryVerticalDrag);
     lfoAmount->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     lfoAmount->addListener (this);

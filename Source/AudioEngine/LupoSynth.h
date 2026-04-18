@@ -146,4 +146,5 @@ private:
 	float rightPeak = 0.0f;
 
 	bool prepared = false;
+    bool eqAutoNotesWereActive = false;
 };

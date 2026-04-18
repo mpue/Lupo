@@ -162,7 +162,9 @@ juce::String EQAutomationTrack::getStateAsString() const
     int64_t loopSamples  = loopDurationSamples.load();
     float   durationSec  = loopSamples > 0 ? (float) ((double) loopSamples / sampleRate_) : 0.0f;
 
-    juce::String s = juce::String (durationSec, 4);
+    // Prefix: play state
+    juce::String s = juce::String ("play=") + (playing.load() ? "1" : "0") + ";";
+    s += juce::String (durationSec, 4);
 
     for (int b = 0; b < 8; ++b)
     {
@@ -183,8 +185,22 @@ void EQAutomationTrack::loadStateFromString (const juce::String& s)
 {
     if (s.trim().isEmpty()) return;
 
+    // Parse optional play= prefix (backward compatible with older files)
+    juce::String data = s.trim();
+    bool shouldPlay = false;
+    if (data.startsWith ("play="))
+    {
+        int sep = data.indexOf (";");
+        if (sep > 0)
+        {
+            shouldPlay = data.substring (5, sep).getIntValue() != 0;
+            data = data.substring (sep + 1);
+        }
+    }
+    playing.store (shouldPlay);
+
     juce::StringArray tokens;
-    tokens.addTokens (s.trim(), ";", "");
+    tokens.addTokens (data, ";", "");
     if (tokens.isEmpty()) return;
 
     const juce::SpinLock::ScopedLockType sl (lock);

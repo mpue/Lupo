@@ -279,8 +279,8 @@ void OscillatorPanel::buttonClicked (Button* buttonThatWasClicked)
     if (buttonThatWasClicked == syncButton.get())
     {
         //[UserButtonCode_syncButton] -- add your button handler code here..
-		if (getName().startsWith("osc1")) {
-			model->osc1Sync = true;
+		if (getName().startsWith("osc2")) {
+			model->osc1Sync = syncButton->getToggleState();
 		}
 
         //[/UserButtonCode_syncButton]
@@ -354,9 +354,8 @@ void OscillatorPanel::initAttachments()
 		factory->createComboAttachment("osc1Shape", shapeComboBox.get());
 		factory->createSliderAttachment("osc1Spread", spreadSlider.get());
 		factory->createSliderAttachment("osc1Width",  widthSlider.get());
-        factory->createButtonAttachment("osc1Sync", syncButton.get());
         factory->createButtonAttachment("osc1Enabled", oscEnabledButton.get());
-
+        syncButton->setVisible(false);
 	}
 	else if (getName().startsWith("osc2")) {
 		factory->createSliderAttachment("osc2Pitch", oscPitch.get());
@@ -364,6 +363,7 @@ void OscillatorPanel::initAttachments()
 		factory->createComboAttachment("osc2Shape", shapeComboBox.get());
 		factory->createSliderAttachment("osc2Spread", spreadSlider.get());
 		factory->createSliderAttachment("osc2Width",  widthSlider.get());
+        factory->createButtonAttachment("osc1Sync", syncButton.get());
         factory->createButtonAttachment("osc2Enabled", oscEnabledButton.get());
 	}
 	else if (getName().startsWith("osc3")) {
@@ -373,6 +373,7 @@ void OscillatorPanel::initAttachments()
 		factory->createSliderAttachment("osc3Spread", spreadSlider.get());
 		factory->createSliderAttachment("osc3Width",  widthSlider.get());
         factory->createButtonAttachment("osc3Enabled", oscEnabledButton.get());
+        syncButton->setVisible(false);
 	}
 
 	else if (getName().startsWith("osc4")) {
@@ -382,6 +383,7 @@ void OscillatorPanel::initAttachments()
 		factory->createSliderAttachment("osc4Spread", spreadSlider.get());
 		factory->createSliderAttachment("osc4Width",  widthSlider.get());
         factory->createButtonAttachment("osc4Enabled", oscEnabledButton.get());
+        syncButton->setVisible(false);
 	}
 
 	oscPitch.get()->textFromValueFunction = [](double value)

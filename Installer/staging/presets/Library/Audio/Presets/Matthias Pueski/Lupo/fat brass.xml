@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<LupoState>
+  <PARAM id="Amount_0" value="0.0"/>
+  <PARAM id="Amount_1" value="0.0"/>
+  <PARAM id="Amount_2" value="0.0"/>
+  <PARAM id="Amount_3" value="0.0"/>
+  <PARAM id="Amount_4" value="0.0"/>
+  <PARAM id="Amount_5" value="0.0"/>
+  <PARAM id="Source_0" value="0.0"/>
+  <PARAM id="Source_1" value="0.0"/>
+  <PARAM id="Source_2" value="0.0"/>
+  <PARAM id="Source_3" value="0.0"/>
+  <PARAM id="Source_4" value="0.0"/>
+  <PARAM id="Source_5" value="0.0"/>
+  <PARAM id="Target_0" value="0.0"/>
+  <PARAM id="Target_1" value="0.0"/>
+  <PARAM id="Target_2" value="0.0"/>
+  <PARAM id="Target_3" value="0.0"/>
+  <PARAM id="Target_4" value="0.0"/>
+  <PARAM id="Target_5" value="0.0"/>
+  <PARAM id="ampAttack" value="0.0"/>
+  <PARAM id="ampDecay" value="2.698905944824219"/>
+  <PARAM id="ampRelease" value="1.191562533378601"/>
+  <PARAM id="ampSustain" value="0.653374969959259"/>
+  <PARAM id="arpClockMode" value="0.0"/>
+  <PARAM id="arpEnabled" value="0.0"/>
+  <PARAM id="arpMode" value="0.0"/>
+  <PARAM id="arpOctaves" value="0.0"/>
+  <PARAM id="arpSpeed" value="2.0"/>
+  <PARAM id="arpTempo" value="120.0"/>
+  <PARAM id="auxAttack1" value="0.0"/>
+  <PARAM id="auxAttack2" value="0.0"/>
+  <PARAM id="auxDecay1" value="10.0"/>
+  <PARAM id="auxDecay2" value="1.0"/>
+  <PARAM id="auxRelease1" value="3.219062328338623"/>
+  <PARAM id="auxRelease2" value="1.0"/>
+  <PARAM id="auxSustain1" value="0.1342187523841858"/>
+  <PARAM id="auxSustain2" value="0.0"/>
+  <PARAM id="bypass" value="0.0"/>
+  <PARAM id="chrDelay" value="0.0"/>
+  <PARAM id="chrFeedback" value="0.0"/>
+  <PARAM id="chrMix" value="0.0"/>
+  <PARAM id="chrModulation" value="1.0"/>
+  <PARAM id="cutoff1" value="20000.0"/>
+  <PARAM id="cutoff2" value="20000.0"/>
+  <PARAM id="cutoffLink" value="0.0"/>
+  <PARAM id="distDrive" value="0.0"/>
+  <PARAM id="distMix" value="0.0"/>
+  <PARAM id="distMode" value="0.0"/>
+  <PARAM id="dlyFeedback" value="0.0"/>
+  <PARAM id="dlyMix" value="0.0"/>
+  <PARAM id="dlyTimeLeft" value="0.0"/>
+  <PARAM id="dlyTimeRight" value="1.0"/>
+  <PARAM id="envAmt1" value="1.0"/>
+  <PARAM id="envAmt2" value="1.0"/>
+  <PARAM id="filterMode" value="0.0"/>
+  <PARAM id="filterMode1" value="0.0"/>
+  <PARAM id="filterMode2" value="0.0"/>
+  <PARAM id="fmAmount" value="0.0"/>
+  <PARAM id="lfo1Amount" value="0.0"/>
+  <PARAM id="lfo1Shape" value="0.0"/>
+  <PARAM id="lfo1Speed" value="0.0"/>
+  <PARAM id="lfo2Amount" value="0.0"/>
+  <PARAM id="lfo2Shape" value="0.0"/>
+  <PARAM id="lfo2Speed" value="0.0"/>
+  <PARAM id="lfo3Amount" value="0.0"/>
+  <PARAM id="lfo3Shape" value="0.0"/>
+  <PARAM id="lfo3Speed" value="0.0"/>
+  <PARAM id="mainVolume" value="0.7130357623100281"/>
+  <PARAM id="osc1Enabled" value="0.0"/>
+  <PARAM id="osc1Fine" value="0.0"/>
+  <PARAM id="osc1Pan" value="0.0"/>
+  <PARAM id="osc1Pitch" value="0.0"/>
+  <PARAM id="osc1Shape" value="0.0"/>
+  <PARAM id="osc1Spread" value="0.0"/>
+  <PARAM id="osc1Sync" value="0.0"/>
+  <PARAM id="osc1Volume" value="1.0"/>
+  <PARAM id="osc2Enabled" value="1.0"/>
+  <PARAM id="osc2Fine" value="0.0"/>
+  <PARAM id="osc2Pan" value="0.0"/>
+  <PARAM id="osc2Pitch" value="6.999999046325684"/>
+  <PARAM id="osc2Shape" value="0.0"/>
+  <PARAM id="osc2Spread" value="0.0"/>
+  <PARAM id="osc2Volume" value="1.0"/>
+  <PARAM id="osc3Enabled" value="1.0"/>
+  <PARAM id="osc3Fine" value="0.0"/>
+  <PARAM id="osc3Pan" value="-0.4349687695503235"/>
+  <PARAM id="osc3Pitch" value="12.00000190734863"/>
+  <PARAM id="osc3Shape" value="0.0"/>
+  <PARAM id="osc3Spread" value="0.0"/>
+  <PARAM id="osc3Volume" value="1.0"/>
+  <PARAM id="osc4Enabled" value="1.0"/>
+  <PARAM id="osc4Fine" value="0.0"/>
+  <PARAM id="osc4Pan" value="0.3667500019073486"/>
+  <PARAM id="osc4Pitch" value="12.00000190734863"/>
+  <PARAM id="osc4Shape" value="0.0"/>
+  <PARAM id="osc4Spread" value="0.0"/>
+  <PARAM id="osc4Volume" value="1.0"/>
+  <PARAM id="resonance1" value="0.6443845629692078"/>
+  <PARAM id="resonance2" value="0.5140208601951599"/>
+  <PARAM id="rvbDamping" value="1.0"/>
+  <PARAM id="rvbDryLevel" value="0.0"/>
+  <PARAM id="rvbEnabled" value="0.0"/>
+  <PARAM id="rvbFreezeMode" value="0.0"/>
+  <PARAM id="rvbRoomSize" value="0.0"/>
+  <PARAM id="rvbWetLevel" value="0.0"/>
+  <PARAM id="rvbWidth" value="0.0"/>
+  <PARAM id="eqEnabled" value="1.0"/>
+  <PARAM id="eqFreq1"/>
+  <PARAM id="eqFreq2" value="151.2701721191406"/>
+  <PARAM id="eqFreq3"/>
+  <PARAM id="eqFreq4"/>
+  <PARAM id="eqFreq5" value="440.1323547363281"/>
+  <PARAM id="eqFreq6" value="905.7759399414062"/>
+  <PARAM id="eqFreq7" value="2039.26220703125"/>
+  <PARAM id="eqFreq8"/>
+  <PARAM id="eqGain1"/>
+  <PARAM id="eqGain2" value="1.515789985656738"/>
+  <PARAM id="eqGain3"/>
+  <PARAM id="eqGain4" value="-5.214747905731201"/>
+  <PARAM id="eqGain5" value="-2.526317596435547"/>
+  <PARAM id="eqGain6" value="-5.32879114151001"/>
+  <PARAM id="eqGain7" value="2.273683547973633"/>
+  <PARAM id="eqGain8"/>
+  <PARAM id="eqQ1"/>
+  <PARAM id="eqQ2"/>
+  <PARAM id="eqQ3"/>
+  <PARAM id="eqQ4"/>
+  <PARAM id="eqQ5"/>
+  <PARAM id="eqQ6" value="3.356083631515503"/>
+  <PARAM id="eqQ7"/>
+  <PARAM id="eqQ8"/>
+  <PARAM id="osc1Width" value="0.0"/>
+  <PARAM id="osc2Width"/>
+  <PARAM id="osc3Width"/>
+  <PARAM id="osc4Width"/>
+  <PARAM id="portamentoAmount" value="0.0"/>
+  <PARAM id="portamentoTime" value="0.5"/>
+  <PARAM id="seqDirection"/>
+  <PARAM id="seqDivision"/>
+  <PARAM id="seqEnabled"/>
+  <PARAM id="seqSteps"/>
+  <PARAM id="seqSwing"/>
+  <PARAM id="seqTempo"/>
+</LupoState>

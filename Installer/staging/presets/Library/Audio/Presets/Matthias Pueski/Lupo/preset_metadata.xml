@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<PresetMetadata>
+  <Categories>
+    <Category name="Bass"/>
+    <Category name="Keys"/>
+    <Category name="Pads"/>
+    <Category name="Sequences"/>
+  </Categories>
+  <Presets>
+    <Preset name="bassshaper" category="Bass" description="" rating="0"/>
+    <Preset name="fat bassline" category="Bass" description="A fat bassline sequence"
+            rating="4"/>
+    <Preset name="litte fella" category="Sequences" description="" rating="0"/>
+    <Preset name="s+h" category="Keys" description="" rating="0"/>
+    <Preset name="seq_test2" category="Sequences" description="" rating="0"/>
+    <Preset name="simple bass" category="Bass" description="" rating="0"/>
+    <Preset name="simple brass" category="Keys" description="" rating="0"/>
+    <Preset name="simple pad" category="Pads" description="" rating="0"/>
+    <Preset name="simple saw" category="Keys" description="A simple sawtooth sound"
+            rating="0"/>
+    <Preset name="superpad" category="Pads" description="A bright and wide pad"
+            rating="5"/>
+  </Presets>
+</PresetMetadata>

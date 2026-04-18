@@ -402,6 +402,17 @@ void EQPanel::timerCallback()
         responseDisplay->repaint();
 }
 
+void EQPanel::syncPlayButtonState()
+{
+    if (eqAuto == nullptr || playButton == nullptr) return;
+    bool isPlaying = eqAuto->isPlaying();
+    playButton->setToggleState (isPlaying, dontSendNotification);
+    if (isPlaying)
+        startTimerHz (30);
+    else if (!recButton->getToggleState())
+        stopTimer();
+}
+
 void EQPanel::initAttachments()
 {
     factory->createButtonAttachment ("eqEnabled", bypassButton.get());

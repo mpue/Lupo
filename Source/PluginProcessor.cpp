@@ -63,6 +63,7 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("auxDecay2", "ENV 2 Decay", 0.0f, 10.0f, 1.0);
 	factory->createParam("auxSustain2", "ENV 2 Sustain", 0.0f, 1.0f, 0.0);
 	factory->createParam("auxRelease2", "ENV 2 Release", 0.0f, 10.0f, 1.0);
+	factory->createParam("auxAmt2", "ENV 2 Amount", 0.0f, 100.0f, 1.0);
 
 	factory->createParam("dlyTimeLeft", "DelayL", 0.0f, 1000.0, 0.0);
 	factory->createParam("dlyTimeRight", "DelayR", 0.0f, 1000.0f, 1.0);

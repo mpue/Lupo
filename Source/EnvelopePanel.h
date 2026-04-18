@@ -78,10 +78,12 @@ private:
     std::unique_ptr<Slider> amp_decay;
     std::unique_ptr<Slider> amp_sustain;
     std::unique_ptr<Slider> amp_release;
+    std::unique_ptr<Slider> auxAmount;
     std::unique_ptr<Label> attack;
     std::unique_ptr<Label> decay;
     std::unique_ptr<Label> sustain;
     std::unique_ptr<Label> Release;
+    std::unique_ptr<Label> auxAmountLabel;
 
 
     //==============================================================================

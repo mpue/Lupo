@@ -55,6 +55,9 @@ public:
     /** Start or stop looped playback; resets playback position when starting. */
     void setPlaying (bool b);
 
+    /** Reset playback position to the beginning (audio-thread safe). */
+    void resetPlaybackPosition() { playbackResetPending.store (true); }
+
     bool  isRecording()        const { return recording.load(); }
     bool  isPlaying()          const { return playing.load(); }
     bool  hasData()            const;

@@ -118,6 +118,25 @@ EnvelopePanel::EnvelopePanel (Model* model, AttachmentFactory* factory)
     Release->setBounds (200, 64, 56, 24);
 
 
+    auxAmount.reset (new Slider ("auxAmount"));
+    addAndMakeVisible (auxAmount.get());
+    auxAmount->setRange (0.0, 100.0, 0.1);
+    auxAmount->setSliderStyle (Slider::RotaryVerticalDrag);
+    auxAmount->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
+    auxAmount->addListener (this);
+    auxAmount->setBounds (256, 8, 64, 64);
+    auxAmount->setVisible (false);
+
+    auxAmountLabel.reset (new Label ("auxAmountLabel", TRANS("Amount")));
+    addAndMakeVisible (auxAmountLabel.get());
+    auxAmountLabel->setFont (Font (12.00f, Font::plain).withTypefaceStyle ("Regular"));
+    auxAmountLabel->setJustificationType (Justification::centredLeft);
+    auxAmountLabel->setEditable (false, false, false);
+    auxAmountLabel->setColour (TextEditor::textColourId, Colours::black);
+    auxAmountLabel->setColour (TextEditor::backgroundColourId, Colour (0x00000000));
+    auxAmountLabel->setBounds (264, 64, 56, 24);
+    auxAmountLabel->setVisible (false);
+
     //[UserPreSize]
     //[/UserPreSize]
 
@@ -148,10 +167,12 @@ EnvelopePanel::~EnvelopePanel()
     amp_decay = nullptr;
     amp_sustain = nullptr;
     amp_release = nullptr;
+    auxAmount = nullptr;
     attack = nullptr;
     decay = nullptr;
     sustain = nullptr;
     Release = nullptr;
+    auxAmountLabel = nullptr;
 
 
     //[Destructor]. You can add your own custom destruction code here..
@@ -249,6 +270,12 @@ void EnvelopePanel::sliderValueChanged (Slider* sliderThatWasMoved)
 		}
         //[/UserSliderCode_amp_release]
     }
+    else if (sliderThatWasMoved == auxAmount.get())
+    {
+		if (getName() == "auxEnvelope2") {
+			model->auxAmt2 = sliderThatWasMoved->getValue();
+		}
+    }
 
     //[UsersliderValueChanged_Post]
 	sendChangeMessage();
@@ -296,6 +323,9 @@ void EnvelopePanel::initAttachments()
 		factory->createSliderAttachment("auxDecay2", amp_decay.get());
 		factory->createSliderAttachment("auxSustain2", amp_sustain.get());
 		factory->createSliderAttachment("auxRelease2", amp_release.get());
+		factory->createSliderAttachment("auxAmt2", auxAmount.get());
+		auxAmount->setVisible(true);
+		auxAmountLabel->setVisible(true);
 	}
 }
 

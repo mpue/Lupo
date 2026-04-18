@@ -362,7 +362,29 @@ void LupoSynth::processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessage
 
 	this->chordManager->captureFromMidi(midiMessages);          // tap raw keyboard for chord capture (before seq eats it)
 	this->seq->processBlock(buffer, midiMessages);              // note-triggered; eats keyboard notes, outputs sequence
-	this->eqAuto->advance(buffer.getNumSamples(), eq.get());    // advance & apply EQ automation loop
+	// Note-triggered EQ automation: only play when notes are active, restart from top on first note
+    {
+        bool notesCurrentlyActive = false;
+        for (auto& voice : voices) {
+            if (voice->getAmpEnvelope()->getState() != SynthLab::ADSR::env_idle) {
+                notesCurrentlyActive = true;
+                break;
+            }
+        }
+
+        if (eqAuto->isPlaying() && eqAuto->getLoopDurationSec() > 0.0f) {
+            // Note-triggered playback: start from beginning on first note, pause when silent
+            if (notesCurrentlyActive && !eqAutoNotesWereActive)
+                eqAuto->resetPlaybackPosition();
+            if (notesCurrentlyActive)
+                eqAuto->advance(buffer.getNumSamples(), eq.get());
+        } else {
+            // Play button off or no data yet: always advance so the recording clock runs
+            eqAuto->advance(buffer.getNumSamples(), eq.get());
+        }
+
+        eqAutoNotesWereActive = notesCurrentlyActive;
+    }
 	this->arp->processBlock(buffer, midiMessages);              // runs on remaining MIDI
 	this->chordManager->expandMidi(midiMessages);               // expand all notes (from any source) with chord intervals
 	this->processMidi(midiMessages);
@@ -485,6 +507,12 @@ void LupoSynth::updateState(ValueTree state, juce::String modMatríxState) {
 			voice->getOscillator(0)->setSync(true);
 		}
 	}
+	else {
+		for (auto& voice : voices) {
+			voice->getOscillator(0)->setSlave(nullptr);
+			voice->getOscillator(0)->setSync(false);
+		}
+	}
 
 	updateMatrix();
 }
@@ -501,6 +529,18 @@ void LupoSynth::changeListenerCallback(ChangeBroadcaster* source) {
 		voice->getOscillator(1)->enabled = model->osc2Enabled;
 		voice->getOscillator(2)->enabled = model->osc3Enabled;
 		voice->getOscillator(3)->enabled = model->osc4Enabled;
+	}
+	if (model->osc1Sync) {
+		for (auto& voice : voices) {
+			voice->getOscillator(0)->setSlave(voice->getOscillator(1));
+			voice->getOscillator(0)->setSync(true);
+		}
+	}
+	else {
+		for (auto& voice : voices) {
+			voice->getOscillator(0)->setSlave(nullptr);
+			voice->getOscillator(0)->setSync(false);
+		}
 	}
 }
 
@@ -650,6 +690,10 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 			voice->getFilterEnvelope()->setReleaseRate(newValue * sampleRate);
 		}
 	}
+	else if (parameterID == "auxAmt2") {
+		model->auxAmt2 = newValue;
+		modEnvelopes.at(1)->setModAmount(newValue);
+	}
 	else if (parameterID == "auxAttack2") {
 		modEnvelopes.at(1)->setAttackRate(jmax(0.01f, newValue) * sampleRate);
 	}
@@ -661,6 +705,21 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 	}
 	else if (parameterID == "auxRelease2") {
 		modEnvelopes.at(1)->setReleaseRate(newValue * sampleRate);
+	}
+	else if (parameterID == "osc1Sync") {
+		model->osc1Sync = newValue > 0.5f;
+		if (model->osc1Sync) {
+			for (auto& voice : voices) {
+				voice->getOscillator(0)->setSlave(voice->getOscillator(1));
+				voice->getOscillator(0)->setSync(true);
+			}
+		}
+		else {
+			for (auto& voice : voices) {
+				voice->getOscillator(0)->setSlave(nullptr);
+				voice->getOscillator(0)->setSync(false);
+			}
+		}
 	}
 	else if (parameterID == "osc1Shape") {
 		for (auto& voice : voices) {

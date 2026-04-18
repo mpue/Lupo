@@ -93,6 +93,7 @@ public:
 	float auxDecay = 1;
 	float auxSustain = 0.1f;
 	float auxRelease = 0.1f;
+	float auxAmt2 = 1.0f;
 
 	float osc1Pitch;
 	float osc1Fine;

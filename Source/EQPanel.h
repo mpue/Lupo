@@ -62,6 +62,7 @@ public:
     void timerCallback() override;
 
     void initAttachments();
+    void syncPlayButtonState();
 
 private:
     Model*              model;
