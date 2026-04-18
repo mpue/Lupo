@@ -71,6 +71,9 @@ public:
 	void setGlobalTranspose(int semitones) { globalTranspose = juce::jlimit(-24, 24, semitones); }
 	int  getGlobalTranspose() const        { return globalTranspose; }
 
+	/** Immediately silence all voices and reset arpeggiator note state. */
+	void stopAllNotes();
+
 	// Methods for real-time envelope visualization
 	Voice* getActiveVoice();
 	int getAmpEnvelopeState();

@@ -149,6 +149,23 @@ void LupoSynth::configureOscillators(Oszillator::OscMode mode1, Oszillator::OscM
 	}
 }
 
+void LupoSynth::stopAllNotes()
+{
+    // Immediately reset all voices to silence (no release tail)
+    for (auto& voice : voices) {
+        voice->getAmpEnvelope()->reset();
+        voice->getFilterEnvelope()->reset();
+        voice->setPlaying(false);
+    }
+    for (auto& env : modEnvelopes) {
+        env->reset();
+    }
+    highestNote = 0;
+
+    // Clear arpeggiator note lists so it doesn't fire stale notes
+    arp->panic();
+}
+
 Voice* LupoSynth::findFreeVoice(int noteNumber) {
 	for (auto& v : voices) {
 		if (!v->isPlaying() && v->getAmpEnvelope()->getState() == SynthLab::ADSR::env_idle) {
@@ -1030,15 +1047,14 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		arp->setOctaves(static_cast<int>(newValue) + 1);  // 0-3 -> 1-4 octaves
 	}
 	else if (parameterID == "arpMode") {
-		if (newValue < 0.5f) {
+		if (newValue < 0.5f)
 			arp->setMode(Arpeggiator::Mode::Up);
-		}
-		else if (newValue < 1.5f) {
+		else if (newValue < 1.5f)
 			arp->setMode(Arpeggiator::Mode::Down);
-		}
-		else {
+		else if (newValue < 2.5f)
 			arp->setMode(Arpeggiator::Mode::Random);
-		}
+		else
+			arp->setMode(Arpeggiator::Mode::Chord);
 	}
 	// Step Sequencer parameters
 	else if (parameterID == "seqEnabled") {

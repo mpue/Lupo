@@ -146,7 +146,7 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("arpTempo", "Arp tempo", 60.0f, 200.0f, 120.0f);
 	factory->createParam("arpClockMode", "Arp clock mode", 0, 1.0, 0);  // 0=Internal, 1=MIDI
 	factory->createParam("arpOctaves", "Arp Octaves", 0, 3.0, 0);  // Changed from 0, 3.0, 0 to match octaveCombo (1-4 items, 0-3 index)
-	factory->createParam("arpMode", "Arp mode", 0, 2.0, 0);  // 0=Up, 1=Down, 2=Random
+	factory->createParam("arpMode", "Arp mode", 0, 3.0, 0);  // 0=Up, 1=Down, 2=Random, 3=Chord
 	
 	factory->createParam("filterMode", "Filter mode", 0, 1.0, 0);
 	factory->createParam("cutoffLink", "Cutoff link", 0, 1.0, 0);
@@ -324,6 +324,9 @@ void LupoAudioProcessor::setSelectedProgram(juce::String name) {
 	if (matrixFile.exists()) {
 		 modMatrixState = matrixFile.loadFileAsString();
 	}
+
+	// Silence all voices and clear arpeggiator state before loading
+	lupo->stopAllNotes();
 
 	// Stop the sequencer before loading the new preset so it doesn't keep
 	// running with stale pattern/timing during the state transition.

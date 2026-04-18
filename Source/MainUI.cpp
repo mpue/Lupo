@@ -32,6 +32,7 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 		processor->parameters->addParameterListener("Amount_" + String(i), this);
 	}
 	processor->parameters->addParameterListener("arpEnabled", this);
+	processor->parameters->addParameterListener("arpMode", this);
 	processor->parameters->addParameterListener("seqEnabled", this);
 
 	groupComponent.reset(new GroupComponent("new group",TRANS("Amplifier")));
@@ -905,6 +906,18 @@ void MainUI::parameterChanged(const String& parameterID, float newValue)
 		{
 			if (safeThis == nullptr) return;
 			safeThis->arpPanel->syncArpEnabled(newValue > 0.5f);
+		});
+		return;
+	}
+
+	// Sync arp mode combo when preset is loaded
+	if (parameterID == "arpMode")
+	{
+		juce::Component::SafePointer<MainUI> safeThis(this);
+		juce::MessageManager::callAsync([safeThis, newValue]()
+		{
+			if (safeThis == nullptr) return;
+			safeThis->arpPanel->syncModeCombo(juce::roundToInt(newValue));
 		});
 		return;
 	}

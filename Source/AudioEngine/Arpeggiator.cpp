@@ -1,4 +1,4 @@
-﻿#include "Arpeggiator.h"
+#include "Arpeggiator.h"
 
 Arpeggiator::Arpeggiator() {}
 Arpeggiator::~Arpeggiator() {}
@@ -107,14 +107,28 @@ void Arpeggiator::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffe
      if (currentStepIndex != prevStepIndex || lastPpqPosition < 0.0)
      {
            // Step boundary crossed at this sample
-       if (lastNote >= 0)
-      output.addEvent(juce::MidiMessage::noteOff(1, lastNote + 12 * octave), sample);
+        if (mode == Mode::Chord) {
+            for (int n : chordNotes)
+                output.addEvent(juce::MidiMessage::noteOff(1, n + 12 * octave), sample);
+            chordNotes.clear();
+        } else {
+            if (lastNote >= 0)
+                output.addEvent(juce::MidiMessage::noteOff(1, lastNote + 12 * octave), sample);
+        }
 
             if (notes.size() > 0)
          {
-         currentNote = getNextNoteIndex(currentNote, notes.size(), mode, direction);
-  lastNote = notes[currentNote];
-       output.addEvent(juce::MidiMessage::noteOn(1, lastNote + 12 * octave, (uint8)120), sample);
+            if (mode == Mode::Chord) {
+                for (int n : notes) {
+                    output.addEvent(juce::MidiMessage::noteOn(1, n + 12 * octave, (uint8)120), sample);
+                    chordNotes.add(n);
+                }
+                lastNote = notes[0];
+            } else {
+                currentNote = getNextNoteIndex(currentNote, notes.size(), mode, direction);
+                lastNote = notes[currentNote];
+                output.addEvent(juce::MidiMessage::noteOn(1, lastNote + 12 * octave, (uint8)120), sample);
+            }
   }
 
         if (octaves > 0)
@@ -126,7 +140,10 @@ lastPpqPosition = ppqPosition + (static_cast<double>(numSamples) / samplesPerQua
   }
        else
   {
-         // Host is stopped — release any held note
+         // Host is stopped — release any held note(s)
+            for (int n : chordNotes)
+                output.addEvent(juce::MidiMessage::noteOff(1, n + 12 * octave), 0);
+            chordNotes.clear();
          if (lastNote >= 0)
         {
           output.addEvent(juce::MidiMessage::noteOff(1, lastNote + 12 * octave), 0);
@@ -149,14 +166,28 @@ lastPpqPosition = ppqPosition + (static_cast<double>(numSamples) / samplesPerQua
         {
             timeSamples %= duration;
 
-     if (lastNote >= 0)
-  output.addEvent(juce::MidiMessage::noteOff(1, lastNote + 12 * octave), 0);
+        if (mode == Mode::Chord) {
+                for (int n : chordNotes)
+                    output.addEvent(juce::MidiMessage::noteOff(1, n + 12 * octave), 0);
+                chordNotes.clear();
+            } else {
+                if (lastNote >= 0)
+                    output.addEvent(juce::MidiMessage::noteOff(1, lastNote + 12 * octave), 0);
+            }
 
             if (notes.size() > 0)
     {
-      currentNote = getNextNoteIndex(currentNote, notes.size(), mode, direction);
-      lastNote = notes[currentNote];
-   output.addEvent(juce::MidiMessage::noteOn(1, lastNote + 12 * octave, (uint8)120), 0);
+                if (mode == Mode::Chord) {
+                    for (int n : notes) {
+                        output.addEvent(juce::MidiMessage::noteOn(1, n + 12 * octave, (uint8)120), 0);
+                        chordNotes.add(n);
+                    }
+                    lastNote = notes[0];
+                } else {
+                    currentNote = getNextNoteIndex(currentNote, notes.size(), mode, direction);
+                    lastNote = notes[currentNote];
+                    output.addEvent(juce::MidiMessage::noteOn(1, lastNote + 12 * octave, (uint8)120), 0);
+                }
      }
 
        if (octaves > 0)

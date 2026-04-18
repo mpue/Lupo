@@ -120,6 +120,7 @@ ArpPanel::ArpPanel (AttachmentFactory* factory, Arpeggiator* arp )
     modeCombo->addItem (TRANS("Up"), 1);
     modeCombo->addItem (TRANS("Down"), 2);
     modeCombo->addItem (TRANS("Random"), 3);
+    modeCombo->addItem (TRANS("Chord"), 4);
     modeCombo->addListener (this);
     modeCombo->setBounds (280, 176, 88, 28);
 
@@ -235,17 +236,19 @@ void ArpPanel::comboBoxChanged (ComboBox* comboBoxThatHasChanged)
     else if (comboBoxThatHasChanged == modeCombo.get())
     {
         //[UserComboBoxCode_modeCombo] -- add your combo box handling code here..
+        {
+            int idx = comboBoxThatHasChanged->getSelectedItemIndex();
+            if      (idx == 0) arp->setMode(Arpeggiator::Mode::Up);
+            else if (idx == 1) arp->setMode(Arpeggiator::Mode::Down);
+            else if (idx == 2) arp->setMode(Arpeggiator::Mode::Random);
+            else if (idx == 3) arp->setMode(Arpeggiator::Mode::Chord);
 
-		if (comboBoxThatHasChanged->getSelectedItemIndex() == 0) {
-			arp->setMode(Arpeggiator::Mode::Up);
-		}
-		if (comboBoxThatHasChanged->getSelectedItemIndex() == 1) {
-			arp->setMode(Arpeggiator::Mode::Down);
-		}
-        if (comboBoxThatHasChanged->getSelectedItemIndex() == 2) {
-            arp->setMode(Arpeggiator::Mode::Random);
+            // Write to APVTS so the mode is saved with the preset
+            if (factory != nullptr)
+                if (auto* apvts = factory->getValueTreeState())
+                    if (auto* param = apvts->getParameter("arpMode"))
+                        param->setValueNotifyingHost(apvts->getParameterRange("arpMode").convertTo0to1((float)idx));
         }
-
         //[/UserComboBoxCode_modeCombo]
     }
     else if (comboBoxThatHasChanged == clockModeCombo.get())
@@ -307,6 +310,11 @@ void ArpPanel::syncArpEnabled(bool enabled)
 {
     enabledButton->setToggleState(enabled, juce::dontSendNotification);
     arp->setEnabled(enabled);
+}
+
+void ArpPanel::syncModeCombo(int modeIndex)
+{
+    modeCombo->setSelectedItemIndex(modeIndex, juce::dontSendNotification);
 }
 
 void ArpPanel::initAttachments()
