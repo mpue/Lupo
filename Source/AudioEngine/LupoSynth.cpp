@@ -55,6 +55,8 @@ LupoSynth::LupoSynth(Model* model, ModMatrix* modMatrix) {
 	modMatrix->registerSource("LFO3", 3);
 	modMatrix->registerSource("ENV 1", 4);
 	modMatrix->registerSource("ENV 2", 5);
+	modMatrix->registerSource("ModWheel", 6);
+	modMatrix->registerSource("Velocity", 7);
 
 	modMatrix->registerTarget("Osc 1 pitch", 1);
 	modMatrix->registerTarget("Osc 2 pitch", 2);
@@ -284,6 +286,7 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 				voice->getAmpEnvelope()->gate(true);
 				voice->getFilterEnvelope()->gate(true);
 				voice->setNoteAndVelocity(noteNumber, m.getVelocity());
+				velocityMod->setValue(m.getVelocity() / 127.0f);
 				voice->setDuration(250);
 				voice->setTime(elapsed);
 				lfo1->reset();
@@ -359,9 +362,9 @@ void LupoSynth::processMidi(MidiBuffer& midiMessages) {
 	// TODO : Implement aftertouch and modulation wheel handling
 	if (m.isController()) {
 
-		// Modulation wheel
+		// Modulation wheel (CC1)
 		if (m.getControllerNumber() == 1) {
-
+			modWheelMod->setValue(m.getControllerValue() / 127.0f);
 		}
 	}
 
@@ -570,14 +573,22 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		model->cutoff1 = newValue;
 
 		for (auto& voice : voices) {
-			voice->getFilter1()->setFrequency(model->cutoff1);
+			// During preset load (running == false) snap immediately so the
+			// smoother doesn't sweep from 0 Hz to the new value.
+			if (!running)
+				voice->getFilter1()->setFrequencyImmediate(model->cutoff1);
+			else
+				voice->getFilter1()->setFrequency(model->cutoff1);
 		}
 
 		// Handle cutoff linking
 		if (cutoffLink) {
 			model->cutoff2 = newValue;
 			for (auto& voice : voices) {
-				voice->getFilter2()->setFrequency(model->cutoff1);
+				if (!running)
+					voice->getFilter2()->setFrequencyImmediate(model->cutoff1);
+				else
+					voice->getFilter2()->setFrequency(model->cutoff1);
 			}
 		}
 	}
@@ -610,13 +621,19 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		model->cutoff2 = newValue;
 
 		for (auto& voice : voices) {
-			voice->getFilter2()->setFrequency(newValue);
+			if (!running)
+				voice->getFilter2()->setFrequencyImmediate(newValue);
+			else
+				voice->getFilter2()->setFrequency(newValue);
 		}
 
 		if (cutoffLink) {
 			model->cutoff1 = newValue;
 			for (auto& voice : voices) {
-				voice->getFilter1()->setFrequency(newValue);
+				if (!running)
+					voice->getFilter1()->setFrequencyImmediate(newValue);
+				else
+					voice->getFilter1()->setFrequency(newValue);
 			}
 		}
 	}
@@ -1021,7 +1038,10 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 		if (cutoffLink) {
 			model->cutoff2 = model->cutoff1;
 			for (auto& voice : voices) {
-				voice->getFilter2()->setFrequency(model->cutoff1);
+				if (!running)
+					voice->getFilter2()->setFrequencyImmediate(model->cutoff1);
+				else
+					voice->getFilter2()->setFrequency(model->cutoff1);
 			}
 		}
 	}
@@ -1142,11 +1162,21 @@ void LupoSynth::configureModulation()
 	modEnvelopes.at(0)->setName("ENV1");
 	modEnvelopes.at(1)->setName("ENV2");
 
+	modWheelMod = std::make_shared<ScalarModulator>();
+	modWheelMod->setName("ModWheel");
+	modWheelMod->setModAmount(1.0f);
+
+	velocityMod = std::make_shared<ScalarModulator>();
+	velocityMod->setName("Velocity");
+	velocityMod->setModAmount(1.0f);
+
 	matrix->addModulator(lfo1);
 	matrix->addModulator(lfo2);
 matrix->addModulator(lfo3);
 	matrix->addModulator(modEnvelopes.at(0));
 	matrix->addModulator(modEnvelopes.at(1));
+	matrix->addModulator(modWheelMod);
+	matrix->addModulator(velocityMod);
 
 	matrix->addModTarget(oscGroup1);
 	matrix->addModTarget(oscGroup2);

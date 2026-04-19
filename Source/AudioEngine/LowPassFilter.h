@@ -27,7 +27,7 @@ public:
 	float processSample(float sample);
 	void setFrequency(float frequency);
 	void setResonance(float resonance);
-	void setModulatedValue(float value) { currentModulatedValue = value; }
+	void setModulatedValue(float value) { envelopeModValue = value; currentModulatedValue = listModValue * envelopeModValue; }
 	float getModulatedValue() const { return currentModulatedValue; }
 	
 	// Force immediate update for real-time control responsiveness
@@ -45,6 +45,8 @@ private:
 	float frequency = 1000.0f;
 	float resonance = 0.7f;
 	float currentModulatedValue = 1.0f;
+	float listModValue = 1.0f;      // contribution from mod-matrix modulators
+	float envelopeModValue = 1.0f;  // contribution from direct setCutoffModulation (filter envelope)
 
 	float modulationDepth = 1000.0f;
 	int    updateCounter = 0;

@@ -25,7 +25,8 @@ class ModMatrix;
     GridButtons in the matrix allow routing modulators to targets.
 */
 class ModPanel : public juce::Component,
-                 public juce::Button::Listener
+                 public juce::Button::Listener,
+                 public juce::Slider::Listener
 {
 public:
     //==============================================================================
@@ -36,6 +37,7 @@ public:
     void paint(juce::Graphics& g) override;
     void resized() override;
     void buttonClicked(juce::Button* button) override;
+    void sliderValueChanged(juce::Slider* slider) override;
 
     void initAttachments();
     void updateMatrix();
@@ -49,15 +51,19 @@ private:
     Model* model;
     ModMatrix* matrix;
     
-    static constexpr int GRID_SIZE = 25;
+    static constexpr int GRID_SIZE    = 25;
     static constexpr int LABEL_HEIGHT = 20;
-    static constexpr int LABEL_WIDTH = 50;
-    static constexpr int MARGIN_LEFT = 5;
-    static constexpr int MARGIN_TOP = 50;
+    static constexpr int LABEL_WIDTH  = 50;
+    static constexpr int MARGIN_LEFT  = 5;
+    static constexpr int MARGIN_TOP   = 50;
+    static constexpr int AMOUNT_WIDTH = 44;   // width of the amount knob column
     
     // Grid of modulation routing buttons
     std::vector<std::vector<std::unique_ptr<GridButton>>> gridButtons;
-    
+
+    // Amount knob per source row
+    std::vector<std::unique_ptr<juce::Slider>> amountKnobs;
+
     // Labels for sources (left side)
     std::vector<std::unique_ptr<juce::Label>> sourceLabels;
     
@@ -69,6 +75,7 @@ private:
     
     void createMatrix();
     void setupLabels();
+    void createAmountKnobs();
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ModPanel)
 };

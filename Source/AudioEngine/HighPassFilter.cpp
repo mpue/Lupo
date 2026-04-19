@@ -39,6 +39,13 @@ void HighPassFilter::coefficients(float newSampleRate,
 	resonance = juce::jlimit(0.05f, 10.0f, newResonance);
 	svf1.setResonance(resonance);
 	svf2.setResonance(resonance);
+
+	// Initialise smoother so the first audio block starts at the correct frequency.
+	float initCutoff = juce::jlimit(20.0f, 20000.0f, newFrequency);
+	smoothedCutoff.setCurrentAndTargetValue(initCutoff);
+	svf1.setCutoffFrequency(initCutoff);
+	svf2.setCutoffFrequency(initCutoff);
+	lastCutoff = initCutoff;
 }
 
 void HighPassFilter::setFrequency(float newFrequency)
@@ -155,6 +162,7 @@ void HighPassFilter::processModulation()
     for (auto mod : modulators) {
         totalOctaves += mod->getOutput() * mod->getModAmount() * 4.0f;
     }
-    currentModulatedValue = juce::jmax(0.01f, std::pow(2.0f, totalOctaves));
+    listModValue = juce::jmax(0.01f, std::pow(2.0f, totalOctaves));
+    currentModulatedValue = listModValue * envelopeModValue;
 }
 

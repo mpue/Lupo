@@ -146,7 +146,8 @@ void MultimodeFilter::setCutoffModulation(float value)
 	lowPassRightStage2->setModulatedValue(value);
 	highPassLeft->setModulatedValue(value);
 	highPassRight->setModulatedValue(value);
-	charFilter->setModulatedValue(value);
+	// Sync character filter with the combined modulation (list * envelope)
+	charFilter->setModulatedValue(lowPassLeftStage1->getModulatedValue());
 }
 
 void MultimodeFilter::processSampleStereo(float& left, float& right)

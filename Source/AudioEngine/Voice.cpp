@@ -95,7 +95,9 @@ void Voice::processBlock(AudioBuffer<float>& buffer) {
         return;
     }
 
-    // Filter2 uses a modEnvelope processed block-level in LupoSynth
+    // Process mod-matrix modulators for both filters once per block.
+    // filter1 combines this with per-sample envelope modulation via setCutoffModulation.
+    filter1->processModulation();
     filter2->processModulation();
 
     // Portamento: advance currentMidiNote towards targetMidiNote and update oscillator frequencies

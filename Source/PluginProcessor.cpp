@@ -319,7 +319,8 @@ void LupoAudioProcessor::setSelectedProgram(juce::String name) {
 	this->selectedProgram = name;
 
 	// Get the mod matrix state from the preset
-	String modMatrixState = "5,7;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0;0,0,0,0,0,0,0";
+	// Default: 7 sources x 14 targets, all disconnected, amounts = 1
+	String modMatrixState = "7,14;0,0,0,0,0,0,0,0,0,0,0,0,0,0;0,0,0,0,0,0,0,0,0,0,0,0,0,0;0,0,0,0,0,0,0,0,0,0,0,0,0,0;0,0,0,0,0,0,0,0,0,0,0,0,0,0;0,0,0,0,0,0,0,0,0,0,0,0,0,0;0,0,0,0,0,0,0,0,0,0,0,0,0,0;0,0,0,0,0,0,0,0,0,0,0,0,0,0|A:1,1,1,1,1,1,1";
 
 	if (matrixFile.exists()) {
 		 modMatrixState = matrixFile.loadFileAsString();

@@ -25,8 +25,9 @@ ModPanel::ModPanel(ModMatrix* matrix, Model* model, AttachmentFactory* factory)
     
     createMatrix();
     setupLabels();
-    
-    setSize(LABEL_WIDTH + numTargets * GRID_SIZE + MARGIN_LEFT * 2, 
+    createAmountKnobs();
+
+    setSize(LABEL_WIDTH + numTargets * GRID_SIZE + MARGIN_LEFT * 2 + AMOUNT_WIDTH,
             LABEL_HEIGHT + numSources * GRID_SIZE + MARGIN_TOP * 2);
 }
 
@@ -58,6 +59,15 @@ void ModPanel::paint(juce::Graphics& g)
         g.drawLine(startX, y, startX + numTargets * GRID_SIZE, y);
     }
     
+    // Draw "Amt" header above the amount knob column
+    {
+        int knobX = startX + numTargets * GRID_SIZE + 4;
+        g.setColour(juce::Colours::white);
+        g.setFont(juce::Font(10.0f, juce::Font::plain));
+        g.drawText("Amt", knobX, MARGIN_TOP + LABEL_HEIGHT / 2 - 6, GRID_SIZE, 12,
+                   juce::Justification::centred);
+    }
+
     // Draw vertical target labels manually
     g.setColour(juce::Colours::white);
     g.setFont(juce::Font(10.0f, juce::Font::plain));
@@ -111,10 +121,18 @@ void ModPanel::resized()
     {
         for (int col = 0; col < gridButtons[row].size(); ++col)
         {
-            gridButtons[row][col]->setBounds(startX + col * GRID_SIZE + 1, 
-                                           startY + row * GRID_SIZE + 1,
-                                           GRID_SIZE - 2, GRID_SIZE - 2);
+            gridButtons[row][col]->setBounds(startX + col * GRID_SIZE + 1,
+                                             startY + row * GRID_SIZE + 1,
+                                             GRID_SIZE - 2, GRID_SIZE - 2);
         }
+    }
+
+    // Position amount knobs to the right of the grid
+    int knobX = startX + numTargets * GRID_SIZE + 4;
+    for (int row = 0; row < (int)amountKnobs.size(); ++row)
+    {
+        int knobY = startY + row * GRID_SIZE;
+        amountKnobs[row]->setBounds(knobX, knobY, GRID_SIZE, GRID_SIZE);
     }
 }
 
@@ -200,7 +218,16 @@ juce::String ModPanel::getGridStateAsString() const
         if (row < numSources - 1)
             gridState += ";";
     }
-    
+
+    // Append amount values
+    gridState += "|A:";
+    for (int row = 0; row < (int)amountKnobs.size(); ++row)
+    {
+        gridState += juce::String(amountKnobs[row]->getValue(), 4);
+        if (row < (int)amountKnobs.size() - 1)
+            gridState += ",";
+    }
+
     return gridState;
 }
 
@@ -208,11 +235,21 @@ void ModPanel::setGridStateFromString(const juce::String& gridState)
 {
     if (gridState.isEmpty())
         return;
-    
+
+    // Split off the amount section ("|A:...") before parsing the grid
+    juce::String gridPart  = gridState;
+    juce::String amountPart;
+    int pipeSep = gridState.indexOf("|A:");
+    if (pipeSep >= 0)
+    {
+        gridPart  = gridState.substring(0, pipeSep);
+        amountPart = gridState.substring(pipeSep + 3);  // skip "|A:"
+    }
+
     // Parse the grid state string
     // Format: "rows,cols;r0c0,r0c1,r0c2,...;r1c0,r1c1,r1c2,...;..."
-    
-    juce::StringArray parts = juce::StringArray::fromTokens(gridState, ";", "");
+
+    juce::StringArray parts = juce::StringArray::fromTokens(gridPart, ";", "");
     
     if (parts.size() < 1)
         return;
@@ -284,6 +321,56 @@ void ModPanel::setGridStateFromString(const juce::String& gridState)
                 }
             }
         }
+    }
+
+    // Restore amount knob values
+    if (amountPart.isNotEmpty())
+    {
+        juce::StringArray amtTokens = juce::StringArray::fromTokens(amountPart, ",", "");
+        auto& modulators = matrix->getModulators();
+        for (int row = 0; row < (int)amountKnobs.size() && row < amtTokens.size(); ++row)
+        {
+            float amt = juce::jlimit(0.0f, 20.0f, amtTokens[row].getFloatValue());
+            amountKnobs[row]->setValue(amt, juce::dontSendNotification);
+            if (row < (int)modulators.size())
+                modulators[row]->setModAmount(amt);
+        }
+    }
+}
+
+void ModPanel::sliderValueChanged(juce::Slider* slider)
+{
+    for (int row = 0; row < (int)amountKnobs.size(); ++row)
+    {
+        if (amountKnobs[row].get() == slider)
+        {
+            auto& modulators = matrix->getModulators();
+            if (row < (int)modulators.size())
+                modulators[row]->setModAmount((float)slider->getValue());
+            return;
+        }
+    }
+}
+
+void ModPanel::createAmountKnobs()
+{
+    amountKnobs.clear();
+    auto& modulators = matrix->getModulators();
+
+    for (int row = 0; row < numSources; ++row)
+    {
+        auto knob = std::make_unique<juce::Slider>(juce::Slider::RotaryVerticalDrag,
+                                                   juce::Slider::NoTextBox);
+        knob->setRange(0.0, 20.0, 0.01);
+
+        // Reflect the current engine modAmount; do not write back so we
+        // never overwrite amounts that were correctly restored by setGridStateFromString.
+        float initAmt = (row < (int)modulators.size()) ? modulators[row]->getModAmount() : 1.0f;
+        knob->setValue(initAmt, juce::dontSendNotification);
+
+        knob->addListener(this);
+        addAndMakeVisible(knob.get());
+        amountKnobs.push_back(std::move(knob));
     }
 }
 

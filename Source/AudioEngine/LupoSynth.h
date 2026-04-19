@@ -30,6 +30,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "ModTargetGroup.h"
 #include "PanModTarget.h"
+#include "ScalarModulator.h"
 
 class LupoSynth : public ChangeListener, 
 			      public AudioProcessorValueTreeState::Listener, 
@@ -107,6 +108,9 @@ private:
 	std::shared_ptr<MultimodeOscillator> lfo1;
 	std::shared_ptr<MultimodeOscillator> lfo2;
 	std::shared_ptr<MultimodeOscillator> lfo3;
+
+	std::shared_ptr<ScalarModulator> modWheelMod;
+	std::shared_ptr<ScalarModulator> velocityMod;
 
 	std::unique_ptr<StereoDelay> delay;
 	std::unique_ptr<StereoReverb> reverb;
