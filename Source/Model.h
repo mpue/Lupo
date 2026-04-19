@@ -159,6 +159,10 @@ public:
 	std::atomic<bool> modMatrixStateChanged { false };
 	juce::String pendingModMatrixState = "";
 
+	// Per-instance chord manager state notification
+	std::atomic<bool> chordStateChanged { false };
+	juce::String pendingChordState = "";
+
 	int getModSource(int source) {
 		return this->modSource[source];
 	}

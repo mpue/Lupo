@@ -490,13 +490,20 @@ rightPeak = buffer.getMagnitude(1, 0, buffer.getNumSamples());
 
 }
 
-void LupoSynth::updateState(ValueTree state, juce::String modMatríxState) {
+void LupoSynth::updateState(ValueTree state, juce::String modMatríxState, juce::String chordState) {
 
 	model->gridState = modMatríxState;
 
 	// Per-instance notification: store state in Model for the UI to pick up
 	model->pendingModMatrixState = modMatríxState;
 	model->modMatrixStateChanged.store(true);
+
+	// Chord manager: apply engine-side immediately (all setters are atomic),
+	// then notify the UI thread to sync its controls.
+	if (chordState.isNotEmpty())
+		chordManager->loadStateFromString(chordState);
+	model->pendingChordState = chordState;
+	model->chordStateChanged.store(true);
 
 	for (int j = 0; j < state.getNumChildren(); j++) {
 
@@ -1075,6 +1082,9 @@ void LupoSynth::parameterChanged(const String& parameterID, float newValue)
 			arp->setMode(Arpeggiator::Mode::Random);
 		else
 			arp->setMode(Arpeggiator::Mode::Chord);
+	}
+	else if (parameterID == "arpLatch") {
+		arp->setLatch(newValue > 0.5f);
 	}
 	// Step Sequencer parameters
 	else if (parameterID == "seqEnabled") {

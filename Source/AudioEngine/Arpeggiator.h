@@ -23,8 +23,22 @@ public:
     void setDivisionTicks(int ticks) noexcept { ticksPerStep = juce::jmax(1, ticks); }
     void setTempo(float bpm)         noexcept { tempo = juce::jlimit(60.0f, 200.0f, bpm); }
 
+    /** Enable / disable latch mode.
+        When on, note-offs don't remove notes from the arp pool.
+        Turning latch off reverts the pool to only physically-held keys. */
+    void setLatch(bool l) noexcept {
+        latch = l;
+        if (!l) {
+            // Keep only the notes still physically held so the arp continues
+            // for held keys but stops if all keys have been released.
+            notes.clearQuick();
+            for (int n : physicallyHeld) notes.add(n);
+        }
+    }
+    bool getLatch() const noexcept { return latch; }
+
     /** Clear all held notes and reset playback state (call on preset change). */
-    void panic() noexcept { notes.clearQuick(); chordNotes.clearQuick(); lastNote = -1; currentNote = -1; }
+    void panic() noexcept { notes.clearQuick(); chordNotes.clearQuick(); physicallyHeld.clearQuick(); lastNote = -1; currentNote = -1; }
     float getTempo() const           noexcept { return tempo; }
 
     /** Call this before processBlock to provide host transport info. */
@@ -45,8 +59,11 @@ private:
     bool  isPlaying = false;
     float tempo = 120.0f;    // BPM for internal clock
 
+    bool latch = false;
+
     juce::Array<int> notes;
-    juce::Array<int> chordNotes;  // notes currently sounding in Chord mode
+    juce::Array<int> physicallyHeld;  // keys actually depressed (latch bookkeeping)
+    juce::Array<int> chordNotes;      // notes currently sounding in Chord mode
     int currentNote = -1;
     int lastNote = -1;
     int direction = 1;

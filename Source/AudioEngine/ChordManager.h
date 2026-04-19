@@ -52,6 +52,15 @@ public:
     /** Returns a copy of the current manual interval list. */
     std::vector<int> getIntervals() const;
 
+    /** Directly set the manual interval list (e.g. when loading a preset). */
+    void setIntervals(const std::vector<int>& iv);
+
+    /** Serialise the full manager state for preset save. */
+    juce::String getStateAsString() const;
+
+    /** Restore state from a string produced by getStateAsString(). */
+    void loadStateFromString(const juce::String& s);
+
     /** True if midiNote is a diatonic member of the current key/scale. */
     bool isNoteInScale (int midiNote) const;
 

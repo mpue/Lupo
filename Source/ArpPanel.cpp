@@ -42,6 +42,12 @@ ArpPanel::ArpPanel (AttachmentFactory* factory, Arpeggiator* arp )
     enabledButton->addListener (this);
     enabledButton->setBounds (16, 20, 100, 32);
 
+    latchButton.reset (new ToggleButton ("latchButton"));
+    addAndMakeVisible (latchButton.get());
+    latchButton->setButtonText (TRANS("Latch"));
+    latchButton->addListener (this);
+    latchButton->setBounds (130, 20, 100, 32);
+
     speedSlider.reset (new Slider ("speedSlider"));
     addAndMakeVisible (speedSlider.get());
     speedSlider->setRange (0, 3, 1);
@@ -176,6 +182,7 @@ ArpPanel::~ArpPanel()
     modeCombo = nullptr;
     modeLabel = nullptr;
     enabledButton = nullptr;
+    latchButton = nullptr;
 
     //[Destructor]. You can add your own custom destruction code here..
     //[/Destructor]
@@ -298,6 +305,23 @@ void ArpPanel::buttonClicked (Button* buttonThatWasClicked)
         }
         //[/UserButtonCode_enabledButton]
     }
+    else if (buttonThatWasClicked == latchButton.get())
+    {
+        bool on = latchButton->getToggleState();
+        arp->setLatch(on);
+        if (factory)
+        {
+            auto* apvts = factory->getValueTreeState();
+            if (apvts)
+            {
+                if (auto* param = apvts->getParameter("arpLatch"))
+                {
+                    auto range = apvts->getParameterRange("arpLatch");
+                    param->setValueNotifyingHost(range.convertTo0to1(on ? 1.0f : 0.0f));
+                }
+            }
+        }
+    }
 
     //[UserbuttonClicked_Post]
     //[/UserbuttonClicked_Post]
@@ -315,6 +339,12 @@ void ArpPanel::syncArpEnabled(bool enabled)
 void ArpPanel::syncModeCombo(int modeIndex)
 {
     modeCombo->setSelectedItemIndex(modeIndex, juce::dontSendNotification);
+}
+
+void ArpPanel::syncLatch(bool on)
+{
+    latchButton->setToggleState(on, juce::dontSendNotification);
+    arp->setLatch(on);
 }
 
 void ArpPanel::initAttachments()

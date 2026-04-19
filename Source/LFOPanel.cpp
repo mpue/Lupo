@@ -38,7 +38,7 @@ LFOPanel::LFOPanel (Model* model, AttachmentFactory* factory)
 
     lfoSpeed.reset (new Slider ("lfoSpeed"));
     addAndMakeVisible (lfoSpeed.get());
-    lfoSpeed->setRange (0, 100, 1);
+    lfoSpeed->setRange (0.01, 30.0, 0.0);  // overridden by APVTS attachment; kept for consistency
     lfoSpeed->setSliderStyle (Slider::RotaryVerticalDrag);
     lfoSpeed->setTextBoxStyle (Slider::NoTextBox, false, 80, 20);
     lfoSpeed->addListener (this);

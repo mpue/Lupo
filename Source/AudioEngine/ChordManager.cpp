@@ -46,6 +46,49 @@ std::vector<int> ChordManager::getIntervals() const
     return {};
 }
 
+void ChordManager::setIntervals(const std::vector<int>& iv)
+{
+    const juce::SpinLock::ScopedLockType sl (intervalsLock);
+    intervals = iv;
+}
+
+juce::String ChordManager::getStateAsString() const
+{
+    juce::String s;
+    s << (enabled.load()   ? 1 : 0) << ","
+      << (autoChord.load() ? 1 : 0) << ","
+      << key.load()   << ","
+      << scale.load();
+
+    const juce::SpinLock::ScopedTryLockType sl (intervalsLock);
+    if (sl.isLocked())
+        for (int iv : intervals)
+            s << "," << iv;
+
+    return s;
+}
+
+void ChordManager::loadStateFromString(const juce::String& s)
+{
+    if (s.isEmpty()) return;
+
+    juce::StringArray tokens;
+    tokens.addTokens (s, ",", "");
+    if (tokens.size() < 4) return;
+
+    enabled.store   (tokens[0].getIntValue() != 0);
+    autoChord.store (tokens[1].getIntValue() != 0);
+    key.store   (juce::jlimit (0, 11, tokens[2].getIntValue()));
+    scale.store (juce::jlimit (0, (int) Scale::NUM_SCALES - 1, tokens[3].getIntValue()));
+
+    std::vector<int> ivs;
+    for (int i = 4; i < tokens.size(); ++i)
+        ivs.push_back (tokens[i].getIntValue());
+
+    if (!ivs.empty())
+        setIntervals (ivs);
+}
+
 bool ChordManager::isNoteInScale (int midiNote) const
 {
     int k = key.load();

@@ -33,6 +33,7 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	}
 	processor->parameters->addParameterListener("arpEnabled", this);
 	processor->parameters->addParameterListener("arpMode", this);
+	processor->parameters->addParameterListener("arpLatch", this);
 	processor->parameters->addParameterListener("seqEnabled", this);
 
 	groupComponent.reset(new GroupComponent("new group",TRANS("Amplifier")));
@@ -402,12 +403,9 @@ MainUI::MainUI(LupoAudioProcessor* processor, AttachmentFactory* factory)
 	ampEnvelope.get()->initAttachments();
 	filterEnvelope->initAttachments();
 	
-	lfo1->setName("lfo1");
-	lfo2->setName("lfo2");
-	lfo3->setName("lfo3");
-	lfo1->initAttachments();
-	lfo2->initAttachments();
-	lfo3->initAttachments();
+	if (lfo1 != nullptr) { lfo1->setName("lfo1"); lfo1->initAttachments(); }
+	if (lfo2 != nullptr) { lfo2->setName("lfo2"); lfo2->initAttachments(); }
+	if (lfo3 != nullptr) { lfo3->setName("lfo3"); lfo3->initAttachments(); }
 
 	if (auxEnv2 != nullptr) {
 		auxEnv2->setName("auxEnvelope2");
@@ -528,6 +526,10 @@ MainUI::~MainUI()
 			processor->parameters->removeParameterListener("Target_" + String(i), this);
 			processor->parameters->removeParameterListener("Amount_" + String(i), this);
 		}
+		processor->parameters->removeParameterListener("arpEnabled", this);
+		processor->parameters->removeParameterListener("arpMode", this);
+		processor->parameters->removeParameterListener("arpLatch", this);
+		processor->parameters->removeParameterListener("seqEnabled", this);
 	}
 
 	processor->getFactory()->clearAttachments();
@@ -765,8 +767,18 @@ void MainUI::buttonClicked(Button* buttonThatWasClicked)
 				eqAutoFile.appendText(eqAutoState);
 			}
 
-			// DEBUG
-			ValueTree state = ValueTree::fromXml(*xml);
+			// Save chord manager state to a separate .chord file
+				File chordFile = File(presetPath + presetName + ".chord");
+				String chordStateStr = synth->getChordManager()->getStateAsString();
+				if (chordFile.exists())
+					chordFile.replaceWithText(chordStateStr);
+				else {
+					chordFile.create();
+					chordFile.appendText(chordStateStr);
+				}
+
+				// DEBUG
+				ValueTree state = ValueTree::fromXml(*xml);
 
 			for (int i = 0; i < state.getNumChildren(); i++) {
 
@@ -837,6 +849,21 @@ void MainUI::timerCallback()
 	{
 		modMatrix->setGridStateFromString(model->pendingModMatrixState);
 		repaint();
+	}
+
+	// Chord manager UI sync after preset load
+	if (model->chordStateChanged.exchange(false))
+	{
+		auto* chord = synth->getChordManager();
+		if (chord && chordButton && autoChordButton && chordKeyCombo && chordScaleCombo)
+		{
+			bool isAuto   = chord->isAutoChord();
+			bool isManual = chord->isEnabled() && !isAuto;
+			chordButton->setToggleState(isManual, dontSendNotification);
+			autoChordButton->setToggleState(isAuto, dontSendNotification);
+			chordKeyCombo->setSelectedId(chord->getKey() + 1, dontSendNotification);
+			chordScaleCombo->setSelectedId((int)chord->getScale() + 1, dontSendNotification);
+		}
 	}
 
 	// Apply buffered MIDI CC values to parameters (must run on message thread)
@@ -918,6 +945,18 @@ void MainUI::parameterChanged(const String& parameterID, float newValue)
 		{
 			if (safeThis == nullptr) return;
 			safeThis->arpPanel->syncModeCombo(juce::roundToInt(newValue));
+		});
+		return;
+	}
+
+	// Sync arp latch button when preset is loaded
+	if (parameterID == "arpLatch")
+	{
+		juce::Component::SafePointer<MainUI> safeThis(this);
+		juce::MessageManager::callAsync([safeThis, newValue]()
+		{
+			if (safeThis == nullptr) return;
+			safeThis->arpPanel->syncLatch(newValue > 0.5f);
 		});
 		return;
 	}

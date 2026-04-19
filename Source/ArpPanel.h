@@ -50,6 +50,7 @@ public:
 	void initAttachments();
     void syncArpEnabled(bool enabled);
     void syncModeCombo(int modeIndex);
+    void syncLatch(bool on);
     //[/UserMethods]
 
     void paint (Graphics& g) override;
@@ -78,6 +79,7 @@ private:
     std::unique_ptr<ComboBox> modeCombo;
     std::unique_ptr<Label> modeLabel;
     std::unique_ptr<ToggleButton> enabledButton;
+    std::unique_ptr<ToggleButton> latchButton;
 
 
     //==============================================================================

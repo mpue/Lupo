@@ -14,6 +14,7 @@ void Arpeggiator::prepareToPlay(double sr, int)
     octave = 0;
     lastPpqPosition = -1.0;
     notes.clear();
+    physicallyHeld.clear();
 }
 
 void Arpeggiator::setDivisionIndex(int idx) noexcept
@@ -64,9 +65,27 @@ void Arpeggiator::processBlock(juce::AudioBuffer<float>& buffer, juce::MidiBuffe
 
     for (juce::MidiBuffer::Iterator it(midi); it.getNextEvent(msg, pos); )
     {
-        if (msg.isNoteOn())       notes.addIfNotAlreadyThere(msg.getNoteNumber());
-        else if (msg.isNoteOff())        notes.removeFirstMatchingValue(msg.getNoteNumber());
-        else   output.addEvent(msg, pos);
+        if (msg.isNoteOn())
+        {
+            // In latch mode, pressing a new note after all keys were released
+            // starts a fresh latch set (replaces the old latched notes).
+            if (latch && physicallyHeld.isEmpty())
+                notes.clearQuick();
+
+            physicallyHeld.addIfNotAlreadyThere(msg.getNoteNumber());
+            notes.addIfNotAlreadyThere(msg.getNoteNumber());
+        }
+        else if (msg.isNoteOff())
+        {
+            physicallyHeld.removeFirstMatchingValue(msg.getNoteNumber());
+            // In latch mode, notes stay in the pool even after key release.
+            if (!latch)
+                notes.removeFirstMatchingValue(msg.getNoteNumber());
+        }
+        else
+        {
+            output.addEvent(msg, pos);
+        }
     }
 
     // --- Determine step triggers ---

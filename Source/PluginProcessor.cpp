@@ -124,9 +124,11 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("lfo2Shape", "Lfo2 shape", 0, 4.0, 0);
 	factory->createParam("lfo3Shape", "Lfo3 shape", 0, 4.0, 0);
 
-	factory->createParam("lfo1Speed", "Lfo1 speed", 0, 10.0, 0);
-	factory->createParam("lfo2Speed", "Lfo2 speed", 0, 10.0, 0);
-	factory->createParam("lfo3Speed", "Lfo3 speed", 0, 10.0, 0);
+	// Skew 0.3 gives a power-law curve: lower half of knob = 0.01–3 Hz (slow LFO),
+	// upper half = 3–30 Hz (fast vibrato/tremolo).
+	factory->createParam("lfo1Speed", "Lfo1 speed", 0.01f, 30.0f, 1.0f, 0.3f);
+	factory->createParam("lfo2Speed", "Lfo2 speed", 0.01f, 30.0f, 1.0f, 0.3f);
+	factory->createParam("lfo3Speed", "Lfo3 speed", 0.01f, 30.0f, 1.0f, 0.3f);
 
 	factory->createParam("lfo1Amount", "Lfo1 amount", 0, 10.0, 0);
 	factory->createParam("lfo2Amount", "Lfo2 amount", 0, 10.0, 0);
@@ -147,6 +149,7 @@ LupoAudioProcessor::LupoAudioProcessor()
 	factory->createParam("arpClockMode", "Arp clock mode", 0, 1.0, 0);  // 0=Internal, 1=MIDI
 	factory->createParam("arpOctaves", "Arp Octaves", 0, 3.0, 0);  // Changed from 0, 3.0, 0 to match octaveCombo (1-4 items, 0-3 index)
 	factory->createParam("arpMode", "Arp mode", 0, 3.0, 0);  // 0=Up, 1=Down, 2=Random, 3=Chord
+	factory->createParam("arpLatch", "Arp latch", 0, 1.0, 0);
 	
 	factory->createParam("filterMode", "Filter mode", 0, 1.0, 0);
 	factory->createParam("cutoffLink", "Cutoff link", 0, 1.0, 0);
@@ -326,6 +329,12 @@ void LupoAudioProcessor::setSelectedProgram(juce::String name) {
 		 modMatrixState = matrixFile.loadFileAsString();
 	}
 
+	// Get the chord manager state from the preset
+	String chordState = "";
+	File chordFile = File(presetPath + name + ".chord");
+	if (chordFile.exists())
+		chordState = chordFile.loadFileAsString().trim();
+
 	// Silence all voices and clear arpeggiator state before loading
 	lupo->stopAllNotes();
 
@@ -348,7 +357,7 @@ void LupoAudioProcessor::setSelectedProgram(juce::String name) {
 	// which reconnects all parameter adapters and fires parameterChanged callbacks.
 	lupo->running = false;
 	getValueTreeState()->replaceState(state);
-	lupo->updateState(state, modMatrixState);
+	lupo->updateState(state, modMatrixState, chordState);
 	lupo->running = true;
 
 	Logger::getCurrentLogger()->writeToLog("Updating synth state");

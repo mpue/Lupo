@@ -50,7 +50,7 @@ public:
 	void processBlock(AudioBuffer<float>& buffer, MidiBuffer& midiMessages);	
 	void processMidi(MidiBuffer& midiMessages);
 	void prepareToPlay(double sampleRate, int bufferSize);	
-	void updateState(ValueTree state, juce::String modMatrixState);
+	void updateState(ValueTree state, juce::String modMatrixState, juce::String chordState = "");
 	std::shared_ptr<MultimodeOscillator> createOscillator(Oszillator::OscMode mode);
 	void configureOscillators(Oszillator::OscMode mode1, Oszillator::OscMode mode2, Oszillator::OscMode mode3, Oszillator::OscMode mode4);
 	void changeListenerCallback(ChangeBroadcaster* source) override;
